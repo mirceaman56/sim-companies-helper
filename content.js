@@ -8,17 +8,20 @@
     rafPending: false,
 
     auth: {
-    companyId: null,
+      companyId: null,
       realmId: null,
       loaded: false,
+      loading: false,
+      error: null,
     },
 
     inventory: {
-        loaded: false,
-        status: "idle", // idle | loading | ok | error
-        error: null,
-        items: [],      // raw array
-        byKind: new Map(), // kind -> aggregated entry
+      loaded: false,
+      loading: false,
+      status: "idle", // idle | loading | ok | error
+      error: null,
+      items: [],
+      byKind: new Map(), // kind -> aggregated entry
     },
 
     marketCache: new Map(), // key -> { ts, data } where key = `${realmId}:${productId}`
@@ -88,8 +91,7 @@
     if (!profitEl) return NaN;
 
     const t = profitEl.textContent || "";
-    const after =
-      ((t.split("Profit per unit:")[1] || "").match(/-?\$?\d+(\.\d+)?/) || [])[0] || "";
+    const after = ((t.split("Profit per unit:")[1] || "").match(/-?\$?\d+(\.\d+)?/) || [])[0] || "";
 
     const val = parseMoney(after);
     if (!isFinite(val)) return NaN;
@@ -107,9 +109,7 @@
     const color = getComputedStyle(profitEl).color;
     const m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
     if (m) {
-      const r = Number(m[1]),
-        g = Number(m[2]),
-        b = Number(m[3]);
+      const r = Number(m[1]), g = Number(m[2]), b = Number(m[3]);
       if (r > 150 && g < 100 && b < 100) return -Math.abs(val);
     }
 
@@ -127,9 +127,135 @@
     return parseDurationToSeconds(t);
   }
 
-  // ---------- realm detection ----------
+  // ---------- auth ----------
+  async function loadAuthDataOnce() {
+    if (STATE.auth.loaded || STATE.auth.loading) return;
+    STATE.auth.loading = true;
+    STATE.auth.error = null;
+
+    try {
+      const res = await fetch("https://www.simcompanies.com/api/v3/companies/auth-data/", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const c = data?.authCompany;
+
+      STATE.auth.companyId = c?.companyId ?? null;
+      STATE.auth.realmId = c?.realmId ?? null;
+      STATE.auth.loaded = true;
+    } catch (e) {
+      STATE.auth.error = String(e?.message || e);
+    } finally {
+      STATE.auth.loading = false;
+      scheduleUpdate();
+    }
+  }
+
   function getRealmId() {
-      return STATE.auth.realmId ?? 0;
+    return STATE.auth.realmId ?? 0;
+  }
+
+  // ---------- inventory ----------
+  function sumCost(cost) {
+    if (!cost) return 0;
+    return (
+      (cost.workers || 0) +
+      (cost.admin || 0) +
+      (cost.material1 || 0) +
+      (cost.material2 || 0) +
+      (cost.material3 || 0) +
+      (cost.material4 || 0) +
+      (cost.material5 || 0) +
+      (cost.market || 0)
+    );
+  }
+
+  function rebuildInventoryIndex(items) {
+    const byKind = new Map();
+
+    for (const it of items || []) {
+      const kind = it?.kind;
+      if (!Number.isFinite(kind)) continue;
+
+      const amount = Number(it.amount || 0);
+      const totalCost = sumCost(it.cost);
+
+      const existing = byKind.get(kind) || {
+        kind,
+        amount: 0,
+        totalCost: 0,
+        marketCost: 0,
+        workers: 0,
+        admin: 0,
+        materials: 0,
+      };
+
+      existing.amount += amount;
+      existing.totalCost += totalCost;
+
+      const c = it.cost || {};
+      existing.marketCost += c.market || 0;
+      existing.workers += c.workers || 0;
+      existing.admin += c.admin || 0;
+      existing.materials +=
+        (c.material1 || 0) +
+        (c.material2 || 0) +
+        (c.material3 || 0) +
+        (c.material4 || 0) +
+        (c.material5 || 0);
+
+      byKind.set(kind, existing);
+    }
+
+    STATE.inventory.byKind = byKind;
+  }
+
+  async function loadInventoryOnce() {
+    if (STATE.inventory.loaded || STATE.inventory.loading) return;
+    if (!STATE.auth.companyId) return;
+
+    STATE.inventory.loading = true;
+    STATE.inventory.status = "loading";
+    STATE.inventory.error = null;
+
+    try {
+      const url = `https://www.simcompanies.com/api/v3/resources/${STATE.auth.companyId}/`;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const items = await res.json();
+
+      STATE.inventory.items = Array.isArray(items) ? items : [];
+      rebuildInventoryIndex(STATE.inventory.items);
+
+      STATE.inventory.loaded = true;
+      STATE.inventory.status = "ok";
+    } catch (e) {
+      STATE.inventory.status = "error";
+      STATE.inventory.error = String(e?.message || e);
+    } finally {
+      STATE.inventory.loading = false;
+      scheduleUpdate();
+    }
+  }
+
+  function getInventoryForKind(kind) {
+    return STATE.inventory.byKind.get(kind) || null;
+  }
+
+  function formatCostPerUnit(totalCost, amount) {
+    if (!isFinite(totalCost) || !isFinite(amount) || amount <= 0) return "—";
+    return `$${(totalCost / amount).toFixed(2)}`;
+  }
+
+  function detectSourceLabel(inv) {
+    if (!inv) return "—";
+    const hasMarket = inv.marketCost > 0;
+    const hasProd = inv.workers + inv.admin + inv.materials > 0;
+    if (hasMarket && hasProd) return "Mixed";
+    if (hasMarket) return "Market";
+    if (hasProd) return "Produced";
+    return "Unknown";
   }
 
   // ---------- market ----------
@@ -140,12 +266,17 @@
     return m ? Number(m[1]) : null;
   }
 
+  function normalizeMarketPrice(raw) {
+    // API returns integer; treat as cents
+    return raw / 100;
+  }
+
   function getCheapestListing(listings) {
     if (!Array.isArray(listings) || listings.length === 0) return null;
     const first = listings[0];
     if (!first || !Number.isFinite(first.price)) return null;
     return {
-      price: first.price,
+      price: normalizeMarketPrice(first.price),
       quantity: Number.isFinite(first.quantity) ? first.quantity : null,
     };
   }
@@ -179,24 +310,16 @@
     if (
       STATE.marketState.productId === productId &&
       STATE.marketState.realmId === realmId &&
-      STATE.marketState.status === "ok"
-    )
+      (STATE.marketState.status === "ok" || STATE.marketState.status === "loading")
+    ) {
       return;
-
-    if (
-      STATE.marketState.productId === productId &&
-      STATE.marketState.realmId === realmId &&
-      STATE.marketState.status === "loading"
-    )
-      return;
+    }
 
     setMarketStatus("loading", realmId, productId);
 
     fetchMarket(realmId, productId)
       .then((listings) => setMarketStatus("ok", realmId, productId, listings, null))
-      .catch((err) =>
-        setMarketStatus("error", realmId, productId, null, String(err?.message || err))
-      );
+      .catch((err) => setMarketStatus("error", realmId, productId, null, String(err?.message || err)));
   }
 
   // ---------- metrics ----------
@@ -219,122 +342,6 @@
     if (ppm >= 5) return { label: "Meh", cls: "scx-chip-meh" };
     return { label: "Low", cls: "scx-chip-meh" };
   }
-
-  async function loadAuthDataOnce() {
-  if (STATE.auth.loaded) return;
-  const res = await fetch("https://www.simcompanies.com/api/v3/companies/auth-data/", {
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  const c = data?.authCompany;
-  STATE.auth.companyId = c?.companyId ?? null;
-  STATE.auth.realmId = c?.realmId ?? null;
-  STATE.auth.loaded = true;
-}
-
-function sumCost(cost) {
-  if (!cost) return 0;
-  return (
-    (cost.workers || 0) +
-    (cost.admin || 0) +
-    (cost.material1 || 0) +
-    (cost.material2 || 0) +
-    (cost.material3 || 0) +
-    (cost.material4 || 0) +
-    (cost.material5 || 0) +
-    (cost.market || 0)
-  );
-}
-
-function rebuildInventoryIndex(items) {
-  const byKind = new Map();
-
-  for (const it of items || []) {
-    const kind = it?.kind;
-    if (!Number.isFinite(kind)) continue;
-
-    const amount = Number(it.amount || 0);
-    const totalCost = sumCost(it.cost);
-
-    const existing = byKind.get(kind) || {
-      kind,
-      amount: 0,
-      totalCost: 0,
-      marketCost: 0,
-      workers: 0,
-      admin: 0,
-      materials: 0,
-      qualities: new Set(),
-    };
-
-    existing.amount += amount;
-    existing.totalCost += totalCost;
-
-    const c = it.cost || {};
-    existing.marketCost += (c.market || 0);
-    existing.workers += (c.workers || 0);
-    existing.admin += (c.admin || 0);
-    existing.materials +=
-      (c.material1 || 0) +
-      (c.material2 || 0) +
-      (c.material3 || 0) +
-      (c.material4 || 0) +
-      (c.material5 || 0);
-
-    existing.qualities.add(it.quality);
-
-    byKind.set(kind, existing);
-  }
-
-  STATE.inventory.byKind = byKind;
-}
-
-async function loadInventoryOnce() {
-  if (STATE.inventory.loaded || STATE.inventory.status === "loading") return;
-  if (!STATE.auth.companyId) return;
-
-  STATE.inventory.status = "loading";
-  STATE.inventory.error = null;
-
-  try {
-    const url = `https://www.simcompanies.com/api/v3/resources/${STATE.auth.companyId}/`;
-    const res = await fetch(url, { credentials: "include" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const items = await res.json();
-
-    STATE.inventory.items = Array.isArray(items) ? items : [];
-    rebuildInventoryIndex(STATE.inventory.items);
-
-    STATE.inventory.loaded = true;
-    STATE.inventory.status = "ok";
-  } catch (e) {
-    STATE.inventory.status = "error";
-    STATE.inventory.error = String(e?.message || e);
-  } finally {
-    scheduleUpdate();
-  }
-}
-
-function getInventoryForKind(kind) {
-  return STATE.inventory.byKind.get(kind) || null;
-}
-
-function formatCostPerUnit(totalCost, amount) {
-  if (!isFinite(totalCost) || !isFinite(amount) || amount <= 0) return "—";
-  return `$${(totalCost / amount).toFixed(2)}`;
-}
-
-function detectSourceLabel(inv) {
-  if (!inv) return "—";
-  const hasMarket = inv.marketCost > 0;
-  const hasProd = (inv.workers + inv.admin + inv.materials) > 0;
-  if (hasMarket && hasProd) return "Mixed";
-  if (hasMarket) return "Market";
-  if (hasProd) return "Produced";
-  return "Unknown";
-}
-
 
   // ---------- UI ----------
   function ensureSidebar() {
@@ -374,6 +381,24 @@ function detectSourceLabel(inv) {
           <div class="scx-k">Per unit</div><div class="scx-v" data-k="ppu">—</div>
         </div>
 
+        <div class="scx-note" data-k="note"></div>
+
+        <hr style="margin:10px 0; opacity:.25">
+
+        <div class="scx-panel-head" style="margin-bottom:6px;">
+          <div class="scx-panel-title">Your cost</div>
+          <div class="scx-chip scx-chip-na" data-k="inv_status">Idle</div>
+        </div>
+
+        <div class="scx-grid">
+          <div class="scx-k">Stock</div><div class="scx-v" data-k="inv_stock">—</div>
+          <div class="scx-k">Avg cost/unit</div><div class="scx-v" data-k="inv_cpu">—</div>
+          <div class="scx-k">Source</div><div class="scx-v" data-k="inv_src">—</div>
+          <div class="scx-k">Cost basis</div><div class="scx-v" data-k="inv_basis">—</div>
+        </div>
+
+        <div class="scx-note" data-k="inv_note"></div>
+
         <hr style="margin:10px 0; opacity:.25">
 
         <div class="scx-panel-head" style="margin-bottom:6px;">
@@ -387,7 +412,6 @@ function detectSourceLabel(inv) {
           <div class="scx-k">You vs cheap</div><div class="scx-v" data-k="m_vs">—</div>
         </div>
 
-        <div class="scx-note" data-k="note"></div>
         <div class="scx-note" data-k="m_note"></div>
       </div>
     `;
@@ -428,6 +452,13 @@ function detectSourceLabel(inv) {
     const ppuEl = sidebar.querySelector('[data-k="ppu"]');
     const noteEl = sidebar.querySelector('[data-k="note"]');
 
+    const invStatusEl = sidebar.querySelector('[data-k="inv_status"]');
+    const invStockEl = sidebar.querySelector('[data-k="inv_stock"]');
+    const invCpuEl = sidebar.querySelector('[data-k="inv_cpu"]');
+    const invSrcEl = sidebar.querySelector('[data-k="inv_src"]');
+    const invBasisEl = sidebar.querySelector('[data-k="inv_basis"]');
+    const invNoteEl = sidebar.querySelector('[data-k="inv_note"]');
+
     const mStatusEl = sidebar.querySelector('[data-k="m_status"]');
     const mBestEl = sidebar.querySelector('[data-k="m_best"]');
     const mQtyEl = sidebar.querySelector('[data-k="m_qty"]');
@@ -442,6 +473,11 @@ function detectSourceLabel(inv) {
       bigEl.textContent = "—";
       phrEl.textContent = profitEl.textContent = timeEl.textContent = ppuEl.textContent = "—";
       noteEl.textContent = "";
+
+      invStatusEl.textContent = STATE.inventory.status === "ok" ? "OK" : "Idle";
+      invStatusEl.className = "scx-chip scx-chip-na";
+      invStockEl.textContent = invCpuEl.textContent = invSrcEl.textContent = invBasisEl.textContent = "—";
+      invNoteEl.textContent = "";
 
       mStatusEl.textContent = "Idle";
       mStatusEl.className = "scx-chip scx-chip-na";
@@ -461,18 +497,17 @@ function detectSourceLabel(inv) {
 
     const profitPerUnit = extractProfitPerUnit(row);
     const seconds = extractFinishSeconds(row);
+    const metrics = computeMetrics({ profitPerUnit, qty, seconds });
 
-    const m = computeMetrics({ profitPerUnit, qty, seconds });
+    bigEl.textContent = isFinite(metrics.profitPerMin) ? formatMoneyPerMin(metrics.profitPerMin) : "—";
 
-    bigEl.textContent = isFinite(m.profitPerMin) ? formatMoneyPerMin(m.profitPerMin) : "—";
-
-    const cls = classifyProfitPerMin(m.profitPerMin);
+    const cls = classifyProfitPerMin(metrics.profitPerMin);
     chipEl.textContent = cls.label;
     chipEl.className = `scx-chip ${cls.cls}`;
 
-    phrEl.textContent = formatMoneyPerHr(m.profitPerHr);
-    profitEl.textContent = formatMoney(m.totalProfit);
-    timeEl.textContent = isFinite(m.seconds) ? `${Math.round(m.seconds)}s` : "—";
+    phrEl.textContent = formatMoneyPerHr(metrics.profitPerHr);
+    profitEl.textContent = formatMoney(metrics.totalProfit);
+    timeEl.textContent = isFinite(metrics.seconds) ? `${Math.round(metrics.seconds)}s` : "—";
     ppuEl.textContent = isFinite(profitPerUnit) ? formatMoney(profitPerUnit) : "—";
 
     const warnings = [];
@@ -481,6 +516,49 @@ function detectSourceLabel(inv) {
     if (!isFinite(seconds)) warnings.push("Waiting for “Finishes … (Xs)”.");
     noteEl.textContent = warnings.join(" ");
 
+    // ---------- inventory render ----------
+    const kind = extractProductId(row); // matches inventory kind/resource id
+
+    if (STATE.inventory.status === "loading") {
+      invStatusEl.textContent = "Loading";
+      invStatusEl.className = "scx-chip scx-chip-meh";
+      invStockEl.textContent = invCpuEl.textContent = invSrcEl.textContent = invBasisEl.textContent = "—";
+      invNoteEl.textContent = "";
+    } else if (STATE.inventory.status === "error") {
+      invStatusEl.textContent = "Error";
+      invStatusEl.className = "scx-chip scx-chip-bad";
+      invStockEl.textContent = invCpuEl.textContent = invSrcEl.textContent = invBasisEl.textContent = "—";
+      invNoteEl.textContent = STATE.inventory.error || "";
+    } else if (STATE.inventory.status === "ok") {
+      invStatusEl.textContent = "OK";
+      invStatusEl.className = "scx-chip scx-chip-good";
+
+      const inv = kind ? getInventoryForKind(kind) : null;
+
+      if (!inv) {
+        invStockEl.textContent = "0";
+        invCpuEl.textContent = "—";
+        invSrcEl.textContent = "—";
+        invBasisEl.textContent = "—";
+        invNoteEl.textContent = "";
+      } else {
+        invStockEl.textContent = String(Math.floor(inv.amount));
+        invCpuEl.textContent = formatCostPerUnit(inv.totalCost, inv.amount);
+        invSrcEl.textContent = detectSourceLabel(inv);
+        invBasisEl.textContent = formatMoney(inv.totalCost);
+
+        const mkt = inv.marketCost || 0;
+        const prod = (inv.workers || 0) + (inv.admin || 0) + (inv.materials || 0);
+        invNoteEl.textContent = `Mix: market ${formatMoney(mkt)} | produced ${formatMoney(prod)}`;
+      }
+    } else {
+      invStatusEl.textContent = "Idle";
+      invStatusEl.className = "scx-chip scx-chip-na";
+      invStockEl.textContent = invCpuEl.textContent = invSrcEl.textContent = invBasisEl.textContent = "—";
+      invNoteEl.textContent = "";
+    }
+
+    // ---------- market render (cheapest only) ----------
     const ms = STATE.marketState;
 
     if (!ms || ms.status === "idle") {
@@ -567,37 +645,14 @@ function detectSourceLabel(inv) {
     if (row) setSelectedRow(row);
   }
 
-  async function loadAuthDataOnce() {
-  if (STATE.auth.loaded) return;
-
-  try {
-    const res = await fetch(
-      "https://www.simcompanies.com/api/v3/companies/auth-data/",
-      { credentials: "include" }
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const data = await res.json();
-    const company = data?.authCompany;
-
-    STATE.auth.companyId = company?.companyId ?? null;
-    STATE.auth.realmId = company?.realmId ?? null;
-    STATE.auth.loaded = true;
-
-    console.log("[SCX] Auth loaded", {
-      companyId: STATE.auth.companyId,
-      realmId: STATE.auth.realmId,
-    });
-  } catch (err) {
-    console.error("[SCX] Failed to load auth data", err);
-  }
-}
-
-
-  // Init
-  loadAuthDataOnce();
+  // ---------- init ----------
   ensureSidebar();
-  updatePanel();
+
+  (async () => {
+    await loadAuthDataOnce();
+    await loadInventoryOnce();
+    updatePanel();
+  })();
 
   window.addEventListener("focusin", onFocusOrClick, true);
   window.addEventListener("click", onFocusOrClick, true);
