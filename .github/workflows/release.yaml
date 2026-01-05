@@ -42,5 +42,5 @@ jobs:
           name: v${{ steps.ver.outputs.version }}
           generate_release_notes: true
           files: |
-            sim-companies-extension-chrome${{ steps.ver.outputs.version }}.zip
+            sim-companies-extension-chrome.zip
 
