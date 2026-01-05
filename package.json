@@ -1,0 +1,13 @@
+{
+  "name": "simcompanies-helper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "pack": "node scripts/pack-extension.mjs",
+    "release:local": "npm run build && npm run pack"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

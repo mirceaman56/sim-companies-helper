@@ -9,7 +9,7 @@
     {
       "matches": ["https://www.simcompanies.com/*"],
       "js": ["content.js"],
-      "css": ["content.css"],
+      "css": ["contentStyle.css"],
       "run_at": "document_idle"
     }
   ]
