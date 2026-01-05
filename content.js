@@ -38,17 +38,29 @@
     return parseNumber(text);
   }
 
-  function parseDurationToSeconds(text) {
-    const s = String(text);
-    let total = 0;
-    const h = s.match(/(\d+)\s*h/i);
-    const m = s.match(/(\d+)\s*m/i);
-    const sec = s.match(/(\d+)\s*s/i);
-    if (h) total += Number(h[1]) * 3600;
-    if (m) total += Number(m[1]) * 60;
-    if (sec) total += Number(sec[1]);
-    return total > 0 ? total : NaN;
-  }
+  // replace your parseDurationToSeconds with this version
+function parseDurationToSeconds(text) {
+  const s = String(text);
+
+  let total = 0;
+
+  // days
+  const d = s.match(/(\d+)\s*d/i);
+  // hours
+  const h = s.match(/(\d+)\s*h/i);
+  // minutes
+  const m = s.match(/(\d+)\s*m/i);
+  // seconds
+  const sec = s.match(/(\d+)\s*s/i);
+
+  if (d) total += Number(d[1]) * 86400;
+  if (h) total += Number(h[1]) * 3600;
+  if (m) total += Number(m[1]) * 60;
+  if (sec) total += Number(sec[1]);
+
+  return total > 0 ? total : NaN;
+}
+
 
   function formatMoney(x) {
     if (!isFinite(x)) return "—";
@@ -266,17 +278,12 @@
     return m ? Number(m[1]) : null;
   }
 
-  function normalizeMarketPrice(raw) {
-    // API returns integer; treat as cents
-    return raw / 100;
-  }
-
   function getCheapestListing(listings) {
     if (!Array.isArray(listings) || listings.length === 0) return null;
     const first = listings[0];
     if (!first || !Number.isFinite(first.price)) return null;
     return {
-      price: normalizeMarketPrice(first.price),
+      price: first.price,
       quantity: Number.isFinite(first.quantity) ? first.quantity : null,
     };
   }
@@ -344,6 +351,18 @@
   }
 
   // ---------- UI ----------
+
+  function toggleSidebar() {
+    const el = document.getElementById(SIDEBAR_ID);
+    if (!el) return;
+
+    const minimized = el.classList.toggle("scx-minimized");
+
+    const btn = el.querySelector('[data-k="toggle"]');
+    if (btn) btn.textContent = minimized ? "◂" : "▸";
+  }
+
+
   function ensureSidebar() {
     let el = document.getElementById(SIDEBAR_ID);
     if (el) return el;
@@ -353,8 +372,8 @@
     el.className = "scx-sidebar";
     el.innerHTML = `
       <div class="scx-sidebar-header">
-        <div class="scx-sidebar-title">Sim Helper</div>
-        <div class="scx-badge">Rate</div>
+        <div class="scx-sidebar-title" data-k="title">Retail Helper</div>
+        <button class="scx-toggle" data-k="toggle" title="Minimize">▸</button>
       </div>
 
       <div class="scx-selected">
@@ -416,12 +435,35 @@
       </div>
     `;
     document.documentElement.appendChild(el);
+    const toggleBtn = el.querySelector('[data-k="toggle"]');
+    toggleBtn?.addEventListener("click", toggleSidebar);
+
     return el;
   }
 
   function getRowFromTarget(target) {
-    return target instanceof Element ? target.closest("div.css-mv4qyq") : null;
-  }
+    if (!(target instanceof Element)) return null;
+
+    // Current (dark theme) row wrapper
+    const row = target.closest("div.css-1ruhbe");
+    if (row && row.querySelector('input[name="price"]') && row.querySelector('input[name="quantity"]')) {
+        return row;
+    }
+
+    // Old (light theme) wrapper fallback
+    const old = target.closest("div.css-mv4qyq");
+    if (old) return old;
+
+    // Generic fallback: nearest ancestor containing both inputs
+    let el = target;
+    for (let i = 0; i < 15 && el; i++) {
+        if (el.querySelector?.('input[name="price"]') && el.querySelector?.('input[name="quantity"]')) return el;
+        el = el.parentElement;
+    }
+
+    return null;
+}
+
 
   function getProductNameFromRow(row) {
     if (!row) return "Unknown";
@@ -639,19 +681,26 @@
   }
 
   function onFocusOrClick(e) {
+    console.log("Sim Company Extension: focus/click event", e);
     const t = e.target;
+    console.log("Sim Company Extension: event target", t);
     if (!isSellInput(t)) return;
     const row = getRowFromTarget(t);
+    console.log("Sim Company Extension: determined row", row);
     if (row) setSelectedRow(row);
   }
 
   // ---------- init ----------
+  console.log("Sim Company Extension: initializing sidebar");
   ensureSidebar();
 
   (async () => {
+    console.log("Sim Company Extension: loading auth and inventory data");
     await loadAuthDataOnce();
     await loadInventoryOnce();
+    console.log("Sim Company Extension: data loaded");
     updatePanel();
+    console.log("Sim Company Extension: panel updated");
   })();
 
   window.addEventListener("focusin", onFocusOrClick, true);

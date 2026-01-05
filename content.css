@@ -131,6 +131,72 @@
   opacity: 0.68;
 }
 
+/* --- Minimize support --- */
+.scx-sidebar {
+  transition: width 0.18s ease, transform 0.18s ease;
+}
+
+.scx-toggle {
+  appearance: none;
+  border: 0;
+  background: rgba(0,0,0,0.08);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.scx-toggle:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+.scx-sidebar.scx-minimized {
+  width: 52px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.scx-sidebar.scx-minimized .scx-selected,
+.scx-sidebar.scx-minimized .scx-panel {
+  display: none;
+}
+
+.scx-sidebar.scx-minimized .scx-sidebar-header {
+  margin-bottom: 0;
+  justify-content: center;
+}
+
+.scx-sidebar.scx-minimized .scx-sidebar-title {
+  display: none;
+}
+
+/* --- Minimized header layout --- */
+.scx-sidebar.scx-minimized {
+  width: auto;
+  min-width: 160px;
+  padding: 10px 12px;
+}
+
+.scx-sidebar.scx-minimized .scx-sidebar-header {
+  justify-content: space-between;
+}
+
+.scx-sidebar.scx-minimized .scx-sidebar-title {
+  display: block;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* Hide content but keep header */
+.scx-sidebar.scx-minimized .scx-selected,
+.scx-sidebar.scx-minimized .scx-panel {
+  display: none;
+}
+
+
+
 @media (max-width: 1200px) {
   .scx-sidebar { display: none; }
 }

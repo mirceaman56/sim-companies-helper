@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Sim Companies ROI Helper",
+  "name": "Sim Companies Helper",
   "version": "0.1.0",
-  "description": "Shows ROI/hr scoring next to product sell controls in Sim Companies.",
+  "description": "Various quality of life improvements for Sim Companies players.",
   "host_permissions": ["https://www.simcompanies.com/*"],
   "permissions": ["storage"],
   "content_scripts": [
