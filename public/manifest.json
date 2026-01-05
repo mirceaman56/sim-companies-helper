@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sim Companies Helper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Various quality of life improvements for Sim Companies players.",
   "host_permissions": ["https://www.simcompanies.com/*"],
   "permissions": ["storage"],
@@ -10,7 +10,12 @@
       "matches": ["https://www.simcompanies.com/*"],
       "js": ["content.js"],
       "css": ["contentStyle.css"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "icon": {
+        "16": "icons/icon-16.png",
+        "48": "icons/icon-48.png",
+        "128": "icons/icon-128.png"
+      }
     }
   ]
 }
