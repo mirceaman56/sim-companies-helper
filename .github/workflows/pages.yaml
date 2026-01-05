@@ -2,7 +2,7 @@ name: Deploy Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -18,6 +18,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # If you committed docs/index.html + docs/install.html, keep them.
+      # Then copy the built dist/* into docs/ so Pages has something to serve.
+      - name: Prepare docs for Pages
+        run: |
+          mkdir -p docs
+          cp -R dist/* docs/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
