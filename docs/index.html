@@ -5,31 +5,123 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sim Companies Retail Helper</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 40px; line-height: 1.5; }
-    .card { max-width: 760px; padding: 24px; border: 1px solid #e5e5e5; border-radius: 14px; }
-    h1 { margin: 0 0 6px; font-size: 26px; }
-    .muted { color: #666; margin-top: 0; }
-    code, pre { background: #f6f6f6; padding: 2px 6px; border-radius: 6px; }
-    .btn { display: inline-block; margin-top: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; text-decoration: none; }
-    ol { margin-top: 10px; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 40px;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+
+    .card {
+      max-width: 820px;
+      padding: 28px;
+      margin: auto;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    h2 {
+      margin-top: 28px;
+      font-size: 20px;
+    }
+
+    .muted {
+      color: #666;
+      margin-top: 0;
+    }
+
+    code {
+      background: #f6f6f6;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.95em;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      text-decoration: none;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .btn:hover {
+      background: #f1f1f1;
+    }
+
+    ol {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 0.9em;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Sim Companies Retail Helper</h1>
-    <p class="muted">A small browser extension that shows retail profit/min, market cheapest listing, and your cost basis.</p>
-
-    <a class="btn" href="./install.html">Install instructions →</a>
-
-    <h2 style="margin-top:22px;">Download</h2>
-    <p>
-      Get the latest ZIP from GitHub Releases:
-      <br />
-      <strong>Repo → Releases →</strong> <code>sim-companies-extension-chrome.zip</code>
+    <p class="muted">
+      A lightweight browser extension for <strong>simcompanies.com</strong> that shows
+      retail profit/min, market cheapest listing, and your cost basis directly in-game.
     </p>
 
-    <h2>Source</h2>
-    <p>If you’re here from the game: this extension runs only on simcompanies.com pages.</p>
+    <a
+      class="btn"
+      href="https://github.com/mirceaman56/sim-companies-helper/releases/latest"
+      target="_blank"
+      rel="noopener"
+    >
+      Download latest release →
+    </a>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>Displays real-time profit per minute for retail products</li>
+      <li>Shows the cheapest market listing</li>
+      <li>Calculates your cost basis automatically</li>
+    </ul>
+
+    <h2>Install (Chrome / Edge)</h2>
+    <ol>
+      <li>
+        Download <code>sim-companies-extension-chrome.zip</code> from the
+        <a href="https://github.com/mirceaman56/sim-companies-helper/releases/latest" target="_blank" rel="noopener">
+          latest GitHub release
+        </a>.
+      </li>
+      <li>Unzip it somewhere permanent (don’t delete the folder later).</li>
+      <li>Open <code>chrome://extensions</code>.</li>
+      <li>Enable <strong>Developer mode</strong> (top right).</li>
+      <li>Click <strong>Load unpacked</strong> and select the unzipped folder (the one containing <code>manifest.json</code>).</li>
+      <li>
+        Open Sim Companies → Retail building and you should see the
+        <strong>Retail Helper</strong> panel.
+      </li>
+    </ol>
+
+    <h2>Source & scope</h2>
+    <p>
+      This extension runs only on <code>simcompanies.com</code> pages.
+      Source code and releases are hosted on GitHub.
+    </p>
+
+    <footer>
+      © Sim Companies Retail Helper — Unofficial community tool
+    </footer>
   </div>
 </body>
 </html>
