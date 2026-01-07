@@ -2,7 +2,9 @@
 import { STATE } from "./state.js";
 
 export async function loadAuthDataOnce() {
-  if (STATE.auth.loaded || STATE.auth.loading) return;
+  if (STATE.auth.loaded || STATE.auth.loading) {
+    return;
+  }
 
   STATE.auth.loading = true;
   STATE.auth.error = null;

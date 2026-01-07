@@ -28,6 +28,19 @@ export const STATE = {
     byKind: new Map(),
   },
 
+  // cashflow
+  cashflow: {
+    loaded: false,
+    loading: false,
+    error: null,
+    items: [],        // all "today" entries (raw)
+    lastRefreshAt: 0, // ms epoch
+    summary: {
+        salesCount: 0,
+        salesMoney: 0,  // sum of money for category "s"
+    },
+  },
+
   // market
   marketCache: new Map(), // `${realmId}:${productId}` -> { ts, data }
   marketState: { status: "idle", productId: null, realmId: null, data: null, error: null },

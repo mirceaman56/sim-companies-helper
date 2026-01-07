@@ -1,0 +1,2239 @@
+[
+    {
+        "id": 66,
+        "name": "Seeds",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 0.1
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Apples",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 3
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Oranges",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 3
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Grapes",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 4
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Grain",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 0.5
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 115,
+        "name": "Cows",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 16
+            },
+            {
+                "id": 139,
+                "quantity": 12
+            }
+        ]
+    },
+    {
+        "id": 116,
+        "name": "Pigs",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 4
+            },
+            {
+                "id": 139,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 118,
+        "name": "Coffee beans",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 0.5
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 120,
+        "name": "Vegetables",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 2
+            },
+            {
+                "id": 66,
+                "quantity": 5
+            }
+        ]
+    },
+    {
+        "id": 40,
+        "name": "Cotton",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 1
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 72,
+        "name": "Sugarcane",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 3
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 136,
+        "name": "Cocoa",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 1
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Steak",
+        "materials": [
+            {
+                "id": 115,
+                "quantity": 0.125
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Sausages",
+        "materials": [
+            {
+                "id": 116,
+                "quantity": 0.0625
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Eggs",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 0.4
+            },
+            {
+                "id": 6,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 119,
+        "name": "Coffee powder",
+        "materials": [
+            {
+                "id": 118,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 117,
+        "name": "Milk",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 2
+            },
+            {
+                "id": 139,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 124,
+        "name": "Orange juice",
+        "materials": [
+            {
+                "id": 4,
+                "quantity": 5
+            },
+            {
+                "id": 135,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 125,
+        "name": "Apple cider",
+        "materials": [
+            {
+                "id": 3,
+                "quantity": 8
+            }
+        ]
+    },
+    {
+        "id": 126,
+        "name": "Ginger beer",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 1
+            },
+            {
+                "id": 120,
+                "quantity": 3
+            },
+            {
+                "id": 135,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 140,
+        "name": "Chocolate",
+        "materials": [
+            {
+                "id": 117,
+                "quantity": 0.5
+            },
+            {
+                "id": 135,
+                "quantity": 1
+            },
+            {
+                "id": 136,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 135,
+        "name": "Sugar",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 0.5
+            },
+            {
+                "id": 72,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 137,
+        "name": "Dough",
+        "materials": [
+            {
+                "id": 9,
+                "quantity": 1
+            },
+            {
+                "id": 133,
+                "quantity": 2
+            },
+            {
+                "id": 134,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 138,
+        "name": "Sauce",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 0.5
+            },
+            {
+                "id": 120,
+                "quantity": 2
+            },
+            {
+                "id": 134,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 133,
+        "name": "Flour",
+        "materials": [
+            {
+                "id": 6,
+                "quantity": 15
+            }
+        ]
+    },
+    {
+        "id": 121,
+        "name": "Bread",
+        "materials": [
+            {
+                "id": 137,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 123,
+        "name": "Apple pie",
+        "materials": [
+            {
+                "id": 3,
+                "quantity": 2
+            },
+            {
+                "id": 135,
+                "quantity": 2
+            },
+            {
+                "id": 137,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 127,
+        "name": "Frozen pizza",
+        "materials": [
+            {
+                "id": 8,
+                "quantity": 1
+            },
+            {
+                "id": 120,
+                "quantity": 2
+            },
+            {
+                "id": 122,
+                "quantity": 1
+            },
+            {
+                "id": 137,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 128,
+        "name": "Pasta",
+        "materials": [
+            {
+                "id": 9,
+                "quantity": 2
+            },
+            {
+                "id": 133,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 134,
+        "name": "Butter",
+        "materials": [
+            {
+                "id": 117,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 122,
+        "name": "Cheese",
+        "materials": [
+            {
+                "id": 117,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 129,
+        "name": "Hamburger",
+        "materials": [
+            {
+                "id": 7,
+                "quantity": 4
+            },
+            {
+                "id": 120,
+                "quantity": 3
+            },
+            {
+                "id": 121,
+                "quantity": 0.5
+            },
+            {
+                "id": 134,
+                "quantity": 1
+            },
+            {
+                "id": 141,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 130,
+        "name": "Lasagna",
+        "materials": [
+            {
+                "id": 7,
+                "quantity": 1
+            },
+            {
+                "id": 122,
+                "quantity": 0.5
+            },
+            {
+                "id": 128,
+                "quantity": 1
+            },
+            {
+                "id": 138,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 131,
+        "name": "Meat balls",
+        "materials": [
+            {
+                "id": 8,
+                "quantity": 2
+            },
+            {
+                "id": 121,
+                "quantity": 1
+            },
+            {
+                "id": 138,
+                "quantity": 1
+            },
+            {
+                "id": 141,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 132,
+        "name": "Cocktails",
+        "materials": [
+            {
+                "id": 119,
+                "quantity": 8
+            },
+            {
+                "id": 124,
+                "quantity": 1
+            },
+            {
+                "id": 125,
+                "quantity": 1
+            },
+            {
+                "id": 126,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 141,
+        "name": "Vegetable oil",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 1
+            },
+            {
+                "id": 120,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 142,
+        "name": "Salad",
+        "materials": [
+            {
+                "id": 120,
+                "quantity": 5
+            },
+            {
+                "id": 122,
+                "quantity": 2
+            },
+            {
+                "id": 141,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 143,
+        "name": "Samosa",
+        "materials": [
+            {
+                "id": 120,
+                "quantity": 5
+            },
+            {
+                "id": 133,
+                "quantity": 4
+            },
+            {
+                "id": 141,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 149,
+        "name": "Pumpkin soup",
+        "materials": [
+            {
+                "id": 121,
+                "quantity": 0.5
+            },
+            {
+                "id": 134,
+                "quantity": 2
+            },
+            {
+                "id": 146,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 101,
+        "name": "Reinforced concrete",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 20
+            },
+            {
+                "id": 43,
+                "quantity": 5
+            },
+            {
+                "id": 44,
+                "quantity": 20
+            },
+            {
+                "id": 103,
+                "quantity": 15
+            }
+        ]
+    },
+    {
+        "id": 102,
+        "name": "Bricks",
+        "materials": [
+            {
+                "id": 104,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 108,
+        "name": "Planks",
+        "materials": [
+            {
+                "id": 106,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 111,
+        "name": "Construction units",
+        "materials": [
+            {
+                "id": 12,
+                "quantity": 5
+            },
+            {
+                "id": 107,
+                "quantity": 8
+            },
+            {
+                "id": 109,
+                "quantity": 4
+            },
+            {
+                "id": 110,
+                "quantity": 4
+            },
+            {
+                "id": 112,
+                "quantity": 0.125
+            }
+        ]
+    },
+    {
+        "id": 104,
+        "name": "Clay",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 106,
+        "name": "Wood",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 4
+            },
+            {
+                "id": 66,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 103,
+        "name": "Cement",
+        "materials": [
+            {
+                "id": 105,
+                "quantity": 3
+            }
+        ]
+    },
+    {
+        "id": 105,
+        "name": "Limestone",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 107,
+        "name": "Steel beams",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 4
+            },
+            {
+                "id": 43,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 109,
+        "name": "Windows",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 2
+            },
+            {
+                "id": 45,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 110,
+        "name": "Tools",
+        "materials": [
+            {
+                "id": 21,
+                "quantity": 1
+            },
+            {
+                "id": 22,
+                "quantity": 1
+            },
+            {
+                "id": 43,
+                "quantity": 0.5
+            },
+            {
+                "id": 108,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 41,
+        "name": "Fabric",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 1
+            },
+            {
+                "id": 40,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 46,
+        "name": "Leather",
+        "materials": [
+            {
+                "id": 115,
+                "quantity": 0.125
+            }
+        ]
+    },
+    {
+        "id": 60,
+        "name": "Underwear",
+        "materials": [
+            {
+                "id": 41,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 61,
+        "name": "Gloves",
+        "materials": [
+            {
+                "id": 41,
+                "quantity": 0.5
+            },
+            {
+                "id": 46,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 62,
+        "name": "Dress",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 0.5
+            },
+            {
+                "id": 41,
+                "quantity": 3
+            }
+        ]
+    },
+    {
+        "id": 63,
+        "name": "Stiletto Heel",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 0.2
+            },
+            {
+                "id": 46,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 64,
+        "name": "Handbags",
+        "materials": [
+            {
+                "id": 46,
+                "quantity": 1.5
+            }
+        ]
+    },
+    {
+        "id": 65,
+        "name": "Sneakers",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 70,
+        "name": "Luxury watch",
+        "materials": [
+            {
+                "id": 21,
+                "quantity": 2
+            },
+            {
+                "id": 45,
+                "quantity": 0.5
+            },
+            {
+                "id": 69,
+                "quantity": 0.1
+            }
+        ]
+    },
+    {
+        "id": 71,
+        "name": "Necklace",
+        "materials": [
+            {
+                "id": 69,
+                "quantity": 0.25
+            }
+        ]
+    },
+    {
+        "id": 1,
+        "name": "Power",
+        "materials": []
+    },
+    {
+        "id": 10,
+        "name": "Crude oil",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 25
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Petrol",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 15
+            },
+            {
+                "id": 10,
+                "quantity": 0.75
+            },
+            {
+                "id": 73,
+                "quantity": 0.25
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Diesel",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 15
+            },
+            {
+                "id": 10,
+                "quantity": 0.75
+            },
+            {
+                "id": 73,
+                "quantity": 0.25
+            }
+        ]
+    },
+    {
+        "id": 73,
+        "name": "Ethanol",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 20
+            },
+            {
+                "id": 72,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 74,
+        "name": "Methane",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 20
+            }
+        ]
+    },
+    {
+        "id": 83,
+        "name": "Rocket fuel",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 5
+            },
+            {
+                "id": 74,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 20,
+        "name": "Processors",
+        "materials": [
+            {
+                "id": 16,
+                "quantity": 4
+            },
+            {
+                "id": 17,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 21,
+        "name": "Electronic components",
+        "materials": [
+            {
+                "id": 16,
+                "quantity": 3
+            },
+            {
+                "id": 17,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "name": "Batteries",
+        "materials": [
+            {
+                "id": 17,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "name": "Displays",
+        "materials": [
+            {
+                "id": 16,
+                "quantity": 5
+            },
+            {
+                "id": 17,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "name": "Smart phones",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 2
+            },
+            {
+                "id": 20,
+                "quantity": 2
+            },
+            {
+                "id": 21,
+                "quantity": 1
+            },
+            {
+                "id": 22,
+                "quantity": 1
+            },
+            {
+                "id": 23,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "name": "Tablets",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 3
+            },
+            {
+                "id": 20,
+                "quantity": 2
+            },
+            {
+                "id": 21,
+                "quantity": 1
+            },
+            {
+                "id": 22,
+                "quantity": 1
+            },
+            {
+                "id": 23,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "name": "Laptops",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 3
+            },
+            {
+                "id": 20,
+                "quantity": 4
+            },
+            {
+                "id": 21,
+                "quantity": 3
+            },
+            {
+                "id": 22,
+                "quantity": 2
+            },
+            {
+                "id": 23,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 27,
+        "name": "Monitors",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 3
+            },
+            {
+                "id": 21,
+                "quantity": 2
+            },
+            {
+                "id": 23,
+                "quantity": 3
+            }
+        ]
+    },
+    {
+        "id": 28,
+        "name": "Televisions",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 5
+            },
+            {
+                "id": 20,
+                "quantity": 1
+            },
+            {
+                "id": 21,
+                "quantity": 4
+            },
+            {
+                "id": 23,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 114,
+        "name": "Robots",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 10
+            },
+            {
+                "id": 20,
+                "quantity": 2
+            },
+            {
+                "id": 48,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 79,
+        "name": "High grade e-comps",
+        "materials": [
+            {
+                "id": 16,
+                "quantity": 4
+            },
+            {
+                "id": 17,
+                "quantity": 3
+            },
+            {
+                "id": 69,
+                "quantity": 0.0625
+            }
+        ]
+    },
+    {
+        "id": 98,
+        "name": "Quadcopter",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 2
+            },
+            {
+                "id": 21,
+                "quantity": 3
+            },
+            {
+                "id": 22,
+                "quantity": 1
+            },
+            {
+                "id": 47,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 112,
+        "name": "Bulldozer",
+        "materials": [
+            {
+                "id": 43,
+                "quantity": 4
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            },
+            {
+                "id": 52,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 47,
+        "name": "On-board computer",
+        "materials": [
+            {
+                "id": 20,
+                "quantity": 2
+            },
+            {
+                "id": 21,
+                "quantity": 3
+            }
+        ]
+    },
+    {
+        "id": 48,
+        "name": "Electric motor",
+        "materials": [
+            {
+                "id": 21,
+                "quantity": 3
+            },
+            {
+                "id": 43,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 49,
+        "name": "Luxury car interior",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 2
+            },
+            {
+                "id": 23,
+                "quantity": 6
+            },
+            {
+                "id": 46,
+                "quantity": 5
+            }
+        ]
+    },
+    {
+        "id": 50,
+        "name": "Basic interior",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 2
+            },
+            {
+                "id": 23,
+                "quantity": 2
+            },
+            {
+                "id": 41,
+                "quantity": 5
+            }
+        ]
+    },
+    {
+        "id": 51,
+        "name": "Car body",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 30
+            },
+            {
+                "id": 43,
+                "quantity": 5
+            },
+            {
+                "id": 45,
+                "quantity": 5
+            }
+        ]
+    },
+    {
+        "id": 52,
+        "name": "Combustion engine",
+        "materials": [
+            {
+                "id": 17,
+                "quantity": 5
+            },
+            {
+                "id": 21,
+                "quantity": 5
+            },
+            {
+                "id": 43,
+                "quantity": 6
+            }
+        ]
+    },
+    {
+        "id": 53,
+        "name": "Economy e-car",
+        "materials": [
+            {
+                "id": 22,
+                "quantity": 15
+            },
+            {
+                "id": 47,
+                "quantity": 1
+            },
+            {
+                "id": 48,
+                "quantity": 2
+            },
+            {
+                "id": 50,
+                "quantity": 1
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 54,
+        "name": "Luxury e-car",
+        "materials": [
+            {
+                "id": 22,
+                "quantity": 30
+            },
+            {
+                "id": 47,
+                "quantity": 2
+            },
+            {
+                "id": 48,
+                "quantity": 4
+            },
+            {
+                "id": 49,
+                "quantity": 1
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 55,
+        "name": "Economy car",
+        "materials": [
+            {
+                "id": 47,
+                "quantity": 1
+            },
+            {
+                "id": 50,
+                "quantity": 1
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            },
+            {
+                "id": 52,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 56,
+        "name": "Luxury car",
+        "materials": [
+            {
+                "id": 47,
+                "quantity": 2
+            },
+            {
+                "id": 49,
+                "quantity": 1
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            },
+            {
+                "id": 52,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 57,
+        "name": "Truck",
+        "materials": [
+            {
+                "id": 43,
+                "quantity": 10
+            },
+            {
+                "id": 47,
+                "quantity": 1
+            },
+            {
+                "id": 50,
+                "quantity": 1
+            },
+            {
+                "id": 51,
+                "quantity": 1
+            },
+            {
+                "id": 52,
+                "quantity": 6
+            }
+        ]
+    },
+    {
+        "id": 77,
+        "name": "Fuselage",
+        "materials": [
+            {
+                "id": 76,
+                "quantity": 40
+            }
+        ]
+    },
+    {
+        "id": 78,
+        "name": "Wing",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 5
+            },
+            {
+                "id": 76,
+                "quantity": 30
+            }
+        ]
+    },
+    {
+        "id": 80,
+        "name": "Flight computer",
+        "materials": [
+            {
+                "id": 47,
+                "quantity": 2
+            },
+            {
+                "id": 79,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 81,
+        "name": "Cockpit",
+        "materials": [
+            {
+                "id": 23,
+                "quantity": 8
+            },
+            {
+                "id": 50,
+                "quantity": 1
+            },
+            {
+                "id": 79,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 82,
+        "name": "Attitude control",
+        "materials": [
+            {
+                "id": 22,
+                "quantity": 5
+            },
+            {
+                "id": 43,
+                "quantity": 3
+            },
+            {
+                "id": 48,
+                "quantity": 3
+            }
+        ]
+    },
+    {
+        "id": 84,
+        "name": "Propellant tank",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 50
+            },
+            {
+                "id": 83,
+                "quantity": 250
+            }
+        ]
+    },
+    {
+        "id": 85,
+        "name": "Solid fuel booster",
+        "materials": [
+            {
+                "id": 17,
+                "quantity": 50
+            },
+            {
+                "id": 18,
+                "quantity": 30
+            },
+            {
+                "id": 83,
+                "quantity": 100
+            }
+        ]
+    },
+    {
+        "id": 86,
+        "name": "Rocket engine",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 10
+            },
+            {
+                "id": 43,
+                "quantity": 20
+            },
+            {
+                "id": 79,
+                "quantity": 8
+            }
+        ]
+    },
+    {
+        "id": 90,
+        "name": "Sub-orbital 2nd stage",
+        "materials": [
+            {
+                "id": 77,
+                "quantity": 8
+            },
+            {
+                "id": 80,
+                "quantity": 2
+            },
+            {
+                "id": 82,
+                "quantity": 2
+            },
+            {
+                "id": 84,
+                "quantity": 2
+            },
+            {
+                "id": 88,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 89,
+        "name": "Jet engine",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 5
+            },
+            {
+                "id": 79,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 88,
+        "name": "Ion drive",
+        "materials": [
+            {
+                "id": 17,
+                "quantity": 15
+            },
+            {
+                "id": 22,
+                "quantity": 30
+            },
+            {
+                "id": 79,
+                "quantity": 8
+            }
+        ]
+    },
+    {
+        "id": 87,
+        "name": "Heat shield",
+        "materials": [
+            {
+                "id": 16,
+                "quantity": 30
+            },
+            {
+                "id": 43,
+                "quantity": 20
+            }
+        ]
+    },
+    {
+        "id": 91,
+        "name": "Sub-orbital rocket",
+        "materials": [
+            {
+                "id": 85,
+                "quantity": 1
+            },
+            {
+                "id": 90,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 92,
+        "name": "Orbital booster",
+        "materials": [
+            {
+                "id": 77,
+                "quantity": 40
+            },
+            {
+                "id": 84,
+                "quantity": 16
+            },
+            {
+                "id": 86,
+                "quantity": 34
+            }
+        ]
+    },
+    {
+        "id": 93,
+        "name": "Starship",
+        "materials": [
+            {
+                "id": 81,
+                "quantity": 2
+            },
+            {
+                "id": 82,
+                "quantity": 4
+            },
+            {
+                "id": 84,
+                "quantity": 6
+            },
+            {
+                "id": 86,
+                "quantity": 7
+            },
+            {
+                "id": 87,
+                "quantity": 10
+            }
+        ]
+    },
+    {
+        "id": 94,
+        "name": "BFR",
+        "materials": [
+            {
+                "id": 92,
+                "quantity": 1
+            },
+            {
+                "id": 93,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 95,
+        "name": "Jumbo jet",
+        "materials": [
+            {
+                "id": 50,
+                "quantity": 140
+            },
+            {
+                "id": 77,
+                "quantity": 40
+            },
+            {
+                "id": 78,
+                "quantity": 10
+            },
+            {
+                "id": 81,
+                "quantity": 2
+            },
+            {
+                "id": 89,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 96,
+        "name": "Luxury jet",
+        "materials": [
+            {
+                "id": 69,
+                "quantity": 2
+            },
+            {
+                "id": 77,
+                "quantity": 14
+            },
+            {
+                "id": 78,
+                "quantity": 2
+            },
+            {
+                "id": 81,
+                "quantity": 1
+            },
+            {
+                "id": 89,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 97,
+        "name": "Single engine plane",
+        "materials": [
+            {
+                "id": 52,
+                "quantity": 1
+            },
+            {
+                "id": 77,
+                "quantity": 8
+            },
+            {
+                "id": 78,
+                "quantity": 2
+            },
+            {
+                "id": 81,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 99,
+        "name": "Satellite",
+        "materials": [
+            {
+                "id": 79,
+                "quantity": 8
+            },
+            {
+                "id": 80,
+                "quantity": 4
+            },
+            {
+                "id": 82,
+                "quantity": 2
+            },
+            {
+                "id": 88,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Water",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 0.2
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Transport",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 0.010526315789473684
+            },
+            {
+                "id": 12,
+                "quantity": 0.005263157894736842
+            }
+        ]
+    },
+    {
+        "id": 19,
+        "name": "Plastic",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 5
+            },
+            {
+                "id": 10,
+                "quantity": 0.2
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Minerals",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 20
+            },
+            {
+                "id": 2,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Bauxite",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 14
+            },
+            {
+                "id": 2,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Silicon",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 3
+            },
+            {
+                "id": 44,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "name": "Chemicals",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 0.2
+            },
+            {
+                "id": 14,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "name": "Aluminium",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 15
+            },
+            {
+                "id": 15,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 42,
+        "name": "Iron ore",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 7
+            },
+            {
+                "id": 2,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 43,
+        "name": "Steel",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 5
+            },
+            {
+                "id": 17,
+                "quantity": 0.1
+            },
+            {
+                "id": 42,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 44,
+        "name": "Sand",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 45,
+        "name": "Glass",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 2
+            },
+            {
+                "id": 16,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 76,
+        "name": "Carbon composite",
+        "materials": [
+            {
+                "id": 75,
+                "quantity": 8
+            }
+        ]
+    },
+    {
+        "id": 75,
+        "name": "Carbon fibers",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 0.5
+            },
+            {
+                "id": 10,
+                "quantity": 0.1
+            }
+        ]
+    },
+    {
+        "id": 69,
+        "name": "Golden bars",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 40
+            },
+            {
+                "id": 68,
+                "quantity": 200
+            }
+        ]
+    },
+    {
+        "id": 68,
+        "name": "Gold ore",
+        "materials": [
+            {
+                "id": 1,
+                "quantity": 80
+            },
+            {
+                "id": 2,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 29,
+        "name": "Plant research",
+        "materials": []
+    },
+    {
+        "id": 30,
+        "name": "Energy research",
+        "materials": []
+    },
+    {
+        "id": 31,
+        "name": "Mining research",
+        "materials": []
+    },
+    {
+        "id": 33,
+        "name": "Breeding research",
+        "materials": []
+    },
+    {
+        "id": 145,
+        "name": "Recipes",
+        "materials": []
+    },
+    {
+        "id": 113,
+        "name": "Materials research",
+        "materials": []
+    },
+    {
+        "id": 59,
+        "name": "Fashion research",
+        "materials": []
+    },
+    {
+        "id": 34,
+        "name": "Chemistry research",
+        "materials": []
+    },
+    {
+        "id": 100,
+        "name": "Aerospace research",
+        "materials": [
+            {
+                "id": 91,
+                "quantity": 1
+            },
+            {
+                "id": 94,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 58,
+        "name": "Automotive research",
+        "materials": []
+    },
+    {
+        "id": 35,
+        "name": "Software",
+        "materials": []
+    },
+    {
+        "id": 32,
+        "name": "Electronics research",
+        "materials": []
+    },
+    {
+        "id": 146,
+        "name": "Pumpkin",
+        "materials": [
+            {
+                "id": 2,
+                "quantity": 8
+            },
+            {
+                "id": 66,
+                "quantity": 2
+            }
+        ]
+    },
+    {
+        "id": 148,
+        "name": "Witch costume",
+        "materials": [
+            {
+                "id": 19,
+                "quantity": 1
+            },
+            {
+                "id": 41,
+                "quantity": 4
+            }
+        ]
+    },
+    {
+        "id": 150,
+        "name": "Tree",
+        "materials": []
+    },
+    {
+        "id": 67,
+        "name": "Xmas crackers",
+        "materials": [
+            {
+                "id": 17,
+                "quantity": 0.5
+            },
+            {
+                "id": 19,
+                "quantity": 0.1
+            }
+        ]
+    },
+    {
+        "id": 144,
+        "name": "Xmas ornament",
+        "materials": [
+            {
+                "id": 14,
+                "quantity": 0.25
+            },
+            {
+                "id": 18,
+                "quantity": 0.125
+            },
+            {
+                "id": 45,
+                "quantity": 0.5
+            }
+        ]
+    },
+    {
+        "id": 147,
+        "name": "Jack o'lantern",
+        "materials": [
+            {
+                "id": 21,
+                "quantity": 0.5
+            },
+            {
+                "id": 146,
+                "quantity": 1
+            }
+        ]
+    },
+    {
+        "id": 151,
+        "name": "Easter Bunny",
+        "materials": [
+            {
+                "id": 18,
+                "quantity": 0.0625
+            },
+            {
+                "id": 117,
+                "quantity": 0.25
+            },
+            {
+                "id": 135,
+                "quantity": 0.25
+            },
+            {
+                "id": 136,
+                "quantity": 8
+            }
+        ]
+    },
+    {
+        "id": 152,
+        "name": "Ramadan sweets",
+        "materials": [
+            {
+                "id": 117,
+                "quantity": 0.5
+            },
+            {
+                "id": 133,
+                "quantity": 2
+            },
+            {
+                "id": 134,
+                "quantity": 1
+            },
+            {
+                "id": 135,
+                "quantity": 0.25
+            }
+        ]
+    },
+    {
+        "id": 153,
+        "name": "Chocolate icecream",
+        "materials": [
+            {
+                "id": 117,
+                "quantity": 2
+            },
+            {
+                "id": 135,
+                "quantity": 0.5
+            },
+            {
+                "id": 140,
+                "quantity": 0.0625
+            }
+        ]
+    },
+    {
+        "id": 154,
+        "name": "Apple icecream",
+        "materials": [
+            {
+                "id": 3,
+                "quantity": 4
+            },
+            {
+                "id": 117,
+                "quantity": 2
+            },
+            {
+                "id": 135,
+                "quantity": 0.5
+            }
+        ]
+    }
+]

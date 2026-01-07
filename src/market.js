@@ -29,6 +29,20 @@ async function fetchMarket(realmId, productId) {
   return data;
 }
 
+export async function fetchMarketPrice(realmId, productId) {
+  try {
+    const data = await fetchMarket(realmId, productId);
+    const listing = data?.[0];
+    if (listing && Number.isFinite(listing.price)) {
+      return listing.price;
+    }
+    return null;
+  } catch (e) {
+    console.warn(`Failed to fetch price for product ${productId}:`, e);
+    return null;
+  }
+}
+
 export function ensureMarketFetch(realmId, productId, scheduleUpdate) {
   if (!productId) return;
 
