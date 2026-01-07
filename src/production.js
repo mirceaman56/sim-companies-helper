@@ -9,7 +9,8 @@ const MARKET_FEE = 0.04; // 4% fee on market sales
  * Get all recipes
  */
 export function getRecipes() {
-  return recipesData.recipes || [];
+  // recipes.json is now a direct array, not wrapped in an object
+  return Array.isArray(recipesData) ? recipesData : (recipesData.recipes || []);
 }
 
 /**
@@ -95,37 +96,41 @@ export function calculateProductionCost(productId, quantity, pricesMap) {
 
 /**
  * Calculate selling profit for produced goods
- * Returns { sellPrice, feeAmount, netProceeds, profit }
+ * Returns { sellPrice, feeAmount, netProceeds, profit, profitMargin }
  */
-export function calculateSellProfit(productId, quantity, marketPrice, productionCost) {
+export function calculateSellProfit(productId, quantity, marketPrice, productionCost, laborCost = 0) {
   if (!Number.isFinite(marketPrice) || !Number.isFinite(productionCost)) {
     return {
       sellPrice: NaN,
       feeAmount: NaN,
       netProceeds: NaN,
       profit: NaN,
+      profitMargin: NaN,
     };
   }
 
   const sellPrice = marketPrice * quantity;
   const feeAmount = sellPrice * MARKET_FEE;
   const netProceeds = sellPrice - feeAmount;
-  const profit = netProceeds - productionCost;
+  // Include labor cost in profit calculation
+  const totalCost = productionCost + laborCost;
+  const profit = netProceeds - totalCost;
 
   return {
     sellPrice,
     feeAmount,
     netProceeds,
     profit,
-    profitMargin: productionCost > 0 ? (profit / productionCost) * 100 : NaN,
+    laborCost,
+    profitMargin: totalCost > 0 ? (profit / totalCost) * 100 : NaN,
   };
 }
 
 /**
  * Full production analysis: cost + profit
- * Returns { recipe, productionCost, sellAnalysis, totalAnalysis }
+ * Returns { recipe, productionCost, sellAnalysis, materialCosts }
  */
-export async function analyzeProduction(productId, quantity, pricesMap) {
+export async function analyzeProduction(productId, quantity, pricesMap, laborCost = 0) {
   const recipe = getRecipeByProductId(productId);
   if (!recipe) return null;
 
@@ -158,12 +163,13 @@ export async function analyzeProduction(productId, quantity, pricesMap) {
     };
   }
 
-  // Get sell analysis
+  // Get sell analysis with labor cost
   const sellAnalysis = calculateSellProfit(
     productId,
     quantity,
     productPrice,
-    costAnalysis.totalCost
+    costAnalysis.totalCost,
+    laborCost
   );
 
   return {

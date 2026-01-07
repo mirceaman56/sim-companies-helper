@@ -11,6 +11,7 @@ const SECTION_ID = "production-section";
 // Store current state
 let currentProductId = null;
 let currentQuantity = 1;
+let currentLaborCost = 0;
 let pricesCache = null;
 let currentRow = null;
 
@@ -70,6 +71,62 @@ function getQuantityFromRow(row) {
 }
 
 /**
+ * Extract labor cost from a production row
+ */
+function getLaborCostFromRow(row) {
+  if (!row) {
+    return 0;
+  }
+  // Look for text like "Labor cost: $X,XXX"
+  const text = row.textContent || "";
+  const match = text.match(/Labor cost:\s*\$?([\d,]+(?:\.\d{2})?)/i);
+  if (match) {
+    const costStr = match[1].replace(/,/g, '');
+    const cost = Number(costStr);
+    return Number.isFinite(cost) ? cost : 0;
+  }
+  return 0;
+}
+
+/**
+ * Wait for labor cost to appear in the row, then resolve with the cost value
+ */
+function waitForLaborCost(row, maxWaitMs = 3000) {
+  return new Promise((resolve) => {
+    // Check if labor cost is already visible
+    const currentCost = getLaborCostFromRow(row);
+    if (currentCost > 0) {
+      resolve(currentCost);
+      return;
+    }
+
+    // Set up observer to watch for changes
+    let timeoutId;
+    const observer = new MutationObserver(() => {
+      const cost = getLaborCostFromRow(row);
+      if (cost > 0) {
+        clearTimeout(timeoutId);
+        observer.disconnect();
+        resolve(cost);
+      }
+    });
+
+    // Start observing the row for text content changes
+    observer.observe(row, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    // Timeout after maxWaitMs
+    timeoutId = setTimeout(() => {
+      observer.disconnect();
+      resolve(0); // Resolve with 0 if labor cost doesn't appear
+    }, maxWaitMs);
+  });
+}
+
+/**
  * Update production helper for a specific row
  */
 async function updateForRow(row) {
@@ -90,6 +147,10 @@ async function updateForRow(row) {
   currentProductId = productId;
   currentQuantity = quantity;
   pricesCache = null; // Reset cache to fetch fresh prices
+
+  // Wait for labor cost to appear in the row
+  const laborCost = await waitForLaborCost(row);
+  currentLaborCost = laborCost;
 
   // Trigger update
   await updateProductionPanel();
@@ -125,6 +186,8 @@ export function setupProductionRowListeners() {
       const row = getProductionRowFromTarget(target);
       if (row && currentRow === row) {
         currentQuantity = getQuantityFromRow(row);
+        // Re-extract labor cost since it may have changed with the quantity
+        currentLaborCost = getLaborCostFromRow(row);
         updateProductionPanel();
       }
     }
@@ -192,7 +255,7 @@ async function renderProductAnalysis(contentEl, recipe) {
   }
 
   // Analyze production
-  const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache);
+  const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache, currentLaborCost);
 
   if (!analysis) {
     contentEl.innerHTML = `<div class="scx-muted">Unable to analyze production</div>`;
@@ -252,12 +315,21 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
  * Render materials cost breakdown
  */
 function renderMaterialsCost(materialCosts) {
+  const recipes = getRecipes();
+  const materialNamesMap = new Map();
+  // Build a map of material ID -> name
+  recipes.forEach(r => {
+    materialNamesMap.set(r.id, r.name);
+  });
+
   return materialCosts
     .map(
-      (mc) => `
+      (mc) => {
+        const materialName = materialNamesMap.get(mc.materialId) || `Resource ${mc.materialId}`;
+        return `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
       <div>
-        <div style="color: #333; font-weight: 500;">Material ID: ${mc.materialId}</div>
+        <div style="color: #333; font-weight: 500;">${materialName}</div>
         <div style="color: #999; font-size: 9px;">Qty: ${mc.quantity}</div>
       </div>
       <div style="text-align: right;">
@@ -269,7 +341,8 @@ function renderMaterialsCost(materialCosts) {
         </div>
       </div>
     </div>
-  `
+  `;
+      }
     )
     .join("");
 }
