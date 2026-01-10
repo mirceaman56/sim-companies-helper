@@ -9,6 +9,7 @@ import { ensureSidebarContainer, registerSection, setSectionUpdateFn } from "./s
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initRecipeExtractor } from "./recipe_extractor.js";
+import { STATE } from "./state.js";
 
 async function init() {
   // Initialize the sidebar container
@@ -27,6 +28,14 @@ async function init() {
   await loadAuthDataOnce();
   await loadInventoryOnce();
   await loadCashflowToday();
+
+  // Backward compatibility for any code still reading cf.items/cf.summary
+  STATE.cashflow.items = STATE.cashflow.todayItems || [];
+  STATE.cashflow.summary =
+    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
+
+  // Update cashflow panel after data is loaded
+  updateCashflowPanel();
 
   // Setup row listeners
   setupProductionRowListeners();
@@ -47,7 +56,11 @@ window.addEventListener("click", (e) => RetailHelper.onFocusOrClick(e, () => upd
 // Optional: Auto-refresh cashflow periodically (every 5 minutes)
 setInterval(async () => {
   await loadCashflowToday({ force: true });
+
+  // Backward compatibility for any code still reading cf.items/cf.summary
+  STATE.cashflow.items = STATE.cashflow.todayItems || [];
+  STATE.cashflow.summary =
+    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
+
   updateCashflowPanel();
 }, 5 * 60 * 1000);
-
-

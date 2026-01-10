@@ -1,14 +1,10 @@
 // cashflow_ui.js
-// Renders cashflow section in the sidebar
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 
 const SECTION_ID = "cashflow-section";
 
-/**
- * Render cashflow section content
- */
 export function updateCashflowPanel() {
   const contentEl = getSectionContent(SECTION_ID);
   if (!contentEl) return;
@@ -29,15 +25,20 @@ export function updateCashflowPanel() {
     return;
   }
 
-  if (!cf.loaded || cf.items.length === 0) {
+  if (!cf.loaded || (!cf.todayItems?.length && !cf.yesterdayItems?.length)) {
     contentEl.innerHTML = `<div class="scx-muted">No cashflow data available</div>`;
     return;
   }
 
-  const summary = cf.summary || { salesCount: 0, salesMoney: 0 };
+  const today = cf.todaySummary || { salesCount: 0, salesMoney: 0 };
+  const yesterday = cf.yesterdaySummary || { salesCount: 0, salesMoney: 0 };
 
-  // Calculate average per transaction
-  const avgPerTransaction = summary.salesCount > 0 ? summary.salesMoney / summary.salesCount : 0;
+  const diff = today.salesMoney - yesterday.salesMoney;
+  const diffColor = diff >= 0 ? "#2e7d32" : "#c62828";
+  const diffSign = diff >= 0 ? "+" : "";
+
+  const avgPerTransaction =
+    today.salesCount > 0 ? today.salesMoney / today.salesCount : 0;
 
   contentEl.innerHTML = `
     <div class="scx-panel">
@@ -46,13 +47,17 @@ export function updateCashflowPanel() {
       </div>
 
       <div style="font-size: 18px; font-weight: 700; color: #2e7d32;">
-        ${formatMoney(summary.salesMoney)}
+        ${formatMoney(today.salesMoney)}
       </div>
 
-      <div class="scx-grid">
+      <div style="font-size: 11px; margin-top: 2px; color: ${diffColor}; font-weight: 600;">
+        ${diffSign}${formatMoney(diff)} vs yesterday
+      </div>
+
+      <div class="scx-grid" style="margin-top: 6px;">
         <div>
           <div class="scx-k">Transactions</div>
-          <div class="scx-v">${summary.salesCount}</div>
+          <div class="scx-v">${today.salesCount}</div>
         </div>
         <div>
           <div class="scx-k">Avg per TX</div>
@@ -64,7 +69,7 @@ export function updateCashflowPanel() {
 
       <div class="scx-panel-title" style="margin-bottom: 8px;">Recent Transactions</div>
       <div style="max-height: 200px; overflow-y: auto; font-size: 10px;">
-        ${renderCashflowItems(cf.items)}
+        ${renderCashflowItems(cf.todayItems)}
       </div>
 
       <div class="scx-muted" style="margin-top: 8px;">
@@ -74,16 +79,13 @@ export function updateCashflowPanel() {
   `;
 }
 
-/**
- * Render individual cashflow items
- */
 function renderCashflowItems(items) {
   if (!items || items.length === 0) {
     return `<div class="scx-muted">No transactions</div>`;
   }
 
   return items
-    .slice(0, 10) // Show last 10
+    .slice(0, 10)
     .map((item) => {
       const money = Number(item.money || 0);
       const category = item.category || "?";
@@ -91,7 +93,10 @@ function renderCashflowItems(items) {
       const time = formatTimeOnly(item.datetime);
 
       const categoryLabel =
-        category === "s" ? "Sale" : category === "b" ? "Buy" : category === "w" ? "Wages" : "Other";
+        category === "s" ? "Sale" :
+        category === "b" ? "Buy" :
+        category === "w" ? "Wages" :
+        "Other";
 
       return `
         <div style="
@@ -125,9 +130,6 @@ function renderCashflowItems(items) {
     .join("");
 }
 
-/**
- * Format time portion of datetime string
- */
 function formatTimeOnly(dtStr) {
   try {
     const date = new Date(dtStr);
@@ -141,9 +143,6 @@ function formatTimeOnly(dtStr) {
   }
 }
 
-/**
- * Format the last refresh time
- */
 function formatRefreshTime(ms) {
   if (!ms) return "never";
   const ago = Math.floor((Date.now() - ms) / 1000);

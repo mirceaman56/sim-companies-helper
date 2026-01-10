@@ -232,7 +232,6 @@ export function ensureSidebarContainer() {
 export function registerSection(sectionId, title, icon = "◆") {
   const container = ensureSidebarContainer();
 
-  // Create section element
   const section = document.createElement("div");
   section.className = "scx-section collapsed";
   section.dataset.sectionId = sectionId;
@@ -251,13 +250,11 @@ export function registerSection(sectionId, title, icon = "◆") {
   const toggle = section.querySelector(".scx-section-toggle");
   const content = section.querySelector(".scx-section-content");
 
-  // Toggle collapse/expand
   const toggleCollapse = () => {
     const isCollapsed = section.classList.toggle("collapsed");
     const sectionData = SECTIONS.get(sectionId);
     if (sectionData) {
       sectionData.isCollapsed = isCollapsed;
-      // Trigger update when toggled
       if (sectionData.updateFn && !isCollapsed) {
         sectionData.updateFn();
       }
@@ -268,7 +265,6 @@ export function registerSection(sectionId, title, icon = "◆") {
 
   container.appendChild(section);
 
-  // Store section info
   SECTIONS.set(sectionId, {
     title,
     element: section,
@@ -297,6 +293,13 @@ export function setSectionUpdateFn(sectionId, updateFn) {
   const section = SECTIONS.get(sectionId);
   if (section) {
     section.updateFn = updateFn;
+
+    // If section is currently expanded, update immediately
+    if (!section.isCollapsed) {
+      try {
+        updateFn();
+      } catch {}
+    }
   }
 }
 

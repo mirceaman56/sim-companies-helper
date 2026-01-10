@@ -9,6 +9,10 @@ function startOfTodayLocalMs() {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 }
 
+function startOfYesterdayLocalMs() {
+  return startOfTodayLocalMs() - 24 * 60 * 60 * 1000;
+}
+
 function parseDtMs(s) {
   const t = Date.parse(s);
   return Number.isFinite(t) ? t : NaN;
@@ -18,6 +22,12 @@ function isTodayLocal(dtStr) {
   const ms = parseDtMs(dtStr);
   if (!Number.isFinite(ms)) return false;
   return ms >= startOfTodayLocalMs();
+}
+
+function isYesterdayLocal(dtStr) {
+  const ms = parseDtMs(dtStr);
+  if (!Number.isFinite(ms)) return false;
+  return ms >= startOfYesterdayLocalMs() && ms < startOfTodayLocalMs();
 }
 
 function computeSummary(items) {
@@ -41,10 +51,7 @@ async function fetchPage(url) {
 }
 
 /**
- * Loads only today's cashflow entries.
- * - Calls /recent first, then /<lastId>/ for older pages
- * - Stops once entries are older than today OR oldestPulled true
- * - Does NOT keep going forever (safety page cap)
+ * Loads today's and yesterday's cashflow entries.
  */
 export async function loadCashflowToday({ force = false } = {}) {
   if (STATE.cashflow.loading) return;
@@ -55,6 +62,8 @@ export async function loadCashflowToday({ force = false } = {}) {
 
   try {
     const todayItems = [];
+    const yesterdayItems = [];
+
     let url = RECENT_URL;
     let pages = 0;
 
@@ -64,22 +73,22 @@ export async function loadCashflowToday({ force = false } = {}) {
       const json = await fetchPage(url);
       const data = Array.isArray(json?.data) ? json.data : [];
 
-      // Keep only today's entries from this page.
-      // Once we hit an older-than-today entry, we can stop.
-      let hitOlder = false;
+      let hitOlderThanYesterday = false;
+
       for (const tx of data) {
         if (isTodayLocal(tx?.datetime)) {
           todayItems.push(tx);
+        } else if (isYesterdayLocal(tx?.datetime)) {
+          yesterdayItems.push(tx);
         } else {
-          hitOlder = true;
-          break; // data is in descending time order
+          hitOlderThanYesterday = true;
+          break;
         }
       }
 
-      if (hitOlder) break;
+      if (hitOlderThanYesterday) break;
       if (json?.oldestPulled) break;
 
-      // Next page uses LAST item's id from this page
       const last = data[data.length - 1];
       const lastId = last?.id;
       if (!Number.isFinite(lastId)) break;
@@ -87,8 +96,10 @@ export async function loadCashflowToday({ force = false } = {}) {
       url = PAGE_URL(lastId);
     }
 
-    STATE.cashflow.items = todayItems;
-    STATE.cashflow.summary = computeSummary(todayItems);
+    STATE.cashflow.todayItems = todayItems;
+    STATE.cashflow.yesterdayItems = yesterdayItems;
+    STATE.cashflow.todaySummary = computeSummary(todayItems);
+    STATE.cashflow.yesterdaySummary = computeSummary(yesterdayItems);
     STATE.cashflow.loaded = true;
     STATE.cashflow.lastRefreshAt = Date.now();
   } catch (e) {
