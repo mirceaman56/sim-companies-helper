@@ -14,7 +14,7 @@ export function getCheapestListing(listings) {
   };
 }
 
-async function fetchMarket(realmId, productId) {
+export async function fetchMarket(realmId, productId) {
   const now = Date.now();
   const cacheKey = `${realmId}:${productId}`;
   const cached = STATE.marketCache.get(cacheKey);

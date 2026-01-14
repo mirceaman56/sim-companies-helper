@@ -188,6 +188,7 @@ export function setupProductionRowListeners() {
         currentQuantity = getQuantityFromRow(row);
         // Re-extract labor cost since it may have changed with the quantity
         currentLaborCost = getLaborCostFromRow(row);
+        console.log("Labor cost updated:", currentLaborCost);
         updateProductionPanel();
       }
     }
@@ -241,11 +242,14 @@ async function renderProductAnalysis(contentEl, recipe) {
     contentEl.innerHTML = `<div class="scx-muted">Loading prices...</div>`;
 
     try {
-      // Fetch prices for materials and the product itself
+      // Fetch prices for materials, the product itself, and transport containers (product 13)
       const materialIds = recipe.materials.map((m) => m.id);
-      const productIds = [currentProductId, ...materialIds];
+      const productIds = [currentProductId, ...materialIds, 13]; // 13 is transport container
+      console.log("[renderProductAnalysis] Fetching prices for:", productIds);
 
       pricesCache = await fetchMarketPrices(realmId, productIds);
+      console.log("[renderProductAnalysis] pricesCache:", pricesCache);
+      console.log("[renderProductAnalysis] Container (13) price:", pricesCache.get(13));
     } catch (e) {
       contentEl.innerHTML = `<div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
         Error loading prices: ${e.message}
@@ -254,8 +258,11 @@ async function renderProductAnalysis(contentEl, recipe) {
     }
   }
 
-  // Analyze production
-  const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache, currentLaborCost);
+  // Analyze production (pass realmId for transport cost calculation)
+  const realmId = getRealmId();
+  console.log("[renderProductAnalysis] Calling analyzeProduction with realmId:", realmId);
+  const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache, currentLaborCost, realmId);
+  console.log("[renderProductAnalysis] Analysis result:", analysis);
 
   if (!analysis) {
     contentEl.innerHTML = `<div class="scx-muted">Unable to analyze production</div>`;
@@ -270,7 +277,7 @@ async function renderProductAnalysis(contentEl, recipe) {
  * Render the full analysis UI
  */
 function renderAnalysisUI(contentEl, recipe, analysis) {
-  const { productionCost, sellAnalysis, materialCosts } = analysis;
+  const { productionCost, sellAnalysis, materialCosts, transportCost } = analysis;
 
   contentEl.innerHTML = `
     <div class="scx-panel" style="font-size: 11px;">
@@ -290,6 +297,34 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <div style="background: #fafafa; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
         ${renderMaterialsCost(materialCosts)}
       </div>
+
+      ${currentLaborCost > 0 ? `
+      <div style="background: #f1f8e9; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="color: #333; font-weight: 500;">Labor Cost</div>
+            <div style="color: #999; font-size: 9px;">Per batch</div>
+          </div>
+          <div style="text-align: right; color: #558b2f; font-weight: 600;">
+            ${formatMoney(currentLaborCost)}
+          </div>
+        </div>
+      </div>
+      ` : ''}
+
+      ${Number.isFinite(transportCost) && transportCost > 0 ? `
+      <div style="background: #f3e5f5; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="color: #333; font-weight: 500;">Transport Containers</div>
+            <div style="color: #999; font-size: 9px;">(${recipe.transport || 1} per unit)</div>
+          </div>
+          <div style="text-align: right; color: #6a1b9a; font-weight: 600;">
+            ${formatMoney(transportCost)}
+          </div>
+        </div>
+      </div>
+      ` : ''}
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
         <div style="background: #e3f2fd; padding: 8px; border-radius: 4px;">

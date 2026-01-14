@@ -7,7 +7,8 @@
                 "id": 2,
                 "quantity": 0.1
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 3,
@@ -21,7 +22,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 4,
@@ -35,7 +37,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 5,
@@ -49,7 +52,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 6,
@@ -63,7 +67,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 115,
@@ -77,7 +82,8 @@
                 "id": 139,
                 "quantity": 12
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 116,
@@ -91,7 +97,8 @@
                 "id": 139,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 118,
@@ -105,7 +112,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 120,
@@ -119,7 +127,8 @@
                 "id": 66,
                 "quantity": 5
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 40,
@@ -133,7 +142,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 72,
@@ -147,7 +157,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 136,
@@ -161,7 +172,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 7,
@@ -171,7 +183,8 @@
                 "id": 115,
                 "quantity": 0.125
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 8,
@@ -181,7 +194,8 @@
                 "id": 116,
                 "quantity": 0.0625
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 9,
@@ -195,7 +209,8 @@
                 "id": 6,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 119,
@@ -205,7 +220,8 @@
                 "id": 118,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 0.1
     },
     {
         "id": 117,
@@ -219,7 +235,8 @@
                 "id": 139,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 124,
@@ -233,7 +250,8 @@
                 "id": 135,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 125,
@@ -243,7 +261,8 @@
                 "id": 3,
                 "quantity": 8
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 126,
@@ -261,7 +280,8 @@
                 "id": 135,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 140,
@@ -279,7 +299,8 @@
                 "id": 136,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 135,
@@ -293,7 +314,8 @@
                 "id": 72,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 137,
@@ -311,7 +333,8 @@
                 "id": 134,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 138,
@@ -329,7 +352,8 @@
                 "id": 134,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 133,
@@ -339,7 +363,8 @@
                 "id": 6,
                 "quantity": 15
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 121,
@@ -349,7 +374,8 @@
                 "id": 137,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 123,
@@ -367,7 +393,8 @@
                 "id": 137,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 127,
@@ -389,7 +416,8 @@
                 "id": 137,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 128,
@@ -403,7 +431,8 @@
                 "id": 133,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 134,
@@ -413,7 +442,8 @@
                 "id": 117,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 122,
@@ -423,7 +453,8 @@
                 "id": 117,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 129,
@@ -449,7 +480,8 @@
                 "id": 141,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 130,
@@ -471,7 +503,8 @@
                 "id": 138,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 131,
@@ -493,7 +526,8 @@
                 "id": 141,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 132,
@@ -515,7 +549,8 @@
                 "id": 126,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 141,
@@ -529,7 +564,8 @@
                 "id": 120,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 142,
@@ -547,7 +583,8 @@
                 "id": 141,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 143,
@@ -565,7 +602,8 @@
                 "id": 141,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 149,
@@ -583,7 +621,8 @@
                 "id": 146,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 101,
@@ -605,7 +644,8 @@
                 "id": 103,
                 "quantity": 15
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 102,
@@ -615,7 +655,8 @@
                 "id": 104,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 108,
@@ -625,7 +666,8 @@
                 "id": 106,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 111,
@@ -651,7 +693,8 @@
                 "id": 112,
                 "quantity": 0.125
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 104,
@@ -661,7 +704,8 @@
                 "id": 1,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 106,
@@ -675,7 +719,8 @@
                 "id": 66,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 103,
@@ -685,7 +730,8 @@
                 "id": 105,
                 "quantity": 3
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 105,
@@ -695,7 +741,8 @@
                 "id": 1,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 107,
@@ -709,7 +756,8 @@
                 "id": 43,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 109,
@@ -723,7 +771,8 @@
                 "id": 45,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 110,
@@ -745,7 +794,8 @@
                 "id": 108,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 41,
@@ -759,7 +809,8 @@
                 "id": 40,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 46,
@@ -769,7 +820,8 @@
                 "id": 115,
                 "quantity": 0.125
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 60,
@@ -779,7 +831,8 @@
                 "id": 41,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 61,
@@ -793,7 +846,8 @@
                 "id": 46,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 62,
@@ -807,7 +861,8 @@
                 "id": 41,
                 "quantity": 3
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 63,
@@ -821,7 +876,8 @@
                 "id": 46,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 64,
@@ -831,7 +887,8 @@
                 "id": 46,
                 "quantity": 1.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 65,
@@ -841,7 +898,8 @@
                 "id": 19,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 70,
@@ -859,7 +917,8 @@
                 "id": 69,
                 "quantity": 0.1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 71,
@@ -869,12 +928,14 @@
                 "id": 69,
                 "quantity": 0.25
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 1,
         "name": "Power",
-        "materials": []
+        "materials": [],
+        "transport": 0
     },
     {
         "id": 10,
@@ -884,7 +945,8 @@
                 "id": 1,
                 "quantity": 25
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 11,
@@ -902,7 +964,8 @@
                 "id": 73,
                 "quantity": 0.25
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 12,
@@ -920,7 +983,8 @@
                 "id": 73,
                 "quantity": 0.25
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 73,
@@ -934,7 +998,8 @@
                 "id": 72,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 74,
@@ -944,7 +1009,8 @@
                 "id": 1,
                 "quantity": 20
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 83,
@@ -958,7 +1024,8 @@
                 "id": 74,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 20,
@@ -972,7 +1039,8 @@
                 "id": 17,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 21,
@@ -986,7 +1054,8 @@
                 "id": 17,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 22,
@@ -996,7 +1065,8 @@
                 "id": 17,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 23,
@@ -1010,7 +1080,8 @@
                 "id": 17,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 24,
@@ -1036,7 +1107,8 @@
                 "id": 23,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 25,
@@ -1062,7 +1134,8 @@
                 "id": 23,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 26,
@@ -1088,7 +1161,8 @@
                 "id": 23,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 27,
@@ -1106,7 +1180,8 @@
                 "id": 23,
                 "quantity": 3
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 28,
@@ -1128,7 +1203,8 @@
                 "id": 23,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 114,
@@ -1146,7 +1222,8 @@
                 "id": 48,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 79,
@@ -1164,7 +1241,8 @@
                 "id": 69,
                 "quantity": 0.0625
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 98,
@@ -1186,7 +1264,8 @@
                 "id": 47,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 112,
@@ -1204,7 +1283,8 @@
                 "id": 52,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 47,
@@ -1218,7 +1298,8 @@
                 "id": 21,
                 "quantity": 3
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 48,
@@ -1232,7 +1313,8 @@
                 "id": 43,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 49,
@@ -1250,7 +1332,8 @@
                 "id": 46,
                 "quantity": 5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 50,
@@ -1268,7 +1351,8 @@
                 "id": 41,
                 "quantity": 5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 51,
@@ -1286,7 +1370,8 @@
                 "id": 45,
                 "quantity": 5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 52,
@@ -1304,7 +1389,8 @@
                 "id": 43,
                 "quantity": 6
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 53,
@@ -1330,7 +1416,8 @@
                 "id": 51,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 54,
@@ -1356,7 +1443,8 @@
                 "id": 51,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 55,
@@ -1378,7 +1466,8 @@
                 "id": 52,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 56,
@@ -1400,7 +1489,8 @@
                 "id": 52,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 57,
@@ -1426,7 +1516,8 @@
                 "id": 52,
                 "quantity": 6
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 77,
@@ -1436,7 +1527,8 @@
                 "id": 76,
                 "quantity": 40
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 78,
@@ -1450,7 +1542,8 @@
                 "id": 76,
                 "quantity": 30
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 80,
@@ -1464,7 +1557,8 @@
                 "id": 79,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 81,
@@ -1482,7 +1576,8 @@
                 "id": 79,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 82,
@@ -1500,7 +1595,8 @@
                 "id": 48,
                 "quantity": 3
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 84,
@@ -1514,7 +1610,8 @@
                 "id": 83,
                 "quantity": 250
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 85,
@@ -1532,7 +1629,8 @@
                 "id": 83,
                 "quantity": 100
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 86,
@@ -1550,7 +1648,8 @@
                 "id": 79,
                 "quantity": 8
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 90,
@@ -1576,7 +1675,8 @@
                 "id": 88,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 89,
@@ -1590,7 +1690,8 @@
                 "id": 79,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 88,
@@ -1608,7 +1709,8 @@
                 "id": 79,
                 "quantity": 8
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 87,
@@ -1622,7 +1724,8 @@
                 "id": 43,
                 "quantity": 20
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 91,
@@ -1636,7 +1739,8 @@
                 "id": 90,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 92,
@@ -1654,7 +1758,8 @@
                 "id": 86,
                 "quantity": 34
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 93,
@@ -1680,7 +1785,8 @@
                 "id": 87,
                 "quantity": 10
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 94,
@@ -1694,7 +1800,8 @@
                 "id": 93,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 95,
@@ -1720,7 +1827,8 @@
                 "id": 89,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 96,
@@ -1746,7 +1854,8 @@
                 "id": 89,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 97,
@@ -1768,7 +1877,8 @@
                 "id": 81,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 99,
@@ -1790,7 +1900,8 @@
                 "id": 88,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 2,
@@ -1800,7 +1911,8 @@
                 "id": 1,
                 "quantity": 0.2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 13,
@@ -1814,7 +1926,8 @@
                 "id": 12,
                 "quantity": 0.005263157894736842
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 19,
@@ -1828,7 +1941,8 @@
                 "id": 10,
                 "quantity": 0.2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 14,
@@ -1842,7 +1956,8 @@
                 "id": 2,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 15,
@@ -1856,7 +1971,8 @@
                 "id": 2,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 16,
@@ -1870,7 +1986,8 @@
                 "id": 44,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 17,
@@ -1884,7 +2001,8 @@
                 "id": 14,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 18,
@@ -1898,7 +2016,8 @@
                 "id": 15,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 42,
@@ -1912,7 +2031,8 @@
                 "id": 2,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 43,
@@ -1930,7 +2050,8 @@
                 "id": 42,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 44,
@@ -1940,7 +2061,8 @@
                 "id": 1,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 45,
@@ -1954,7 +2076,8 @@
                 "id": 16,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 76,
@@ -1964,7 +2087,8 @@
                 "id": 75,
                 "quantity": 8
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 75,
@@ -1978,7 +2102,8 @@
                 "id": 10,
                 "quantity": 0.1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 69,
@@ -1992,7 +2117,8 @@
                 "id": 68,
                 "quantity": 200
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 68,
@@ -2006,47 +2132,56 @@
                 "id": 2,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 29,
         "name": "Plant research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 30,
         "name": "Energy research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 31,
         "name": "Mining research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 33,
         "name": "Breeding research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 145,
         "name": "Recipes",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 113,
         "name": "Materials research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 59,
         "name": "Fashion research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 34,
         "name": "Chemistry research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 100,
@@ -2060,22 +2195,26 @@
                 "id": 94,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 58,
         "name": "Automotive research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 35,
         "name": "Software",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 32,
         "name": "Electronics research",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 146,
@@ -2089,7 +2228,8 @@
                 "id": 66,
                 "quantity": 2
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 148,
@@ -2103,12 +2243,14 @@
                 "id": 41,
                 "quantity": 4
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 150,
         "name": "Tree",
-        "materials": []
+        "materials": [],
+        "transport": 1
     },
     {
         "id": 67,
@@ -2122,7 +2264,8 @@
                 "id": 19,
                 "quantity": 0.1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 144,
@@ -2140,7 +2283,8 @@
                 "id": 45,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 147,
@@ -2154,7 +2298,8 @@
                 "id": 146,
                 "quantity": 1
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 151,
@@ -2176,7 +2321,8 @@
                 "id": 136,
                 "quantity": 8
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 152,
@@ -2198,7 +2344,8 @@
                 "id": 135,
                 "quantity": 0.25
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 153,
@@ -2216,7 +2363,8 @@
                 "id": 140,
                 "quantity": 0.0625
             }
-        ]
+        ],
+        "transport": 1
     },
     {
         "id": 154,

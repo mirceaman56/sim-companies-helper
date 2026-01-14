@@ -1,6 +1,6 @@
 // production.js
 // Handles recipe data and production cost calculations
-import { fetchMarketPrice } from "./market.js";
+import { fetchMarketPrice, fetchMarket } from "./market.js";
 import recipesData from "./recipes.json";
 
 const MARKET_FEE = 0.04; // 4% fee on market sales
@@ -47,14 +47,15 @@ export async function fetchMarketPrices(realmId, productIds) {
 
 /**
  * Calculate production cost for a given product and quantity
- * Returns { totalCost, materialCosts, missingPrices }
+ * Returns { totalCost, materialCosts, transportCost, missingPrices }
  */
-export function calculateProductionCost(productId, quantity, pricesMap) {
+export function calculateProductionCost(productId, quantity, pricesMap, transportCost = 0) {
   const recipe = getRecipeByProductId(productId);
   if (!recipe) {
     return {
       totalCost: NaN,
       materialCosts: [],
+      transportCost: 0,
       missingPrices: [],
     };
   }
@@ -87,9 +88,13 @@ export function calculateProductionCost(productId, quantity, pricesMap) {
     }
   }
 
+  // Add transport cost
+  totalCost += transportCost;
+
   return {
     totalCost: missingPrices.length === 0 ? totalCost : NaN,
     materialCosts,
+    transportCost,
     missingPrices,
   };
 }
@@ -127,21 +132,56 @@ export function calculateSellProfit(productId, quantity, marketPrice, production
 }
 
 /**
- * Full production analysis: cost + profit
- * Returns { recipe, productionCost, sellAnalysis, materialCosts }
+ * Full production analysis: cost + profit (including transport costs)
+ * Returns { recipe, productionCost, sellAnalysis, materialCosts, transportCost }
  */
-export async function analyzeProduction(productId, quantity, pricesMap, laborCost = 0) {
+export async function analyzeProduction(productId, quantity, pricesMap, laborCost = 0, realmId = null) {
   const recipe = getRecipeByProductId(productId);
   if (!recipe) return null;
 
-  // Get production cost
-  const costAnalysis = calculateProductionCost(productId, quantity, pricesMap);
+  console.log("[analyzeProduction]", { productId, quantity, realmId, hasRealmId: !!realmId });
+  console.log("[analyzeProduction] Condition check: realmId != null:", realmId != null, "| typeof realmId:", typeof realmId);
+
+  // Calculate transport cost
+  let transportCost = 0;
+  try {
+    if (realmId != null) {
+      console.log("[analyzeProduction] INSIDE if block - realmId is valid");
+      // Get transport container requirement (default to 1 if not specified)
+      const transportContainersNeeded = recipe.transport;
+      console.log("[analyzeProduction] Transport containers needed:", transportContainersNeeded);
+      
+      // Try to get from pricesMap first (passed in from UI), fallback to fetching
+      let containerPrice = pricesMap?.get(13);
+      console.log("[analyzeProduction] Container price from pricesMap:", containerPrice);
+      
+      if (!Number.isFinite(containerPrice)) {
+        console.log("[analyzeProduction] Fetching container price from market...");
+        containerPrice = await fetchMarketPrice(realmId, 13); // Product ID 13 is transport container
+        console.log("[analyzeProduction] Fetched container price:", containerPrice);
+      }
+      if (Number.isFinite(containerPrice)) {
+        transportCost = containerPrice * transportContainersNeeded * quantity;
+        console.log("[analyzeProduction] Calculated transport cost:", transportCost);
+      } else {
+        console.log("[analyzeProduction] Container price is not finite:", containerPrice);
+      }
+    } else {
+      console.log("[analyzeProduction] No realmId provided");
+    }
+  } catch (e) {
+    console.warn("Failed to fetch transport container price:", e);
+  }
+
+  // Get production cost (including transport)
+  const costAnalysis = calculateProductionCost(productId, quantity, pricesMap, transportCost);
   if (!Number.isFinite(costAnalysis.totalCost)) {
     return {
       recipe,
       quantity,
       productionCost: costAnalysis.totalCost,
       materialCosts: costAnalysis.materialCosts,
+      transportCost,
       missingPrices: costAnalysis.missingPrices,
       sellAnalysis: null,
       profitAnalysis: null,
@@ -156,6 +196,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, laborCos
       quantity,
       productionCost: costAnalysis.totalCost,
       materialCosts: costAnalysis.materialCosts,
+      transportCost,
       missingPrices: costAnalysis.missingPrices,
       sellAnalysis: null,
       profitAnalysis: null,
@@ -163,7 +204,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, laborCos
     };
   }
 
-  // Get sell analysis with labor cost
+  // Get sell analysis with labor cost and transport cost included
   const sellAnalysis = calculateSellProfit(
     productId,
     quantity,
@@ -177,6 +218,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, laborCos
     quantity,
     productionCost: costAnalysis.totalCost,
     materialCosts: costAnalysis.materialCosts,
+    transportCost,
     sellPrice: productPrice,
     sellAnalysis,
   };
