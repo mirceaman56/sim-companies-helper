@@ -9,6 +9,7 @@ import { ensureSidebarContainer, registerSection, setSectionUpdateFn } from "./s
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initRecipeExtractor } from "./recipe_extractor.js";
+import { ensureSidebar as ensureChatSidebar } from "./chat_filter_ui.js";
 import { STATE } from "./state.js";
 
 async function init() {
@@ -17,6 +18,7 @@ async function init() {
 
   // Register sections
   ensureSidebar(); // Retail Helper section
+  ensureChatSidebar(); // Chat Filter section
   registerSection("cashflow-section", "Financials Helper", "💰");
   registerSection("production-section", "Production Helper", "🏭");
 

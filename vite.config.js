@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import { copyFileSync, mkdirSync } from "fs";
 
 export default defineConfig({
   build: {
@@ -17,5 +18,19 @@ export default defineConfig({
         assetFileNames: "[name][extname]"
       }
     }
-  }
+  },
+  plugins: [
+    {
+      name: "copy-recipes",
+      apply: "build",
+      enforce: "post",
+      generateBundle() {
+        mkdirSync(resolve(__dirname, "dist"), { recursive: true });
+        copyFileSync(
+          resolve(__dirname, "src/recipes.json"),
+          resolve(__dirname, "dist/recipes.json")
+        );
+      }
+    }
+  ]
 });
