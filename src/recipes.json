@@ -144,7 +144,7 @@
                 "quantity": 1
             }
         ],
-        "transport": 1
+        "transport": 0.5
     },
     {
         "id": 72,

@@ -133,93 +133,115 @@ export function calculateSellProfit(productId, quantity, marketPrice, production
 
 /**
  * Full production analysis: cost + profit (including transport costs)
- * Returns { recipe, productionCost, sellAnalysis, materialCosts, transportCost }
+ * Returns { recipe, productionCost, transportCost, breakEvenAnalysis, profitAnalysis }
  */
-export async function analyzeProduction(productId, quantity, pricesMap, laborCost = 0, realmId = null) {
+export async function analyzeProduction(productId, quantity, pricesMap, realmId = null, uiUnitCost = null) {
   const recipe = getRecipeByProductId(productId);
   if (!recipe) return null;
 
-  console.log("[analyzeProduction]", { productId, quantity, realmId, hasRealmId: !!realmId });
-  console.log("[analyzeProduction] Condition check: realmId != null:", realmId != null, "| typeof realmId:", typeof realmId);
+  // 1. Determine Transport Container Price (ID 13) and Product Price
+  let containerPrice = 0;
+  let productMarketPrice = 0;
 
-  // Calculate transport cost
-  let transportCost = 0;
   try {
     if (realmId != null) {
-      console.log("[analyzeProduction] INSIDE if block - realmId is valid");
-      // Get transport container requirement (default to 1 if not specified)
-      const transportContainersNeeded = recipe.transport;
-      console.log("[analyzeProduction] Transport containers needed:", transportContainersNeeded);
-      
-      // Try to get from pricesMap first (passed in from UI), fallback to fetching
-      let containerPrice = pricesMap?.get(13);
-      console.log("[analyzeProduction] Container price from pricesMap:", containerPrice);
-      
+      // Container Price
+      containerPrice = pricesMap?.get(13);
       if (!Number.isFinite(containerPrice)) {
-        console.log("[analyzeProduction] Fetching container price from market...");
-        containerPrice = await fetchMarketPrice(realmId, 13); // Product ID 13 is transport container
-        console.log("[analyzeProduction] Fetched container price:", containerPrice);
+        containerPrice = await fetchMarketPrice(realmId, 13);
       }
-      if (Number.isFinite(containerPrice)) {
-        transportCost = containerPrice * transportContainersNeeded * quantity;
-        console.log("[analyzeProduction] Calculated transport cost:", transportCost);
-      } else {
-        console.log("[analyzeProduction] Container price is not finite:", containerPrice);
+
+      // Product Market Price (for profit analysis)
+      productMarketPrice = pricesMap?.get(productId);
+      if (!Number.isFinite(productMarketPrice)) {
+        productMarketPrice = await fetchMarketPrice(realmId, productId);
       }
-    } else {
-      console.log("[analyzeProduction] No realmId provided");
     }
   } catch (e) {
-    console.warn("Failed to fetch transport container price:", e);
+    // Silent catch
   }
+  
+  if (!Number.isFinite(containerPrice)) containerPrice = 0;
+  if (!Number.isFinite(productMarketPrice)) productMarketPrice = 0;
 
-  // Get production cost (including transport)
-  const costAnalysis = calculateProductionCost(productId, quantity, pricesMap, transportCost);
-  if (!Number.isFinite(costAnalysis.totalCost)) {
+  // 2. Calculate Base Production Cost
+  // Strictly use UI Unit Cost as requested. 
+  // If uiUnitCost is not provided, we cannot calculate cost without material lookups (which were removed).
+  
+  if (uiUnitCost === null || !Number.isFinite(uiUnitCost)) {
     return {
       recipe,
       quantity,
-      productionCost: costAnalysis.totalCost,
-      materialCosts: costAnalysis.materialCosts,
-      transportCost,
-      missingPrices: costAnalysis.missingPrices,
-      sellAnalysis: null,
+      productionCost: NaN,
+      unitCost: NaN,
+      transportCost: 0,
+      breakEvenAnalysis: null,
       profitAnalysis: null,
+      error: "Unit cost not found"
     };
   }
 
-  // Get market price for the product
-  const productPrice = pricesMap?.get(productId);
-  if (!Number.isFinite(productPrice)) {
-    return {
-      recipe,
-      quantity,
-      productionCost: costAnalysis.totalCost,
-      materialCosts: costAnalysis.materialCosts,
-      transportCost,
-      missingPrices: costAnalysis.missingPrices,
-      sellAnalysis: null,
-      profitAnalysis: null,
-      missingProductPrice: true,
-    };
-  }
+  const totalBaseCost = uiUnitCost * quantity;
 
-  // Get sell analysis with labor cost and transport cost included
-  const sellAnalysis = calculateSellProfit(
-    productId,
-    quantity,
-    productPrice,
-    costAnalysis.totalCost,
-    laborCost
-  );
+  // 3. Calculate Transport Costs
+  const transportNeeded = recipe.transport || 0; // units per item
+  
+  // Market needs full transport
+  const marketTransportCost = transportNeeded * quantity * containerPrice;
+  
+  // Contract needs half transport
+  const contractTransportCost = (transportNeeded / 2) * quantity * containerPrice;
+
+  // 4. Calculate Break-even Prices
+  // Market: (Base + Transport) / (1 - fee) / Qty
+  const marketTotalCost = totalBaseCost + marketTransportCost;
+  const marketBreakEvenPrice = (marketTotalCost / (1 - MARKET_FEE)) / quantity;
+
+  // Contract: (Base + Transport) / Qty (No fee)
+  const contractTotalCost = totalBaseCost + contractTransportCost;
+  const contractBreakEvenPrice = contractTotalCost / quantity;
+
+  // 5. Profit Analysis (Assuming selling at Market Price)
+  const sellRevenue = productMarketPrice * quantity;
+  
+  // Market Profit
+  const marketRevenueNet = sellRevenue * (1 - MARKET_FEE); // Deduct fee
+  const marketProfit = marketRevenueNet - marketTotalCost;
+  const marketMargin = marketTotalCost > 0 ? (marketProfit / marketTotalCost) * 100 : 0;
+
+  // Contract Profit (No fee, Half Transport)
+  // Revenue is full Market Price (as per user request "assuming selling at lowest market price")
+  const contractProfit = sellRevenue - contractTotalCost;
+  const contractMargin = contractTotalCost > 0 ? (contractProfit / contractTotalCost) * 100 : 0;
 
   return {
     recipe,
     quantity,
-    productionCost: costAnalysis.totalCost,
-    materialCosts: costAnalysis.materialCosts,
-    transportCost,
-    sellPrice: productPrice,
-    sellAnalysis,
+    productionCost: totalBaseCost, // Base Cost
+    unitCost: uiUnitCost,
+    transportCost: marketTransportCost,
+    marketPrice: productMarketPrice,
+    breakEvenAnalysis: {
+      market: {
+        totalCost: marketTotalCost,
+        transportCost: marketTransportCost,
+        breakEvenPrice: marketBreakEvenPrice
+      },
+      contract: {
+        totalCost: contractTotalCost,
+        transportCost: contractTransportCost,
+        breakEvenPrice: contractBreakEvenPrice
+      }
+    },
+    profitAnalysis: {
+      market: {
+        profit: marketProfit,
+        margin: marketMargin
+      },
+      contract: {
+        profit: contractProfit,
+        margin: contractMargin
+      }
+    }
   };
 }
