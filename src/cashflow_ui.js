@@ -30,104 +30,96 @@ export function updateCashflowPanel() {
     return;
   }
 
-  const today = cf.todaySummary || { salesCount: 0, salesMoney: 0 };
-  const yesterday = cf.yesterdaySummary || { salesCount: 0, salesMoney: 0 };
+  const today = cf.todaySummary;
+  const yesterday = cf.yesterdaySummary;
 
-  const diff = today.salesMoney - yesterday.salesMoney;
-  const diffColor = diff >= 0 ? "#2e7d32" : "#c62828";
-  const diffSign = diff >= 0 ? "+" : "";
+  // Calculate percentage changes
+  const getPctChange = (curr, prev) => {
+    if (!prev) return curr > 0 ? 100 : 0;
+    return ((curr - prev) / prev) * 100;
+  };
 
-  const avgPerTransaction =
-    today.salesCount > 0 ? today.salesMoney / today.salesCount : 0;
+  const incomePct = getPctChange(today.totalIncome, yesterday.totalIncome);
+  const expensePct = getPctChange(today.totalExpense, yesterday.totalExpense);
+  const netProfit = today.totalIncome - today.totalExpense;
+  const netProfitYesterday = yesterday.totalIncome - yesterday.totalExpense;
+  const netProfitDiff = netProfit - netProfitYesterday;
 
   contentEl.innerHTML = `
     <div class="scx-panel">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">Today's Sales Summary</div>
-      </div>
-
-      <div style="font-size: 18px; font-weight: 700; color: #2e7d32;">
-        ${formatMoney(today.salesMoney)}
-      </div>
-
-      <div style="font-size: 11px; margin-top: 2px; color: ${diffColor}; font-weight: 600;">
-        ${diffSign}${formatMoney(diff)} vs yesterday
-      </div>
-
-      <div class="scx-grid" style="margin-top: 6px;">
-        <div>
-          <div class="scx-k">Transactions</div>
-          <div class="scx-v">${today.salesCount}</div>
+      <!-- Net Profit Summary -->
+      <div style="text-align:center; padding-bottom:12px; border-bottom:1px solid #eee; margin-bottom:12px;">
+        <div class="scx-k">Today's Net Profit</div>
+        <div style="font-size: 20px; font-weight: 700; color: ${netProfit >= 0 ? '#2e7d32' : '#c62828'};">
+          ${formatMoney(netProfit)}
         </div>
-        <div>
-          <div class="scx-k">Avg per TX</div>
-          <div class="scx-v">${formatMoney(avgPerTransaction)}</div>
+        <div style="font-size: 10px; color:${netProfitDiff >= 0 ? '#2e7d32' : '#c62828'};">
+          ${netProfitDiff >= 0 ? '+' : ''}${formatMoney(netProfitDiff)} vs yesterday
         </div>
       </div>
 
-      <hr style="margin: 8px 0;">
-
-      <div class="scx-panel-title" style="margin-bottom: 8px;">Recent Transactions</div>
-      <div style="max-height: 200px; overflow-y: auto; font-size: 10px;">
-        ${renderCashflowItems(cf.todayItems)}
+      <!-- Income Section -->
+      <div style="margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div class="scx-panel-title">Incomes</div>
+          <div style="font-size:10px; font-weight:600; color:${incomePct >= 0 ? '#2e7d32' : '#c62828'};">
+             ${incomePct > 0 ? '+' : ''}${Math.round(incomePct)}%
+          </div>
+        </div>
+        
+        <div style="background:#f1f8e9; padding:8px; border-radius:4px;">
+           <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid #dcedc8; padding-bottom:4px;">
+             <span>Total</span>
+             <span>${formatMoney(today.totalIncome)}</span>
+           </div>
+           ${renderBreakdownRow("Retail", today.incomeByType.s, "#2e7d32")}
+           ${renderBreakdownRow("Contracts", today.incomeByType.t, "#1565c0")}
+           ${renderBreakdownRow("Market", today.incomeByType.m, "#ef6c00")}
+           ${today.incomeByType.other > 0 ? renderBreakdownRow("Other", today.incomeByType.other, "#666") : ''}
+        </div>
       </div>
 
-      <div class="scx-muted" style="margin-top: 8px;">
-        Last updated: ${formatRefreshTime(cf.lastRefreshAt)}
+      <!-- Expense Section -->
+      <div style="margin-bottom: 12px;">
+         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div class="scx-panel-title">Expenses</div>
+          <div style="font-size:10px; font-weight:600; color:${expensePct <= 0 ? '#2e7d32' : '#c62828'};">
+             ${expensePct > 0 ? '+' : ''}${Math.round(expensePct)}%
+          </div>
+        </div>
+
+        <div style="background:#ffebee; padding:8px; border-radius:4px;">
+           <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid #ffcdd2; padding-bottom:4px;">
+             <span>Total</span>
+             <span>${formatMoney(today.totalExpense)}</span>
+           </div>
+           ${renderBreakdownRow("Production", today.expenseByType.p, "#c62828")}
+           ${renderBreakdownRow("Wages", today.expenseByType.w, "#d32f2f")}
+           ${renderBreakdownRow("Market Buy", today.expenseByType.m, "#c2185b")}
+           ${renderBreakdownRow("Contracts", today.expenseByType.t, "#7b1fa2")}
+           ${renderBreakdownRow("Fees", today.expenseByType.f, "#5d4037")}
+           ${renderBreakdownRow("Construction", today.expenseByType.c, "#e64a19")}
+           ${renderBreakdownRow("Accounting", today.expenseByType.A, "#455a64")}
+           ${today.expenseByType.other > 0 ? renderBreakdownRow("Other", today.expenseByType.other, "#666") : ''}
+        </div>
+      </div>
+
+      <!-- Transactions Link -->
+      <div style="text-align:center; margin-top:12px;">
+         <div class="scx-muted" style="font-size: 9px;">Latest: ${formatRefreshTime(cf.lastRefreshAt)}</div>
       </div>
     </div>
   `;
 }
 
-function renderCashflowItems(items) {
-  if (!items || items.length === 0) {
-    return `<div class="scx-muted">No transactions</div>`;
-  }
-
-  return items
-    .slice(0, 10)
-    .map((item) => {
-      const money = Number(item.money || 0);
-      const category = item.category || "?";
-      const desc = item.description || "Transaction";
-      const time = formatTimeOnly(item.datetime);
-
-      const categoryLabel =
-        category === "s" ? "Sale" :
-        category === "b" ? "Buy" :
-        category === "w" ? "Wages" :
-        "Other";
-
-      return `
-        <div style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 6px 0;
-          border-bottom: 1px solid #f0f0f0;
-          gap: 8px;
-        ">
-          <div style="flex: 1; min-width: 0;">
-            <div style="color: #666; font-weight: 500;">${categoryLabel}</div>
-            <div style="color: #999; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              ${desc}
-            </div>
-          </div>
-          <div style="
-            text-align: right;
-            white-space: nowrap;
-            color: ${money >= 0 ? "#2e7d32" : "#c62828"};
-            font-weight: 600;
-          ">
-            ${money >= 0 ? "+" : ""}${formatMoney(money)}
-          </div>
-          <div style="color: #999; font-size: 9px; min-width: 40px; text-align: right;">
-            ${time}
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+function renderBreakdownRow(label, amount, color) {
+  if (!amount || amount <= 0) return '';
+  return `
+    <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:2px;">
+      <span style="color:#555;">${label}</span>
+      <span style="font-weight:500; color:${color};">${formatMoney(amount)}</span>
+    </div>
+  `;
 }
 
 function formatTimeOnly(dtStr) {

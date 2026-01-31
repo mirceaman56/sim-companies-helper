@@ -19,7 +19,7 @@ function classifyProfitPerMin(ppm) {
  * Initialize retail helper section in the sidebar
  */
 export function ensureSidebar() {
-  if (!registerSection(SECTION_ID, "Retail Helper", "📦")) return;
+  if (!registerSection(SECTION_ID, "Retail Helper", "🏪")) return;
   setSectionUpdateFn(SECTION_ID, updatePanel);
 }
 

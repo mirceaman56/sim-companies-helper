@@ -19,8 +19,8 @@ async function init() {
   // Register sections
   ensureSidebar(); // Retail Helper section
   ensureChatSidebar(); // Chat Filter section
-  registerSection("cashflow-section", "Financials Helper", "💰");
-  registerSection("production-section", "Production Helper", "🏭");
+  registerSection("cashflow-section", "Financials Helper", "💲");
+  registerSection("production-section", "Production Helper", "⚙️");
 
   // Set up update functions
   setSectionUpdateFn("cashflow-section", updateCashflowPanel);

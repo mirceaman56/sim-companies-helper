@@ -15,21 +15,16 @@ let lastSmallestId = null;
  * Ensures the chat filter sidebar section exists
  */
 export function ensureSidebar() {
-  // Only show on the Sales chatroom page?
-  // User said: "The ui will be active on a page called: https://www.simcompanies.com/messages/chatroom_Sales/"
-  if (!window.location.href.includes("/messages/chatroom_Sales/")) {
-    return;
-  }
-
   // Prevent duplicates and ensure content is added
   const existingContent = getSectionContent(SECTION_ID);
+
   if (existingContent && existingContent.querySelector(".scx-chat-filter")) {
     return;
   }
   
   // If the section doesn't exist (content is null), register it
   if (!existingContent) {
-    registerSection(SECTION_ID, "Chat Filter", "🔍");
+    registerSection(SECTION_ID, "Chat Filter", "💬");
   }
 
   // Now append content
