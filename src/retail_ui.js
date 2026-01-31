@@ -1,7 +1,9 @@
 // retail_ui.js
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
-import { ensureMarketFetchForProduct, getCheapestListing } from "./market.js";
+import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
+import { getRealmId } from "./auth.js";
+import { getRecipeByProductId } from "./production.js";
 import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
 
 const SECTION_ID = "retail-section";
@@ -119,9 +121,10 @@ export const RetailHelper = (() => {
     const hours = seconds / 3600;
 
     const profitPerMin = isFinite(totalProfit) && minutes > 0 ? totalProfit / minutes : NaN;
-    const profitPerHr = isFinite(totalProfit) && hours > 0 ? totalProfit / hours : NaN;
+    const profitPerHr = profitPerMin * 60;
+    const profitPerDay = profitPerHr * 24;
 
-    return { totalProfit, profitPerMin, profitPerHr, seconds };
+    return { totalProfit, profitPerMin, profitPerHr, profitPerDay, seconds, minutes, hours };
   }
 
   // ---------- row detection ----------
@@ -233,15 +236,16 @@ export const RetailHelper = (() => {
           ? "Mixed"
           : inv.marketCost > 0
           ? "Market"
-          : inv.workers + inv.admin + inv.materials > 0
+          : (inv.workers + inv.admin + inv.materials) > 0
           ? "Produced"
           : "Unknown";
 
-      const note = `Mix: market $${(inv.marketCost || 0).toFixed(2)} | produced $${(
-        (inv.workers || 0) +
-        (inv.admin || 0) +
-        (inv.materials || 0)
-      ).toFixed(2)}`;
+      // Calculate per-unit breakdowns for display
+      const amount = inv.amount || 1;
+      const uMarket = (inv.marketCost || 0) / amount;
+      const uProd = ((inv.workers || 0) + (inv.admin || 0) + (inv.materials || 0)) / amount;
+
+      const note = `Mix: market $${uMarket.toFixed(2)} | produced $${uProd.toFixed(2)}`;
 
       return {
         status: "OK",
@@ -352,7 +356,7 @@ export const RetailHelper = (() => {
 /**
  * Render the retail helper panel content
  */
-export function updatePanel() {
+export async function updatePanel() {
   const contentEl = getSectionContent(SECTION_ID);
   if (!contentEl) return;
 
@@ -370,16 +374,138 @@ export function updatePanel() {
 
   const renderers = RetailHelper.renderers;
   const productName = renderers.getProductName(row);
+  const productId = extractProductId(row);
 
   // Profit area
   const metrics = renderers.getMetrics(row);
   const chip = classifyProfitPerMin(metrics.profitPerMin);
+  
+  // Ensure we have container price for market comparison
+  const realmId = getRealmId();
+  // realmId can be 0, so checks must be explicit
+  if (realmId !== null && realmId !== undefined) {
+     // Check if we have fresh container price in catch
+     const cacheKey = `${realmId}:13`;
+     const cachedContainer = STATE.marketCache.get(cacheKey);
+     if (!cachedContainer || (Date.now() - cachedContainer.ts > 60000)) {
+         // Trigger fetch (async, update callback is just updatePanel)
+         fetchMarket(realmId, 13).then(() => updatePanel()).catch(() => {});
+     }
+  }
+  
+  // Market Check
+  const ms = STATE.marketState;
+  // Trigger market fetch for this product
+  if (productId) {
+      ensureMarketFetchForProduct(productId, () => updatePanel());
+  }
 
-  // Inventory area
-  const inv = renderers.getInventoryView(row);
+  // --- Market Comparison Calculations ---
+  let marketAnalysisHTML = "";
+ 
+  if (productId != null && realmId != null) {
+      const inv = STATE.inventory?.byKind?.get(productId);
+      
+      // Only show if we have stock
+      if (inv && inv.amount > 0) {
+          // Check if we have market data
+          if (ms && ms.status === 'ok' && ms.productId === productId && ms.data) {
+              const cheapest = getCheapestListing(ms.data);
+              
+              // Helper to get cached container price (ID 13)
+              // We use STATE.marketCache directly or a helper if available
+              // We'll peek into the cache directly as we triggered fetch above
+              const containerCache = STATE.marketCache.get(`${realmId}:13`);
+              const containerListing = containerCache ? getCheapestListing(containerCache.data) : null;
+              
+              // Relaxed cache check: allow up to 5 minutes old, or just exists
+              const containerPrice = containerListing ? containerListing.price : null;
 
-  // Market area
-  const mv = renderers.getMarketView(row, () => updatePanel());
+              if (cheapest && Number.isFinite(containerPrice)) {
+                  const qty = metrics.qty || 1;
+                  const recipe = getRecipeByProductId(productId);
+                  const transportUnits = recipe?.transport || 0;
+                  
+                  // Avg Cost (from inventory)
+                  const avgCost = (inv.totalCost / inv.amount) || 0;
+                  
+                  // Market Sells
+                  // Revenue = Price * 0.96 * Qty
+                  const marketRevenue = cheapest.price * 0.96 * qty;
+                  
+                  // Costs = (AvgCost * Qty) + (TransportUnits * Qty * ContainerPrice)
+                  const cogs = avgCost * qty;
+                  const transportCost = transportUnits * qty * containerPrice;
+                  const marketCost = cogs + transportCost;
+                  
+                  const marketProfit = marketRevenue - marketCost;
+                  const retailProfit = metrics.totalProfit; // This is Total Retail Profit for the batch
+                  
+                  const diff = retailProfit - marketProfit;
+                  const isRetailBetter = diff >= 0;
+                  
+                  marketAnalysisHTML = `
+                    <hr style="margin: 8px 0;">
+                    
+                    <div class="scx-panel-head" style="margin-bottom: 6px;">
+                        <div class="scx-panel-title">Retail vs Market</div>
+                    </div>
+
+                    <div style="margin-bottom: 6px; font-size: 11px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="scx-k">Cost of Goods</span>
+                            <span class="scx-v">${formatMoney(cogs)}</span>
+                        </div>
+                         <div style="display:flex; justify-content:space-between; font-size: 9px; color: #666;">
+                            <span>Unit Cost: ${formatMoney(avgCost)}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: ${isRetailBetter ? '#e8f5e9' : '#fff3e0'}; padding: 8px; border-radius: 4px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span class="scx-k">Market Net Profit</span>
+                            <span class="scx-v">${formatMoney(marketProfit)}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? '#2e7d32' : '#e65100'};">
+                            <span>${isRetailBetter ? 'Retail wins by' : 'Market wins by'}</span>
+                            <span>${formatMoney(Math.abs(diff))}</span>
+                        </div>
+                        <div style="margin-top:4px; font-size:9px; color:#666;">
+                            Based on cheap price: ${formatMoney(cheapest.price)}
+                        </div>
+                    </div>
+                  `;
+              } else {
+                  // data loading (container or cheapest price missing)
+                  marketAnalysisHTML = `
+                    <hr style="margin: 8px 0;">
+                    <div class="scx-muted">Loading market prices...</div>
+                  `;
+              }
+          } else if (ms && ms.status === 'error') {
+               marketAnalysisHTML = `
+                <hr style="margin: 8px 0;">
+                <div class="scx-note" style="border-left-color: #c62828;">Market Error: ${ms.error}</div>
+              `;
+          } else {
+              // Loading or Idle
+              marketAnalysisHTML = `
+                <hr style="margin: 8px 0;">
+                <div class="scx-muted">Loading market data...</div>
+              `;ƒ
+          }
+      }
+  }
+
+  // --- HTML Render ---
+
+  let finePrint = "";
+  if (metrics.hours > 1) {
+      finePrint += `<div style="font-size:9px; color:#666; margin-top:2px;">${formatMoney(metrics.profitPerHr)} / hour</div>`;
+  }
+  if (metrics.hours > 24) {
+      finePrint += `<div style="font-size:9px; color:#666;">${formatMoney(metrics.profitPerDay)} / day</div>`;
+  }
 
   contentEl.innerHTML = `
     <div class="scx-panel">
@@ -392,80 +518,23 @@ export function updatePanel() {
         <div class="scx-chip ${chip.cls}">${chip.label}</div>
       </div>
 
-      <div class="scx-big">${isFinite(metrics.profitPerMin) ? `${formatMoney(metrics.profitPerMin)}/min` : "—"}</div>
-
-      <div class="scx-grid">
-        <div>
-          <div class="scx-k">Profit/hr</div>
-          <div class="scx-v">${isFinite(metrics.profitPerHr) ? formatMoney(metrics.profitPerHr) : "—"}</div>
-        </div>
-        <div>
-          <div class="scx-k">Net profit</div>
-          <div class="scx-v">${isFinite(metrics.totalProfit) ? formatMoney(metrics.totalProfit) : "—"}</div>
-        </div>
-        <div>
-          <div class="scx-k">Time</div>
-          <div class="scx-v">${isFinite(metrics.seconds) ? Math.round(metrics.seconds) + "s" : "—"}</div>
-        </div>
-        <div>
-          <div class="scx-k">Per unit</div>
-          <div class="scx-v">${isFinite(metrics.profitPerUnit) ? formatMoney(metrics.profitPerUnit) : "—"}</div>
-        </div>
+      <div class="scx-big" style="line-height:1.1;">
+          ${isFinite(metrics.profitPerMin) ? `${formatMoney(metrics.profitPerMin)}/min` : "—"}
       </div>
+      
+      ${finePrint}
 
-      <hr style="margin: 8px 0;">
-
-      <div class="scx-panel-head" style="margin-bottom: 6px;">
-        <div class="scx-panel-title">Your cost</div>
-        <div class="scx-chip scx-chip-na">${inv.status}</div>
-      </div>
-
-      <div class="scx-grid">
-        <div>
-          <div class="scx-k">Stock</div>
-          <div class="scx-v">${inv.stock}</div>
-        </div>
-        <div>
-          <div class="scx-k">Avg cost/unit</div>
-          <div class="scx-v">${inv.cpu}</div>
-        </div>
-        <div>
-          <div class="scx-k">Source</div>
-          <div class="scx-v">${inv.src}</div>
-        </div>
-        <div>
-          <div class="scx-k">Cost basis</div>
-          <div class="scx-v">${inv.basis}</div>
-        </div>
-      </div>
-
-      ${inv.note ? `<div class="scx-note">${inv.note}</div>` : ""}
-
-      <hr style="margin: 8px 0;">
-
-      <div class="scx-panel-head" style="margin-bottom: 6px;">
-        <div class="scx-panel-title">Market</div>
-        <div class="scx-chip scx-chip-na">${mv.status}</div>
-      </div>
-
-      <div class="scx-grid">
-        <div>
-          <div class="scx-k">Cheapest</div>
-          <div class="scx-v">${mv.cheapestPrice}</div>
-        </div>
-        <div>
-          <div class="scx-k">Qty</div>
-          <div class="scx-v">${mv.cheapestQty}</div>
-        </div>
-        <div colspan="2">
-          <div class="scx-k">You vs cheap</div>
-          <div class="scx-v">${mv.youVs}</div>
-        </div>
-      </div>
-
-      ${mv.note ? `<div class="scx-note">${mv.note}</div>` : ""}
+      ${marketAnalysisHTML}
     </div>
   `;
+}
+
+// Helpers needed in scope but not exported or previously defined in closure
+function extractProductId(row) {
+    const a = row?.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
+    const href = a?.getAttribute("href") || "";
+    const m = href.match(/\/resource\/(\d+)\//);
+    return m ? Number(m[1]) : null;
 }
 
 export function toggleSidebar() {
