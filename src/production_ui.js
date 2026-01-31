@@ -332,11 +332,11 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       </div>
       <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between;">
-            <span class="scx-k">Cost per Unit (UI)</span>
+            <span class="scx-k" style="color:#455a64;">Cost per Unit (UI)</span>
             <span class="scx-v">${formatMoney(currentUnitCost)}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-top:4px;">
-            <span class="scx-k">Total Production Cost</span>
+            <span class="scx-k" style="color:#455a64;">Total Production Cost</span>
             <span class="scx-v" style="font-weight:700; color:#1565c0;">${formatMoney(productionCost)}</span>
           </div>
       </div>
@@ -356,13 +356,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           </div>
           
           <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k">Profit</span>
+             <span class="scx-k" style="color:#5d4037;">Profit</span>
              <span style="font-weight:700; color:${profitAnalysis.market.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k">Margin</span>
+             <span class="scx-k" style="color:#5d4037;">Margin</span>
              <span style="color:${profitAnalysis.market.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
@@ -380,13 +380,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           </div>
           
            <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k">Profit</span>
+             <span class="scx-k" style="color:#4a148c;">Profit</span>
              <span style="font-weight:700; color:${profitAnalysis.contract.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k">Margin</span>
+             <span class="scx-k" style="color:#4a148c;">Margin</span>
              <span style="color:${profitAnalysis.contract.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>

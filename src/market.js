@@ -43,7 +43,7 @@ export async function fetchMarketPrice(realmId, productId) {
   }
 }
 
-export function ensureMarketFetch(realmId, productId, scheduleUpdate) {
+function ensureMarketFetch(realmId, productId, scheduleUpdate) {
   if (!productId) return;
 
   const ms = STATE.marketState;

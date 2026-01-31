@@ -34,7 +34,7 @@ export async function loadInventoryOnce() {
   }
 }
 
-export function rebuildInventoryIndex(items) {
+function rebuildInventoryIndex(items) {
   const byKind = new Map();
 
   for (const it of items || []) {
@@ -75,7 +75,7 @@ export function rebuildInventoryIndex(items) {
   STATE.inventory.byKind = byKind;
 }
 
-export function sumCost(cost) {
+function sumCost(cost) {
   if (!cost) return 0;
   return (
     (cost.workers || 0) +

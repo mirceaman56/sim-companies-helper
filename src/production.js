@@ -1,6 +1,6 @@
 // production.js
 // Handles recipe data and production cost calculations
-import { fetchMarketPrice, fetchMarket } from "./market.js";
+import { fetchMarketPrice } from "./market.js";
 import recipesData from "./recipes.json";
 
 const MARKET_FEE = 0.04; // 4% fee on market sales
@@ -22,13 +22,6 @@ export function getRecipeByProductId(productId) {
 }
 
 /**
- * Get all product IDs from recipes
- */
-export function getAllProductIds() {
-  return getRecipes().map((r) => r.id);
-}
-
-/**
  * Fetch market prices for specific product IDs using market.js
  * Returns map of productId -> price
  */
@@ -43,92 +36,6 @@ export async function fetchMarketPrices(realmId, productIds) {
   }
 
   return prices;
-}
-
-/**
- * Calculate production cost for a given product and quantity
- * Returns { totalCost, materialCosts, transportCost, missingPrices }
- */
-export function calculateProductionCost(productId, quantity, pricesMap, transportCost = 0) {
-  const recipe = getRecipeByProductId(productId);
-  if (!recipe) {
-    return {
-      totalCost: NaN,
-      materialCosts: [],
-      transportCost: 0,
-      missingPrices: [],
-    };
-  }
-
-  const materialCosts = [];
-  const missingPrices = [];
-  let totalCost = 0;
-
-  for (const material of recipe.materials || []) {
-    const price = pricesMap?.get(material.id);
-    const materialQty = material.quantity * quantity;
-
-    if (Number.isFinite(price)) {
-      const cost = price * materialQty;
-      totalCost += cost;
-      materialCosts.push({
-        materialId: material.id,
-        quantity: materialQty,
-        unitPrice: price,
-        totalCost: cost,
-      });
-    } else {
-      missingPrices.push(material.id);
-      materialCosts.push({
-        materialId: material.id,
-        quantity: materialQty,
-        unitPrice: NaN,
-        totalCost: NaN,
-      });
-    }
-  }
-
-  // Add transport cost
-  totalCost += transportCost;
-
-  return {
-    totalCost: missingPrices.length === 0 ? totalCost : NaN,
-    materialCosts,
-    transportCost,
-    missingPrices,
-  };
-}
-
-/**
- * Calculate selling profit for produced goods
- * Returns { sellPrice, feeAmount, netProceeds, profit, profitMargin }
- */
-export function calculateSellProfit(productId, quantity, marketPrice, productionCost, laborCost = 0) {
-  if (!Number.isFinite(marketPrice) || !Number.isFinite(productionCost)) {
-    return {
-      sellPrice: NaN,
-      feeAmount: NaN,
-      netProceeds: NaN,
-      profit: NaN,
-      profitMargin: NaN,
-    };
-  }
-
-  const sellPrice = marketPrice * quantity;
-  const feeAmount = sellPrice * MARKET_FEE;
-  const netProceeds = sellPrice - feeAmount;
-  // Include labor cost in profit calculation
-  const totalCost = productionCost + laborCost;
-  const profit = netProceeds - totalCost;
-
-  return {
-    sellPrice,
-    feeAmount,
-    netProceeds,
-    profit,
-    laborCost,
-    profitMargin: totalCost > 0 ? (profit / totalCost) * 100 : NaN,
-  };
 }
 
 /**
@@ -166,7 +73,6 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
 
   // 2. Calculate Base Production Cost
   // Strictly use UI Unit Cost as requested. 
-  // If uiUnitCost is not provided, we cannot calculate cost without material lookups (which were removed).
   
   if (uiUnitCost === null || !Number.isFinite(uiUnitCost)) {
     return {

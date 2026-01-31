@@ -2,7 +2,7 @@
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
 import { ensureMarketFetchForProduct, getCheapestListing } from "./market.js";
-import { registerSection, getSectionContent, setSectionUpdateFn, expandSection } from "./sidebar.js";
+import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
 
 const SECTION_ID = "retail-section";
 
