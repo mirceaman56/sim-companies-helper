@@ -1,5 +1,6 @@
 // recipe_extractor.js
 // Extracts recipe data on encyclopedia pages and displays in a floating panel
+import { escapeHtml } from "./utils.js";
 
 const EXTRACTOR_PANEL_ID = "scx-recipe-extractor";
 
@@ -171,7 +172,7 @@ export function initRecipeExtractor() {
         line-height: 1.4;
         resize: vertical;
         box-sizing: border-box;
-      ">${recipesJson}</textarea>
+      ">${escapeHtml(recipesJson)}</textarea>
       
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
         <button id="scx-copy-recipe" style="

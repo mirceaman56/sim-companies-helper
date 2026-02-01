@@ -8,9 +8,7 @@
     "release:local": "npm run build && npm run pack"
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "vite": "^5.0.0"
-  },
-  "dependencies": {
-    "archiver": "^7.0.1"
   }
 }

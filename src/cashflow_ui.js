@@ -1,6 +1,6 @@
 // cashflow_ui.js
 import { STATE } from "./state.js";
-import { formatMoney } from "./utils.js";
+import { formatMoney, escapeHtml } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 
 const SECTION_ID = "cashflow-section";
@@ -19,7 +19,7 @@ export function updateCashflowPanel() {
   if (cf.error) {
     contentEl.innerHTML = `
       <div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
-        Error: ${cf.error}
+        Error: ${escapeHtml(cf.error)}
       </div>
     `;
     return;

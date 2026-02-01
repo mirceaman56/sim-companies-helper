@@ -1,9 +1,23 @@
 import { STATE } from "./state.js";
 
 export function formatMoney(x) {
-  if (!isFinite(x)) return "—";
+  if (!Number.isFinite(x)) return "—";
   const sign = x < 0 ? "-" : "";
   return `${sign}$${Math.abs(x).toFixed(2)}`;
+}
+
+/**
+ * Escapes HTML special characters to prevent XSS
+ */
+export function escapeHtml(unsafe) {
+  if (unsafe === null || unsafe === undefined) return "";
+  const str = String(unsafe);
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 export function scheduleUpdate(callback) {

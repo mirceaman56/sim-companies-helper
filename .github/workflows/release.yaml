@@ -24,6 +24,30 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: 🛡️ Security Guardrails
+        run: |
+          # 1. Check for vulnerabilities in shipped code (Production deps only)
+          # Fails if any high/critical issues are found
+          echo "🔍 Scanning production dependencies..."
+          npm audit --omit=dev --audit-level=high
+
+          # 2. Prevent 'unsafe-eval' from sneaking into Manifest
+          echo "🔍 Checking CSP in manifest..."
+          if grep -q "unsafe-eval" public/manifest.json; then
+            echo "::error file=public/manifest.json::❌ Security Fail: 'unsafe-eval' detected in manifest.json"
+            exit 1
+          fi
+
+          # 3. Scan for Dangerous Dynamic Execution in Source
+          echo "🔍 Scanning source for eval/new Function..."
+          # We purposefully fail if these strings are found in src/
+          if grep -rE "eval\(|new Function\(" src/; then
+            echo "::error::❌ Security Fail: Unsafe dynamic execution detected in src/"
+            exit 1
+          fi
+
+          echo "✅ All security checks passed."
+
       - name: Build
         run: npm run build
 

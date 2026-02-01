@@ -1,6 +1,7 @@
 // sidebar.js
 // Main sidebar container system with collapsible sections that snap together
 import { SIDEBAR_ID, STATE } from "./state.js";
+import { escapeHtml } from "./utils.js";
 
 const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn }
 
@@ -238,8 +239,8 @@ export function registerSection(sectionId, title, icon = "◆") {
   section.innerHTML = `
     <div class="scx-section-header">
       <div class="scx-section-title">
-        <span style="font-size: 14px;">${icon}</span>
-        <span>${title}</span>
+        <span style="font-size: 14px;">${escapeHtml(icon)}</span>
+        <span>${escapeHtml(title)}</span>
       </div>
       <div class="scx-section-toggle">▼</div>
     </div>

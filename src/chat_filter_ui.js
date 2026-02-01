@@ -1,6 +1,7 @@
 
 import { registerSection, getSectionContent } from "./sidebar.js";
 import { STATE } from "./state.js";
+import { escapeHtml } from "./utils.js";
 import recipes from "./recipes.json";
 
 const SECTION_ID = "chat-filter-section";
@@ -179,7 +180,7 @@ function addResult(container, msg) {
   
   // Create link
   const companyName = msg.sender.company;
-  const slug = companyName.toLowerCase().replace(/\s+/g, '-');
+  const slug = encodeURIComponent(companyName.toLowerCase().replace(/\s+/g, '-'));
   // Use current user's realmId from state, defaulting to 0 if not set
   const realmId = STATE.auth.realmId || 0;
   const linkUrl = `https://www.simcompanies.com/company/${realmId}/${slug}/`;
@@ -193,16 +194,6 @@ function addResult(container, msg) {
   `;
   
   list.appendChild(div);
-}
-
-function escapeHtml(text) {
-  if (!text) return "";
-  return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
 }
 
 function formatMessageBody(body) {

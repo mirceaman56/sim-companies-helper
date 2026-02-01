@@ -1,6 +1,6 @@
 // retail_ui.js
 import { STATE } from "./state.js";
-import { formatMoney } from "./utils.js";
+import { formatMoney, escapeHtml } from "./utils.js";
 import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
@@ -373,7 +373,7 @@ export async function updatePanel() {
   }
 
   const renderers = RetailHelper.renderers;
-  const productName = renderers.getProductName(row);
+  const productName = escapeHtml(renderers.getProductName(row));
   const productId = extractProductId(row);
 
   // Profit area
@@ -485,7 +485,7 @@ export async function updatePanel() {
           } else if (ms && ms.status === 'error') {
                marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
-                <div class="scx-note" style="border-left-color: #c62828;">Market Error: ${ms.error}</div>
+                <div class="scx-note" style="border-left-color: #c62828;">Market Error: ${escapeHtml(ms.error)}</div>
               `;
           } else {
               // Loading or Idle

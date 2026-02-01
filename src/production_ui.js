@@ -1,7 +1,7 @@
 // production_ui.js
 // Renders production helper section in the sidebar
 import { STATE } from "./state.js";
-import { formatMoney } from "./utils.js";
+import { formatMoney, escapeHtml } from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
@@ -284,7 +284,7 @@ async function renderProductAnalysis(contentEl, recipe) {
       pricesCache = await fetchMarketPrices(realmId, productIds);
     } catch (e) {
       contentEl.innerHTML = `<div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
-        Error loading prices: ${e.message}
+        Error loading prices: ${escapeHtml(e.message)}
       </div>`;
       return;
     }
@@ -298,7 +298,7 @@ async function renderProductAnalysis(contentEl, recipe) {
     contentEl.innerHTML = `
       <div class="scx-panel" style="padding: 12px;">
         <div class="scx-muted">Unable to analyze</div>
-        ${analysis?.error ? `<div style="font-size:9px; color:#c62828; margin-top:4px;">${analysis.error}</div>` : ''}
+        ${analysis?.error ? `<div style="font-size:9px; color:#c62828; margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
         <div style="font-size:9x; color:#999; margin-top:8px;">Ensure "Cost per unit" is visible in the game UI.</div>
       </div>
     `;
@@ -318,7 +318,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
   contentEl.innerHTML = `
     <div class="scx-panel" style="font-size: 11px;">
       <div style="margin-bottom: 12px;">
-        <div style="font-weight: 600; color: #333; font-size: 12px;">${recipe.name}</div>
+        <div style="font-weight: 600; color: #333; font-size: 12px;">${escapeHtml(recipe.name)}</div>
         <div style="color: #999; font-size: 9px;">
           Qty: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
           <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">Active</span>
