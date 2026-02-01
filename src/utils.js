@@ -25,8 +25,29 @@ export function scheduleUpdate(callback) {
   STATE.rafPending = true;
   requestAnimationFrame(() => {
     STATE.rafPending = false;
-    if (callback) callback();
+    if (callback) {
+      try {
+        const res = callback();
+        if (res instanceof Promise) {
+          res.catch(err => console.debug("[SimHelper] Render (async) error:", err));
+        }
+      } catch (err) {
+        console.debug("[SimHelper] Render error:", err);
+      }
+    }
   });
+}
+
+/**
+ * Safely executes an async function and suppresses errors from the console
+ * unless in verbose mode.
+ */
+export async function runSafe(fn) {
+  try {
+    await fn();
+  } catch (err) {
+    console.debug("[SimHelper] Suppressed error:", err);
+  }
 }
 
 

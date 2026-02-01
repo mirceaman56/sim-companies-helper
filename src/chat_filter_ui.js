@@ -4,7 +4,7 @@ import { STATE } from "./state.js";
 import { escapeHtml } from "./utils.js";
 import recipes from "./recipes.json";
 
-const SECTION_ID = "chat-filter-section";
+const SECTION_ID = "chat-section";
 
 // State
 let isSearching = false;
@@ -13,23 +13,11 @@ let foundCount = 0;
 let lastSmallestId = null;
 
 /**
- * Ensures the chat filter sidebar section exists
+ * Initializes the chat filter sidebar content
  */
-export function ensureSidebar() {
-  // Prevent duplicates and ensure content is added
-  const existingContent = getSectionContent(SECTION_ID);
-
-  if (existingContent && existingContent.querySelector(".scx-chat-filter")) {
-    return;
-  }
-  
-  // If the section doesn't exist (content is null), register it
-  if (!existingContent) {
-    registerSection(SECTION_ID, "Chat Filter", "💬");
-  }
-
-  // Now append content
+export function initChatFilter() {
   const content = getSectionContent(SECTION_ID);
+  
   if (content && !content.querySelector(".scx-chat-filter")) {
     content.appendChild(createFilterContent());
   }

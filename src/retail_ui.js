@@ -20,10 +20,10 @@ function classifyProfitPerMin(ppm) {
 /**
  * Initialize retail helper section in the sidebar
  */
-export function ensureSidebar() {
-  if (!registerSection(SECTION_ID, "Retail Helper", "🏪")) return;
-  setSectionUpdateFn(SECTION_ID, updatePanel);
-}
+// export function ensureSidebar() {
+//   if (!registerSection(SECTION_ID, "Retail Helper", "🏪")) return;
+//   setSectionUpdateFn(SECTION_ID, updatePanel);
+// }
 
 /**
  * ---------------------------
@@ -492,7 +492,7 @@ export async function updatePanel() {
               marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
                 <div class="scx-muted">Loading market data...</div>
-              `;ƒ
+              `;
           }
       }
   }

@@ -1,26 +1,26 @@
 // content.js
 // Main entry point for the Chrome extension - handles initialization and event delegation
 import { loadAuthDataOnce } from "./auth.js";
-import { scheduleUpdate } from "./utils.js";
+import { scheduleUpdate, runSafe } from "./utils.js";
 import { loadInventoryOnce } from "./warehouse.js";
 import { loadCashflowToday } from "./cashflow.js";
-import { ensureSidebar, updatePanel, RetailHelper } from "./retail_ui.js";
+import { updatePanel as updateRetailPanel, RetailHelper } from "./retail_ui.js";
 import { ensureSidebarContainer, registerSection, setSectionUpdateFn, ensureFooter } from "./sidebar.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initRecipeExtractor } from "./recipe_extractor.js";
-import { ensureSidebar as ensureChatSidebar } from "./chat_filter_ui.js";
+import { initChatFilter } from "./chat_filter_ui.js";
 import { STATE } from "./state.js";
 
 async function init() {
   // Initialize the sidebar container
   ensureSidebarContainer();
 
-  // Register sections
-  ensureSidebar(); // Retail Helper section
-  ensureChatSidebar(); // Chat Filter section
-  registerSection("cashflow-section", "Financials Helper", "💲");
+  // Register sections - Order: Production, Retail, Financials, Chat
   registerSection("production-section", "Production Helper", "⚙️");
+  registerSection("retail-section", "Retail Helper", "🏪");
+  registerSection("cashflow-section", "Financials Helper", "💲");
+  registerSection("chat-section", "Chat Filter", "💬");
 
   // Add footer
   ensureFooter();
@@ -28,6 +28,10 @@ async function init() {
   // Set up update functions
   setSectionUpdateFn("cashflow-section", updateCashflowPanel);
   setSectionUpdateFn("production-section", updateProductionPanel);
+  setSectionUpdateFn("retail-section", updateRetailPanel);
+  
+  // Chat filter is static, init once
+  initChatFilter();
 
   // Load initial data
   await loadAuthDataOnce();
@@ -45,8 +49,8 @@ async function init() {
   // Setup row listeners
   setupProductionRowListeners();
 
-  scheduleUpdate(() => updatePanel());
-  RetailHelper.autoSelectFirstRow(() => updatePanel());
+  scheduleUpdate(() => updateRetailPanel());
+  RetailHelper.autoSelectFirstRow(() => runSafe(updateRetailPanel));
 }
 
 init();
@@ -55,8 +59,8 @@ init();
 // initRecipeExtractor();
 
 // Event listeners for retail helper
-window.addEventListener("focusin", (e) => RetailHelper.onFocusOrClick(e, () => updatePanel()), true);
-window.addEventListener("click", (e) => RetailHelper.onFocusOrClick(e, () => updatePanel()), true);
+window.addEventListener("focusin", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);
+window.addEventListener("click", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);
 
 // Optional: Auto-refresh cashflow periodically (every 5 minutes)
 setInterval(async () => {
