@@ -5,7 +5,7 @@ import { scheduleUpdate } from "./utils.js";
 import { loadInventoryOnce } from "./warehouse.js";
 import { loadCashflowToday } from "./cashflow.js";
 import { ensureSidebar, updatePanel, RetailHelper } from "./retail_ui.js";
-import { ensureSidebarContainer, registerSection, setSectionUpdateFn } from "./sidebar.js";
+import { ensureSidebarContainer, registerSection, setSectionUpdateFn, ensureFooter } from "./sidebar.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initRecipeExtractor } from "./recipe_extractor.js";
@@ -21,6 +21,9 @@ async function init() {
   ensureChatSidebar(); // Chat Filter section
   registerSection("cashflow-section", "Financials Helper", "💲");
   registerSection("production-section", "Production Helper", "⚙️");
+
+  // Add footer
+  ensureFooter();
 
   // Set up update functions
   setSectionUpdateFn("cashflow-section", updateCashflowPanel);

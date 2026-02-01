@@ -279,6 +279,55 @@ export function registerSection(sectionId, title, icon = "◆") {
 }
 
 /**
+ * Add a footer to the sidebar
+ */
+export function ensureFooter() {
+  const container = ensureSidebarContainer();
+  const FOOTER_CLASS = "scx-sidebar-footer";
+  
+  // Check if exists
+  if (container.querySelector(`.${FOOTER_CLASS}`)) return;
+
+  const footer = document.createElement("div");
+  footer.className = FOOTER_CLASS;
+  // Styled to match the collapsed section width (180px) and look like a button
+  footer.style.cssText = `
+    width: 180px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-top: 4px;
+    box-sizing: border-box;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    overflow: hidden;
+  `;
+  
+  // Interactive feel
+  footer.onmouseenter = () => {
+      footer.style.transform = "translateY(-2px)";
+      footer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+  };
+  footer.onmouseleave = () => {
+      footer.style.transform = "translateY(0)";
+      footer.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
+  };
+
+  footer.innerHTML = `
+    <a href="https://buy.stripe.com/5kQ8wR6QM8SidOJ8cF8IU00" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; color: #555; gap: 2px;">
+      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
+         <span style="color: #e91e63; font-size: 12px;">❤</span> Support The Dev
+      </div>
+      <div style="font-size: 9px; color: #999; text-align: center;">Keep the updates coming ⊂(◉‿◉)つ</div>
+    </a>
+  `;
+
+  // Always append to end
+  container.appendChild(footer);
+}
+
+/**
  * Get the content container for a section
  */
 export function getSectionContent(sectionId) {
