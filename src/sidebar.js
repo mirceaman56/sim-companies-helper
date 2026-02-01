@@ -284,15 +284,41 @@ export function registerSection(sectionId, title, icon = "◆") {
  */
 export function ensureFooter() {
   const container = ensureSidebarContainer();
-  const FOOTER_CLASS = "scx-sidebar-footer";
-  
-  // Check if exists
-  if (container.querySelector(`.${FOOTER_CLASS}`)) return;
 
-  const footer = document.createElement("div");
-  footer.className = FOOTER_CLASS;
-  // Styled to match the collapsed section width (180px) and look like a button
-  footer.style.cssText = `
+  // 1. Donation Button
+  ensureFooterButton(
+    container,
+    "scx-sidebar-footer-donate",
+    "https://buy.stripe.com/5kQ8wR6QM8SidOJ8cF8IU00",
+    `
+      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
+         <span style="color: #e91e63; font-size: 12px;">❤</span> Support The Dev
+      </div>
+      <div style="font-size: 9px; color: #999; text-align: center;">Keep the updates coming ⊂(◉‿◉)つ</div>
+    `
+  );
+
+  // 2. Bug Report Button
+  const bugUrl = "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=Bug%3A%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
+  
+  ensureFooterButton(
+    container,
+    "scx-sidebar-footer-bug",
+    bugUrl,
+    `
+      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
+         <span style="color: #ef6c00; font-size: 12px;">🐛</span> Report a Bug
+      </div>
+    `
+  );
+}
+
+function ensureFooterButton(container, className, href, innerHtml) {
+  if (container.querySelector(`.${className}`)) return;
+
+  const btn = document.createElement("div");
+  btn.className = className;
+  btn.style.cssText = `
     width: 180px;
     background: #fff;
     border: 1px solid #ddd;
@@ -304,28 +330,22 @@ export function ensureFooter() {
     cursor: pointer;
     overflow: hidden;
   `;
-  
-  // Interactive feel
-  footer.onmouseenter = () => {
-      footer.style.transform = "translateY(-2px)";
-      footer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+
+  btn.onmouseenter = () => {
+    btn.style.transform = "translateY(-2px)";
+    btn.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
   };
-  footer.onmouseleave = () => {
-      footer.style.transform = "translateY(0)";
-      footer.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
+  btn.onmouseleave = () => {
+    btn.style.transform = "translateY(0)";
+    btn.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
   };
 
-  footer.innerHTML = `
-    <a href="https://buy.stripe.com/5kQ8wR6QM8SidOJ8cF8IU00" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; color: #555; gap: 2px;">
-      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
-         <span style="color: #e91e63; font-size: 12px;">❤</span> Support The Dev
-      </div>
-      <div style="font-size: 9px; color: #999; text-align: center;">Keep the updates coming ⊂(◉‿◉)つ</div>
+  btn.innerHTML = `
+    <a href="${href}" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; color: #555; gap: 2px;">
+      ${innerHtml}
     </a>
   `;
-
-  // Always append to end
-  container.appendChild(footer);
+  container.appendChild(btn);
 }
 
 /**
