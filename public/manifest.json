@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Sim Companies Helper",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Various quality of life improvements for Sim Companies players.",
   "host_permissions": ["https://www.simcompanies.com/*"],
-  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["https://www.simcompanies.com/*"],
