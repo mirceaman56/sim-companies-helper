@@ -69,8 +69,8 @@ export function updateCashflowPanel() {
         
         <div style="background:#f1f8e9; padding:8px; border-radius:4px;">
            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid #dcedc8; padding-bottom:4px;">
-             <span>Total</span>
-             <span>${formatMoney(today.totalIncome)}</span>
+             <span style="color: #1b5e20;">Total</span>
+             <span style="color: #1b5e20;">${formatMoney(today.totalIncome)}</span>
            </div>
            ${renderBreakdownRow("Retail", today.incomeByType.s, "#2e7d32")}
            ${renderBreakdownRow("Contracts", today.incomeByType.t, "#1565c0")}
@@ -90,8 +90,8 @@ export function updateCashflowPanel() {
 
         <div style="background:#ffebee; padding:8px; border-radius:4px;">
            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid #ffcdd2; padding-bottom:4px;">
-             <span>Total</span>
-             <span>${formatMoney(today.totalExpense)}</span>
+             <span style="color: #b71c1c;">Total</span>
+             <span style="color: #b71c1c;">${formatMoney(today.totalExpense)}</span>
            </div>
            ${renderBreakdownRow("Production", today.expenseByType.p, "#c62828")}
            ${renderBreakdownRow("Wages", today.expenseByType.w, "#d32f2f")}

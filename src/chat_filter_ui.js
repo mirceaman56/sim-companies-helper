@@ -84,11 +84,11 @@ function createFilterContent() {
         display: flex;
         justify-content: space-between;
         margin-bottom: 4px;
-        color: #666;
+        color: #333;
       }
       .scx-chat-message-company {
         font-weight: bold;
-        color: #333;
+        color: #155724;
         text-decoration: none;
       }
       .scx-chat-message-company:hover {
@@ -97,10 +97,11 @@ function createFilterContent() {
       }
       .scx-chat-message-body {
         white-space: pre-wrap;
+        color: #1565c0;
       }
       .scx-status {
         font-size: 11px;
-        color: #666;
+        color: #333;
         font-style: italic;
       }
     </style>
