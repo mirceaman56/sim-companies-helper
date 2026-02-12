@@ -62,7 +62,23 @@ jobs:
         run: |
           node -e "const m=require('./public/manifest.json'); console.log('version=' + m.version)" >> $GITHUB_OUTPUT
 
+      - name: Check if version already released
+        id: check
+        run: |
+          if git ls-remote --tags origin | grep -q "refs/tags/v${{ steps.ver.outputs.version }}$"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭️ v${{ steps.ver.outputs.version }} already released — skipping."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "🆕 New version v${{ steps.ver.outputs.version }} — will release."
+          fi
+
+      - name: Pack ZIP
+        if: steps.check.outputs.skip == 'false'
+        run: npm run pack
+
       - name: Create Release (or update)
+        if: steps.check.outputs.skip == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.version }}
