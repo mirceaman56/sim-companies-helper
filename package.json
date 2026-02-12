@@ -5,10 +5,14 @@
   "scripts": {
     "build": "vite build",
     "pack": "node scripts/pack-extension.mjs",
-    "release:local": "npm run build && npm run pack"
+    "release:local": "npm run build && npm run pack",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "archiver": "^7.0.1",
-    "vite": "^5.0.0"
+    "jsdom": "^28.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^4.0.18"
   }
 }

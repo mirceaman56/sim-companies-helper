@@ -24,6 +24,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: 🧪 Test
+        run: npm test
+
       - name: 🛡️ Security Guardrails
         run: |
           # 1. Check for vulnerabilities in shipped code (Production deps only)

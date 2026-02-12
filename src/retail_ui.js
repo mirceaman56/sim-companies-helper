@@ -9,7 +9,7 @@ import { t } from "./i18n.js";
 
 const SECTION_ID = "retail-section";
 
-function classifyProfitPerMin(ppm) {
+export function classifyProfitPerMin(ppm) {
   if (!Number.isFinite(ppm)) return { label: t("na"), cls: "scx-chip-na" };
   if (ppm < 0) return { label: t("bad"), cls: "scx-chip-bad" };
   if (ppm >= 50) return { label: t("excellent"), cls: "scx-chip-excellent" };
@@ -18,13 +18,6 @@ function classifyProfitPerMin(ppm) {
   return { label: t("low"), cls: "scx-chip-meh" };
 }
 
-/**
- * Initialize retail helper section in the sidebar
- */
-// export function ensureSidebar() {
-//   if (!registerSection(SECTION_ID, "Retail Helper", "🏪")) return;
-//   setSectionUpdateFn(SECTION_ID, updatePanel);
-// }
 
 /**
  * ---------------------------
@@ -386,7 +379,7 @@ export const RetailHelper = (() => {
     if (row) setSelectedRow(row, scheduleUpdate);
   }
 
-  return { onFocusOrClick, autoSelectFirstRow, renderers };
+  return { onFocusOrClick, autoSelectFirstRow, renderers, _testUtils: { parseNumber, parseMoney, parseDurationToSeconds, computeMetrics, getInfoColumn, extractProductId, extractFinishSeconds, extractProfitPerUnit, isSellInput, getRowFromTarget } };
 })();
 
 /**
