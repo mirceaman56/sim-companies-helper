@@ -11,16 +11,17 @@ import { updateProductionPanel, setupProductionRowListeners } from "./production
 import { initRecipeExtractor } from "./recipe_extractor.js";
 import { initChatFilter } from "./chat_filter_ui.js";
 import { STATE } from "./state.js";
+import { t } from "./i18n.js";
 
 async function init() {
   // Initialize the sidebar container
   ensureSidebarContainer();
 
   // Register sections - Order: Production, Retail, Financials, Chat
-  registerSection("production-section", "Production Helper", "⚙️");
-  registerSection("retail-section", "Retail Helper", "🏪");
-  registerSection("cashflow-section", "Financials Helper", "💲");
-  registerSection("chat-section", "Chat Filter", "💬");
+  registerSection("production-section", t("productionHelper"), "⚙️");
+  registerSection("retail-section", t("retailHelper"), "🏪");
+  registerSection("cashflow-section", t("financialsHelper"), "💲");
+  registerSection("chat-section", t("chatFilter"), "💬");
 
   // Add footer
   ensureFooter();

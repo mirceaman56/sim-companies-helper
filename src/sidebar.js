@@ -2,6 +2,7 @@
 // Main sidebar container system with collapsible sections that snap together
 import { SIDEBAR_ID, STATE } from "./state.js";
 import { escapeHtml } from "./utils.js";
+import { t } from "./i18n.js";
 
 const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn }
 
@@ -292,9 +293,9 @@ export function ensureFooter() {
     "https://buy.stripe.com/5kQ8wR6QM8SidOJ8cF8IU00",
     `
       <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
-         <span style="color: #e91e63; font-size: 12px;">❤</span> Support The Dev
+         <span style="color: #e91e63; font-size: 12px;">❤</span> ${t("supportTheDev")}
       </div>
-      <div style="font-size: 9px; color: #999; text-align: center;">Keep the updates coming ⊂(◉‿◉)つ</div>
+      <div style="font-size: 9px; color: #999; text-align: center;">${t("keepUpdates")}</div>
     `
   );
 
@@ -307,7 +308,7 @@ export function ensureFooter() {
     bugUrl,
     `
       <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
-         <span style="color: #ef6c00; font-size: 12px;">🐛</span> Report a Bug
+         <span style="color: #ef6c00; font-size: 12px;">🐛</span> ${t("reportBug")}
       </div>
     `
   );

@@ -2,6 +2,7 @@
 // Handles recipe data and production cost calculations
 import { fetchMarketPrice } from "./market.js";
 import recipesData from "./recipes.json";
+import { t } from "./i18n.js";
 
 const MARKET_FEE = 0.04; // 4% fee on market sales
 
@@ -83,7 +84,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
       transportCost: 0,
       breakEvenAnalysis: null,
       profitAnalysis: null,
-      error: "Unit cost not found"
+      error: t("unitCostNotFound")
     };
   }
 
