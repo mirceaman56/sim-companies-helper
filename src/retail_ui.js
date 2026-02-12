@@ -5,7 +5,7 @@ import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetc
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
 import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
-import { t, findGameLabelElement, splitAfterGameLabel, parseLocalNumber as _parseLocal } from "./i18n.js";
+import { t } from "./i18n.js";
 
 const SECTION_ID = "retail-section";
 
@@ -33,29 +33,56 @@ function classifyProfitPerMin(ppm) {
  */
 export const RetailHelper = (() => {
   // ---------- parsing ----------
+  /**
+   * Parse a number from text, handling both locale formats:
+   *   EN: 1,234.56  (comma = thousands, dot = decimal)
+   *   DE: 1.234,56  (dot = thousands, comma = decimal)
+   * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
+   */
   function parseNumber(text) {
-    return _parseLocal(text);
+    let s = String(text).trim();
+    // Find the last comma or dot
+    const lastComma = s.lastIndexOf(',');
+    const lastDot = s.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      // Comma is last — check if it's a decimal separator (1-2 digits after)
+      const afterComma = s.slice(lastComma + 1);
+      if (/^\d{1,2}$/.test(afterComma)) {
+        // German decimal: remove dots (thousands), replace comma with dot
+        s = s.replace(/\./g, '').replace(',', '.');
+      } else {
+        // Comma is thousands separator (3 digits after)
+        s = s.replace(/,/g, '');
+      }
+    } else {
+      // Dot is last or no comma — standard: remove commas (thousands)
+      s = s.replace(/,/g, '');
+    }
+    const m = s.match(/-?\s*([0-9]+(\.[0-9]+)?)/);
+    return m ? Number(m[1]) : NaN;
   }
   function parseMoney(text) {
     return parseNumber(text);
   }
 
-  function findTextElement(root, includesText) {
-    const els = root.querySelectorAll("div, span, p");
-    for (const el of els) {
-      if ((el.textContent || "").includes(includesText)) return el;
-    }
-    return null;
+  /**
+   * Find the info column (div.right-border containing an h3) within a row.
+   * This is the column that holds product name, profit, finishes, etc.
+   */
+  function getInfoColumn(row) {
+    const cols = row.querySelectorAll('div.right-border');
+    return [...cols].find(c => c.querySelector('h3')) || null;
   }
 
-  // supports: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m", "1t" (German day), etc.
+  // Supports EN: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m"
+  // Supports DE: "12s", "8m", "1st 5m", "1t 5st", "13st, 31m" (st = Stunden, t = Tage)
   function parseDurationToSeconds(text) {
     const s = String(text);
     let total = 0;
-    const d = s.match(/(\d+)\s*[dt]/i);   // d = day (en), t = Tag (de)
-    const h = s.match(/(\d+)\s*[hS]/i);   // h = hour, S = Std (first char)
-    const m = s.match(/(\d+)\s*m/i);
-    const sec = s.match(/(\d+)\s*s(?!t)/i); // s but not "st" (Std)
+    const d = s.match(/(\d+)\s*(?:d|t)\b/i);       // days: "d" (EN) or "t" (DE: Tage)
+    const h = s.match(/(\d+)\s*(?:h|st)\b/i);       // hours: "h" (EN) or "st" (DE: Stunden)
+    const m = s.match(/(\d+)\s*m\b/i);               // minutes
+    const sec = s.match(/(\d+)\s*s\b/i);             // seconds: "s" — \b prevents matching "st"
     if (d) total += Number(d[1]) * 86400;
     if (h) total += Number(h[1]) * 3600;
     if (m) total += Number(m[1]) * 60;
@@ -64,39 +91,44 @@ export const RetailHelper = (() => {
   }
 
   function extractFinishSeconds(row) {
-    const finishEl = findGameLabelElement(row, "finishes");
-    if (!finishEl) return NaN;
+    const infoCol = getInfoColumn(row);
+    if (!infoCol) return NaN;
 
-    const t = finishEl.textContent || "";
-    const paren = t.match(/\(([^)]+)\)/);
+    // Duration is always in parentheses like (11h, 7m) or (13st, 31m) — language-agnostic
+    const text = infoCol.textContent || '';
+    const paren = text.match(/\(([^)]*\d+\s*(?:st|[hmst])[^)]*)\)/);
     if (paren) return parseDurationToSeconds(paren[1]);
 
-    return parseDurationToSeconds(t);
+    return NaN;
   }
 
   function extractProfitPerUnit(row) {
-    const profitEl = findGameLabelElement(row, "profitPerUnit");
-    if (!profitEl) return NaN;
+    const infoCol = getInfoColumn(row);
+    if (!infoCol) return NaN;
 
-    const t = profitEl.textContent || "";
-    const after =
-      (splitAfterGameLabel(t, "profitPerUnit").match(/-?\$?\d+(\.\d+)?/) || [])[0] || "";
+    // The profit div is the one containing an SVG (question-mark icon) — language-agnostic
+    const profitDiv = [...infoCol.querySelectorAll(':scope > div')].find(d => d.querySelector('svg'));
+    if (!profitDiv) return NaN;
 
-    const val = parseMoney(after);
+    const text = profitDiv.textContent || '';
+    // Extract dollar value — supports both EN ($1,234.56) and DE ($1.234,56)
+    const match = text.match(/([-−]?)\s*\$\s*([\d.,]+)/);
+    if (!match) return NaN;
+
+    const val = parseMoney(match[2]);
     if (!isFinite(val)) return NaN;
 
     // explicit minus formats
     const hasExplicitMinus =
-      /-\s*\$/.test(after) ||
-      /−\s*\$/.test(after) ||
-      /^\s*-/.test(after) ||
-      /^\s*−/.test(after) ||
-      /\(\s*\$?\s*\d/.test(after);
+      match[1].length > 0 ||
+      /-\s*\$/.test(text) ||
+      /−\s*\$/.test(text) ||
+      /\(\s*\$?\s*\d/.test(text);
 
     if (hasExplicitMinus) return -Math.abs(val);
 
     // implicit negative by red-ish text
-    const color = getComputedStyle(profitEl).color;
+    const color = getComputedStyle(profitDiv).color;
     const mm = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
     if (mm) {
       const r = Number(mm[1]),
@@ -180,13 +212,17 @@ export const RetailHelper = (() => {
 
   function getProductName(row) {
     if (!row) return "Unknown";
-    const h3s = row.querySelectorAll("h3");
+    // Use the h3 specifically from the info column — avoids matching "Quantity" / "Price" headers
+    const infoCol = getInfoColumn(row);
+    if (infoCol) {
+      const h3 = infoCol.querySelector('h3');
+      if (h3) return (h3.textContent || '').trim() || "Unknown";
+    }
+    // Fallback: first h3 with content in the row
+    const h3s = row.querySelectorAll('h3');
     for (const h of h3s) {
-      const t = (h.textContent || "").trim();
-      if (!t) continue;
-      const tl = t.toLowerCase();
-      if (tl === "quantity" || tl === "price") continue;
-      return t;
+      const t = (h.textContent || '').trim();
+      if (t) return t;
     }
     return "Unknown";
   }

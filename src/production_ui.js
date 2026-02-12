@@ -5,7 +5,7 @@ import { formatMoney, escapeHtml } from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
-import { t, matchesGameLabel, gameRegex, parseLocalNumber } from "./i18n.js";
+import { t } from "./i18n.js";
 
 const SECTION_ID = "production-section";
 
@@ -18,7 +18,67 @@ let pricesCache = null;
 let currentRow = null;
 
 /**
- * Detect production row from target element
+ * Find the info column (div.right-border containing an h3) within a row.
+ */
+function getInfoColumn(row) {
+  const cols = row.querySelectorAll('div.right-border');
+  return [...cols].find(c => c.querySelector('h3')) || null;
+}
+
+/**
+ * Find the data-wrapper div inside an active production info column.
+ * Active rows have: h3 + div{div, div, div, div} (producing qty, sourcing, quality, cost).
+ */
+function getDataWrapper(infoCol) {
+  for (const child of infoCol.children) {
+    if (child.tagName === 'DIV' && child.querySelectorAll(':scope > div').length >= 3) {
+      return child;
+    }
+  }
+  return null;
+}
+
+/**
+ * Parse a locale-agnostic number from text.
+ *   EN: 1,234.56  (comma = thousands, dot = decimal)
+ *   DE: 1.234,56  (dot = thousands, comma = decimal)
+ * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
+ */
+function parseLocalNum(raw) {
+  let s = String(raw).trim();
+  const lastComma = s.lastIndexOf(',');
+  const lastDot = s.lastIndexOf('.');
+  if (lastComma > lastDot) {
+    const afterComma = s.slice(lastComma + 1);
+    if (/^\d{1,2}$/.test(afterComma)) {
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      s = s.replace(/,/g, '');
+    }
+  } else {
+    s = s.replace(/,/g, '');
+  }
+  const m = s.match(/-?\s*([0-9]+(?:\.[0-9]+)?)/);
+  return m ? Number(m[1]) : NaN;
+}
+
+/**
+ * Extract the first dollar value ($X.XX or $X,XX) from a text string.
+ * Handles both EN and DE locale formats.
+ */
+function extractDollarValue(text) {
+  if (!text) return null;
+  const match = text.match(/\$\s*([\d.,]+)/);
+  if (match) {
+    const val = parseLocalNum(match[1]);
+    return Number.isFinite(val) ? val : null;
+  }
+  return null;
+}
+
+/**
+ * Detect production row from target element.
+ * Uses structural checks (amount input or data-wrapper div) instead of text labels.
  */
 function getProductionRowFromTarget(target) {
   if (!(target instanceof Element)) {
@@ -32,11 +92,12 @@ function getProductionRowFromTarget(target) {
     const hasProductLink = !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
 
     if (hasProductLink) {
-        // It's a valid row if it has an amount input OR if it displays "Cost per unit" / "Kosten pro Einheit" (active row)
         const hasQtyInput = !!el.querySelector?.('input[name="amount"]');
-        const hasUnitCost = matchesGameLabel(el.textContent || "", "costPerUnit");
-        
-        if (hasQtyInput || hasUnitCost) {
+        // Active/completed production: info column shows dollar values ($)
+        const infoCol = getInfoColumn(el);
+        const hasDollarValue = /\$/.test(infoCol?.textContent || '');
+
+        if (hasQtyInput || hasDollarValue) {
             return el;
         }
     }
@@ -65,7 +126,9 @@ function extractProductIdFromRow(row) {
 }
 
 /**
- * Extract quantity from a production row
+ * Extract quantity from a production row.
+ * Setup rows: reads from input[name="amount"].
+ * Active rows: reads the number from the 1st child div in the data wrapper.
  */
 function getQuantityFromRow(row) {
   if (!row) {
@@ -76,46 +139,80 @@ function getQuantityFromRow(row) {
     const val = Number(input.value || 0);
     return val > 0 ? val : 1;
   }
-  
-  // Try to find "Producing right now: X,XXX" / "Produziert gerade: X.XXX"
-  const text = row.textContent || "";
-  // Look for quantity patterns
-  const match = text.match(gameRegex("producingRightNow", "\\s*([\\d.,]+)"));
-  if (match) {
-    return parseLocalNumber(match[1]);
+
+  // Active production: first data div contains the quantity
+  const infoCol = getInfoColumn(row);
+  if (infoCol) {
+    const wrapper = getDataWrapper(infoCol);
+    if (wrapper) {
+      const firstDiv = wrapper.querySelector(':scope > div');
+      if (firstDiv) {
+        const text = firstDiv.textContent || '';
+        // Extract the number (digits with commas or dots as thousands separators)
+        const nums = text.match(/[\d.,]+/g);
+        if (nums) {
+          // Take the largest number found (the quantity value, not any small digit in the label)
+          let best = 0;
+          for (const n of nums) {
+            const v = parseLocalNum(n);
+            if (v > best) best = v;
+          }
+          if (best > 0) return best;
+        }
+      }
+    }
   }
-  
+
   return 1;
 }
 
 /**
- * Extract Cost per unit from active production row
+ * Extract Cost/Unit cost from production row.
+ * Active rows: last child div in the data wrapper contains the dollar value.
+ * Setup rows: dollar value in a bare text node (not inside span/div).
  */
 function getUnitCostFromRow(row) {
   if (!row) return null;
-  const text = row.textContent || "";
-  // Supports "Cost per unit: $0.96" / "Kosten pro Einheit: $2,20" and "Unit cost: $0.96"
-  const costPerUnitRe = gameRegex("costPerUnit", "\\s*\\$?([\\d.,]+)");
-  const match = text.match(costPerUnitRe);
-  if (match) {
-    return parseLocalNumber(match[1]);
+  const infoCol = getInfoColumn(row);
+  if (!infoCol) return null;
+
+  // Active production: last data div in wrapper (Cost per unit)
+  const wrapper = getDataWrapper(infoCol);
+  if (wrapper) {
+    const dataDivs = wrapper.querySelectorAll(':scope > div');
+    const costDiv = dataDivs[dataDivs.length - 1];
+    if (costDiv) {
+      return extractDollarValue(costDiv.textContent);
+    }
+    return null;
+  }
+
+  // Setup production: unit cost is a bare text node with a dollar value
+  for (const node of infoCol.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const val = extractDollarValue(node.textContent);
+      if (val !== null) return val;
+    }
   }
   return null;
 }
 
 /**
- * Extract labor cost from a production row
+ * Extract labor cost from a production row.
+ * Setup rows: labor cost is in the 2nd span inside the info column.
  */
 function getLaborCostFromRow(row) {
   if (!row) {
     return 0;
   }
-  // Look for text like "Labor cost: $X,XXX" / "Arbeitskosten: $X.XXX"
-  const text = row.textContent || "";
-  const match = text.match(gameRegex("laborCost", "\\s*\\$?([\\d.,]+)"));
-  if (match) {
-    const cost = parseLocalNumber(match[1]);
-    return Number.isFinite(cost) ? cost : 0;
+  const infoCol = getInfoColumn(row);
+  if (!infoCol) return 0;
+
+  // Setup production: 2nd span in info column contains the labor cost
+  const spans = infoCol.querySelectorAll(':scope > span');
+  if (spans.length >= 2) {
+    const val = extractDollarValue(spans[1].textContent);
+    if (val !== null) return val;
   }
   return 0;
 }
