@@ -1,0 +1,14 @@
+bug:
+  - head-branch: ['^fix/', '^bugfix/', '^hotfix/']
+
+feature:
+  - head-branch: ['^feat/', '^feature/']
+
+enhancement:
+  - head-branch: ['^improve/', '^refactor/', '^perf/']
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '*.md'
