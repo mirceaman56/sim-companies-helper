@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: 🧪 Test
+        run: npm test
+
+      - name: 🛡️ Security Guardrails
+        run: |
+          echo "🔍 Scanning production dependencies..."
+          npm audit --omit=dev --audit-level=high
+
+          echo "🔍 Checking CSP in manifest..."
+          if grep -q "unsafe-eval" public/manifest.json; then
+            echo "::error file=public/manifest.json::❌ 'unsafe-eval' detected in manifest.json"
+            exit 1
+          fi
+
+          echo "🔍 Scanning source for eval/new Function..."
+          if grep -rE "eval\(|new Function\(" src/; then
+            echo "::error::❌ Unsafe dynamic execution detected in src/"
+            exit 1
+          fi
+
+          echo "✅ All security checks passed."
+
+      - name: Build
+        run: npm run build
