@@ -3,6 +3,7 @@ import { registerSection, getSectionContent } from "./sidebar.js";
 import { STATE } from "./state.js";
 import { escapeHtml } from "./utils.js";
 import recipes from "./recipes.json";
+import { t } from "./i18n.js";
 
 const SECTION_ID = "chat-section";
 
@@ -109,8 +110,8 @@ function createFilterContent() {
     <div class="scx-chat-controls">
       <div class="scx-chat-row">
         <select id="scx-filter-type" class="scx-chat-select">
-          <option value="buy">Buying</option>
-          <option value="sell">Selling</option>
+          <option value="buy">${t("buying")}</option>
+          <option value="sell">${t("selling")}</option>
         </select>
       </div>
       <div class="scx-chat-row">
@@ -118,7 +119,7 @@ function createFilterContent() {
           <!-- Populated by JS -->
         </select>
       </div>
-      <button id="scx-filter-action" class="scx-chat-btn">Start Search</button>
+      <button id="scx-filter-action" class="scx-chat-btn">${t("startSearch")}</button>
     </div>
     <div id="scx-filter-status" class="scx-status"></div>
     <div id="scx-filter-results" class="scx-chat-results"></div>
@@ -218,22 +219,22 @@ async function startSearch(container) {
   lastSmallestId = null;
   resultsDiv.innerHTML = "";
   
-  actionBtn.textContent = "Stop";
+  actionBtn.textContent = t("stop");
   actionBtn.classList.add("stop");
-  updateStatus(container, `Searching for ${filterType} ${productName}...`);
+  updateStatus(container, `${t("searchingFor")} ${filterType} ${productName}...`);
 
   try {
     await fetchMessages(container, filterType, productId, searchController.signal);
   } catch (err) {
     if (err.name === 'AbortError') {
-      updateStatus(container, "Search stopped.");
+      updateStatus(container, t("searchStopped"));
     } else {
       console.error(err);
       updateStatus(container, "Error: " + err.message);
     }
   } finally {
     isSearching = false;
-    actionBtn.textContent = "Start Search";
+    actionBtn.textContent = t("startSearch");
     actionBtn.classList.remove("stop");
     searchController = null;
   }

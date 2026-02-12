@@ -5,16 +5,17 @@ import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetc
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
 import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
+import { t, findGameLabelElement, splitAfterGameLabel, parseLocalNumber as _parseLocal } from "./i18n.js";
 
 const SECTION_ID = "retail-section";
 
 function classifyProfitPerMin(ppm) {
-  if (!Number.isFinite(ppm)) return { label: "N/A", cls: "scx-chip-na" };
-  if (ppm < 0) return { label: "Bad", cls: "scx-chip-bad" };
-  if (ppm >= 50) return { label: "Excellent", cls: "scx-chip-excellent" };
-  if (ppm >= 20) return { label: "Good", cls: "scx-chip-good" };
-  if (ppm >= 5) return { label: "Meh", cls: "scx-chip-meh" };
-  return { label: "Low", cls: "scx-chip-meh" };
+  if (!Number.isFinite(ppm)) return { label: t("na"), cls: "scx-chip-na" };
+  if (ppm < 0) return { label: t("bad"), cls: "scx-chip-bad" };
+  if (ppm >= 50) return { label: t("excellent"), cls: "scx-chip-excellent" };
+  if (ppm >= 20) return { label: t("good"), cls: "scx-chip-good" };
+  if (ppm >= 5) return { label: t("meh"), cls: "scx-chip-meh" };
+  return { label: t("low"), cls: "scx-chip-meh" };
 }
 
 /**
@@ -33,8 +34,7 @@ function classifyProfitPerMin(ppm) {
 export const RetailHelper = (() => {
   // ---------- parsing ----------
   function parseNumber(text) {
-    const m = String(text).replace(/,/g, "").match(/-?\s*([0-9]+(\.[0-9]+)?)/);
-    return m ? Number(m[1]) : NaN;
+    return _parseLocal(text);
   }
   function parseMoney(text) {
     return parseNumber(text);
@@ -48,14 +48,14 @@ export const RetailHelper = (() => {
     return null;
   }
 
-  // supports: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m", etc.
+  // supports: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m", "1t" (German day), etc.
   function parseDurationToSeconds(text) {
     const s = String(text);
     let total = 0;
-    const d = s.match(/(\d+)\s*d/i);
-    const h = s.match(/(\d+)\s*h/i);
+    const d = s.match(/(\d+)\s*[dt]/i);   // d = day (en), t = Tag (de)
+    const h = s.match(/(\d+)\s*[hS]/i);   // h = hour, S = Std (first char)
     const m = s.match(/(\d+)\s*m/i);
-    const sec = s.match(/(\d+)\s*s/i);
+    const sec = s.match(/(\d+)\s*s(?!t)/i); // s but not "st" (Std)
     if (d) total += Number(d[1]) * 86400;
     if (h) total += Number(h[1]) * 3600;
     if (m) total += Number(m[1]) * 60;
@@ -64,7 +64,7 @@ export const RetailHelper = (() => {
   }
 
   function extractFinishSeconds(row) {
-    const finishEl = findTextElement(row, "Finishes:");
+    const finishEl = findGameLabelElement(row, "finishes");
     if (!finishEl) return NaN;
 
     const t = finishEl.textContent || "";
@@ -75,12 +75,12 @@ export const RetailHelper = (() => {
   }
 
   function extractProfitPerUnit(row) {
-    const profitEl = findTextElement(row, "Profit per unit:");
+    const profitEl = findGameLabelElement(row, "profitPerUnit");
     if (!profitEl) return NaN;
 
     const t = profitEl.textContent || "";
     const after =
-      ((t.split("Profit per unit:")[1] || "").match(/-?\$?\d+(\.\d+)?/) || [])[0] || "";
+      (splitAfterGameLabel(t, "profitPerUnit").match(/-?\$?\d+(\.\d+)?/) || [])[0] || "";
 
     const val = parseMoney(after);
     if (!isFinite(val)) return NaN;
@@ -212,7 +212,7 @@ export const RetailHelper = (() => {
       }
 
       if (STATE.inventory.status === "loading")
-        return { status: "Loading", stock: "—", cpu: "—", src: "—", basis: "—", note: "" };
+        return { status: t("loading"), stock: "—", cpu: "—", src: "—", basis: "—", note: "" };
 
       if (STATE.inventory.status === "error")
         return {
@@ -265,14 +265,14 @@ export const RetailHelper = (() => {
 
       // if your market module stores productId in marketState, this prevents stale display:
       if (ms?.productId != null && productId != null && ms.productId !== productId) {
-        return { status: "Loading", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
+        return { status: t("loading"), cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
       }
 
       if (!ms || ms.status === "idle")
         return { status: "Idle", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
 
       if (ms.status === "loading")
-        return { status: "Loading", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
+        return { status: t("loading"), cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
 
       if (ms.status === "error")
         return {
@@ -365,8 +365,8 @@ export async function updatePanel() {
   if (!row) {
     contentEl.innerHTML = `
       <div style="text-align: center; padding: 12px;">
-        <div class="scx-muted">No item selected</div>
-        <div class="scx-muted" style="font-size: 9px; margin-top: 4px;">Click Quantity or Price to show stats.</div>
+        <div class="scx-muted">${t("noItemSelected")}</div>
+        <div class="scx-muted" style="font-size: 9px; margin-top: 4px;">${t("clickToShowStats")}</div>
       </div>
     `;
     return;
@@ -448,30 +448,30 @@ export async function updatePanel() {
                     <hr style="margin: 8px 0;">
                     
                     <div class="scx-panel-head" style="margin-bottom: 6px;">
-                        <div class="scx-panel-title">Retail vs Market</div>
+                        <div class="scx-panel-title">${t("retailVsMarket")}</div>
                     </div>
 
                     <div style="margin-bottom: 6px; font-size: 11px;">
                         <div style="display:flex; justify-content:space-between;">
-                            <span class="scx-k">Cost of Goods</span>
+                            <span class="scx-k">${t("costOfGoods")}</span>
                             <span class="scx-v">${formatMoney(cogs)}</span>
                         </div>
                          <div style="display:flex; justify-content:space-between; font-size: 9px; color: #666;">
-                            <span>Unit Cost: ${formatMoney(avgCost)}</span>
+                            <span>${t("unitCostLabel")}: ${formatMoney(avgCost)}</span>
                         </div>
                     </div>
                     
                     <div style="background: ${isRetailBetter ? '#e8f5e9' : '#fff3e0'}; padding: 8px; border-radius: 4px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                            <span class="scx-k">Market Net Profit</span>
+                            <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? '#2e7d32' : '#e65100'};">
-                            <span>${isRetailBetter ? 'Retail wins by' : 'Market wins by'}</span>
+                            <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
                             <span>${formatMoney(Math.abs(diff))}</span>
                         </div>
                         <div style="margin-top:4px; font-size:9px; color:#666;">
-                            Based on cheap price: ${formatMoney(cheapest.price)}
+                            ${t("basedOnCheapPrice")}: ${formatMoney(cheapest.price)}
                         </div>
                     </div>
                   `;
@@ -479,19 +479,19 @@ export async function updatePanel() {
                   // data loading (container or cheapest price missing)
                   marketAnalysisHTML = `
                     <hr style="margin: 8px 0;">
-                    <div class="scx-muted">Loading market prices...</div>
+                    <div class="scx-muted">${t("loadingMarketPrices")}</div>
                   `;
               }
           } else if (ms && ms.status === 'error') {
                marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
-                <div class="scx-note" style="border-left-color: #c62828;">Market Error: ${escapeHtml(ms.error)}</div>
+                <div class="scx-note" style="border-left-color: #c62828;">${t("marketError")}: ${escapeHtml(ms.error)}</div>
               `;
           } else {
               // Loading or Idle
               marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
-                <div class="scx-muted">Loading market data...</div>
+                <div class="scx-muted">${t("loadingMarketData")}</div>
               `;
           }
       }
@@ -501,10 +501,10 @@ export async function updatePanel() {
 
   let finePrint = "";
   if (metrics.hours > 1) {
-      finePrint += `<div style="font-size:9px; color:#666; margin-top:2px;">${formatMoney(metrics.profitPerHr)} / hour</div>`;
+      finePrint += `<div style="font-size:9px; color:#666; margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
   }
   if (metrics.hours > 24) {
-      finePrint += `<div style="font-size:9px; color:#666;">${formatMoney(metrics.profitPerDay)} / day</div>`;
+      finePrint += `<div style="font-size:9px; color:#666;">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
   }
 
   contentEl.innerHTML = `
@@ -514,12 +514,12 @@ export async function updatePanel() {
       </div>
 
       <div class="scx-panel-head">
-        <div class="scx-panel-title">Profit per minute</div>
+        <div class="scx-panel-title">${t("profitPerMinute")}</div>
         <div class="scx-chip ${chip.cls}">${chip.label}</div>
       </div>
 
       <div class="scx-big" style="line-height:1.1;">
-          ${isFinite(metrics.profitPerMin) ? `${formatMoney(metrics.profitPerMin)}/min` : "—"}
+          ${isFinite(metrics.profitPerMin) ? `${formatMoney(metrics.profitPerMin)}${t("perMin")}` : "—"}
       </div>
       
       ${finePrint}

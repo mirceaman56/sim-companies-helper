@@ -5,6 +5,7 @@ import { formatMoney, escapeHtml } from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
+import { t, matchesGameLabel, gameRegex, parseLocalNumber } from "./i18n.js";
 
 const SECTION_ID = "production-section";
 
@@ -31,9 +32,9 @@ function getProductionRowFromTarget(target) {
     const hasProductLink = !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
 
     if (hasProductLink) {
-        // It's a valid row if it has an amount input OR if it displays "Cost per unit" (active row)
+        // It's a valid row if it has an amount input OR if it displays "Cost per unit" / "Kosten pro Einheit" (active row)
         const hasQtyInput = !!el.querySelector?.('input[name="amount"]');
-        const hasUnitCost = /Cost per unit:/i.test(el.textContent || "");
+        const hasUnitCost = matchesGameLabel(el.textContent || "", "costPerUnit");
         
         if (hasQtyInput || hasUnitCost) {
             return el;
@@ -76,12 +77,12 @@ function getQuantityFromRow(row) {
     return val > 0 ? val : 1;
   }
   
-  // Try to find "Producing right now: X,XXX" or just "Producing: X"
+  // Try to find "Producing right now: X,XXX" / "Produziert gerade: X.XXX"
   const text = row.textContent || "";
   // Look for quantity patterns
-  const match = text.match(/Producing right now:\s*([\d,]+)/i);
+  const match = text.match(gameRegex("producingRightNow", "\\s*([\\d.,]+)"));
   if (match) {
-    return Number(match[1].replace(/,/g, ''));
+    return parseLocalNumber(match[1]);
   }
   
   return 1;
@@ -93,10 +94,11 @@ function getQuantityFromRow(row) {
 function getUnitCostFromRow(row) {
   if (!row) return null;
   const text = row.textContent || "";
-  // Supports "Cost per unit: $0.96" (Active) and "Unit cost: $0.96" (Setup)
-  const match = text.match(/(?:Cost per unit|Unit cost):\s*\$?([\d,]+(?:\.\d+)?)/i);
+  // Supports "Cost per unit: $0.96" / "Kosten pro Einheit: $2,20" and "Unit cost: $0.96"
+  const costPerUnitRe = gameRegex("costPerUnit", "\\s*\\$?([\\d.,]+)");
+  const match = text.match(costPerUnitRe);
   if (match) {
-    return Number(match[1].replace(/,/g, ''));
+    return parseLocalNumber(match[1]);
   }
   return null;
 }
@@ -108,12 +110,11 @@ function getLaborCostFromRow(row) {
   if (!row) {
     return 0;
   }
-  // Look for text like "Labor cost: $X,XXX"
+  // Look for text like "Labor cost: $X,XXX" / "Arbeitskosten: $X.XXX"
   const text = row.textContent || "";
-  const match = text.match(/Labor cost:\s*\$?([\d,]+(?:\.\d{2})?)/i);
+  const match = text.match(gameRegex("laborCost", "\\s*\\$?([\\d.,]+)"));
   if (match) {
-    const costStr = match[1].replace(/,/g, '');
-    const cost = Number(costStr);
+    const cost = parseLocalNumber(match[1]);
     return Number.isFinite(cost) ? cost : 0;
   }
   return 0;
@@ -256,7 +257,7 @@ export async function updateProductionPanel() {
   const recipe = recipes.find((r) => r.id === currentProductId);
 
   if (!recipe) {
-    contentEl.innerHTML = `<div class="scx-muted">Recipe not found</div>`;
+    contentEl.innerHTML = `<div class="scx-muted">${t("recipeNotFound")}</div>`;
     return;
   }
 
@@ -272,11 +273,11 @@ async function renderProductAnalysis(contentEl, recipe) {
   if (!pricesCache) {
     const realmId = getRealmId();
     if (realmId === null || realmId === undefined) {
-      contentEl.innerHTML = `<div class="scx-muted">Authentication required - realmId not available</div>`;
+      contentEl.innerHTML = `<div class="scx-muted">${t("authRequired")}</div>`;
       return;
     }
 
-    contentEl.innerHTML = `<div class="scx-muted">Loading prices...</div>`;
+    contentEl.innerHTML = `<div class="scx-muted">${t("loadingPrices")}</div>`;
 
     try {
       // Just fetch product and container
@@ -284,7 +285,7 @@ async function renderProductAnalysis(contentEl, recipe) {
       pricesCache = await fetchMarketPrices(realmId, productIds);
     } catch (e) {
       contentEl.innerHTML = `<div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
-        Error loading prices: ${escapeHtml(e.message)}
+        ${t("errorLoadingPrices")}: ${escapeHtml(e.message)}
       </div>`;
       return;
     }
@@ -299,7 +300,7 @@ async function renderProductAnalysis(contentEl, recipe) {
       <div class="scx-panel" style="padding: 12px;">
         <div class="scx-muted">Unable to analyze</div>
         ${analysis?.error ? `<div style="font-size:9px; color:#c62828; margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
-        <div style="font-size:9x; color:#999; margin-top:8px;">Ensure "Cost per unit" is visible in the game UI.</div>
+        <div style="font-size:9x; color:#999; margin-top:8px;">${t("ensureCostPerUnit")}</div>
       </div>
     `;
     return;
@@ -320,30 +321,30 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <div style="margin-bottom: 12px;">
         <div style="font-weight: 600; color: #333; font-size: 12px;">${escapeHtml(recipe.name)}</div>
         <div style="color: #999; font-size: 9px;">
-          Qty: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
-          <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">Active</span>
+          ${t("qty")}: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
+          <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">${t("active")}</span>
         </div>
       </div>
 
       <hr style="margin: 8px 0;">
 
       <div class="scx-panel-head" style="margin-bottom: 8px;">
-        <div class="scx-panel-title">Production Costs</div>
+        <div class="scx-panel-title">${t("productionCosts")}</div>
       </div>
       <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between;">
-            <span class="scx-k" style="color:#455a64;">Cost per Unit (UI)</span>
+            <span class="scx-k" style="color:#455a64;">${t("costPerUnitUI")}</span>
             <span class="scx-v">${formatMoney(currentUnitCost)}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-top:4px;">
-            <span class="scx-k" style="color:#455a64;">Total Production Cost</span>
+            <span class="scx-k" style="color:#455a64;">${t("totalProductionCost")}</span>
             <span class="scx-v" style="font-weight:700; color:#1565c0;">${formatMoney(productionCost)}</span>
           </div>
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-         <div class="scx-panel-title">Profit Analysis</div>
-         <div style="font-size:9px; color:#999;">@ ${formatMoney(marketPrice)} (Market)</div>
+         <div class="scx-panel-title">${t("profitAnalysis")}</div>
+         <div style="font-size:9px; color:#999;">@ ${formatMoney(marketPrice)} ${t("marketInParens")}</div>
       </div>
       
       <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
@@ -351,48 +352,48 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         <!-- Market Profit -->
         <div style="background: #fff8e1; padding: 8px; border-radius: 4px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-             <span style="font-weight:600; color:#ff6f00;">Market Sell</span>
-             <div class="scx-muted">Full transport + Fee</div>
+             <span style="font-weight:600; color:#ff6f00;">${t("marketSell")}</span>
+             <div class="scx-muted">${t("fullTransportFee")}</div>
           </div>
           
           <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k" style="color:#5d4037;">Profit</span>
+             <span class="scx-k" style="color:#5d4037;">${t("profit")}</span>
              <span style="font-weight:700; color:${profitAnalysis.market.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k" style="color:#5d4037;">Margin</span>
+             <span class="scx-k" style="color:#5d4037;">${t("margin")}</span>
              <span style="color:${profitAnalysis.market.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
           </div>
           <div style="font-size:9px; color:#999; margin-top:4px; text-align:right;">
-             Break Even > ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}
+             ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}
           </div>
         </div>
 
         <!-- Contract Profit -->
         <div style="background: #f3e5f5; padding: 8px; border-radius: 4px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-             <span style="font-weight:600; color:#7b1fa2;">Contract Sell</span>
-             <div class="scx-muted">50% transport</div>
+             <span style="font-weight:600; color:#7b1fa2;">${t("contractSell")}</span>
+             <div class="scx-muted">${t("halfTransport")}</div>
           </div>
           
            <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k" style="color:#4a148c;">Profit</span>
+             <span class="scx-k" style="color:#4a148c;">${t("profit")}</span>
              <span style="font-weight:700; color:${profitAnalysis.contract.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k" style="color:#4a148c;">Margin</span>
+             <span class="scx-k" style="color:#4a148c;">${t("margin")}</span>
              <span style="color:${profitAnalysis.contract.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>
           </div>
            <div style="font-size:9px; color:#999; margin-top:4px; text-align:right;">
-             Break Even > ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}
+             ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}
           </div>
         </div>
       </div>
@@ -419,11 +420,11 @@ function renderMaterialsCost(materialCosts) {
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
       <div>
         <div style="color: #333; font-weight: 500;">${materialName}</div>
-        <div style="color: #999; font-size: 9px;">Qty: ${mc.quantity}</div>
+        <div style="color: #999; font-size: 9px;">${t("qty")}: ${mc.quantity}</div>
       </div>
       <div style="text-align: right;">
         <div style="color: #666; font-weight: 500;">
-          ${Number.isFinite(mc.unitPrice) ? formatMoney(mc.unitPrice) : "—"} /unit
+          ${Number.isFinite(mc.unitPrice) ? formatMoney(mc.unitPrice) : "—"} ${t("perUnit")}
         </div>
         <div style="color: #333; font-weight: 600;">
           ${Number.isFinite(mc.totalCost) ? formatMoney(mc.totalCost) : "—"}
@@ -443,7 +444,7 @@ function renderSellAnalysis(sellAnalysis, quantity) {
   if (!sellAnalysis || !Number.isFinite(sellAnalysis.profit)) {
     return `
       <div class="scx-note" style="border-left-color: #ff9800; background: #fff8f0;">
-        Cannot calculate profit - missing market prices
+        ${t("cannotCalcProfit")}
       </div>
     `;
   }
@@ -456,18 +457,18 @@ function renderSellAnalysis(sellAnalysis, quantity) {
     <hr style="margin: 8px 0;">
 
     <div class="scx-panel-head" style="margin-bottom: 12px;">
-      <div class="scx-panel-title">Selling Analysis</div>
+      <div class="scx-panel-title">${t("sellingAnalysis")}</div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
       <div style="background: #e8f5e9; padding: 8px; border-radius: 4px;">
-        <div class="scx-k">Gross Proceeds</div>
+        <div class="scx-k">${t("grossProceeds")}</div>
         <div style="font-size: 13px; font-weight: 700; color: #1b5e20;">
           ${formatMoney(sellAnalysis.sellPrice)}
         </div>
       </div>
       <div style="background: #fff3e0; padding: 8px; border-radius: 4px;">
-        <div class="scx-k">Market Fee (4%)</div>
+        <div class="scx-k">${t("marketFee4pct")}</div>
         <div style="font-size: 13px; font-weight: 700; color: #e65100;">
           -${formatMoney(sellAnalysis.feeAmount)}
         </div>
@@ -476,13 +477,13 @@ function renderSellAnalysis(sellAnalysis, quantity) {
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
       <div style="background: #f0f8ff; padding: 8px; border-radius: 4px;">
-        <div class="scx-k">Net Proceeds</div>
+        <div class="scx-k">${t("netProceeds")}</div>
         <div style="font-size: 13px; font-weight: 700; color: #0d47a1;">
           ${formatMoney(sellAnalysis.netProceeds)}
         </div>
       </div>
       <div style="background: ${profitBg}; padding: 8px; border-radius: 4px;">
-        <div class="scx-k">Profit</div>
+        <div class="scx-k">${t("profit")}</div>
         <div style="font-size: 13px; font-weight: 700; color: ${profitColor};">
           ${isProfitable ? "+" : ""}${formatMoney(sellAnalysis.profit)}
         </div>
@@ -490,7 +491,7 @@ function renderSellAnalysis(sellAnalysis, quantity) {
     </div>
 
     <div style="background: #fafafa; padding: 8px; border-radius: 4px; text-align: center;">
-      <div class="scx-k" style="margin-bottom: 4px;">Profit Margin</div>
+      <div class="scx-k" style="margin-bottom: 4px;">${t("profitMargin")}</div>
       <div style="font-size: 16px; font-weight: 700; color: ${profitColor};">
         ${Number.isFinite(sellAnalysis.profitMargin) ? sellAnalysis.profitMargin.toFixed(1) : "—"}%
       </div>

@@ -4,6 +4,8 @@
  * for calculating profit per unit, profit per hour, and optimal pricing
  */
 
+import { t } from "./i18n.js";
+
 // Labor costs by store type (hourly in dollars)
 export const LABOR_COSTS = {
   grocery: 138.00,
@@ -247,19 +249,19 @@ export function analyzeProductProfit(params) {
  */
 export function formatAnalysis(analysis) {
   const fmt = (n) => {
-    if (!Number.isFinite(n)) return "N/A";
+    if (!Number.isFinite(n)) return t("na");
     return n > 0 ? `+$${n.toFixed(2)}` : `-$${Math.abs(n).toFixed(2)}`;
   };
   
   const fmtPrice = (n) => {
-    if (!Number.isFinite(n)) return "N/A";
+    if (!Number.isFinite(n)) return t("na");
     return `$${n.toFixed(2)}`;
   };
   
   return {
     currentProfit: fmt(analysis.profitPerHour),
     profitPerUnit: fmt(analysis.profitPerUnit),
-    quantitySold: Number.isFinite(analysis.quantitySoldPerHour) ? analysis.quantitySoldPerHour.toFixed(1) : "N/A",
+    quantitySold: Number.isFinite(analysis.quantitySoldPerHour) ? analysis.quantitySoldPerHour.toFixed(1) : t("na"),
     optimalPrice: fmtPrice(analysis.optimalPrice),
     priceChange: fmt(analysis.priceAdjustment),
     potentialGain: fmt(analysis.potentialGain),
