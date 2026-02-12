@@ -8,7 +8,6 @@ import { updatePanel as updateRetailPanel, RetailHelper } from "./retail_ui.js";
 import { ensureSidebarContainer, registerSection, setSectionUpdateFn, ensureFooter } from "./sidebar.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
-import { initRecipeExtractor } from "./recipe_extractor.js";
 import { initChatFilter } from "./chat_filter_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
@@ -55,9 +54,6 @@ async function init() {
 }
 
 init();
-
-// Initialize recipe extractor on encyclopedia pages
-// initRecipeExtractor();
 
 // Event listeners for retail helper
 window.addEventListener("focusin", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);

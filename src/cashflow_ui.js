@@ -123,19 +123,6 @@ function renderBreakdownRow(label, amount, color) {
   `;
 }
 
-function formatTimeOnly(dtStr) {
-  try {
-    const date = new Date(dtStr);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch {
-    return "—";
-  }
-}
-
 function formatRefreshTime(ms) {
   if (!ms) return t("never");
   const ago = Math.floor((Date.now() - ms) / 1000);

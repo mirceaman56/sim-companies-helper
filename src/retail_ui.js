@@ -566,12 +566,3 @@ function extractProductId(row) {
     return m ? Number(m[1]) : null;
 }
 
-export function toggleSidebar() {
-  const el = document.getElementById(SIDEBAR_ID);
-  if (!el) return;
-
-  const minimized = el.classList.toggle("scx-minimized");
-
-  const btn = el.querySelector('[data-k="toggle"]');
-  if (btn) btn.textContent = minimized ? "◂" : "▸";
-}
