@@ -50,5 +50,23 @@ export async function runSafe(fn) {
   }
 }
 
+/**
+ * Copy text to clipboard and show brief feedback
+ */
+export async function copyToClipboard(text, feedbackEl) {
+  try {
+    await navigator.clipboard.writeText(text);
+    if (feedbackEl) {
+      const orig = feedbackEl.textContent;
+      feedbackEl.textContent = "✓ Copied!";
+      setTimeout(() => {
+        feedbackEl.textContent = orig;
+      }, 1500);
+    }
+  } catch (err) {
+    console.error("Failed to copy:", err);
+  }
+}
+
 
 

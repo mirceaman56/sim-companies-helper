@@ -1,10 +1,39 @@
 // cashflow_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
 
 const SECTION_ID = "cashflow-section";
+
+/**
+ * Format cashflow data as plain text table
+ */
+function formatCashflowAsText(today, yesterday) {
+  const lines = [
+    `Today's Net Profit: ${formatMoney(today.totalIncome - today.totalExpense)}`,
+    `vs Yesterday: ${formatMoney((today.totalIncome - today.totalExpense) - (yesterday.totalIncome - yesterday.totalExpense))}`,
+    ``,
+    `INCOMES:`,
+    `  Retail: ${formatMoney(today.incomeByType.s)}`,
+    `  Contracts: ${formatMoney(today.incomeByType.t)}`,
+    `  Market: ${formatMoney(today.incomeByType.m)}`,
+    `  Other: ${formatMoney(today.incomeByType.other)}`,
+    `  Total: ${formatMoney(today.totalIncome)}`,
+    ``,
+    `EXPENSES:`,
+    `  Production: ${formatMoney(today.expenseByType.p)}`,
+    `  Wages: ${formatMoney(today.expenseByType.w)}`,
+    `  Market Buy: ${formatMoney(today.expenseByType.m)}`,
+    `  Contracts: ${formatMoney(today.expenseByType.t)}`,
+    `  Fees: ${formatMoney(today.expenseByType.f)}`,
+    `  Construction: ${formatMoney(today.expenseByType.c)}`,
+    `  Accounting: ${formatMoney(today.expenseByType.A)}`,
+    `  Other: ${formatMoney(today.expenseByType.other)}`,
+    `  Total: ${formatMoney(today.totalExpense)}`,
+  ];
+  return lines.join('\n');
+}
 
 export function updateCashflowPanel() {
   const contentEl = getSectionContent(SECTION_ID);
@@ -48,6 +77,16 @@ export function updateCashflowPanel() {
 
   contentEl.innerHTML = `
     <div class="scx-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div class="scx-panel-title">${t("todaysNetProfit")}</div>
+        <button class="scx-copy-btn" data-copy-action="cashflow" data-tooltip="Copy text">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+        </button>
+      </div>
+      
       <!-- Net Profit Summary -->
       <div style="text-align:center; padding-bottom:12px; border-bottom:1px solid #eee; margin-bottom:12px;">
         <div class="scx-k">${t("todaysNetProfit")}</div>
@@ -111,6 +150,15 @@ export function updateCashflowPanel() {
       </div>
     </div>
   `;
+
+  // Wire up copy button
+  const copyBtn = contentEl.querySelector('.scx-copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const text = formatCashflowAsText(today, yesterday);
+      copyToClipboard(text, copyBtn);
+    });
+  }
 }
 
 function renderBreakdownRow(label, amount, color) {

@@ -1,6 +1,6 @@
 // retail_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
 import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
@@ -383,6 +383,24 @@ export const RetailHelper = (() => {
 })();
 
 /**
+ * Format retail panel data as plain text table
+ */
+function formatRetailAsText(productName, metrics, productId, realmId) {
+  const lines = [
+    `Product: ${productName}`,
+    `Profit/Min: ${formatMoney(metrics.profitPerMin)}`,
+    `Total Profit: ${formatMoney(metrics.totalProfit)}`,
+    `Profit/Hour: ${formatMoney(metrics.profitPerHr)}`,
+    `Profit/Day: ${formatMoney(metrics.profitPerDay)}`,
+    ``,
+    `Quantity: ${metrics.qty}`,
+    `Your Price: ${formatMoney(metrics.yourPrice)}`,
+    `Finish in: ${metrics.seconds}s (${metrics.hours.toFixed(2)}hrs)`,
+  ];
+  return lines.join('\n');
+}
+
+/**
  * Render the retail helper panel content
  */
 export async function updatePanel() {
@@ -538,8 +556,16 @@ export async function updatePanel() {
 
   contentEl.innerHTML = `
     <div class="scx-panel">
-      <div style="font-weight: 600; color: #333; margin-bottom: 8px; font-size: 12px;">
-        ${productName}
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="font-weight: 600; color: #333; font-size: 12px;">
+          ${productName}
+        </div>
+        <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="Copy text">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+        </button>
       </div>
 
       <div class="scx-panel-head">
@@ -556,6 +582,15 @@ export async function updatePanel() {
       ${marketAnalysisHTML}
     </div>
   `;
+
+  // Wire up copy button
+  const copyBtn = contentEl.querySelector('.scx-copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const text = formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId);
+      copyToClipboard(text, copyBtn);
+    });
+  }
 }
 
 // Helpers needed in scope but not exported or previously defined in closure
