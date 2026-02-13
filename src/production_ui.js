@@ -1,7 +1,7 @@
 // production_ui.js
 // Renders production helper section in the sidebar
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
@@ -408,6 +408,49 @@ async function renderProductAnalysis(contentEl, recipe) {
 }
 
 /**
+ * Format production data as plain text table
+ */
+function formatProductionAsText(recipe, analysis, quantity) {
+  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, unitCost } = analysis;
+  const lines = [
+    `Product: ${recipe.name}`,
+    `Quantity: ${quantity}`,
+    ``,
+    `COSTS:`,
+    `  Base Unit Cost: ${formatMoney(unitCost)}`,
+    `  Total Production Cost: ${formatMoney(productionCost)}`,
+    ``,
+  ];
+  
+  if (breakEvenAnalysis) {
+    lines.push(
+      `BREAK-EVEN (Market):`,
+      `  Total Cost: ${formatMoney(breakEvenAnalysis.market.totalCost)}`,
+      `  Transport Cost: ${formatMoney(breakEvenAnalysis.market.transportCost)}`,
+      `  Break-Even Price: ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}`,
+      ``,
+      `BREAK-EVEN (Contract):`,
+      `  Total Cost: ${formatMoney(breakEvenAnalysis.contract.totalCost)}`,
+      `  Transport Cost: ${formatMoney(breakEvenAnalysis.contract.transportCost)}`,
+      `  Break-Even Price: ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}`,
+      ``
+    );
+  }
+  
+  if (profitAnalysis) {
+    lines.push(
+      `PROFIT ANALYSIS (at $${formatMoney(marketPrice)}):`,
+      `  Market Profit: ${formatMoney(profitAnalysis.market.profit)}`,
+      `  Market Margin: ${profitAnalysis.market.margin.toFixed(2)}%`,
+      `  Contract Profit: ${formatMoney(profitAnalysis.contract.profit)}`,
+      `  Contract Margin: ${profitAnalysis.contract.margin.toFixed(2)}%`
+    );
+  }
+  
+  return lines.join('\n');
+}
+
+/**
  * Render the full analysis UI
  */
 function renderAnalysisUI(contentEl, recipe, analysis) {
@@ -415,12 +458,19 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
 
   contentEl.innerHTML = `
     <div class="scx-panel" style="font-size: 11px;">
-      <div style="margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div style="font-weight: 600; color: #333; font-size: 12px;">${escapeHtml(recipe.name)}</div>
-        <div style="color: #999; font-size: 9px;">
-          ${t("qty")}: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
-          <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">${t("active")}</span>
-        </div>
+        <button class="scx-copy-btn" data-copy-action="production" data-tooltip="Copy text">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+        </button>
+      </div>
+      
+      <div style="color: #999; font-size: 9px;">
+        ${t("qty")}: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
+        <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">${t("active")}</span>
       </div>
 
       <hr style="margin: 8px 0;">
@@ -496,6 +546,15 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       </div>
     </div>
   `;
+
+  // Wire up copy button
+  const copyBtn = contentEl.querySelector('.scx-copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const text = formatProductionAsText(recipe, analysis, currentQuantity);
+      copyToClipboard(text, copyBtn);
+    });
+  }
 }
 
 /**
