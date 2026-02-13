@@ -385,7 +385,7 @@ export const RetailHelper = (() => {
 /**
  * Format retail panel data as plain text table
  */
-function formatRetailAsText(productName, metrics, productId, realmId) {
+function formatRetailAsText(productName, metrics, productId, realmId, marketAnalysisData) {
   const lines = [
     `Product: ${productName}`,
     `Profit/Min: ${formatMoney(metrics.profitPerMin)}`,
@@ -397,6 +397,21 @@ function formatRetailAsText(productName, metrics, productId, realmId) {
     `Your Price: ${formatMoney(metrics.yourPrice)}`,
     `Finish in: ${metrics.seconds}s (${metrics.hours.toFixed(2)}hrs)`,
   ];
+  
+  // Add market analysis if available
+  if (marketAnalysisData) {
+    lines.push('');
+    lines.push('--- Retail vs Market ---');
+    lines.push(`Cost of Goods: ${formatMoney(marketAnalysisData.cogs)}`);
+    lines.push(`Unit Cost: ${formatMoney(marketAnalysisData.avgCost)}`);
+    lines.push(`Retail Net Profit: ${formatMoney(marketAnalysisData.retailNetProfit)}`);
+    lines.push(`Market Net Profit: ${formatMoney(marketAnalysisData.marketProfit)}`);
+    const diff = marketAnalysisData.retailProfit - marketAnalysisData.marketProfit;
+    const winner = diff >= 0 ? 'Retail wins by' : 'Market wins by';
+    lines.push(`${winner}: ${formatMoney(Math.abs(diff))}`);
+    lines.push(`Cheapest Market Price: ${formatMoney(marketAnalysisData.cheapestPrice)}`);
+  }
+  
   return lines.join('\n');
 }
 
@@ -449,6 +464,7 @@ export async function updatePanel() {
 
   // --- Market Comparison Calculations ---
   let marketAnalysisHTML = "";
+  let marketAnalysisData = null; // Store for copy functionality
  
   if (productId != null && realmId != null) {
       const inv = STATE.inventory?.byKind?.get(productId);
@@ -488,8 +504,22 @@ export async function updatePanel() {
                   const marketProfit = marketRevenue - marketCost;
                   const retailProfit = metrics.totalProfit; // This is Total Retail Profit for the batch
                   
+                  // Calculate retail net profit: profit per unit * quantity
+                  const profitPerUnit = metrics.profitPerUnit || 0;
+                  const retailNetProfit = profitPerUnit * qty;
+                  
                   const diff = retailProfit - marketProfit;
                   const isRetailBetter = diff >= 0;
+                  
+                  // Store market analysis data for copy functionality
+                  marketAnalysisData = {
+                    cogs,
+                    avgCost,
+                    retailNetProfit,
+                    marketProfit,
+                    retailProfit,
+                    cheapestPrice: cheapest.price
+                  };
                   
                   marketAnalysisHTML = `
                     <hr style="margin: 8px 0;">
@@ -512,6 +542,10 @@ export async function updatePanel() {
                         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                             <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span class="scx-k">${t("retailNetProfit")}</span>
+                            <span class="scx-v">${formatMoney(retailNetProfit)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? '#2e7d32' : '#e65100'};">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
@@ -587,7 +621,7 @@ export async function updatePanel() {
   const copyBtn = contentEl.querySelector('.scx-copy-btn');
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
-      const text = formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId);
+      const text = formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData);
       copyToClipboard(text, copyBtn);
     });
   }
