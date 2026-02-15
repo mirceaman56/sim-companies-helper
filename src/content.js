@@ -9,6 +9,7 @@ import { ensureSidebarContainer, registerSection, setSectionUpdateFn, ensureFoot
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initChatFilter } from "./chat_filter_ui.js";
+import { initContractHelper } from "./contract_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 
@@ -32,6 +33,9 @@ async function init() {
   
   // Chat filter is static, init once
   initChatFilter();
+
+  // Contract helper for discount pricing
+  initContractHelper();
 
   // Load initial data
   await loadAuthDataOnce();
