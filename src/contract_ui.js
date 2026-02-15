@@ -5,9 +5,13 @@
 
 import { t } from "./i18n.js";
 import { SIDEBAR_ID } from "./state.js";
+import { fetchMarketPrice } from "./market.js";
+import { getRealmId } from "./auth.js";
+import { formatMoney } from "./utils.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const STORAGE_KEY = "scx-contract-discount";
+const TRANSPORT_RESOURCE_ID = 13; // Transport container in SimCompanies
 
 let discountPct = 3; // default
 
@@ -184,6 +188,156 @@ function updateButtonLabel() {
   }
 }
 
+// ── Profit calculation helpers ──────────────────────────────────
+
+/**
+ * Read the amount from the contract form input.
+ */
+function getAmountValue() {
+  const input = document.querySelector('input[name="amount"]');
+  if (!input) return null;
+  const val = parsePrice(input.value);
+  return Number.isFinite(val) && val > 0 ? val : null;
+}
+
+/**
+ * Read the price-per-unit from the contract form input.
+ */
+function getPriceValue() {
+  const input = findPriceInput();
+  if (!input) return null;
+  const val = parsePrice(input.value);
+  return Number.isFinite(val) && val > 0 ? val : null;
+}
+
+/**
+ * Extract sourcing cost per unit from the product info section.
+ * Finds the encyclopedia link → parent div → first span starting with "$".
+ * Language-safe: uses structural selectors only.
+ */
+function getSourcingCostPerUnit() {
+  const encLinks = document.querySelectorAll('a[href*="encyclopedia"]');
+  for (const link of encLinks) {
+    const container = link.closest("div");
+    if (!container) continue;
+    const spans = container.querySelectorAll("span");
+    for (const span of spans) {
+      const text = span.textContent.trim();
+      if (text.startsWith("$")) {
+        const val = parsePrice(text.slice(1));
+        if (Number.isFinite(val) && val > 0) return val;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract total transport count from the contract page.
+ * Finds img[src*="transport"] → parent div → sibling span with "Nx" pattern.
+ * Language-safe: uses structural + image selectors only.
+ */
+function getTransportCount() {
+  // There are multiple transport images on the page:
+  //   1. Sourcing section (css-1erjzjw) — contains encyclopedia links, shows per-unit transport
+  //   2. Transport total section (css-ix8ka2) — NO encyclopedia links, shows total count like "6,301x"
+  // We want #2. Distinguish by skipping containers that have encyclopedia links.
+  const transportImgs = document.querySelectorAll('img[src*="transport"]');
+  for (const img of transportImgs) {
+    const container = img.parentElement;
+    if (!container) continue;
+
+    // Skip the sourcing/ingredient section — it contains encyclopedia links
+    if (container.querySelector('a[href*="encyclopedia"]')) continue;
+
+    const spans = container.querySelectorAll("span");
+    for (const span of spans) {
+      const text = span.textContent.trim();
+      // Match patterns like "6,301x" or "6.301x" or "6301x"
+      const match = text.match(/([\d.,]+)\s*x$/i);
+      if (match) {
+        // Strip thousands separators (commas or dots) — count is always an integer
+        const raw = match[1].replace(/[.,]/g, "");
+        const val = parseInt(raw, 10);
+        if (Number.isFinite(val) && val > 0) return val;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Calculate and display profit breakdown in the sidebar widget.
+ * Profit = Revenue − Sourcing − Transport
+ *   Revenue  = amount × price
+ *   Sourcing = amount × sourcing_cost_per_unit
+ *   Transport = transport_count × transport_market_price
+ */
+async function calculateAndDisplayProfit() {
+  const resultDiv = document.getElementById("scx-contract-profit-result");
+  const calcBtn = document.getElementById("scx-contract-calc-btn");
+  if (!resultDiv) return;
+
+  const amount = getAmountValue();
+  const price = getPriceValue();
+
+  if (!amount || !price) {
+    resultDiv.innerHTML = `<div style="color:#999; text-align:center; font-size:10px;">${t("contractSetValues")}</div>`;
+    resultDiv.style.display = "block";
+    return;
+  }
+
+  // Loading indicator
+  if (calcBtn) calcBtn.textContent = "...";
+
+  const sourcingCost = getSourcingCostPerUnit();
+  const transportCount = getTransportCount();
+
+  const revenue = amount * price;
+  const totalSourcing = sourcingCost ? amount * sourcingCost : 0;
+
+  // Fetch transport market price
+  let totalTransport = 0;
+  if (transportCount) {
+    try {
+      const realmId = getRealmId();
+      const transportPrice = await fetchMarketPrice(realmId, TRANSPORT_RESOURCE_ID);
+      if (transportPrice) {
+        totalTransport = transportCount * transportPrice;
+      }
+    } catch (e) {
+      console.warn("[SimHelper] Failed to fetch transport price:", e);
+    }
+  }
+
+  const profit = revenue - totalSourcing - totalTransport;
+  const profitColor = profit >= 0 ? "#27ae60" : "#e74c3c";
+
+  resultDiv.innerHTML = `
+    <div style="display:flex; justify-content:space-between;">
+      <span>${t("contractRevenue")}</span>
+      <span>${formatMoney(revenue)}</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; color:#e67e22;">
+      <span>${t("contractSourcing")}</span>
+      <span>-${formatMoney(totalSourcing)}</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; color:#e67e22;">
+      <span>${t("contractTransportCost")}</span>
+      <span>-${formatMoney(totalTransport)}</span>
+    </div>
+    <hr style="border:none; border-top:1px solid #ddd; margin:4px 0;">
+    <div style="display:flex; justify-content:space-between; font-weight:700; color:${profitColor};">
+      <span>${t("profit")}</span>
+      <span>${formatMoney(profit)}</span>
+    </div>
+  `;
+  resultDiv.style.display = "block";
+
+  // Reset button text
+  if (calcBtn) calcBtn.textContent = `💰 ${t("contractCalcProfit")}`;
+}
+
 function injectIfNeeded() {
   if (document.getElementById(CONTAINER_ID)) return;
 
@@ -253,6 +407,29 @@ function injectIfNeeded() {
         ${t("contractApplyBtn")}${discountPct}%
       </button>
     </div>
+    <div style="border-top: 1px solid #eee; padding-top: 8px; width: 100%;">
+      <button id="scx-contract-calc-btn" style="
+        background: #2ecc71;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 11px;
+        width: 100%;
+        transition: background 0.2s;
+      ">
+        💰 ${t("contractCalcProfit")}
+      </button>
+      <div id="scx-contract-profit-result" style="
+        display: none;
+        font-size: 11px;
+        width: 100%;
+        margin-top: 6px;
+        line-height: 1.6;
+      "></div>
+    </div>
   `;
 
   // Append to sidebar — appears after the existing footer buttons
@@ -279,5 +456,11 @@ function injectIfNeeded() {
   document.getElementById("scx-contract-apply-btn").addEventListener("click", (e) => {
     e.preventDefault();
     applyDiscount();
+  });
+
+  // Event: calculate profit button click
+  document.getElementById("scx-contract-calc-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    calculateAndDisplayProfit();
   });
 }
