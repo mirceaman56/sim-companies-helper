@@ -91,6 +91,9 @@ const STRINGS = {
     sAgo: "s ago",
     mAgo: "m ago",
     hAgo: "h ago",
+    contractDiscountLabel: "Discount %",
+    contractApplyTooltip: "Apply Price",
+    contractApplyBtn: "Market -",
   },
   de: {
     productionHelper: "Produktionshelfer",
@@ -180,6 +183,9 @@ const STRINGS = {
     sAgo: "s her",
     mAgo: "m her",
     hAgo: "h her",
+    contractDiscountLabel: "Rabatt %",
+    contractApplyTooltip: "Preis anwenden",
+    contractApplyBtn: "Markt -",
   },
   fr: {
     productionHelper: "Assistant de Production",
@@ -269,6 +275,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "m",
     hAgo: "h",
+    contractDiscountLabel: "Remise %",
+    contractApplyTooltip: "Appliquer le prix",
+    contractApplyBtn: "Marché -",
   },
   pt: {
     productionHelper: "Assistente de Produção",
@@ -358,6 +367,9 @@ const STRINGS = {
     sAgo: "s atrás",
     mAgo: "m atrás",
     hAgo: "h atrás",
+    contractDiscountLabel: "Desconto %",
+    contractApplyTooltip: "Aplicar preço",
+    contractApplyBtn: "Mercado -",
   },
   tr: {
     productionHelper: "Üretim Yardımcısı",
@@ -447,6 +459,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "d",
     hAgo: "s",
+    contractDiscountLabel: "İndirim %",
+    contractApplyTooltip: "Fiyat uygula",
+    contractApplyBtn: "Piyasa -",
   },
   it: {
     productionHelper: "Assistente di Produzione",
@@ -536,6 +551,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "m",
     hAgo: "h",
+    contractDiscountLabel: "Sconto %",
+    contractApplyTooltip: "Applica prezzo",
+    contractApplyBtn: "Mercato -",
   },
   es: {
     productionHelper: "Asistente de Producción",
@@ -625,6 +643,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "m",
     hAgo: "h",
+    contractDiscountLabel: "Descuento %",
+    contractApplyTooltip: "Aplicar precio",
+    contractApplyBtn: "Mercado -",
   },
   zh_cn: {
     productionHelper: "生产助手",
@@ -714,6 +735,9 @@ const STRINGS = {
     sAgo: "秒前",
     mAgo: "分钟前",
     hAgo: "小时前",
+    contractDiscountLabel: "折扣 %",
+    contractApplyTooltip: "应用价格",
+    contractApplyBtn: "市场 -",
   },
   zh_tw: {
     productionHelper: "生産助手",
@@ -803,6 +827,9 @@ const STRINGS = {
     sAgo: "秒前",
     mAgo: "分鐘前",
     hAgo: "小時前",
+    contractDiscountLabel: "折扣 %",
+    contractApplyTooltip: "應用價格",
+    contractApplyBtn: "市場 -",
   },
   cs: {
     productionHelper: "Asistent Výroby",
@@ -892,6 +919,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "m",
     hAgo: "h",
+    contractDiscountLabel: "Sleva %",
+    contractApplyTooltip: "Použít cenu",
+    contractApplyBtn: "Trh -",
   },
   pl: {
     productionHelper: "Asystent Produkcji",
@@ -981,6 +1011,9 @@ const STRINGS = {
     sAgo: "s",
     mAgo: "m",
     hAgo: "h",
+    contractDiscountLabel: "Zniżka %",
+    contractApplyTooltip: "Zastosuj cenę",
+    contractApplyBtn: "Rynek -",
   },
   ja: {
     productionHelper: "生産ヘルパー",
@@ -1070,6 +1103,9 @@ const STRINGS = {
     sAgo: "秒前",
     mAgo: "分前",
     hAgo: "時間前",
+    contractDiscountLabel: "割引 %",
+    contractApplyTooltip: "価格を適用",
+    contractApplyBtn: "市場 -",
   },
 };
 
