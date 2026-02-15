@@ -162,6 +162,13 @@
       transform: translateY(-2px);
     }
 
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
     .btn-primary {
       display: inline-block;
       background: #3498db;
@@ -170,11 +177,32 @@
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
-      margin-top: 10px;
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
     }
     
     .btn-primary:hover {
       background: #2980b9;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      background: #f5f5f5;
+      color: #333;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      border: 1px solid #ddd;
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
+    }
+    
+    .btn-secondary:hover {
+      background: #e8e8e8;
+      border-color: #999;
     }
 
     code {
@@ -212,7 +240,10 @@
         This extension integrates seamlessly into Sim Companies to help you make smarter decisions.
       </p>
 
-      <a href="https://github.com/mirceaman56/sim-companies-helper/releases" class="btn-primary">Download Extension</a>
+      <div class="btn-group">
+        <a href="https://chromewebstore.google.com/detail/sim-companies-helper/kpodpgcmkpjidokiejlkkoiaceameaan?authuser=2&hl=en" target="_blank" class="btn-primary">Install from Chrome Web Store</a>
+        <a href="https://github.com/mirceaman56/sim-companies-helper/releases" class="btn-secondary">Early Release (Manual Setup)</a>
+      </div>
       
       <h2>Overview</h2>
       <p>Watch this quick overview to learn about the extension's features:</p>
@@ -227,7 +258,7 @@
         </div>
       </div>
 
-      <h2>Installation</h2>
+      <h2>Installation of early releases</h2>
       <ol>
         <li>Download the latest <code>.zip</code> release.</li>
         <li>Go to <code>chrome://extensions</code> in your browser.</li>
