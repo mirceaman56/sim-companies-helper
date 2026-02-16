@@ -93,6 +93,10 @@ describe("parseDurationToSeconds", () => {
     expect(parseDurationToSeconds("45s")).toBe(45);
   });
 
+  it("parses exactly 1 day (EN)", () => {
+    expect(parseDurationToSeconds("1d")).toBe(86400);
+  });
+
   it("returns NaN for garbage", () => {
     expect(parseDurationToSeconds("abc")).toBeNaN();
   });
@@ -165,6 +169,11 @@ describe("extractFinishSeconds", () => {
   it("extracts duration from parenthesized text in info column", () => {
     const row = makeRow({ duration: "(2h 30m)" });
     expect(extractFinishSeconds(row)).toBe(9000);
+  });
+
+  it("extracts exactly 1 day duration", () => {
+    const row = makeRow({ duration: "(1d)" });
+    expect(extractFinishSeconds(row)).toBe(86400);
   });
 
   it("returns NaN when no duration present", () => {

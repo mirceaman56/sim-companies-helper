@@ -89,7 +89,7 @@ export const RetailHelper = (() => {
 
     // Duration is always in parentheses like (11h, 7m) or (13st, 31m) — language-agnostic
     const text = infoCol.textContent || '';
-    const paren = text.match(/\(([^)]*\d+\s*(?:st|[hmst])[^)]*)\)/);
+    const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
     if (paren) return parseDurationToSeconds(paren[1]);
 
     return NaN;
