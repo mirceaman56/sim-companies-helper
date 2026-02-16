@@ -154,13 +154,13 @@ function setInputValue(input, value) {
 function applyDiscount() {
   const lowestPrice = getLowestSellerPrice();
   if (lowestPrice === null) {
-    console.warn("[SimHelper] Could not find lowest seller price on the page.");
+    console.debug("[SimHelper] Could not find lowest seller price on the page.");
     return;
   }
 
   const priceInput = findPriceInput();
   if (!priceInput) {
-    console.warn("[SimHelper] Could not find price input on the page.");
+    console.debug("[SimHelper] Could not find price input on the page.");
     return;
   }
 
@@ -306,7 +306,7 @@ async function calculateAndDisplayProfit() {
         totalTransport = transportCount * transportPrice;
       }
     } catch (e) {
-      console.warn("[SimHelper] Failed to fetch transport price:", e);
+      console.debug("[SimHelper] Failed to fetch transport price:", e);
     }
   }
 
