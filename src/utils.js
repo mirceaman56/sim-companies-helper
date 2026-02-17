@@ -1,9 +1,27 @@
 import { STATE } from "./state.js";
 
-export function formatMoney(x) {
+/**
+ * Format a number as money with thousands separators
+ * @param {number} x - The amount to format
+ * @param {object} options - Optional formatting options
+ * @param {number} options.decimals - Number of decimal places (default: 2)
+ * @param {boolean} options.prefix - Whether to include $ prefix (default: true)
+ * @returns {string} Formatted amount, e.g. "$1,234,567.89" or "1,234.50"
+ */
+export function formatMoney(x, options = {}) {
   if (!Number.isFinite(x)) return "—";
+  
+  const decimals = options.decimals ?? 2;
+  const prefix = options.prefix !== false; // default true
+  
   const sign = x < 0 ? "-" : "";
-  return `${sign}$${Math.abs(x).toFixed(2)}`;
+  const abs = Math.abs(x).toFixed(decimals);
+  const parts = abs.split('.');
+  const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const decimal = parts[1];
+  
+  const formatted = `${integer}.${decimal}`;
+  return prefix ? `${sign}$${formatted}` : `${sign}${formatted}`;
 }
 
 /**

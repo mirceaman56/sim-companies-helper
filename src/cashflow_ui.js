@@ -178,3 +178,6 @@ function formatRefreshTime(ms) {
   if (ago < 3600) return `${Math.floor(ago / 60)}${t("mAgo")}`;
   return `${Math.floor(ago / 3600)}${t("hAgo")}`;
 }
+
+// Export test utilities
+export const _testUtils = { formatCashflowAsText, renderBreakdownRow, formatRefreshTime };

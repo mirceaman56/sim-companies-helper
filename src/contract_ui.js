@@ -174,7 +174,7 @@ function applyDiscount() {
   const btn = document.getElementById("scx-contract-apply-btn");
   if (btn) {
     const orig = btn.textContent;
-    btn.textContent = `✓ $${rounded.toFixed(3)}`;
+    btn.textContent = `✓ ${formatMoney(rounded, { decimals: 3 })}`;
     setTimeout(() => {
       btn.textContent = orig;
     }, 1500);
