@@ -259,7 +259,7 @@ export const RetailHelper = (() => {
       const inv = kind ? STATE.inventory.byKind.get(kind) : null;
       if (!inv) return { status: "OK", stock: "0", cpu: "—", src: "—", basis: "—", note: "" };
 
-      const cpu = inv.amount > 0 ? `$${(inv.totalCost / inv.amount).toFixed(2)}` : "—";
+      const cpu = inv.amount > 0 ? `$${formatMoney(inv.totalCost / inv.amount, { prefix: false })}` : "—";
       const src =
         inv.marketCost > 0 && (inv.workers + inv.admin + inv.materials) > 0
           ? "Mixed"
@@ -274,14 +274,14 @@ export const RetailHelper = (() => {
       const uMarket = (inv.marketCost || 0) / amount;
       const uProd = ((inv.workers || 0) + (inv.admin || 0) + (inv.materials || 0)) / amount;
 
-      const note = `Mix: market $${uMarket.toFixed(2)} | produced $${uProd.toFixed(2)}`;
+      const note = `Mix: market $${formatMoney(uMarket, { prefix: false })} | produced $${formatMoney(uProd, { prefix: false })}`;
 
       return {
         status: "OK",
         stock: String(Math.floor(inv.amount)),
         cpu,
         src,
-        basis: `$${(inv.totalCost || 0).toFixed(2)}`,
+        basis: `$${formatMoney(inv.totalCost || 0, { prefix: false })}`,
         note,
       };
     },
@@ -321,9 +321,9 @@ export const RetailHelper = (() => {
 
       return {
         status: "OK",
-        cheapestPrice: `$${cheapest.price.toFixed(2)}`,
+        cheapestPrice: `$${formatMoney(cheapest.price, { prefix: false })}`,
         cheapestQty: cheapest.quantity == null ? "—" : String(cheapest.quantity),
-        youVs: isFinite(youVs) ? `${youVs > 0 ? "+" : ""}${youVs.toFixed(2)}` : "—",
+        youVs: isFinite(youVs) ? `${youVs > 0 ? "+" : ""}${formatMoney(youVs, { prefix: false })}` : "—",
         note: "",
       };
     },
