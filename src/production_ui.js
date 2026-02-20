@@ -218,6 +218,83 @@ function getLaborCostFromRow(row) {
 }
 
 /**
+ * Extract building level from the page.
+ * Searches for level indicators in building info cards, excluding header/navigation.
+ * Prioritizes patterns like "LEVEL 10" and avoids player level indicators.
+ */
+function extractBuildingLevelFromPage() {
+  // First, try to find explicit "LEVEL X" patterns (case-insensitive)
+  // Exclude elements in the header/navigation area (top ~100px)
+  const allDivs = document.querySelectorAll('div');
+  
+  for (const div of allDivs) {
+    const rect = div.getBoundingClientRect();
+    
+    // Skip elements in the top navigation bar (typically in top 100px of viewport)
+    if (rect.top < 100) continue;
+    
+    const text = div.textContent?.trim() || '';
+    
+    // Look for explicit patterns like "LEVEL 10", "LEVEL 19", etc.
+    // Case insensitive
+    const levelMatch = text.match(/level\s+(\d+)/i);
+    if (levelMatch) {
+      const level = parseInt(levelMatch[1], 10);
+      if (level >= 1 && level <= 100) {
+        // Verify this is in a reasonable context (short text, suggests building info)
+        if (text.length <= 50) {
+          return level;
+        }
+      }
+    }
+  }
+
+  // Fallback: If no explicit "LEVEL X" pattern found, look for isolated numbers
+  // in small containers (building cards are typically compact)
+  for (const div of allDivs) {
+    const rect = div.getBoundingClientRect();
+    
+    // Skip header area
+    if (rect.top < 100) continue;
+    
+    const text = div.textContent?.trim() || '';
+    
+    // Skip if text is too long - likely not a building card
+    if (text.length > 100) continue;
+    
+    // Skip divs that seem to be part of large sections
+    if (rect.width > 300 || rect.height > 200) continue;
+    
+    // Look for a number that stands alone or with minimal text
+    const match = text.match(/^\d+$|^(?:level\s+)?\d+$/i);
+    if (match) {
+      const level = parseInt(text.match(/\d+/)[0], 10);
+      if (level >= 1 && level <= 100 && text.length <= 30) {
+        // Check parent context - should be in a card-like structure
+        const parent = div.parentElement;
+        if (parent && parent.textContent && parent.textContent.length < 500) {
+          return level;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Calculate production multiplier for upgraded building.
+ * Formula: multiplier = 1 + 1/currentLevel
+ * This represents the new production level after upgrading.
+ */
+function calculateUpgradeMultiplier(currentLevel) {
+  if (!currentLevel || currentLevel <= 0) {
+    return null;
+  }
+  return 1 + (1 / currentLevel);
+}
+
+/**
  * Wait for labor cost to appear in the row, then resolve with the cost value
  */
 function waitForLaborCost(row, maxWaitMs = 3000) {
@@ -295,6 +372,12 @@ async function updateForRow(row) {
  */
 function handleProductionInteraction(e) {
   const target = e.target;
+  
+  // Don't handle copy button clicks
+  if (target.closest?.('.scx-copy-btn')) {
+    return;
+  }
+  
   const row = getProductionRowFromTarget(target);
   if (row) {
     // If clicking input, handle normally. 
@@ -391,7 +474,7 @@ async function renderProductAnalysis(contentEl, recipe) {
   // Analyze production (pass realmId for transport cost calculation)
   const realmId = getRealmId();
   const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache, realmId, currentUnitCost);
-
+  
   if (!analysis || analysis.error) {
     contentEl.innerHTML = `
       <div class="scx-panel" style="padding: 12px;">
@@ -410,41 +493,66 @@ async function renderProductAnalysis(contentEl, recipe) {
 /**
  * Format production data as plain text table
  */
-function formatProductionAsText(recipe, analysis, quantity) {
+function formatProductionAsText(recipe, analysis, quantity, buildingLevel, upgradeMultiplier, upgradedProduction, productionIncrease, projectedMarketProfit, projectedContractProfit, marketProfitDelta, contractProfitDelta) {
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, unitCost } = analysis;
   const lines = [
-    `Product: ${recipe.name}`,
-    `Quantity: ${quantity}`,
+    `${t('product')}: ${recipe.name}`,
+    `${t('quantity')}: ${quantity}`,
     ``,
-    `COSTS:`,
-    `  Base Unit Cost: ${formatMoney(unitCost)}`,
+    `${t('costLabel')}:`,
+    `  ${t('baseUnitCost')}: ${formatMoney(unitCost)}`,
     `  Total Production Cost: ${formatMoney(productionCost)}`,
     ``,
   ];
   
   if (breakEvenAnalysis) {
     lines.push(
-      `BREAK-EVEN (Market):`,
+      `${t('breakEvenMarket')}:`,
       `  Total Cost: ${formatMoney(breakEvenAnalysis.market.totalCost)}`,
-      `  Transport Cost: ${formatMoney(breakEvenAnalysis.market.transportCost)}`,
-      `  Break-Even Price: ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}`,
+      `  ${t('transportCost')}: ${formatMoney(breakEvenAnalysis.market.transportCost)}`,
+      `  ${t('breakEvenPrice')}: ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}`,
       ``,
-      `BREAK-EVEN (Contract):`,
+      `${t('breakEvenContract')}:`,
       `  Total Cost: ${formatMoney(breakEvenAnalysis.contract.totalCost)}`,
-      `  Transport Cost: ${formatMoney(breakEvenAnalysis.contract.transportCost)}`,
-      `  Break-Even Price: ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}`,
+      `  ${t('transportCost')}: ${formatMoney(breakEvenAnalysis.contract.transportCost)}`,
+      `  ${t('breakEvenPrice')}: ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}`, 
       ``
     );
   }
   
   if (profitAnalysis) {
     lines.push(
-      `PROFIT ANALYSIS (at $${formatMoney(marketPrice)}):`,
-      `  Market Profit: ${formatMoney(profitAnalysis.market.profit)}`,
-      `  Market Margin: ${profitAnalysis.market.margin.toFixed(2)}%`,
-      `  Contract Profit: ${formatMoney(profitAnalysis.contract.profit)}`,
-      `  Contract Margin: ${profitAnalysis.contract.margin.toFixed(2)}%`
+      `${t('profitAnalysisText')} (at $${formatMoney(marketPrice)}):`,
+      `  ${t('marketProfit')}: ${formatMoney(profitAnalysis.market.profit)}`,
+      `  ${t('marketMargin')}: ${profitAnalysis.market.margin.toFixed(2)}%`,
+      `  ${t('contractProfit')}: ${formatMoney(profitAnalysis.contract.profit)}`,
+      `  ${t('contractMargin')}: ${profitAnalysis.contract.margin.toFixed(2)}%`,
+      ``
     );
+  }
+
+  if (buildingLevel && upgradeMultiplier) {
+    lines.push(
+      `${t('buildingUpgradeProjection')}:`,
+      `  ${t('currentLevel')}: ${buildingLevel}`,
+      `  ${t('productionAfterUpgrade')} (${t('lvl')} ${buildingLevel + 1}): ${upgradedProduction.toFixed(2)}`,
+      `  ${t('productionIncreasePercent')}: +${productionIncrease.toFixed(2)} (${((upgradeMultiplier - 1) * 100).toFixed(1)}%)` ,
+      ``
+    );
+  }
+
+  if (projectedMarketProfit !== null && projectedContractProfit !== null) {
+    lines.push(
+      `${t('projectedProfitsAtLevel')} ${buildingLevel + 1}:`,
+      `  Market Sell: ${formatMoney(projectedMarketProfit)}`
+    );
+    if (marketProfitDelta !== null) {
+      lines.push(`    ${t('delta')}: ${formatMoney(marketProfitDelta)}`);
+    }
+    lines.push(`  Contract Sell: ${formatMoney(projectedContractProfit)}`);
+    if (contractProfitDelta !== null) {
+      lines.push(`    ${t('delta')}: ${formatMoney(contractProfitDelta)}`);
+    }
   }
   
   return lines.join('\n');
@@ -454,12 +562,33 @@ function formatProductionAsText(recipe, analysis, quantity) {
  * Render the full analysis UI
  */
 function renderAnalysisUI(contentEl, recipe, analysis) {
+  
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice } = analysis;
+
+  // Extract building level from the page
+  const buildingLevel = extractBuildingLevelFromPage();
+  const upgradeMultiplier = buildingLevel ? calculateUpgradeMultiplier(buildingLevel) : null;
+  const upgradedProduction = upgradeMultiplier ? currentQuantity * upgradeMultiplier : null;
+  const productionIncrease = upgradedProduction ? currentQuantity * (upgradeMultiplier - 1) : null;
+
+  // Calculate projected profits at upgraded production level
+  let projectedMarketProfit = null;
+  let projectedContractProfit = null;
+  let marketProfitDelta = null;
+  let contractProfitDelta = null;
+
+  if (buildingLevel && upgradeMultiplier && upgradedProduction && profitAnalysis) {
+    const profitMultiplier = upgradedProduction / currentQuantity;
+    projectedMarketProfit = profitAnalysis.market.profit * profitMultiplier;
+    projectedContractProfit = profitAnalysis.contract.profit * profitMultiplier;
+    marketProfitDelta = projectedMarketProfit - profitAnalysis.market.profit;
+    contractProfitDelta = projectedContractProfit - profitAnalysis.contract.profit;
+  }
 
   contentEl.innerHTML = `
     <div class="scx-panel" style="font-size: 11px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <div style="font-weight: 600; color: #333; font-size: 12px;">${escapeHtml(recipe.name)}</div>
+      <div class="scx-flex-spaced scx-margin-bottom-6">
+        <div class="scx-prod-title">${escapeHtml(recipe.name)}</div>
         <button class="scx-copy-btn" data-copy-action="production" data-tooltip="Copy text">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -468,93 +597,186 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         </button>
       </div>
       
-      <div style="color: #999; font-size: 9px;">
-        ${t("qty")}: <span style="font-weight: 600; color: #333;">${currentQuantity}</span>
-        <span style="background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px; margin-left:4px;">${t("active")}</span>
+      <div class="scx-color-999 scx-font-8 scx-margin-bottom-4">
+        ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
+        <span class="scx-badge-active">${t("active")}</span>
+        ${buildingLevel ? `<span class="scx-badge-level">${t('lvl')} ${buildingLevel}</span>` : ''}
       </div>
 
-      <hr style="margin: 8px 0;">
+      <hr class="scx-hr-sm">
 
-      <div class="scx-panel-head" style="margin-bottom: 8px;">
-        <div class="scx-panel-title">${t("productionCosts")}</div>
+      <div class="scx-panel-head scx-margin-bottom-4">
+        <div class="scx-panel-title scx-font-9">${t("productionCosts")}</div>
       </div>
-      <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="scx-k" style="color:#455a64;">${t("costPerUnitUI")}</span>
+      <div class="scx-box-blue scx-margin-bottom-4">
+          <div class="scx-flex-row">
+            <span class="scx-k scx-color-333">${t("costPerUnitUI")}</span>
             <span class="scx-v">${formatMoney(currentUnitCost)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-top:4px;">
-            <span class="scx-k" style="color:#455a64;">${t("totalProductionCost")}</span>
-            <span class="scx-v" style="font-weight:700; color:#1565c0;">${formatMoney(productionCost)}</span>
+          <div class="scx-flex-row scx-margin-top-2">
+            <span class="scx-k scx-color-333">${t("totalProductionCost")}</span>
+            <span class="scx-v scx-text-bold scx-text-blue">${formatMoney(productionCost)}</span>
           </div>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-         <div class="scx-panel-title">${t("profitAnalysis")}</div>
-         <div style="font-size:9px; color:#999;">@ ${formatMoney(marketPrice)} ${t("marketInParens")}</div>
+      <div class="scx-flex-spaced scx-margin-bottom-4">
+         <div class="scx-panel-title scx-font-9">${t("profitAnalysis")}</div>
+         <div class="scx-font-8 scx-color-999">@ ${formatMoney(marketPrice)}</div>
       </div>
       
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+      <div class="scx-flex-column" style="gap: 4px; margin-bottom: 4px;">
         
         <!-- Market Profit -->
-        <div style="background: #fff8e1; padding: 8px; border-radius: 4px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-             <span style="font-weight:600; color:#ff6f00;">${t("marketSell")}</span>
-             <div class="scx-muted">${t("fullTransportFee")}</div>
+        <div class="scx-box-yellow">
+          <div class="scx-flex-spaced scx-font-9">
+             <span class="scx-text-semibold scx-text-orange">${t("marketSell")}</span>
+             <div class="scx-muted scx-font-8">${t("fullTransportFee")}</div>
           </div>
           
-          <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k" style="color:#5d4037;">${t("profit")}</span>
-             <span style="font-weight:700; color:${profitAnalysis.market.profit >= 0 ? '#2e7d32' : '#c62828'};">
+          <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-text-brown scx-font-9">${t("profit")}</span>
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.market.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k" style="color:#5d4037;">${t("margin")}</span>
+          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+             <span class="scx-k scx-text-brown">${t("margin")}</span>
              <span style="color:${profitAnalysis.market.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
           </div>
-          <div style="font-size:9px; color:#999; margin-top:4px; text-align:right;">
+          <div class="scx-text-muted scx-margin-top-2 scx-text-right">
              ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}
           </div>
         </div>
 
         <!-- Contract Profit -->
-        <div style="background: #f3e5f5; padding: 8px; border-radius: 4px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-             <span style="font-weight:600; color:#7b1fa2;">${t("contractSell")}</span>
-             <div class="scx-muted">${t("halfTransport")}</div>
+        <div class="scx-box-purple">
+          <div class="scx-flex-spaced scx-font-9">
+             <span class="scx-text-semibold scx-text-purple">${t("contractSell")}</span>
+             <div class="scx-muted scx-font-8">${t("halfTransport")}</div>
           </div>
           
-           <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.05);">
-             <span class="scx-k" style="color:#4a148c;">${t("profit")}</span>
-             <span style="font-weight:700; color:${profitAnalysis.contract.profit >= 0 ? '#2e7d32' : '#c62828'};">
+           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-text-dark-brown scx-font-9">${t("profit")}</span>
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.contract.profit >= 0 ? '#2e7d32' : '#c62828'};">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-top:2px;">
-             <span class="scx-k" style="color:#4a148c;">${t("margin")}</span>
+          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+             <span class="scx-k scx-text-dark-brown">${t("margin")}</span>
              <span style="color:${profitAnalysis.contract.margin >= 0 ? '#2e7d32' : '#c62828'};">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>
           </div>
-           <div style="font-size:9px; color:#999; margin-top:4px; text-align:right;">
+           <div class="scx-text-muted scx-margin-top-2 scx-text-right">
              ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}
           </div>
         </div>
       </div>
+
+      ${buildingLevel && upgradeMultiplier && upgradedProduction ? `
+      <hr class="scx-hr-sm">
+
+      <div class="scx-panel-head scx-margin-bottom-4">
+        <div class="scx-panel-title scx-font-9">${t("buildingUpgradeProjection")}</div>
+      </div>
+      <div class="scx-box-green scx-margin-bottom-4">
+          <div class="scx-flex-row">
+            <span class="scx-k scx-text-forest">${t("currentLevel")}</span>
+            <span class="scx-v scx-text-semibold">${buildingLevel}</span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-2">
+            <span class="scx-k scx-text-forest">${t("afterUpgradeLevel")} ${buildingLevel + 1})</span>
+            <span class="scx-v scx-text-semibold">${upgradedProduction.toFixed(2)}</span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-2 scx-padding-top-3 scx-border-top-md">
+            <span class="scx-k scx-text-forest scx-text-semibold">${t("productionIncrease")}</span>
+            <span class="scx-v scx-text-bold scx-text-green">+${productionIncrease.toFixed(2)} (${((upgradeMultiplier - 1) * 100).toFixed(1)}%)</span>
+          </div>
+      </div>
+
+      <!-- Projected Profit Section -->
+      ${projectedMarketProfit !== null && projectedContractProfit !== null ? `
+      <div class="scx-box-light-gray" style="margin-top: 4px;">
+        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase" style="color: #1a237e;">${t('projectedProfitsAtLevel')} ${t('lvl')} ${buildingLevel + 1}</div>
+        
+        <!-- Projected Market Profit -->
+        <div class="scx-profit-box-sm scx-profit-box-yellow scx-margin-bottom-4">
+          <div class="scx-flex-spaced scx-font-8">
+             <span class="scx-text-orange">${t("marketSell")}</span>
+             <span class="scx-text-bold" style="color:${projectedMarketProfit >= 0 ? '#2e7d32' : '#c62828'};">
+               ${formatMoney(projectedMarketProfit)}
+             </span>
+          </div>
+          ${marketProfitDelta !== null ? `
+          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+             <span>${t('delta')}:</span>
+             <span style="color:${marketProfitDelta >= 0 ? '#2e7d32' : '#c62828'};">
+               ${formatMoney(marketProfitDelta)}
+             </span>
+          </div>
+          ` : ''}
+        </div>
+
+        <!-- Projected Contract Profit -->
+        <div class="scx-profit-box-sm scx-profit-box-purple">
+          <div class="scx-flex-spaced scx-font-8">
+             <span class="scx-text-purple">${t("contractSell")}</span>
+             <span class="scx-text-bold" style="color:${projectedContractProfit >= 0 ? '#2e7d32' : '#c62828'};">
+               ${formatMoney(projectedContractProfit)}
+             </span>
+          </div>
+          ${contractProfitDelta !== null ? `
+          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+             <span>${t('delta')}:</span>
+             <span style="color:${contractProfitDelta >= 0 ? '#2e7d32' : '#c62828'};">
+               ${formatMoney(contractProfitDelta)}
+             </span>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+      ` : ''}
+      ` : ''}
     </div>
   `;
 
-  // Wire up copy button
-  const copyBtn = contentEl.querySelector('.scx-copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const text = formatProductionAsText(recipe, analysis, currentQuantity);
-      copyToClipboard(text, copyBtn);
-    });
+  // Wire up copy button using capture phase to intercept before other handlers
+  const handleCopyClick = async (e) => {
+    if (!e.target.closest('.scx-copy-btn')) return;
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    try {
+      const text = formatProductionAsText(
+        recipe, 
+        analysis, 
+        currentQuantity, 
+        buildingLevel, 
+        upgradeMultiplier, 
+        upgradedProduction, 
+        productionIncrease, 
+        projectedMarketProfit, 
+        projectedContractProfit, 
+        marketProfitDelta, 
+        contractProfitDelta
+      );
+      await copyToClipboard(text);
+    } catch (err) {
+      console.error('Copy error:', err);
+    }
+  };
+  
+  // Remove old listener if it exists
+  if (contentEl._copyClickHandler) {
+    contentEl.removeEventListener('click', contentEl._copyClickHandler, true);
   }
+  
+  // Store and attach new listener
+  contentEl._copyClickHandler = handleCopyClick;
+  contentEl.addEventListener('click', handleCopyClick, true);
 }
 
 /**
@@ -573,16 +795,16 @@ function renderMaterialsCost(materialCosts) {
       (mc) => {
         const materialName = materialNamesMap.get(mc.materialId) || `Resource ${mc.materialId}`;
         return `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
+    <div class="scx-material-row">
       <div>
-        <div style="color: #333; font-weight: 500;">${materialName}</div>
-        <div style="color: #999; font-size: 9px;">${t("qty")}: ${mc.quantity}</div>
+        <div class="scx-material-name">${materialName}</div>
+        <div class="scx-material-qty">${t("qty")}: ${mc.quantity}</div>
       </div>
-      <div style="text-align: right;">
-        <div style="color: #666; font-weight: 500;">
+      <div class="scx-material-price">
+        <div class="scx-material-unit-price">
           ${Number.isFinite(mc.unitPrice) ? formatMoney(mc.unitPrice) : "—"} ${t("perUnit")}
         </div>
-        <div style="color: #333; font-weight: 600;">
+        <div class="scx-material-total-cost">
           ${Number.isFinite(mc.totalCost) ? formatMoney(mc.totalCost) : "—"}
         </div>
       </div>
@@ -599,7 +821,7 @@ function renderMaterialsCost(materialCosts) {
 function renderSellAnalysis(sellAnalysis, quantity) {
   if (!sellAnalysis || !Number.isFinite(sellAnalysis.profit)) {
     return `
-      <div class="scx-note" style="border-left-color: #ff9800; background: #fff8f0;">
+      <div class="scx-note scx-note-warning">
         ${t("cannotCalcProfit")}
       </div>
     `;
@@ -610,45 +832,45 @@ function renderSellAnalysis(sellAnalysis, quantity) {
   const profitBg = isProfitable ? "#e8f5e9" : "#ffebee";
 
   return `
-    <hr style="margin: 8px 0;">
+    <hr class="scx-sell-hr">
 
-    <div class="scx-panel-head" style="margin-bottom: 12px;">
+    <div class="scx-panel-head scx-margin-bottom-6">
       <div class="scx-panel-title">${t("sellingAnalysis")}</div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-      <div style="background: #e8f5e9; padding: 8px; border-radius: 4px;">
+    <div class="scx-sell-grid">
+      <div class="scx-sell-box scx-sell-box-green">
         <div class="scx-k">${t("grossProceeds")}</div>
-        <div style="font-size: 13px; font-weight: 700; color: #1b5e20;">
+        <div class="scx-sell-box-content">
           ${formatMoney(sellAnalysis.sellPrice)}
         </div>
       </div>
-      <div style="background: #fff3e0; padding: 8px; border-radius: 4px;">
+      <div class="scx-sell-box scx-sell-box-orange">
         <div class="scx-k">${t("marketFee4pct")}</div>
-        <div style="font-size: 13px; font-weight: 700; color: #e65100;">
+        <div class="scx-sell-box-content">
           -${formatMoney(sellAnalysis.feeAmount)}
         </div>
       </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-      <div style="background: #f0f8ff; padding: 8px; border-radius: 4px;">
+    <div class="scx-sell-grid">
+      <div class="scx-sell-box scx-sell-box-blue">
         <div class="scx-k">${t("netProceeds")}</div>
-        <div style="font-size: 13px; font-weight: 700; color: #0d47a1;">
+        <div class="scx-sell-box-content">
           ${formatMoney(sellAnalysis.netProceeds)}
         </div>
       </div>
-      <div style="background: ${profitBg}; padding: 8px; border-radius: 4px;">
+      <div class="scx-sell-box" style="background: ${profitBg}; padding: 8px; border-radius: 4px;">
         <div class="scx-k">${t("profit")}</div>
-        <div style="font-size: 13px; font-weight: 700; color: ${profitColor};">
+        <div class="scx-sell-box-content" style="color: ${profitColor};">
           ${isProfitable ? "+" : ""}${formatMoney(sellAnalysis.profit)}
         </div>
       </div>
     </div>
 
-    <div style="background: #fafafa; padding: 8px; border-radius: 4px; text-align: center;">
-      <div class="scx-k" style="margin-bottom: 4px;">${t("profitMargin")}</div>
-      <div style="font-size: 16px; font-weight: 700; color: ${profitColor};">
+    <div class="scx-sell-profit-center">
+      <div class="scx-k scx-margin-bottom-4">${t("profitMargin")}</div>
+      <div class="scx-sell-profit-center-value" style="color: ${profitColor};">
         ${Number.isFinite(sellAnalysis.profitMargin) ? sellAnalysis.profitMargin.toFixed(1) : "—"}%
       </div>
     </div>

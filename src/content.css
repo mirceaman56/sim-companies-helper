@@ -251,6 +251,298 @@
   opacity: 1;
 }
 
+/* Production UI styling */
+.scx-prod-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 12px;
+}
+
+.scx-prod-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.scx-prod-qty {
+  font-weight: 600;
+  color: #333;
+}
+
+.scx-badge-active {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 0px 3px;
+  border-radius: 2px;
+  margin-left: 3px;
+  font-size: 8px;
+}
+
+.scx-badge-level {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  padding: 0px 3px;
+  border-radius: 2px;
+  margin-left: 3px;
+  font-size: 8px;
+}
+
+.scx-box-blue {
+  background: #e3f2fd;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.scx-box-yellow {
+  background: #fff8e1;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.scx-box-purple {
+  background: #f3e5f5;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.scx-box-green {
+  background: #e8f5e9;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.scx-box-light-gray {
+  background: #f0f4f8;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.scx-profit-box-sm {
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.scx-profit-box-yellow {
+  background: #fff8e1;
+}
+
+.scx-profit-box-purple {
+  background: #f3e5f5;
+}
+
+.scx-flex-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+}
+
+.scx-flex-spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.scx-text-blue {
+  color: #1565c0;
+}
+
+.scx-text-green {
+  color: #2e7d32;
+}
+
+.scx-text-red {
+  color: #c62828;
+}
+
+.scx-text-orange {
+  color: #ff6f00;
+}
+
+.scx-text-purple {
+  color: #7b1fa2;
+}
+
+.scx-text-brown {
+  color: #5d4037;
+}
+
+.scx-text-dark-brown {
+  color: #4a148c;
+}
+
+.scx-text-forest {
+  color: #558b2f;
+}
+
+.scx-text-muted {
+  color: #999;
+  font-size: 9px;
+}
+
+.scx-text-bold {
+  font-weight: 700;
+}
+
+.scx-text-semibold {
+  font-weight: 600;
+}
+
+.scx-hr-sm {
+  margin: 6px 0;
+}
+
+.scx-margin-bottom-4 {
+  margin-bottom: 4px;
+}
+
+.scx-margin-bottom-6 {
+  margin-bottom: 6px;
+}
+
+.scx-margin-top-1 {
+  margin-top: 1px;
+}
+
+.scx-margin-top-2 {
+  margin-top: 2px;
+}
+
+.scx-margin-top-4 {
+  margin-top: 4px;
+}
+
+.scx-border-top-sm {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.scx-border-top-md {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.scx-padding-top-3 {
+  padding-top: 3px;
+}
+
+.scx-padding-top-4 {
+  padding-top: 4px;
+}
+
+.scx-text-right {
+  text-align: right;
+}
+
+.scx-text-uppercase {
+  text-transform: uppercase;
+}
+
+.scx-font-8 {
+  font-size: 9px;
+}
+
+.scx-font-9 {
+  font-size: 10px;
+}
+
+.scx-color-999 {
+  color: #999;
+}
+
+.scx-color-333 {
+  color: #333;
+}
+
+.scx-material-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.scx-material-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.scx-material-qty {
+  color: #999;
+  font-size: 10px;
+}
+
+.scx-material-price {
+  text-align: right;
+}
+
+.scx-material-unit-price {
+  color: #666;
+  font-weight: 500;
+}
+
+.scx-material-total-cost {
+  color: #333;
+  font-weight: 600;
+}
+
+.scx-sell-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.scx-sell-box {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-sell-box-green {
+  background: #e8f5e9;
+}
+
+.scx-sell-box-orange {
+  background: #fff3e0;
+}
+
+.scx-sell-box-blue {
+  background: #f0f8ff;
+}
+
+.scx-sell-box-content {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scx-sell-box-green .scx-sell-box-content {
+  color: #1b5e20;
+}
+
+.scx-sell-box-orange .scx-sell-box-content {
+  color: #e65100;
+}
+
+.scx-sell-box-blue .scx-sell-box-content {
+  color: #0d47a1;
+}
+
+.scx-sell-profit-center {
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.scx-sell-profit-center-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
 @media (max-width: 1200px) {
   .scx-sidebar { display: none; }
 }
