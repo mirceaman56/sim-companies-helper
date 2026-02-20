@@ -10,18 +10,30 @@ import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initChatFilter } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
+import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
+
+/**
+ * Sync legacy cashflow state for backward compatibility.
+ * Some code still reads cf.items/cf.summary instead of the modern cf.todayItems/cf.todaySummary.
+ */
+function syncLegacyCashflowState() {
+  STATE.cashflow.items = STATE.cashflow.todayItems || [];
+  STATE.cashflow.summary =
+    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
+}
 
 async function init() {
   // Initialize the sidebar container
   ensureSidebarContainer();
 
-  // Register sections - Order: Production, Retail, Financials, Chat
+  // Register sections - Order: Production, Retail, Financials, Chat, Executive
   registerSection("production-section", t("productionHelper"), "⚙️");
   registerSection("retail-section", t("retailHelper"), "🏪");
   registerSection("cashflow-section", t("financialsHelper"), "💲");
   registerSection("chat-section", t("chatFilter"), "💬");
+  registerSection("executive-section", t("executiveHelper"), "👔");
 
   // Add footer
   ensureFooter();
@@ -30,6 +42,7 @@ async function init() {
   setSectionUpdateFn("cashflow-section", updateCashflowPanel);
   setSectionUpdateFn("production-section", updateProductionPanel);
   setSectionUpdateFn("retail-section", updateRetailPanel);
+  setSectionUpdateFn("executive-section", updateExecutivePanel);
   
   // Chat filter is static, init once
   initChatFilter();
@@ -37,21 +50,35 @@ async function init() {
   // Contract helper for discount pricing
   initContractHelper();
 
-  // Load initial data
-  await loadAuthDataOnce();
-  await loadInventoryOnce();
-  await loadCashflowToday();
+  // Setup production row listeners FIRST to close race condition window
+  // (attach listeners before user can interact)
+  setupProductionRowListeners();
 
-  // Backward compatibility for any code still reading cf.items/cf.summary
-  STATE.cashflow.items = STATE.cashflow.todayItems || [];
-  STATE.cashflow.summary =
-    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
+  // Load initial data
+  try {
+    await loadAuthDataOnce();
+    if (STATE.auth.error) {
+      console.warn('[SimHelper] Auth failed:', STATE.auth.error);
+    }
+
+    await loadInventoryOnce();
+    if (STATE.inventory.error) {
+      console.warn('[SimHelper] Inventory failed:', STATE.inventory.error);
+    }
+
+    await loadCashflowToday();
+    if (STATE.cashflow.error) {
+      console.warn('[SimHelper] Cashflow failed:', STATE.cashflow.error);
+    }
+  } catch (e) {
+    console.error('[SimHelper] Critical initialization failure:', e);
+  }
+
+  // Sync legacy cashflow state for backward compatibility
+  syncLegacyCashflowState();
 
   // Update cashflow panel after data is loaded
   updateCashflowPanel();
-
-  // Setup row listeners
-  setupProductionRowListeners();
 
   scheduleUpdate(() => updateRetailPanel());
   RetailHelper.autoSelectFirstRow(() => runSafe(updateRetailPanel));
@@ -64,13 +91,17 @@ window.addEventListener("focusin", (e) => RetailHelper.onFocusOrClick(e, () => r
 window.addEventListener("click", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);
 
 // Optional: Auto-refresh cashflow periodically (every 5 minutes)
+const CASHFLOW_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(async () => {
-  await loadCashflowToday({ force: true });
+  try {
+    await loadCashflowToday({ force: true });
+    if (STATE.cashflow.error) {
+      console.warn('[SimHelper] Cashflow refresh failed:', STATE.cashflow.error);
+    }
+  } catch (e) {
+    console.error('[SimHelper] Cashflow refresh error:', e);
+  }
 
-  // Backward compatibility for any code still reading cf.items/cf.summary
-  STATE.cashflow.items = STATE.cashflow.todayItems || [];
-  STATE.cashflow.summary =
-    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
-
+  syncLegacyCashflowState();
   updateCashflowPanel();
-}, 5 * 60 * 1000);
+}, CASHFLOW_REFRESH_INTERVAL_MS);

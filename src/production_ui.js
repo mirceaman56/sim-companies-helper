@@ -426,8 +426,7 @@ export async function updateProductionPanel() {
   if (currentProductId === null) {
     contentEl.innerHTML = `
       <div class="scx-panel" style="text-align: center; padding: 20px 12px;">
-        <div class="scx-muted">Click on a production</div>
-        <div class="scx-muted" style="font-size: 9px; margin-top: 4px;">quantity field to analyze.</div>
+        <div class="scx-muted">${t("clickProductionBuilding")}</div>
       </div>
     `;
     return;
@@ -480,7 +479,7 @@ async function renderProductAnalysis(contentEl, recipe) {
       <div class="scx-panel" style="padding: 12px;">
         <div class="scx-muted">Unable to analyze</div>
         ${analysis?.error ? `<div style="font-size:9px; color:#c62828; margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
-        <div style="font-size:9x; color:#999; margin-top:8px;">${t("ensureCostPerUnit")}</div>
+        <div style="font-size:9x; color:#999; margin-top:8px;">${t("ensureProductionQuantity")}</div>
       </div>
     `;
     return;
