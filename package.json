@@ -9,6 +9,9 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "string-similarity-js": "^2.1.4"
+  },
   "devDependencies": {
     "archiver": "^7.0.1",
     "jsdom": "^28.0.0",

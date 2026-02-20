@@ -1,0 +1,3970 @@
+[
+  {
+    "id": 1,
+    "en": {
+      "originalFeedback": "<Name> \"doesn't believe in combs\". I'm not sure he/she would fit in."
+    },
+    "tr": {
+      "originalFeedback": "<isim> \"taraklara inanmıyor\". Ekibe uyum sağlayacağından emin değilim."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.57,
+      "comm": 0.43,
+      "tech": 0.64,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 2,
+    "en": {
+      "originalFeedback": "<Name> added sugar to his/her coffee twice before even tasting it once. Lee Iacoca wouldn't have hired him/her and neither should we."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kahvesine daha tatmadan iki kez şeker ekledi. Lee Iacoca onu işe almazdı, biz de almamalıyız."
+    },
+    "skills": {
+      "mgmt": 0.54,
+      "acct": 0.46,
+      "comm": 0.54,
+      "tech": 0.62,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 3,
+    "en": {
+      "originalFeedback": "<Name> asked if anyone even reads these things anyway. I found that an intriguing question."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kimsenin bunları okuyup okumadığını sordu. Bu soruyu ilgi çekici buldum."
+    },
+    "skills": {
+      "mgmt": 0.45,
+      "acct": 0.55,
+      "comm": 0.27,
+      "tech": 0.41,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 4,
+    "en": {
+      "originalFeedback": "<Name> asked if he/she could record the interview. When I said \"Sure\" he/she asked if he/she could film the interview. I said \"Um, OK\" and suddenly a full camera crew came in."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeyi kaydedip kaydedemeyeceğini sordu. \"Elbette\" dediğimde görüşmeyi filme alıp alamayacağını sordu. \"Hmm, tamam\" dedim ve aniden içeri tam bir kamera ekibi girdi."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.50,
+      "comm": 1.35,
+      "tech": 0.50,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 5,
+    "en": {
+      "originalFeedback": "<Name> asked if the job required travel. I said there was some, and the response was \"One or two way?\""
+    },
+    "tr": {
+      "originalFeedback": "<isim> işin seyahat gerektirip gerektirmediğini sordu. Biraz olduğunu söyledim ve yanıtı \"Tek yön mü, çift yön mü?\" oldu."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.56,
+      "comm": 0.44,
+      "tech": 0.39,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 6,
+    "en": {
+      "originalFeedback": "<Name> asked me why I didn't accept his/her friend invitation on Facebook since we will be colleagues."
+    },
+    "tr": {
+      "originalFeedback": "<isim> madem meslektaş olacağız neden Facebook'taki arkadaşlık isteğini kabul etmediğimi sordu."
+    },
+    "skills": {
+      "mgmt": 0.79,
+      "acct": 0.63,
+      "comm": 0.71,
+      "tech": 0.42,
+      "avgSkill": 0.64
+    }
+  },
+  {
+    "id": 7,
+    "en": {
+      "originalFeedback": "<Name> believes he/she has marketing experience; he/she did some ads as a hand model."
+    },
+    "tr": {
+      "originalFeedback": "<isim> pazarlama deneyimi olduğuna inanıyor; el modeli olarak bazı reklamlarda yer almış."
+    },
+    "skills": {
+      "mgmt": 0.47,
+      "acct": 0.68,
+      "comm": 0.79,
+      "tech": 0.37,
+      "avgSkill": 0.58
+    }
+  },
+  {
+    "id": 8,
+    "en": {
+      "originalFeedback": "<Name> believes in fair play and noble standards. I wouldn't let him/her anywhere near a boardroom."
+    },
+    "tr": {
+      "originalFeedback": "<isim> adil oyuna ve asil standartlara inanıyor. Onu bir yönetim kurulu odasının yakınına bile yaklaştırmazdım."
+    },
+    "skills": {
+      "mgmt": 0.30,
+      "acct": 0.30,
+      "comm": 0.52,
+      "tech": 0.30,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 9,
+    "en": {
+      "originalFeedback": "<Name> brought a copy of The Jungle and asked if I had memorized the socialist's speech. I wish I had said yes..."
+    },
+    "tr": {
+      "originalFeedback": "<isim>, The Jungle'ın bir kopyasını getirdi ve sosyalistin konuşmasını ezberleyip ezberlemediğimi sordu. Keşke evet deseydim..."
+    },
+    "skills": {
+      "mgmt": 0.14,
+      "acct": 0.57,
+      "comm": 0.71,
+      "tech": 0.50,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 10,
+    "en": {
+      "originalFeedback": "<Name> brought a family picture and his/her favorite plant. He/She expected to start today."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bir aile fotoğrafı ve en sevdiği bitkiyi getirdi. Bugün başlamayı bekliyordu."
+    },
+    "skills": {
+      "mgmt": 0.15,
+      "acct": 0.31,
+      "comm": 0.38,
+      "tech": 0.38,
+      "avgSkill": 0.31
+    }
+  },
+  {
+    "id": 11,
+    "en": {
+      "originalFeedback": "<Name> brought samples and convinced me that quality water is essential to the overall economy."
+    },
+    "tr": {
+      "originalFeedback": "<isim> numuneler getirdi ve kaliteli suyun genel ekonomi için gerekli olduğuna beni ikna etti."
+    },
+    "skills": {
+      "mgmt": 0.52,
+      "acct": 0.45,
+      "comm": 0.64,
+      "tech": 1.45,
+      "avgSkill": 0.77
+    }
+  },
+  {
+    "id": 12,
+    "en": {
+      "originalFeedback": "<Name> came to the interview wearing a black and red satin cloak and insisted he/she can only work nights. I think he/she also sharpen his/her teeth."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeye siyah ve kırmızı saten bir pelerin giyerek geldi ve sadece geceleri çalışabileceği konusunda ısrar etti. Sanırım dişlerini de bilemiş."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.73,
+      "comm": 0.53,
+      "tech": 0.33,
+      "avgSkill": 0.53
+    }
+  },
+  {
+    "id": 13,
+    "en": {
+      "originalFeedback": "<Name> claimed that going from Ebay-seller to UBER driver displayed impressive initiative, so, of course, we should employ him/her."
+    },
+    "tr": {
+      "originalFeedback": "<isim>, Ebay satıcılığından UBER şoförlüğüne geçmenin etkileyici bir inisiyatif sergilediğini iddia etti, bu yüzden elbette onu işe almalıyız."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.35,
+      "comm": 0.71,
+      "tech": 0.35,
+      "avgSkill": 0.49
+    }
+  },
+  {
+    "id": 14,
+    "en": {
+      "originalFeedback": "<Name> claimed to be a Pulitzer Prize winning Congressional Medal of Honor Recipient. This could not be verified."
+    },
+    "tr": {
+      "originalFeedback": "<isim> Pulitzer Ödülü sahibi bir Kongre Şeref Madalyası sahibi olduğunu iddia etti. Bu doğrulanamadı."
+    },
+    "skills": {
+      "mgmt": 0.21,
+      "acct": 0.36,
+      "comm": 0.29,
+      "tech": 0.57,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 15,
+    "en": {
+      "originalFeedback": "<Name> claimed to be worth twice the normal salary. He/She said he/she had a split personality and therefore would always work two shifts."
+    },
+    "tr": {
+      "originalFeedback": "<isim> normal maaşın iki katı değerinde olduğunu iddia etti. Bölünmüş bir kişiliği olduğunu ve bu nedenle her zaman iki vardiya çalışacağını söyledi."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.30,
+      "comm": 0.70,
+      "tech": 0.10,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 16,
+    "en": {
+      "originalFeedback": "<Name> collected used calculators and ran a solar distillery in college from the recovered cells. Technically savvy and environmentally friendly? Keeper."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kullanılmış hesap makineleri topladı ve üniversitedeyken geri kazanılmış pillerden bir güneş damıtma tesisi işletti. Teknik olarak bilgili ve çevre dostu mu? Tutulmalı."
+    },
+    "skills": {
+      "mgmt": 0.71,
+      "acct": 0.46,
+      "comm": 0.39,
+      "tech": 1.51,
+      "avgSkill": 0.77
+    }
+  },
+  {
+    "id": 17,
+    "en": {
+      "originalFeedback": "<Name> cooked for the entire office. We are still working on removing the smell."
+    },
+    "tr": {
+      "originalFeedback": "<isim> tüm ofis için yemek pişirdi. Hala kokuyu gidermeye çalışıyoruz."
+    },
+    "skills": {
+      "mgmt": 0.80,
+      "acct": 0.33,
+      "comm": 0.27,
+      "tech": 0.33,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 18,
+    "en": {
+      "originalFeedback": "<Name> demanded to see my supervisor when I asked about his/her last job."
+    },
+    "tr": {
+      "originalFeedback": "<isim> son işi hakkında soru sorduğumda amirimi görmek istedi."
+    },
+    "skills": {
+      "mgmt": 0.42,
+      "acct": 0.58,
+      "comm": 0.37,
+      "tech": 0.26,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 19,
+    "en": {
+      "originalFeedback": "<Name> did his/her homework; he/she already had some ideas for improvement!"
+    },
+    "tr": {
+      "originalFeedback": "<isim> ödevini yapmıştı; şimdiden iyileştirme için bazı fikirleri vardı!"
+    },
+    "skills": {
+      "mgmt": 1.47,
+      "acct": 0.51,
+      "comm": 0.41,
+      "tech": 0.60,
+      "avgSkill": 0.75
+    }
+  },
+  {
+    "id": 20,
+    "en": {
+      "originalFeedback": "<Name> did not show up for the interview but texted: \"R u cool bro?\""
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeye gelmedi ama mesaj attı: \"İyi misin kanka?\""
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.21,
+      "comm": 0.50,
+      "tech": 0.71,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 21,
+    "en": {
+      "originalFeedback": "<Name> did not speak very good English and kept biting his/her nails."
+    },
+    "tr": {
+      "originalFeedback": "<isim> çok iyi İngilizce konuşmuyordu ve sürekli tırnaklarını yiyordu."
+    },
+    "skills": {
+      "mgmt": 0.64,
+      "acct": 0.36,
+      "comm": 0.29,
+      "tech": 0.21,
+      "avgSkill": 0.38
+    }
+  },
+  {
+    "id": 22,
+    "en": {
+      "originalFeedback": "<Name> didn't seem very interested in the actual job; he/she was just asking if he/she would get a company car and phone."
+    },
+    "tr": {
+      "originalFeedback": "<isim> asıl işle pek ilgileniyor gibi görünmüyordu; sadece şirket arabası ve telefonu alıp alamayacağını soruyordu."
+    },
+    "skills": {
+      "mgmt": 0.25,
+      "acct": 0.25,
+      "comm": 0.58,
+      "tech": 0.58,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 23,
+    "en": {
+      "originalFeedback": "<Name> had all the right answers. I think he/she might have gotten the questions beforehand somehow. Now that's good interview prep!"
+    },
+    "tr": {
+      "originalFeedback": "<isim> tüm doğru cevapları verdi. Sanırım soruları bir şekilde önceden almış olabilir. İşte bu iyi bir mülakat hazırlığı!"
+    },
+    "skills": {
+      "mgmt": 0.51,
+      "acct": 0.38,
+      "comm": 0.61,
+      "tech": 1.57,
+      "avgSkill": 0.77
+    }
+  },
+  {
+    "id": 24,
+    "en": {
+      "originalFeedback": "<Name> has a whole youtube channel devoted to the Kerbal Space Program."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın Kerbal Uzay Programı'na adanmış bütün bir youtube kanalı var."
+    },
+    "skills": {
+      "mgmt": 0.47,
+      "acct": 0.60,
+      "comm": 0.63,
+      "tech": 1.35,
+      "avgSkill": 0.76
+    }
+  },
+  {
+    "id": 25,
+    "en": {
+      "originalFeedback": "<Name> has an MBA and is a PMP from MIT and knows XML, SQL, and VBA. Also understands DHCP and TCP/IP and claims to always RTFM."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın MBA'i var, MIT'den PMP sertifikalı ve XML, SQL ve VBA biliyor. Ayrıca DHCP ve TCP/IP'yi anlıyor ve her zaman RTFM (Kılavuzu Oku Lanet Olası) yaptığını iddia ediyor."
+    },
+    "skills": {
+      "mgmt": 0.47,
+      "acct": 0.54,
+      "comm": 0.62,
+      "tech": 1.35,
+      "avgSkill": 0.75
+    }
+  },
+  {
+    "id": 26,
+    "en": {
+      "originalFeedback": "<Name> has had over a dozen jobs in the last 5 years and kept asking about our severance packages."
+    },
+    "tr": {
+      "originalFeedback": "<isim> son 5 yılda bir düzineden fazla işte çalışmış ve sürekli kıdem tazminatı paketlerimizi soruyordu."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.50,
+      "comm": 1.00,
+      "tech": 0.60,
+      "avgSkill": 0.65
+    }
+  },
+  {
+    "id": 27,
+    "en": {
+      "originalFeedback": "<Name> has open availability and great customer service skills, two thumbs way up!"
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın müsaitliği tam ve harika müşteri hizmetleri becerileri var, iki başparmak havaya!"
+    },
+    "skills": {
+      "mgmt": 1.48,
+      "acct": 0.56,
+      "comm": 0.54,
+      "tech": 0.58,
+      "avgSkill": 0.79
+    }
+  },
+  {
+    "id": 28,
+    "en": {
+      "originalFeedback": "<Name> has the most beautiful abacus I have ever seen."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın gördüğüm en güzel abaküsü var."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.60,
+      "comm": 0.57,
+      "tech": 1.34,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 29,
+    "en": {
+      "originalFeedback": "<Name> has unremarkable grades, but his/her social talents are exceptional. Class president!"
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın notları dikkat çekici değil, ancak sosyal yetenekleri olağanüstü. Sınıf başkanı!"
+    },
+    "skills": {
+      "mgmt": 1.47,
+      "acct": 0.48,
+      "comm": 0.30,
+      "tech": 0.43,
+      "avgSkill": 0.67
+    }
+  },
+  {
+    "id": 30,
+    "en": {
+      "originalFeedback": "<Name> immediately began handing out the donuts to staff while praising him/her for his/her good work. We had to call security when the donuts ran out."
+    },
+    "tr": {
+      "originalFeedback": "<isim> hemen personele donut dağıtmaya başladı ve iyi çalışmaları için onları övdü. Donutlar bitince güvenliği çağırmak zorunda kaldık."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.36,
+      "comm": 0.50,
+      "tech": 0.57,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 31,
+    "en": {
+      "originalFeedback": "<Name> insisted he/she could bring the customers to the yard. I'm not sure why we need to bring him/her here; I introduced him/her to a telephone."
+    },
+    "tr": {
+      "originalFeedback": "<isim> müşterileri 'bahçeye' getirebileceğinde ısrar etti. Neden onu buraya getirmemiz gerektiğinden emin değilim; ona telefonu tanıttım."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.29,
+      "comm": 0.43,
+      "tech": 0.50,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 32,
+    "en": {
+      "originalFeedback": "<Name> is a keeper, you will have to take him/her ASAP!"
+    },
+    "tr": {
+      "originalFeedback": "<isim> kaçırılmaması gereken biri, onu HEMEN almalısınız!"
+    },
+    "skills": {
+      "mgmt": 1.48,
+      "acct": 0.61,
+      "comm": 0.48,
+      "tech": 0.46,
+      "avgSkill": 0.76
+    }
+  },
+  {
+    "id": 33,
+    "en": {
+      "originalFeedback": "<Name> is a really strange person. Let's hire him/her and see where it goes."
+    },
+    "tr": {
+      "originalFeedback": "<isim> gerçekten garip bir insan. Onu işe alalım ve nereye varacağını görelim."
+    },
+    "skills": {
+      "mgmt": 1.35,
+      "acct": 0.38,
+      "comm": 0.47,
+      "tech": 0.50,
+      "avgSkill": 0.67
+    }
+  },
+  {
+    "id": 34,
+    "en": {
+      "originalFeedback": "<Name> is a terrific math student but lacks imagination."
+    },
+    "tr": {
+      "originalFeedback": "<isim> müthiş bir matematik öğrencisi ama hayal gücü zayıf."
+    },
+    "skills": {
+      "mgmt": 0.65,
+      "acct": 1.39,
+      "comm": 0.62,
+      "tech": 0.63,
+      "avgSkill": 0.82
+    }
+  },
+  {
+    "id": 35,
+    "en": {
+      "originalFeedback": "<Name> is absolutely lazy, and it seems he/she has no idea what we do here. But he/she likes trains."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kesinlikle tembel ve görünüşe göre burada ne yaptığımız hakkında hiçbir fikri yok. Ama trenleri seviyor."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.45,
+      "comm": 0.27,
+      "tech": 0.45,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 36,
+    "en": {
+      "originalFeedback": "<Name> is an excellent ventriloquist. He/She brought a book for us called: \"Ventriloquism for dummies\"."
+    },
+    "tr": {
+      "originalFeedback": "<isim> mükemmel bir vantrilok. Bize \"Aptallar için Vantrilokluk\" adlı bir kitap getirdi."
+    },
+    "skills": {
+      "mgmt": 0.30,
+      "acct": 0.60,
+      "comm": 1.00,
+      "tech": 0.50,
+      "avgSkill": 0.60
+    }
+  },
+  {
+    "id": 37,
+    "en": {
+      "originalFeedback": "<Name> is not someone that would interact well with customers. Some great ideas, though."
+    },
+    "tr": {
+      "originalFeedback": "<isim> müşterilerle iyi etkileşim kuracak biri değil. Yine de bazı harika fikirleri var."
+    },
+    "skills": {
+      "mgmt": 0.48,
+      "acct": 0.62,
+      "comm": 0.54,
+      "tech": 1.32,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 38,
+    "en": {
+      "originalFeedback": "<Name> is one of the practical kind. As a kid, he/she once sold all his/her parents' furniture in 2 hours when they went for groceries."
+    },
+    "tr": {
+      "originalFeedback": "<isim> pratik türden biri. Çocukken, ailesi markete gittiğinde tüm mobilyalarını 2 saat içinde satmış."
+    },
+    "skills": {
+      "mgmt": 0.51,
+      "acct": 0.51,
+      "comm": 1.49,
+      "tech": 0.57,
+      "avgSkill": 0.77
+    }
+  },
+  {
+    "id": 39,
+    "en": {
+      "originalFeedback": "<Name> is really communicative but can just do one thing at a time. He/She sold his/her crashed car to his/her neighbor."
+    },
+    "tr": {
+      "originalFeedback": "<isim> gerçekten iletişimci ama aynı anda sadece tek bir şey yapabiliyor. Kaza yapmış arabasını komşusuna satmış."
+    },
+    "skills": {
+      "mgmt": 0.52,
+      "acct": 0.46,
+      "comm": 1.41,
+      "tech": 0.52,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 40,
+    "en": {
+      "originalFeedback": "<Name> is smart and a social person. Don't know if he/she fits this position though."
+    },
+    "tr": {
+      "originalFeedback": "<isim> zeki ve sosyal bir insan. Ama bu pozisyona uyup uymadığını bilmiyorum."
+    },
+    "skills": {
+      "mgmt": 0.70,
+      "acct": 0.48,
+      "comm": 0.41,
+      "tech": 0.52,
+      "avgSkill": 0.53
+    }
+  },
+  {
+    "id": 41,
+    "en": {
+      "originalFeedback": "<Name> is the state champion in poker."
+    },
+    "tr": {
+      "originalFeedback": "<isim> eyalet poker şampiyonu."
+    },
+    "skills": {
+      "mgmt": 0.85,
+      "acct": 0.44,
+      "comm": 1.49,
+      "tech": 0.69,
+      "avgSkill": 0.87
+    }
+  },
+  {
+    "id": 42,
+    "en": {
+      "originalFeedback": "<Name> just showed up in my office without an appointment saying he/she is ready to help us improve our company. What should we do?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> randevusuz bir şekilde ofisime gelip şirketimizi geliştirmemize yardım etmeye hazır olduğunu söyledi. Ne yapmalıyız?"
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.31,
+      "comm": 0.19,
+      "tech": 0.50,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 43,
+    "en": {
+      "originalFeedback": "<Name> left his/her last position because he/she is being chased by an international drug cartel. Not to worry though, <Name> said he's/she's in witness protection."
+    },
+    "tr": {
+      "originalFeedback": "<isim> uluslararası bir uyuşturucu karteli tarafından takip edildiği için son görevinden ayrılmış. Endişelenmeyin ama, <isim> tanık koruma programında olduğunu söyledi."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.17,
+      "comm": 0.28,
+      "tech": 0.56,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 44,
+    "en": {
+      "originalFeedback": "<Name> listed watching \"Risky Business\" under Education on the application. I really didn't expect the underwear and socks for the interview, though."
+    },
+    "tr": {
+      "originalFeedback": "<isim> başvurudaki Eğitim bölümüne \"Riskli İş\" izlediğini yazmış. Görüşmeye iç çamaşırı ve çorapla gelmesini gerçekten beklemiyordum."
+    },
+    "skills": {
+      "mgmt": 0.65,
+      "acct": 0.67,
+      "comm": 1.51,
+      "tech": 0.58,
+      "avgSkill": 0.85
+    }
+  },
+  {
+    "id": 45,
+    "en": {
+      "originalFeedback": "<Name> looks just like Stephen King. It was creepy. I have no idea if he/she is a good candidate."
+    },
+    "tr": {
+      "originalFeedback": "<isim> tıpkı Stephen King'e benziyor. Ürkütücüydü. İyi bir aday olup olmadığı hakkında hiçbir fikrim yok."
+    },
+    "skills": {
+      "mgmt": 0.35,
+      "acct": 0.71,
+      "comm": 0.65,
+      "tech": 0.35,
+      "avgSkill": 0.51
+    }
+  },
+  {
+    "id": 46,
+    "en": {
+      "originalFeedback": "<Name> made a fully automated production line for Lego cars when he/she was 14. He/She didn't like to share his/her blocks, though. It's your call."
+    },
+    "tr": {
+      "originalFeedback": "<isim> 14 yaşındayken Lego arabaları için tam otomatik bir üretim hattı yapmış. Ama bloklarını paylaşmayı sevmiyormuş. Karar sizin."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.46,
+      "comm": 0.54,
+      "tech": 1.41,
+      "avgSkill": 0.71
+    }
+  },
+  {
+    "id": 47,
+    "en": {
+      "originalFeedback": "<Name> makes a first impression similar to a bum on the street."
+    },
+    "tr": {
+      "originalFeedback": "<isim> sokaktaki bir serseriye benzer bir ilk izlenim bırakıyor."
+    },
+    "skills": {
+      "mgmt": 0.22,
+      "acct": 0.33,
+      "comm": 0.33,
+      "tech": 0.67,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 48,
+    "en": {
+      "originalFeedback": "<Name> needed 2 hours to explain to me that marketing is nothing more than selling things with short catch phrases."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın pazarlamanın kısa sloganlarla bir şeyler satmaktan başka bir şey olmadığını bana açıklaması 2 saat sürdü."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.56,
+      "comm": 1.42,
+      "tech": 0.56,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 49,
+    "en": {
+      "originalFeedback": "<Name> needed some help with the door, but, otherwise, seemed reasonable."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın kapı konusunda biraz yardıma ihtiyacı oldu ama bunun dışında makul görünüyordu."
+    },
+    "skills": {
+      "mgmt": 0.64,
+      "acct": 0.18,
+      "comm": 0.45,
+      "tech": 0.82,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 50,
+    "en": {
+      "originalFeedback": "<Name> offered to fill my coffee for me twice. I'm not sure he/she is qualified much beyond that."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kahvemi iki kez doldurmayı teklif etti. Bundan daha fazlası için nitelikli olduğundan emin değilim."
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.22,
+      "comm": 0.48,
+      "tech": 0.35,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 51,
+    "en": {
+      "originalFeedback": "<Name> poured 4 cups of coffee down his/her throat during the interview."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşme sırasında boğazından aşağı 4 fincan kahve döktü."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.56,
+      "comm": 0.22,
+      "tech": 0.83,
+      "avgSkill": 0.49
+    }
+  },
+  {
+    "id": 52,
+    "en": {
+      "originalFeedback": "<Name> promised to be better this time."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bu sefer daha iyi olacağına söz verdi."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.50,
+      "comm": 0.43,
+      "tech": 0.50,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 53,
+    "en": {
+      "originalFeedback": "<Name> proudly presented that he/she was in bottom 25 percentile at the Uni. I guess he/she doesn't understand what that means."
+    },
+    "tr": {
+      "originalFeedback": "<isim> üniversitede en alttaki %25'lik dilimde olduğunu gururla sundu. Sanırım bunun ne anlama geldiğini anlamıyor."
+    },
+    "skills": {
+      "mgmt": 0.22,
+      "acct": 0.33,
+      "comm": 0.11,
+      "tech": 0.22,
+      "avgSkill": 0.22
+    }
+  },
+  {
+    "id": 54,
+    "en": {
+      "originalFeedback": "<Name> put down his/her mom as both reference and current address."
+    },
+    "tr": {
+      "originalFeedback": "<isim> annesini hem referans hem de güncel adres olarak yazmış."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.67,
+      "comm": 0.33,
+      "tech": 0.44,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 55,
+    "en": {
+      "originalFeedback": "<Name> put in as \"reason for leaving the previous job\": \"The boss was an idiot\"."
+    },
+    "tr": {
+      "originalFeedback": "<isim> \"önceki işten ayrılma nedeni\" olarak şunu yazmış: \"Patron bir aptaldı\"."
+    },
+    "skills": {
+      "mgmt": 0.71,
+      "acct": 0.43,
+      "comm": 0.36,
+      "tech": 0.36,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 56,
+    "en": {
+      "originalFeedback": "<Name> put: \"Able to balance a spoon on his/her nose\" as a special talent on his/her resume. So... perhaps a jester position?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> özgeçmişine özel bir yetenek olarak \"Burnunun üzerinde kaşık dengeleyebilir\" yazmış. Yani... belki bir soytarı pozisyonu?"
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.40,
+      "comm": 0.67,
+      "tech": 0.27,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 57,
+    "en": {
+      "originalFeedback": "<Name> ran his/her father's shop for 3 years before getting his/her degree in theater."
+    },
+    "tr": {
+      "originalFeedback": "<isim> tiyatro diplomasını almadan önce 3 yıl babasının dükkanını işletmiş."
+    },
+    "skills": {
+      "mgmt": 1.47,
+      "acct": 0.42,
+      "comm": 0.46,
+      "tech": 0.48,
+      "avgSkill": 0.70
+    }
+  },
+  {
+    "id": 58,
+    "en": {
+      "originalFeedback": "<Name> ran the local chapter of the Aquarium Club. I learned that a \"pescatarian\" is one that eats fish, but not other meats. Also, have we looked into aquaculture?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> Akvaryum Kulübü'nün yerel şubesini yönetmiş. \"Pesketaryen\"in balık yiyen ama diğer etleri yemeyen biri olduğunu öğrendim. Ayrıca, su ürünleri yetiştiriciliğine baktık mı?"
+    },
+    "skills": {
+      "mgmt": 1.47,
+      "acct": 0.54,
+      "comm": 0.59,
+      "tech": 0.38,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 59,
+    "en": {
+      "originalFeedback": "<Name> remembers the first 500 digits of the number Pi. Do we have an open position for real geek?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> Pi sayısının ilk 500 basamağını hatırlıyor. Gerçek bir inek için açık bir pozisyonumuz var mı?"
+    },
+    "skills": {
+      "mgmt": 0.69,
+      "acct": 0.66,
+      "comm": 0.53,
+      "tech": 1.41,
+      "avgSkill": 0.82
+    }
+  },
+  {
+    "id": 60,
+    "en": {
+      "originalFeedback": "<Name> requires his/her emotional support rat be allowed to come to work with him/her to work."
+    },
+    "tr": {
+      "originalFeedback": "<isim> duygusal destek faresinin kendisiyle birlikte işe gelmesine izin verilmesini istiyor."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.57,
+      "comm": 0.43,
+      "tech": 0.71,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 61,
+    "en": {
+      "originalFeedback": "<Name> said he/she got a referral from the monkey. Not sure what to make of that."
+    },
+    "tr": {
+      "originalFeedback": "<isim> maymundan bir referans aldığını söyledi. Bundan ne çıkaracağımdan emin değilim."
+    },
+    "skills": {
+      "mgmt": 1.41,
+      "acct": 0.57,
+      "comm": 0.60,
+      "tech": 0.52,
+      "avgSkill": 0.78
+    }
+  },
+  {
+    "id": 62,
+    "en": {
+      "originalFeedback": "<Name> said he/she really wants to work here because we appear to be making good money even though our products stink."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ürünlerimiz berbat olsa da iyi para kazanıyor gibi göründüğümüz için burada gerçekten çalışmak istediğini söyledi."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.41,
+      "comm": 0.47,
+      "tech": 0.41,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 63,
+    "en": {
+      "originalFeedback": "<Name> said his/her major was in classic studies: latin, roman empire and such. I had no idea how to react to that."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ana dalının klasik çalışmalar olduğunu söyledi: latince, roma imparatorluğu ve benzeri. Buna nasıl tepki vereceğimi bilemedim."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.45,
+      "comm": 0.15,
+      "tech": 0.55,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 64,
+    "en": {
+      "originalFeedback": "<Name> said: \"Freedom is the wisdom of intimate success.\" or a different New Age BS, can't remember."
+    },
+    "tr": {
+      "originalFeedback": "<isim> dedi ki: \"Özgürlük, samimi başarının bilgeliğidir.\" ya da başka bir New Age saçmalığı, hatırlayamıyorum."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.44,
+      "comm": 0.33,
+      "tech": 0.50,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 65,
+    "en": {
+      "originalFeedback": "<Name> says he/she have a lot of business experience, because he/she plays a lot of SimCompanies. It's a kind of internet game."
+    },
+    "tr": {
+      "originalFeedback": "<isim> çok fazla iş deneyimi olduğunu söylüyor, çünkü çok fazla SimCompanies oynuyormuş. Bu bir tür internet oyunu."
+    },
+    "skills": {
+      "mgmt": 1.46,
+      "acct": 0.66,
+      "comm": 0.49,
+      "tech": 0.35,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 66,
+    "en": {
+      "originalFeedback": "<Name> says he/she ran a business while in college. It was an industry that is not available to us."
+    },
+    "tr": {
+      "originalFeedback": "<isim> üniversitedeyken bir işlettiğini söylüyor. Bu, bizim için mevcut olmayan bir sektördü."
+    },
+    "skills": {
+      "mgmt": 0.48,
+      "acct": 0.41,
+      "comm": 1.33,
+      "tech": 0.70,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 67,
+    "en": {
+      "originalFeedback": "<Name> says that we should hire him/her because he/she went bankrupt twice and know \"which transactions you cannot do without being caught\"."
+    },
+    "tr": {
+      "originalFeedback": "<isim> iki kez iflas ettiği ve \"yakalanmadan hangi işlemleri yapamayacağınızı\" bildiği için onu işe almamız gerektiğini söylüyor."
+    },
+    "skills": {
+      "mgmt": 0.41,
+      "acct": 1.27,
+      "comm": 0.63,
+      "tech": 0.42,
+      "avgSkill": 0.68
+    }
+  },
+  {
+    "id": 68,
+    "en": {
+      "originalFeedback": "<Name> says that when he/she is CEO the first thing he/she will do is cut cost on human resources. Maybe we keep looking for more candidates..."
+    },
+    "tr": {
+      "originalFeedback": "<isim> CEO olduğunda yapacağı ilk şeyin insan kaynakları maliyetini kısmak olacağını söylüyor. Belki daha fazla aday aramaya devam etmeliyiz..."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.33,
+      "comm": 0.22,
+      "tech": 0.72,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 69,
+    "en": {
+      "originalFeedback": "<Name> scared off all the other candidates with his/her sword and proclaimed, \"There can be only one!\" It does show initiative."
+    },
+    "tr": {
+      "originalFeedback": "<isim> diğer tüm adayları kılıcıyla korkutup kaçırdı ve \"Sadece bir tane olabilir!\" diye ilan etti. İnisiyatif gösterdiği kesin."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.50,
+      "comm": 0.20,
+      "tech": 0.50,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 70,
+    "en": {
+      "originalFeedback": "<Name> seemed distracted and kept asking questions about our security system."
+    },
+    "tr": {
+      "originalFeedback": "<isim> dikkati dağınık görünüyordu ve sürekli güvenlik sistemimiz hakkında sorular soruyordu."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.44,
+      "comm": 0.50,
+      "tech": 1.47,
+      "avgSkill": 0.75
+    }
+  },
+  {
+    "id": 71,
+    "en": {
+      "originalFeedback": "<Name> sent his/her sister to the interview because, in his/her opinion, a good leader should delegate the work."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeye kız kardeşini gönderdi çünkü kendi görüşüne göre iyi bir lider işi delege etmeliymiş."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.43,
+      "comm": 0.50,
+      "tech": 0.36,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 72,
+    "en": {
+      "originalFeedback": "<Name> showed me a picture of his/her house. Stuff piled up everywhere. Don't let him/her near our warehouse!"
+    },
+    "tr": {
+      "originalFeedback": "<isim> bana evinin bir resmini gösterdi. Her yerde eşyalar yığılmıştı. Onu depomuza yaklaştırmayın!"
+    },
+    "skills": {
+      "mgmt": 0.71,
+      "acct": 0.71,
+      "comm": 0.64,
+      "tech": 0.29,
+      "avgSkill": 0.59
+    }
+  },
+  {
+    "id": 73,
+    "en": {
+      "originalFeedback": "<Name> showed up for his/her interview 15 minutes early with donuts! Another plus, he/she is only looking for an unpaid internship. And did I mention donuts?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmesine 15 dakika erken geldi, hem de donutlarla! Bir başka artı, sadece ücretsiz bir staj arıyor olması. Ve donutlardan bahsetmiş miydim?"
+    },
+    "skills": {
+      "mgmt": 0.71,
+      "acct": 0.49,
+      "comm": 1.37,
+      "tech": 0.65,
+      "avgSkill": 0.80
+    }
+  },
+  {
+    "id": 74,
+    "en": {
+      "originalFeedback": "<Name> showed up in a Chewbacca costume because he/she had to go with his/her friend Spiderman to a Star Trek convention later."
+    },
+    "tr": {
+      "originalFeedback": "<isim> Chewbacca kostümüyle geldi çünkü daha sonra arkadaşı Örümcek Adam ile bir Star Trek kongresine gitmek zorundaymış."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.40,
+      "comm": 0.60,
+      "tech": 0.40,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 75,
+    "en": {
+      "originalFeedback": "<Name> showed up two days late for the interview claiming he/she had needed more time to prepare."
+    },
+    "tr": {
+      "originalFeedback": "<isim> hazırlanmak için daha fazla zamana ihtiyacı olduğunu iddia ederek görüşmeye iki gün geç geldi."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.40,
+      "comm": 0.30,
+      "tech": 0.30,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 76,
+    "en": {
+      "originalFeedback": "<Name> showed up with 3 young children and left him/her outside the room. When I asked if the kids were alright, he/she reminded me I'm not allowed to ask about family."
+    },
+    "tr": {
+      "originalFeedback": "<isim> 3 küçük çocukla geldi ve onları odanın dışında bıraktı. Çocukların iyi olup olmadığını sorduğumda, aile hakkında soru sormama izin verilmediğini hatırlattı."
+    },
+    "skills": {
+      "mgmt": 0.08,
+      "acct": 0.17,
+      "comm": 0.00,
+      "tech": 0.17,
+      "avgSkill": 0.10
+    }
+  },
+  {
+    "id": 77,
+    "en": {
+      "originalFeedback": "<Name> speaks over a dozen languages. Unfortunately not one of them is ours."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bir düzineden fazla dil konuşuyor. Maalesef bunlardan hiçbiri bizimki değil."
+    },
+    "skills": {
+      "mgmt": 0.22,
+      "acct": 0.50,
+      "comm": 0.67,
+      "tech": 0.72,
+      "avgSkill": 0.53
+    }
+  },
+  {
+    "id": 78,
+    "en": {
+      "originalFeedback": "<Name> spent the first half of the interview laying out the agenda for the second half."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmenin ilk yarısını ikinci yarının gündemini belirleyerek geçirdi."
+    },
+    "skills": {
+      "mgmt": 0.21,
+      "acct": 0.32,
+      "comm": 0.16,
+      "tech": 0.53,
+      "avgSkill": 0.30
+    }
+  },
+  {
+    "id": 79,
+    "en": {
+      "originalFeedback": "<Name> started giving me tax advice regarding the money I inherited recently, he/she seems to know a lot about the stuff."
+    },
+    "tr": {
+      "originalFeedback": "<isim> son zamanlarda miras aldığım para konusunda bana vergi tavsiyesi vermeye başladı, bu konuda çok şey biliyor gibi görünüyor."
+    },
+    "skills": {
+      "mgmt": 0.66,
+      "acct": 1.31,
+      "comm": 0.62,
+      "tech": 0.45,
+      "avgSkill": 0.76
+    }
+  },
+  {
+    "id": 80,
+    "en": {
+      "originalFeedback": "<Name> studied at Trump University; that says enough."
+    },
+    "tr": {
+      "originalFeedback": "<isim> Trump Üniversitesi'nde okumuş; bu yeterli."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.75,
+      "comm": 0.00,
+      "tech": 0.50,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 81,
+    "en": {
+      "originalFeedback": "<Name> suggested we sell everything with an extra thousandth of a penny added and it will add up. Then he/she asked if we used Swingline staplers."
+    },
+    "tr": {
+      "originalFeedback": "<isim> her şeyi fazladan bir peninin binde biri eklenmiş olarak satmamızı önerdi ve bunun birikeceğini söyledi. Sonra Swingline zımba kullanıp kullanmadığımızı sordu."
+    },
+    "skills": {
+      "mgmt": 0.68,
+      "acct": 1.60,
+      "comm": 0.55,
+      "tech": 0.49,
+      "avgSkill": 0.83
+    }
+  },
+  {
+    "id": 82,
+    "en": {
+      "originalFeedback": "<Name> takes the saying \"Cash is king\" quite literally. He/She never had a bank account, and says he/she mostly uses 100 dollar bills."
+    },
+    "tr": {
+      "originalFeedback": "<isim> \"Nakit kraldır\" sözünü oldukça ciddiye alıyor. Hiç banka hesabı olmamış ve çoğunlukla 100 dolarlık banknotlar kullandığını söylüyor."
+    },
+    "skills": {
+      "mgmt": 0.35,
+      "acct": 0.41,
+      "comm": 0.53,
+      "tech": 0.53,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 83,
+    "en": {
+      "originalFeedback": "<Name> texted me his/her transcripts. One. Class. At. A. Time. I've requested a new number from HR."
+    },
+    "tr": {
+      "originalFeedback": "<isim> transkriptlerini bana mesaj attı. Tek. Tek. Ders. Ders. İK'dan yeni bir numara talep ettim."
+    },
+    "skills": {
+      "mgmt": 0.27,
+      "acct": 0.45,
+      "comm": 0.36,
+      "tech": 0.36,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 84,
+    "en": {
+      "originalFeedback": "<Name> told me he/she can smell my aura."
+    },
+    "tr": {
+      "originalFeedback": "<isim> auramı koklayabildiğini söyledi."
+    },
+    "skills": {
+      "mgmt": 0.18,
+      "acct": 0.47,
+      "comm": 0.47,
+      "tech": 0.53,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 85,
+    "en": {
+      "originalFeedback": "<Name> told me he/she had a Strength of 11, Dexterity of 14, Constitution of 15, Intelligence of 17, Wisdom of 12, and a Charisma of 16. I still don't understand."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bana Güç 11, Çeviklik 14, Dayanıklılık 15, Zeka 17, Bilgelik 12 ve Karizma 16 olduğunu söyledi. Hala anlamıyorum."
+    },
+    "skills": {
+      "mgmt": 0.63,
+      "acct": 0.51,
+      "comm": 0.44,
+      "tech": 1.37,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 86,
+    "en": {
+      "originalFeedback": "<Name> told me that we just need to build a time machine to beat our competition. That is out of the box thinking."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bana rakiplerimizi yenmek için sadece bir zaman makinesi yapmamız gerektiğini söyledi. Bu alışılmışın dışında bir düşünce."
+    },
+    "skills": {
+      "mgmt": 0.62,
+      "acct": 0.45,
+      "comm": 0.45,
+      "tech": 1.38,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 87,
+    "en": {
+      "originalFeedback": "<Name> took 3 phone calls on our landline during the interview. He/She made us money."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşme sırasında sabit hattımızdan 3 telefon görüşmesi yaptı. Bize para kazandırdı."
+    },
+    "skills": {
+      "mgmt": 0.58,
+      "acct": 0.47,
+      "comm": 1.29,
+      "tech": 0.44,
+      "avgSkill": 0.70
+    }
+  },
+  {
+    "id": 88,
+    "en": {
+      "originalFeedback": "<Name> took three different pills from unlabeled bottles during the interview without apology or explanation. I didn't dare ask."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşme sırasında etiketsiz şişelerden özür dilemeden veya açıklama yapmadan üç farklı hap aldı. Sormaya cesaret edemedim."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.21,
+      "comm": 0.57,
+      "tech": 0.36,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 89,
+    "en": {
+      "originalFeedback": "<Name> used his/her cell phone throughout the interview. When asked why, he/she said it showed the ability to multi-task."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşme boyunca cep telefonunu kullandı. Neden diye sorulduğunda, çoklu görev yeteneğini gösterdiğini söyledi."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.30,
+      "comm": 0.40,
+      "tech": 0.10,
+      "avgSkill": 0.30
+    }
+  },
+  {
+    "id": 90,
+    "en": {
+      "originalFeedback": "<Name> used the phrase 'Danger Zone' multiple times. Also, he/she put 'spy' as the job he/she was seeking."
+    },
+    "tr": {
+      "originalFeedback": "<isim> 'Tehlike Bölgesi' ifadesini birkaç kez kullandı. Ayrıca, aradığı iş olarak 'casus' yazmış."
+    },
+    "skills": {
+      "mgmt": 0.72,
+      "acct": 0.17,
+      "comm": 0.44,
+      "tech": 0.44,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 91,
+    "en": {
+      "originalFeedback": "<Name> was 2 hours early for the interview and made sure I was reminded he/she was waiting every 15 minutes."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeye 2 saat erken geldi ve her 15 dakikada bir beklediğinin bana hatırlatılmasını sağladı."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.55,
+      "comm": 0.36,
+      "tech": 0.18,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 92,
+    "en": {
+      "originalFeedback": "<Name> was convicted twice for drug possession and is rumored to be the former gang leader, but are trying to apply their skills in legitimate business."
+    },
+    "tr": {
+      "originalFeedback": "<isim> uyuşturucu bulundurmaktan iki kez mahkum olmuş ve eski çete lideri olduğu söyleniyor, ancak becerilerini yasal işlerde uygulamaya çalışıyor."
+    },
+    "skills": {
+      "mgmt": 1.54,
+      "acct": 0.57,
+      "comm": 0.58,
+      "tech": 0.58,
+      "avgSkill": 0.82
+    }
+  },
+  {
+    "id": 93,
+    "en": {
+      "originalFeedback": "<Name> was disappointed that he/she had to do the interview, since he/she knew better than all other candidates anyway."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeyi yapmak zorunda kaldığı için hayal kırıklığına uğradı, çünkü zaten diğer tüm adaylardan daha iyi biliyordu."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.36,
+      "comm": 0.18,
+      "tech": 0.64,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 94,
+    "en": {
+      "originalFeedback": "<Name> was late for his/her interview because the phone he/she programmed doesn't consider summer time. He/She has references from University, though."
+    },
+    "tr": {
+      "originalFeedback": "<isim> programladığı telefon yaz saatini dikkate almadığı için görüşmesine geç kaldı. Yine de Üniversiteden referansları var."
+    },
+    "skills": {
+      "mgmt": 0.56,
+      "acct": 0.41,
+      "comm": 0.56,
+      "tech": 1.43,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 95,
+    "en": {
+      "originalFeedback": "<Name> was very concerned about cubicle placement. When I mentioned he/she wasn't hired yet, I heard some mumbling about burning the place down..."
+    },
+    "tr": {
+      "originalFeedback": "<isim> kübikül yerleşimi konusunda çok endişeliydi. Henüz işe alınmadığını söylediğimde, burayı yakmakla ilgili bazı mırıltılar duydum..."
+    },
+    "skills": {
+      "mgmt": 0.17,
+      "acct": 0.42,
+      "comm": 0.25,
+      "tech": 0.17,
+      "avgSkill": 0.25
+    }
+  },
+  {
+    "id": 96,
+    "en": {
+      "originalFeedback": "<Name> will add some piece of flair to our company. And can you have too much flair, really?"
+    },
+    "tr": {
+      "originalFeedback": "<isim> şirketimize biraz hava katacak. Ve gerçekten de çok fazla hava olabilir mi?"
+    },
+    "skills": {
+      "mgmt": 0.42,
+      "acct": 0.47,
+      "comm": 0.42,
+      "tech": 0.47,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 97,
+    "en": {
+      "originalFeedback": "<Name> will need some additional training, but I think he/she can be a promising manager."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın biraz ek eğitime ihtiyacı olacak, ancak umut vadeden bir yönetici olabileceğini düşünüyorum."
+    },
+    "skills": {
+      "mgmt": 1.39,
+      "acct": 0.60,
+      "comm": 0.55,
+      "tech": 0.65,
+      "avgSkill": 0.79
+    }
+  },
+  {
+    "id": 98,
+    "en": {
+      "originalFeedback": "<Name> won the debate championship two years in a row. His/her classmates have little to say about him/her."
+    },
+    "tr": {
+      "originalFeedback": "<isim> münazara şampiyonluğunu üst üste iki yıl kazandı. Sınıf arkadaşlarının onun hakkında söyleyecek pek bir şeyi yok."
+    },
+    "skills": {
+      "mgmt": 0.70,
+      "acct": 0.57,
+      "comm": 1.28,
+      "tech": 0.59,
+      "avgSkill": 0.79
+    }
+  },
+  {
+    "id": 99,
+    "en": {
+      "originalFeedback": "<Name> wore a concert T-shirt to the interview. \"If you don't rock, I don't roll.\" I'm not sure what that means."
+    },
+    "tr": {
+      "originalFeedback": "<isim> görüşmeye bir konser tişörtü giymiş. \"Sen coşmazsan, ben de coşmam.\" Bunun ne anlama geldiğinden emin değilim."
+    },
+    "skills": {
+      "mgmt": 0.31,
+      "acct": 0.23,
+      "comm": 0.54,
+      "tech": 0.38,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 100,
+    "en": {
+      "originalFeedback": "<Name> wore a tie with popular stock symbols on it. I think this one may be interested in finances."
+    },
+    "tr": {
+      "originalFeedback": "<isim> üzerinde popüler hisse senedi sembolleri olan bir kravat takmıştı. Sanırım bu kişi finansla ilgileniyor olabilir."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 1.44,
+      "comm": 0.39,
+      "tech": 0.58,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 101,
+    "en": {
+      "originalFeedback": "<Name> worked as a barista to push him/herself through the Uni. He/She seems to have a talent for describing mundane things with great enthusiasm."
+    },
+    "tr": {
+      "originalFeedback": "<isim> üniversiteyi bitirmek için barista olarak çalışmış. Sıradan şeyleri büyük bir coşkuyla anlatma yeteneği var gibi görünüyor."
+    },
+    "skills": {
+      "mgmt": 0.51,
+      "acct": 0.55,
+      "comm": 1.45,
+      "tech": 0.54,
+      "avgSkill": 0.76
+    }
+  },
+  {
+    "id": 102,
+    "en": {
+      "originalFeedback": "<Name> would be a great asset as a janitor. Tidied up the meeting room nicely."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bir hademe olarak harika bir değer olurdu. Toplantı odasını güzelce topladı."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.50,
+      "comm": 0.57,
+      "tech": 0.43,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 103,
+    "en": {
+      "originalFeedback": "<Name> would have won the science fair, but his/her experiment went wrong at the last minute."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bilim fuarını kazanacaktı ama deneyi son anda ters gitti."
+    },
+    "skills": {
+      "mgmt": 0.46,
+      "acct": 0.58,
+      "comm": 0.49,
+      "tech": 1.39,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 104,
+    "en": {
+      "originalFeedback": "<Name> would lose at tic tac toe."
+    },
+    "tr": {
+      "originalFeedback": "<isim> üç taş oyununda kaybederdi."
+    },
+    "skills": {
+      "mgmt": 0.56,
+      "acct": 0.63,
+      "comm": 0.44,
+      "tech": 0.38,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 105,
+    "en": {
+      "originalFeedback": "<Name>'s thesis topic was tax havens in corporate America."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın tez konusu kurumsal Amerika'daki vergi cennetleriydi."
+    },
+    "skills": {
+      "mgmt": 0.42,
+      "acct": 1.39,
+      "comm": 0.49,
+      "tech": 0.74,
+      "avgSkill": 0.76
+    }
+  },
+  {
+    "id": 106,
+    "en": {
+      "originalFeedback": "<Name>? Sorry he/she is no longer available. I hired him/her for the new company I'm starting."
+    },
+    "tr": {
+      "originalFeedback": "<isim> mı? Üzgünüm, artık müsait değil. Onu kurduğum yeni şirket için işe aldım."
+    },
+    "skills": {
+      "mgmt": 1.44,
+      "acct": 0.57,
+      "comm": 0.48,
+      "tech": 0.44,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 107,
+    "en": {
+      "originalFeedback": "A good candidate, but <Name> says he/she will need the summers off to tend to his/her goats."
+    },
+    "tr": {
+      "originalFeedback": "İyi bir aday, ancak <isim> keçilerine bakmak için yazları izinli olması gerektiğini söylüyor."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.40,
+      "comm": 0.65,
+      "tech": 0.25,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 108,
+    "en": {
+      "originalFeedback": "A poetry major in University, I imagine. <Name> was almost Shakespearan in demeanour. I've never had responses delivered in perfect iambic pentameter before."
+    },
+    "tr": {
+      "originalFeedback": "Üniversitede şiir bölümü okumuş sanırım. <isim>'ın tavırları neredeyse Shakespeare gibiydi. Daha önce hiç kusursuz iambik pentametre ile verilen yanıtlar almamıştım."
+    },
+    "skills": {
+      "mgmt": 0.25,
+      "acct": 0.31,
+      "comm": 0.44,
+      "tech": 0.31,
+      "avgSkill": 0.33
+    }
+  },
+  {
+    "id": 109,
+    "en": {
+      "originalFeedback": "A wise scholar once said, you can only choose one. But you can choose again."
+    },
+    "tr": {
+      "originalFeedback": "Bilge bir alim bir keresinde şöyle demişti: Sadece birini seçebilirsin. Ama tekrar seçebilirsin."
+    },
+    "skills": {
+      "mgmt": 0.17,
+      "acct": 0.44,
+      "comm": 0.39,
+      "tech": 0.39,
+      "avgSkill": 0.35
+    }
+  },
+  {
+    "id": 110,
+    "en": {
+      "originalFeedback": "According to reliable sources, two out of three ain't bad."
+    },
+    "tr": {
+      "originalFeedback": "Güvenilir kaynaklara göre, üçte iki fena değil."
+    },
+    "skills": {
+      "mgmt": 0.41,
+      "acct": 0.18,
+      "comm": 0.35,
+      "tech": 0.47,
+      "avgSkill": 0.35
+    }
+  },
+  {
+    "id": 111,
+    "en": {
+      "originalFeedback": "After asking <Name> to leave for the 3rd time, he/she pulled out a pen, put on sunglasses, and tried to do the Men in Black mind wipe thing. The second interview went much better."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'dan 3. kez ayrılmasını istedikten sonra, bir kalem çıkardı, güneş gözlüğü taktı ve Siyah Giyen Adamlar'daki zihin silme olayını yapmaya çalıştı. İkinci görüşme çok daha iyi geçti."
+    },
+    "skills": {
+      "mgmt": 0.51,
+      "acct": 1.50,
+      "comm": 0.50,
+      "tech": 0.63,
+      "avgSkill": 0.79
+    }
+  },
+  {
+    "id": 112,
+    "en": {
+      "originalFeedback": "After being 6 minutes late to the interview, <Name> showed off an impressive watch."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeye 6 dakika geç kaldıktan sonra, <isim> etkileyici bir saat gösterdi."
+    },
+    "skills": {
+      "mgmt": 0.79,
+      "acct": 0.43,
+      "comm": 0.50,
+      "tech": 0.57,
+      "avgSkill": 0.58
+    }
+  },
+  {
+    "id": 113,
+    "en": {
+      "originalFeedback": "After discussing the literary significance of Lord of the Flies for no particular reason, <Name> asked if we could roast a hog for family day."
+    },
+    "tr": {
+      "originalFeedback": "Belirli bir neden olmaksızın Sineklerin Tanrısı'nın edebi önemini tartıştıktan sonra, <isim> aile günü için domuz çevirip çeviremeyeceğimizi sordu."
+    },
+    "skills": {
+      "mgmt": 0.32,
+      "acct": 0.20,
+      "comm": 0.24,
+      "tech": 0.44,
+      "avgSkill": 0.30
+    }
+  },
+  {
+    "id": 114,
+    "en": {
+      "originalFeedback": "After telling me of his/her college experience - and it was apparently extensive - I returned to the original question: What was your name?"
+    },
+    "tr": {
+      "originalFeedback": "Bana üniversite deneyiminden bahsettikten sonra - ve görünüşe göre oldukça kapsamlıydı - asıl soruma geri döndüm: Adınız neydi?"
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.41,
+      "comm": 1.00,
+      "tech": 0.24,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 115,
+    "en": {
+      "originalFeedback": "After the interview, I sent <Name> to go organize our storage shed. We made $400 on the street sale and bought pizza for the staff."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeden sonra, <isim>'ı depomuzu düzenlemeye gönderdim. Sokak satışından 400 dolar kazandık ve personele pizza aldık."
+    },
+    "skills": {
+      "mgmt": 0.54,
+      "acct": 0.65,
+      "comm": 1.42,
+      "tech": 0.38,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 116,
+    "en": {
+      "originalFeedback": "After two hours of history lessons on mining, I had to inform him/her we weren't hiring for that position. He/She looked very disappointed."
+    },
+    "tr": {
+      "originalFeedback": "Madencilik üzerine iki saatlik tarih dersinden sonra, o pozisyon için işe alım yapmadığımızı bildirmek zorunda kaldım. Çok hayal kırıklığına uğramış görünüyordu."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.36,
+      "comm": 0.21,
+      "tech": 0.64,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 117,
+    "en": {
+      "originalFeedback": "All I can remember from the interview is <Name> talked a lot about his/her band."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeden hatırlayabildiğim tek şey, <isim>'ın müzik grubu hakkında çok konuştuğuydu."
+    },
+    "skills": {
+      "mgmt": 0.41,
+      "acct": 0.27,
+      "comm": 0.36,
+      "tech": 0.55,
+      "avgSkill": 0.40
+    }
+  },
+  {
+    "id": 118,
+    "en": {
+      "originalFeedback": "Although <Name> had trouble communicating - possibly due to high functioning autism - but when you looked past that, his/her answers were brilliant."
+    },
+    "tr": {
+      "originalFeedback": "<isim> iletişim kurmakta zorluk çekse de - muhtemelen yüksek işlevli otizm nedeniyle - ama bunu aştığınızda cevapları harikaydı."
+    },
+    "skills": {
+      "mgmt": 0.76,
+      "acct": 0.61,
+      "comm": 0.59,
+      "tech": 1.46,
+      "avgSkill": 0.86
+    }
+  },
+  {
+    "id": 119,
+    "en": {
+      "originalFeedback": "Although <Name> seems like an excellent fit for the job, during the interview he/she kept talking to some invisible friend standing behind me."
+    },
+    "tr": {
+      "originalFeedback": "<isim> iş için mükemmel bir uyum gibi görünse de, görüşme sırasında arkamda duran görünmez bir arkadaşıyla konuşup durdu."
+    },
+    "skills": {
+      "mgmt": 0.14,
+      "acct": 0.14,
+      "comm": 0.43,
+      "tech": 0.14,
+      "avgSkill": 0.21
+    }
+  },
+  {
+    "id": 120,
+    "en": {
+      "originalFeedback": "Although the resume looks decent, <Name> was unable to stop laughing the entire interview."
+    },
+    "tr": {
+      "originalFeedback": "Özgeçmiş iyi görünse de, <isim> tüm görüşme boyunca gülmeyi durduramadı."
+    },
+    "skills": {
+      "mgmt": 0.71,
+      "acct": 0.50,
+      "comm": 0.71,
+      "tech": 0.43,
+      "avgSkill": 0.59
+    }
+  },
+  {
+    "id": 121,
+    "en": {
+      "originalFeedback": "As the interview came to a close, <Name> gave me a bag of \"pixie dust\" and claimed it could make me fly if I only believe. It may have been acid."
+    },
+    "tr": {
+      "originalFeedback": "Görüşme sona ererken, <isim> bana bir torba \"peri tozu\" verdi ve sadece inanırsam beni uçurabileceğini iddia etti. Asit olabilir."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.25,
+      "comm": 0.83,
+      "tech": 0.33,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 122,
+    "en": {
+      "originalFeedback": "Asked to convince me he/she was the right person for the job, <Name> held up a flashlight to my face and said, \"Step into the light!\""
+    },
+    "tr": {
+      "originalFeedback": "İş için doğru kişi olduğuna beni ikna etmesi istendiğinde, <isim> yüzüme bir el feneri tuttu ve \"Işığa adım at!\" dedi."
+    },
+    "skills": {
+      "mgmt": 0.62,
+      "acct": 0.31,
+      "comm": 0.31,
+      "tech": 0.46,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 123,
+    "en": {
+      "originalFeedback": "At the end of every interview, I ask if the candidate has any questions. This one asked about recess, because \"All work and no play makes <Name> a dull employee.\""
+    },
+    "tr": {
+      "originalFeedback": "Her görüşmenin sonunda adayın sorusu olup olmadığını sorarım. Bu, teneffüsü sordu, çünkü \"Sadece iş, oyun yok <isim>'ı sıkıcı bir çalışan yapar.\""
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.39,
+      "comm": 0.57,
+      "tech": 0.43,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 124,
+    "en": {
+      "originalFeedback": "Awareness projects onto karmic life."
+    },
+    "tr": {
+      "originalFeedback": "Farkındalık karmik yaşama yansır."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.38,
+      "comm": 0.33,
+      "tech": 0.38,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 125,
+    "en": {
+      "originalFeedback": "Baby shark! doo do doo dooo do do doo"
+    },
+    "tr": {
+      "originalFeedback": "Bebek köpekbalığı! du du du duu du du du"
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.53,
+      "comm": 0.47,
+      "tech": 0.33,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 126,
+    "en": {
+      "originalFeedback": "Boss, the level of the applicants is horrible. I need a vacation. But <Name> is the most acceptable."
+    },
+    "tr": {
+      "originalFeedback": "Patron, başvuranların seviyesi korkunç. Tatile ihtiyacım var. Ama <isim> en kabul edilebilir olanı."
+    },
+    "skills": {
+      "mgmt": 0.54,
+      "acct": 0.92,
+      "comm": 0.23,
+      "tech": 0.23,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 127,
+    "en": {
+      "originalFeedback": "Brilliant! However, the tinfoil outfit distracted the other employees. Perhaps a work from home arrangement?"
+    },
+    "tr": {
+      "originalFeedback": "Harika! Ancak, alüminyum folyo kıyafeti diğer çalışanların dikkatini dağıttı. Belki evden çalışma düzenlemesi?"
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.50,
+      "comm": 0.75,
+      "tech": 0.35,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 128,
+    "en": {
+      "originalFeedback": "Business is a whirlpool. That's pretty much all <Name> said."
+    },
+    "tr": {
+      "originalFeedback": "İş bir girdaptır. <isim>'ın söylediği hemen hemen hepsi buydu."
+    },
+    "skills": {
+      "mgmt": 0.41,
+      "acct": 0.65,
+      "comm": 0.53,
+      "tech": 0.59,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 129,
+    "en": {
+      "originalFeedback": "Can I have the position? I'm more qualified than <Name>."
+    },
+    "tr": {
+      "originalFeedback": "Pozisyonu alabilir miyim? <isim>'dan daha nitelikliyim."
+    },
+    "skills": {
+      "mgmt": 0.46,
+      "acct": 0.46,
+      "comm": 0.62,
+      "tech": 0.62,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 130,
+    "en": {
+      "originalFeedback": "Did you know you can reference cells in a different sheet! <Name> showed it to me."
+    },
+    "tr": {
+      "originalFeedback": "Farklı bir sayfadaki hücrelere referans verebileceğinizi biliyor muydunuz! <isim> bana gösterdi."
+    },
+    "skills": {
+      "mgmt": 0.48,
+      "acct": 1.45,
+      "comm": 0.59,
+      "tech": 0.49,
+      "avgSkill": 0.75
+    }
+  },
+  {
+    "id": 131,
+    "en": {
+      "originalFeedback": "Do or do not, there is no try."
+    },
+    "tr": {
+      "originalFeedback": "Yap ya da yapma, denemek yok."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.35,
+      "comm": 0.48,
+      "tech": 0.43,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 132,
+    "en": {
+      "originalFeedback": "Do we really need the bonus that badly? <Name> counted the ceiling tiles while I was asking questions. Out loud!"
+    },
+    "tr": {
+      "originalFeedback": "Gerçekten o bonusa bu kadar çok mu ihtiyacımız var? Ben soru sorarken <isim> tavan karolarını saydı. Yüksek sesle!"
+    },
+    "skills": {
+      "mgmt": 0.63,
+      "acct": 0.21,
+      "comm": 0.42,
+      "tech": 0.37,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 133,
+    "en": {
+      "originalFeedback": "Don't buy term life insurance!"
+    },
+    "tr": {
+      "originalFeedback": "Vadeli hayat sigortası almayın!"
+    },
+    "skills": {
+      "mgmt": 0.59,
+      "acct": 0.35,
+      "comm": 0.35,
+      "tech": 0.29,
+      "avgSkill": 0.40
+    }
+  },
+  {
+    "id": 134,
+    "en": {
+      "originalFeedback": "Elvis is alive and well and living in Las Cruces, by <Name>'s recounting. That's all we talked about."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın anlattığına göre Elvis hayatta, sağlıklı ve Las Cruces'te yaşıyor. Tek konuştuğumuz buydu."
+    },
+    "skills": {
+      "mgmt": 0.10,
+      "acct": 0.50,
+      "comm": 0.60,
+      "tech": 0.30,
+      "avgSkill": 0.38
+    }
+  },
+  {
+    "id": 135,
+    "en": {
+      "originalFeedback": "Every response included a pun. When I asked if <Name> could be serious, the answer was \"Sure, I can be a star!\""
+    },
+    "tr": {
+      "originalFeedback": "Her cevap bir kelime oyunu içeriyordu. <isim>'a ciddi olup olamayacağını sorduğumda cevap \"Elbette, bir yıldız olabilirim!\" oldu."
+    },
+    "skills": {
+      "mgmt": 0.22,
+      "acct": 0.56,
+      "comm": 0.33,
+      "tech": 0.44,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 136,
+    "en": {
+      "originalFeedback": "Experience is the way to total enlightenment."
+    },
+    "tr": {
+      "originalFeedback": "Deneyim, tam aydınlanmaya giden yoldur."
+    },
+    "skills": {
+      "mgmt": 0.62,
+      "acct": 0.38,
+      "comm": 0.62,
+      "tech": 0.62,
+      "avgSkill": 0.56
+    }
+  },
+  {
+    "id": 137,
+    "en": {
+      "originalFeedback": "Experiential truth self-interacts with mortal belonging."
+    },
+    "tr": {
+      "originalFeedback": "Deneyimsel gerçeklik, ölümlü aidiyetle kendi kendine etkileşir."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.50,
+      "comm": 0.43,
+      "tech": 0.71,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 138,
+    "en": {
+      "originalFeedback": "For 'greatest achievement' <Name> put 'Built a replica of the Devils Tower out of mash potatoes from memory.' I would like my encounters to be less close on this one."
+    },
+    "tr": {
+      "originalFeedback": "'En büyük başarı' için <isim> 'Hafızadan patates püresiyle Şeytan Kulesi'nin bir kopyasını inşa etti.' yazmış. Bu konuda karşılaşmalarımın daha az yakın olmasını isterdim."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.67,
+      "comm": 0.33,
+      "tech": 0.60,
+      "avgSkill": 0.53
+    }
+  },
+  {
+    "id": 139,
+    "en": {
+      "originalFeedback": "From running the school bake sale to chairing the business forum at University, <Name> has shown tremendous organizational skills."
+    },
+    "tr": {
+      "originalFeedback": "Okul kermesinden Üniversitedeki iş forumuna başkanlık etmeye kadar, <isim> muazzam organizasyon becerileri göstermiştir."
+    },
+    "skills": {
+      "mgmt": 1.46,
+      "acct": 0.58,
+      "comm": 0.58,
+      "tech": 0.63,
+      "avgSkill": 0.81
+    }
+  },
+  {
+    "id": 140,
+    "en": {
+      "originalFeedback": "Great candidate! However <Name> showed up with a water quality test kit and mailed a sample to the lab. I hope we pass!"
+    },
+    "tr": {
+      "originalFeedback": "Harika aday! Ancak <isim> bir su kalitesi test kiti ile geldi ve laboratuvara bir numune postaladı. Umarım geçeriz!"
+    },
+    "skills": {
+      "mgmt": 0.31,
+      "acct": 0.38,
+      "comm": 0.23,
+      "tech": 0.23,
+      "avgSkill": 0.29
+    }
+  },
+  {
+    "id": 141,
+    "en": {
+      "originalFeedback": "Halfway through a great interview I realized this was actually a sales rep trying to sell us an AI driven robot to fill the position."
+    },
+    "tr": {
+      "originalFeedback": "Harika bir görüşmenin yarısında bunun aslında bize pozisyonu doldurmak için yapay zeka destekli bir robot satmaya çalışan bir satış temsilcisi olduğunu fark ettim."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.45,
+      "comm": 0.77,
+      "tech": 0.45,
+      "avgSkill": 0.55
+    }
+  },
+  {
+    "id": 142,
+    "en": {
+      "originalFeedback": "Here's an entrepreneur in the making: <Name> organized a circus at the local pet shelter. The walking cats were a hit, apparently."
+    },
+    "tr": {
+      "originalFeedback": "İşte yetişmekte olan bir girişimci: <isim> yerel hayvan barınağında bir sirk düzenledi. Yürüyen kediler görünüşe göre çok tutulmuş."
+    },
+    "skills": {
+      "mgmt": 1.41,
+      "acct": 0.52,
+      "comm": 0.52,
+      "tech": 0.53,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 143,
+    "en": {
+      "originalFeedback": "Hire a fresh graduate."
+    },
+    "tr": {
+      "originalFeedback": "Yeni mezun birini işe alın."
+    },
+    "skills": {
+      "mgmt": 0.67,
+      "acct": 1.33,
+      "comm": 0.33,
+      "tech": 1.33,
+      "avgSkill": 0.92
+    }
+  },
+  {
+    "id": 144,
+    "en": {
+      "originalFeedback": "How can things have a beautiful ending without beautiful mistakes."
+    },
+    "tr": {
+      "originalFeedback": "Güzel hatalar olmadan işlerin nasıl güzel bir sonu olabilir ki?"
+    },
+    "skills": {
+      "mgmt": 0.30,
+      "acct": 0.60,
+      "comm": 0.70,
+      "tech": 0.60,
+      "avgSkill": 0.55
+    }
+  },
+  {
+    "id": 145,
+    "en": {
+      "originalFeedback": "I asked <Name> if he/she could be an animal which one would he/she be. He/She spent the remainder of the interview filling my whiteboard with charts analyzing the question."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'a bir hayvan olabilseydi hangisi olacağını sordum. Görüşmenin geri kalanını beyaz tahtamı soruyu analiz eden grafiklerle doldurarak geçirdi."
+    },
+    "skills": {
+      "mgmt": 0.77,
+      "acct": 1.41,
+      "comm": 0.46,
+      "tech": 0.57,
+      "avgSkill": 0.80
+    }
+  },
+  {
+    "id": 146,
+    "en": {
+      "originalFeedback": "I asked if <Name> would like a donut. \"If it's free, I'll take 2.\" I think he/she sold them both on the way out."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'a donut isteyip istemediğini sordum. \"Eğer bedavaysa 2 tane alırım.\" Sanırım çıkarken ikisini de satmış."
+    },
+    "skills": {
+      "mgmt": 0.65,
+      "acct": 0.49,
+      "comm": 1.53,
+      "tech": 0.58,
+      "avgSkill": 0.81
+    }
+  },
+  {
+    "id": 147,
+    "en": {
+      "originalFeedback": "I can only please one person per day. Today is not your day."
+    },
+    "tr": {
+      "originalFeedback": "Günde sadece bir kişiyi memnun edebilirim. Bugün senin günün değil."
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.44,
+      "comm": 0.33,
+      "tech": 0.56,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 148,
+    "en": {
+      "originalFeedback": "I couldn't concentrate on the interview. <Name> wore 2 different socks; it was driving me crazy."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeye konsantre olamadım. <isim> 2 farklı çorap giymişti; beni deli ediyordu."
+    },
+    "skills": {
+      "mgmt": 0.46,
+      "acct": 0.62,
+      "comm": 0.38,
+      "tech": 0.54,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 149,
+    "en": {
+      "originalFeedback": "I did not see anyone sum a column in a spreadsheet the way <Name> did it. He/She carries a pocket calculator for that purpose."
+    },
+    "tr": {
+      "originalFeedback": "Kimsenin bir e-tabloda bir sütunu <isim>'ın yaptığı gibi topladığını görmedim. Bu amaçla bir cep hesap makinesi taşıyor."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.80,
+      "comm": 0.20,
+      "tech": 0.40,
+      "avgSkill": 0.56
+    }
+  },
+  {
+    "id": 150,
+    "en": {
+      "originalFeedback": "I had to take a bath after this interview, <Name> tried to pick me up! Bad lines, too."
+    },
+    "tr": {
+      "originalFeedback": "Bu görüşmeden sonra banyo yapmak zorunda kaldım, <isim> bana asılmaya çalıştı! Kötü laflardı, hem de."
+    },
+    "skills": {
+      "mgmt": 0.29,
+      "acct": 0.43,
+      "comm": 0.29,
+      "tech": 0.14,
+      "avgSkill": 0.29
+    }
+  },
+  {
+    "id": 151,
+    "en": {
+      "originalFeedback": "I have a bit of a nerd crush on <Name>. He/she even looks like Elon Musk."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'a karşı biraz inekçe bir hoşlantım var. Hatta Elon Musk'a benziyor."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.49,
+      "comm": 0.49,
+      "tech": 1.43,
+      "avgSkill": 0.75
+    }
+  },
+  {
+    "id": 152,
+    "en": {
+      "originalFeedback": "I just interviewed this candidate; there must be a glitch in the matrix. Operator, I need an exit..."
+    },
+    "tr": {
+      "originalFeedback": "Bu adayla az önce görüştüm; matrix'te bir hata olmalı. Operatör, bir çıkışa ihtiyacım var..."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.53,
+      "comm": 0.87,
+      "tech": 0.40,
+      "avgSkill": 0.58
+    }
+  },
+  {
+    "id": 153,
+    "en": {
+      "originalFeedback": "I needed a thesaurus to find a proper synonym for \"unacceptable\" that sums <Name> up. \"Execrable\" is what I came up with."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ı özetleyen \"kabul edilemez\" için uygun bir eş anlamlı bulmak için bir eş anlamlılar sözlüğüne ihtiyacım vardı. \"İğrenç\" kelimesini buldum."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.50,
+      "comm": 0.70,
+      "tech": 0.70,
+      "avgSkill": 0.63
+    }
+  },
+  {
+    "id": 154,
+    "en": {
+      "originalFeedback": "I spent half an hour cleaning up the crumbs after the interview, but <Name> was very interested in the grocery business. And where we got our donuts."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeden sonra kırıntıları temizlemek için yarım saat harcadım, ama <isim> market işiyle çok ilgiliydi. Ve donutlarımızı nereden aldığımızla."
+    },
+    "skills": {
+      "mgmt": 0.29,
+      "acct": 0.43,
+      "comm": 0.29,
+      "tech": 0.71,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 155,
+    "en": {
+      "originalFeedback": "I strongly recommend this candidate for the position. He/She smells really nice."
+    },
+    "tr": {
+      "originalFeedback": "Bu adayı pozisyon için şiddetle tavsiye ediyorum. Gerçekten güzel kokuyor."
+    },
+    "skills": {
+      "mgmt": 0.52,
+      "acct": 0.57,
+      "comm": 0.52,
+      "tech": 0.48,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 156,
+    "en": {
+      "originalFeedback": "I think I died a little during the interview with <Name>."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ile görüşme sırasında biraz öldüğümü düşünüyorum."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.61,
+      "comm": 0.39,
+      "tech": 0.44,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 157,
+    "en": {
+      "originalFeedback": "I think we need a new agency. <Name> didn't know what job he/she was applying for."
+    },
+    "tr": {
+      "originalFeedback": "Sanırım yeni bir ajansa ihtiyacımız var. <isim> hangi işe başvurduğunu bilmiyordu."
+    },
+    "skills": {
+      "mgmt": 0.18,
+      "acct": 0.45,
+      "comm": 0.27,
+      "tech": 1.00,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 158,
+    "en": {
+      "originalFeedback": "I was asked by <Name> if the 8 AM start time was flexible since the local Starbucks doesn't open until 9 AM and he/she just isn't right without a pumpkin spice latte."
+    },
+    "tr": {
+      "originalFeedback": "<isim> tarafından sabah 8 başlama saatinin esnek olup olmadığı soruldu, çünkü yerel Starbucks sabah 9'a kadar açılmıyor ve balkabağı baharatlı latte olmadan kendine gelemiyormuş."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.71,
+      "comm": 0.14,
+      "tech": 0.29,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 159,
+    "en": {
+      "originalFeedback": "I was assured that, when hired, <Name> would have one job to do, and dammit, he/she is going to do it."
+    },
+    "tr": {
+      "originalFeedback": "İşe alındığında <isim>'ın yapacak tek bir işi olacağı ve lanet olsun ki bunu yapacağı konusunda teminat aldım."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.40,
+      "comm": 0.53,
+      "tech": 0.73,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 160,
+    "en": {
+      "originalFeedback": "I was unable to understand most of <Name>'s answers, as he/she was eating the free donuts the entire time. He/She preferred the powdered."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın cevaplarının çoğunu anlayamadım, çünkü tüm süre boyunca bedava donutları yiyordu. Pudra şekerli olanı tercih etti."
+    },
+    "skills": {
+      "mgmt": 0.61,
+      "acct": 0.33,
+      "comm": 0.44,
+      "tech": 0.44,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 161,
+    "en": {
+      "originalFeedback": "I would not suggest <Name> for a follow-up interview."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ı bir takip görüşmesi için önermem."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.28,
+      "comm": 0.33,
+      "tech": 0.56,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 162,
+    "en": {
+      "originalFeedback": "I wouldn't hire <Name>; bad shoes."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ı işe almazdım; kötü ayakkabılar."
+    },
+    "skills": {
+      "mgmt": 0.88,
+      "acct": 0.25,
+      "comm": 0.25,
+      "tech": 0.56,
+      "avgSkill": 0.47
+    }
+  },
+  {
+    "id": 163,
+    "en": {
+      "originalFeedback": "I wouldn't work with <Name>."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ile çalışmazdım."
+    },
+    "skills": {
+      "mgmt": 0.65,
+      "acct": 0.41,
+      "comm": 0.47,
+      "tech": 0.65,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 164,
+    "en": {
+      "originalFeedback": "I'm confused...!?"
+    },
+    "tr": {
+      "originalFeedback": "Kafam karıştı...!?"
+    },
+    "skills": {
+      "mgmt": 0.23,
+      "acct": 0.38,
+      "comm": 0.46,
+      "tech": 0.23,
+      "avgSkill": 0.33
+    }
+  },
+  {
+    "id": 165,
+    "en": {
+      "originalFeedback": "I'm glad I only have to do these interviews once a day. Don't bother with this one."
+    },
+    "tr": {
+      "originalFeedback": "Bu görüşmeleri günde sadece bir kez yapmak zorunda olduğuma sevindim. Bununla uğraşmayın."
+    },
+    "skills": {
+      "mgmt": 0.15,
+      "acct": 0.46,
+      "comm": 0.46,
+      "tech": 0.38,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 166,
+    "en": {
+      "originalFeedback": "I'm having trouble remembering what happened during the interview. There was some sort of light, and I apparently offered <Name> the position with a very high salary."
+    },
+    "tr": {
+      "originalFeedback": "Görüşme sırasında ne olduğunu hatırlamakta zorlanıyorum. Bir tür ışık vardı ve görünüşe göre <isim>'a pozisyonu çok yüksek bir maaşla teklif etmişim."
+    },
+    "skills": {
+      "mgmt": 0.64,
+      "acct": 0.57,
+      "comm": 1.42,
+      "tech": 0.70,
+      "avgSkill": 0.83
+    }
+  },
+  {
+    "id": 167,
+    "en": {
+      "originalFeedback": "I'm not sure if athletic achievement translates in the business world, but <Name> played 2 sports at University."
+    },
+    "tr": {
+      "originalFeedback": "Atletik başarının iş dünyasına yansıyıp yansımadığından emin değilim, ama <isim> Üniversitede 2 spor dalında oynamış."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.40,
+      "comm": 0.20,
+      "tech": 0.60,
+      "avgSkill": 0.38
+    }
+  },
+  {
+    "id": 168,
+    "en": {
+      "originalFeedback": "I'm not sure if it was a debate or an interview, but <Name> was incredibly fun to talk to."
+    },
+    "tr": {
+      "originalFeedback": "Bir münazara mıydı yoksa bir görüşme miydi emin değilim, ama <isim> ile konuşmak inanılmaz eğlenceliydi."
+    },
+    "skills": {
+      "mgmt": 0.68,
+      "acct": 0.40,
+      "comm": 1.35,
+      "tech": 0.51,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 169,
+    "en": {
+      "originalFeedback": "I'm pretty sure I would have sold my house to <Name>. However, he/she mentioned 'bones' a few too many times."
+    },
+    "tr": {
+      "originalFeedback": "Evimi <isim>'a satacağıma oldukça eminim. Ancak, 'kemikler'den biraz fazla bahsetti."
+    },
+    "skills": {
+      "mgmt": 0.47,
+      "acct": 0.44,
+      "comm": 1.27,
+      "tech": 0.40,
+      "avgSkill": 0.64
+    }
+  },
+  {
+    "id": 170,
+    "en": {
+      "originalFeedback": "I'm pretty sure we could train a monkey to perform better than <Name>."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'dan daha iyi performans göstermesi için bir maymunu eğitebileceğimize oldukça eminim."
+    },
+    "skills": {
+      "mgmt": 0.45,
+      "acct": 0.55,
+      "comm": 0.45,
+      "tech": 0.45,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 171,
+    "en": {
+      "originalFeedback": "I'm sure I nodded off at some point, but that didn't phase <Name>. I believe it was 52 minutes on the 'what was your favorite day on the job' question."
+    },
+    "tr": {
+      "originalFeedback": "Bir noktada uyukladığıma eminim, ama bu <isim>'ı etkilemedi. Sanırım 'işteki en sevdiğiniz gün hangisiydi' sorusuna 52 dakika harcadı."
+    },
+    "skills": {
+      "mgmt": 0.30,
+      "acct": 0.60,
+      "comm": 0.30,
+      "tech": 0.30,
+      "avgSkill": 0.38
+    }
+  },
+  {
+    "id": 172,
+    "en": {
+      "originalFeedback": "If <Name> were qualified enough, I'd hire him/her to talk to the next unqualified candidate. I need an assistant!"
+    },
+    "tr": {
+      "originalFeedback": "Eğer <isim> yeterince nitelikli olsaydı, bir sonraki niteliksiz adayla konuşması için onu işe alırdım. Bir asistana ihtiyacım var!"
+    },
+    "skills": {
+      "mgmt": 0.58,
+      "acct": 0.25,
+      "comm": 0.67,
+      "tech": 0.25,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 173,
+    "en": {
+      "originalFeedback": "If I had a nickel for every time a candidate asked me what a fax is, I'd be able to retire early."
+    },
+    "tr": {
+      "originalFeedback": "Bir adayın bana faksın ne olduğunu her sorduğunda bir kuruşum olsaydı, erken emekli olabilirdim."
+    },
+    "skills": {
+      "mgmt": 0.23,
+      "acct": 0.62,
+      "comm": 0.62,
+      "tech": 0.54,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 174,
+    "en": {
+      "originalFeedback": "If I have to do an interview like that again, I may rethink my career path. <Name> is intolerable."
+    },
+    "tr": {
+      "originalFeedback": "Eğer tekrar böyle bir görüşme yapmak zorunda kalırsam, kariyer yolumu yeniden düşünebilirim. <isim> katlanılmaz."
+    },
+    "skills": {
+      "mgmt": 0.55,
+      "acct": 0.36,
+      "comm": 0.36,
+      "tech": 0.82,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 175,
+    "en": {
+      "originalFeedback": "If you hire <Name>, meetings with him/her would not take long, unless he/she discovers deodorant."
+    },
+    "tr": {
+      "originalFeedback": "Eğer <isim>'ı işe alırsanız, deodorantı keşfetmediği sürece onunla toplantılar uzun sürmez."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.70,
+      "comm": 0.20,
+      "tech": 0.50,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 176,
+    "en": {
+      "originalFeedback": "If you refuse to accept anything but the best, you very often get it."
+    },
+    "tr": {
+      "originalFeedback": "Eğer en iyisinden başkasını kabul etmeyi reddederseniz, çok sık elde edersiniz."
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.39,
+      "comm": 0.50,
+      "tech": 0.33,
+      "avgSkill": 0.40
+    }
+  },
+  {
+    "id": 177,
+    "en": {
+      "originalFeedback": "If you take <Name>, you are an idiot!"
+    },
+    "tr": {
+      "originalFeedback": "Eğer <isim>'ı alırsan, aptalsın!"
+    },
+    "skills": {
+      "mgmt": 0.41,
+      "acct": 0.24,
+      "comm": 0.47,
+      "tech": 0.29,
+      "avgSkill": 0.35
+    }
+  },
+  {
+    "id": 178,
+    "en": {
+      "originalFeedback": "If you want sense, you have to make it yourself!"
+    },
+    "tr": {
+      "originalFeedback": "Eğer anlam istiyorsan, onu kendin yaratmalısın!"
+    },
+    "skills": {
+      "mgmt": 0.56,
+      "acct": 0.38,
+      "comm": 0.38,
+      "tech": 0.63,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 179,
+    "en": {
+      "originalFeedback": "In response to 'what is your greatest fear', <Name> replied, \"The world fears your own miracles.\" He/She claimed it was a Deepak Chopra quote, but I can't verify that."
+    },
+    "tr": {
+      "originalFeedback": "'En büyük korkunuz nedir' sorusuna yanıt olarak <isim> şöyle cevap verdi: \"Dünya kendi mucizelerinizden korkar.\" Bunun bir Deepak Chopra alıntısı olduğunu iddia etti, ama doğrulayamıyorum."
+    },
+    "skills": {
+      "mgmt": 0.72,
+      "acct": 0.39,
+      "comm": 0.22,
+      "tech": 0.28,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 180,
+    "en": {
+      "originalFeedback": "In response to every question I asked, <Name> replied \"I'd like to assert my fifth amendment privilege.\""
+    },
+    "tr": {
+      "originalFeedback": "Sorduğum her soruya karşılık <isim> \"Beşinci değişiklik ayrıcalığımı kullanmak istiyorum\" diye cevap verdi."
+    },
+    "skills": {
+      "mgmt": 0.82,
+      "acct": 0.27,
+      "comm": 0.45,
+      "tech": 0.27,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 181,
+    "en": {
+      "originalFeedback": "Instead of a resume this candidate gave us video of his/her appearance on the show \"Shark Tank\"."
+    },
+    "tr": {
+      "originalFeedback": "Bu aday özgeçmiş yerine bize \"Shark Tank\" programındaki görünümünün videosunu verdi."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.48,
+      "comm": 0.52,
+      "tech": 0.67,
+      "avgSkill": 0.56
+    }
+  },
+  {
+    "id": 182,
+    "en": {
+      "originalFeedback": "Is being a lieutenant in Starfleet a good thing? <Name> was very proud. Even wore his/her uniform to the interview."
+    },
+    "tr": {
+      "originalFeedback": "Yıldız Filosu'nda teğmen olmak iyi bir şey mi? <isim> çok gururluydu. Hatta görüşmeye üniformasını giymişti."
+    },
+    "skills": {
+      "mgmt": 0.64,
+      "acct": 0.29,
+      "comm": 0.21,
+      "tech": 0.43,
+      "avgSkill": 0.39
+    }
+  },
+  {
+    "id": 183,
+    "en": {
+      "originalFeedback": "It is all fun and games until the flying monkeys attack."
+    },
+    "tr": {
+      "originalFeedback": "Uçan maymunlar saldırana kadar her şey eğlence ve oyundur."
+    },
+    "skills": {
+      "mgmt": 0.67,
+      "acct": 0.33,
+      "comm": 0.58,
+      "tech": 0.42,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 184,
+    "en": {
+      "originalFeedback": "It looks like <Name>'s parents paid a lot for college; it took him/her long enough."
+    },
+    "tr": {
+      "originalFeedback": "Görünüşe göre <isim>'ın ailesi üniversite için çok para ödemiş; yeterince uzun sürdü."
+    },
+    "skills": {
+      "mgmt": 0.20,
+      "acct": 0.47,
+      "comm": 0.27,
+      "tech": 0.53,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 185,
+    "en": {
+      "originalFeedback": "It would be business very casual for <Name>; he/she wore pajamas to the interview."
+    },
+    "tr": {
+      "originalFeedback": "<isim> için iş çok rahat olurdu; görüşmeye pijama giymişti."
+    },
+    "skills": {
+      "mgmt": 0.64,
+      "acct": 0.43,
+      "comm": 0.50,
+      "tech": 0.29,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 186,
+    "en": {
+      "originalFeedback": "Let's reconsider the selection process... this is rubbish."
+    },
+    "tr": {
+      "originalFeedback": "Seçim sürecini yeniden gözden geçirelim... bu saçmalık."
+    },
+    "skills": {
+      "mgmt": 0.40,
+      "acct": 0.30,
+      "comm": 0.30,
+      "tech": 0.60,
+      "avgSkill": 0.40
+    }
+  },
+  {
+    "id": 187,
+    "en": {
+      "originalFeedback": "Mixed bag. <Name> knew the answer to \"what is the airspeed velocity of an unladen swallow?\" but didn't know his/her favorite color."
+    },
+    "tr": {
+      "originalFeedback": "Karışık durum. <isim> \"yüksüz bir kırlangıcın hava hızı nedir?\" sorusunun cevabını biliyordu ama en sevdiği rengi bilmiyordu."
+    },
+    "skills": {
+      "mgmt": 0.07,
+      "acct": 0.29,
+      "comm": 0.21,
+      "tech": 0.50,
+      "avgSkill": 0.27
+    }
+  },
+  {
+    "id": 188,
+    "en": {
+      "originalFeedback": "My reality cheque bounced."
+    },
+    "tr": {
+      "originalFeedback": "Gerçeklik çekim karşılıksız çıktı."
+    },
+    "skills": {
+      "mgmt": 0.37,
+      "acct": 0.26,
+      "comm": 0.42,
+      "tech": 0.42,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 189,
+    "en": {
+      "originalFeedback": "Next!"
+    },
+    "tr": {
+      "originalFeedback": "Sıradaki!"
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.58,
+      "comm": 0.42,
+      "tech": 0.47,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 190,
+    "en": {
+      "originalFeedback": "Not sure how the interview went, but I signed up for a whole family insurance policy while interviewing <Name>."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmenin nasıl geçtiğinden emin değilim, ama <isim> ile görüşürken tüm aile için bir sigorta poliçesi imzaladım."
+    },
+    "skills": {
+      "mgmt": 0.38,
+      "acct": 0.41,
+      "comm": 1.54,
+      "tech": 0.39,
+      "avgSkill": 0.68
+    }
+  },
+  {
+    "id": 191,
+    "en": {
+      "originalFeedback": "Not sure if we can use this one, <Name> didn't know what a computer was."
+    },
+    "tr": {
+      "originalFeedback": "Bunu kullanıp kullanamayacağımızdan emin değilim, <isim> bilgisayarın ne olduğunu bilmiyordu."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.53,
+      "comm": 0.47,
+      "tech": 0.47,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 192,
+    "en": {
+      "originalFeedback": "Not sure we can take this candidate seriously. Every response was a Captain Picard quote, I think. When I said I would be in touch, <Name> said, \"Make it so, Number 1!\""
+    },
+    "tr": {
+      "originalFeedback": "Bu adayı ciddiye alabileceğimizden emin değilim. Her cevap sanırım bir Kaptan Picard alıntısıydı. İletişimde olacağımı söylediğimde <isim>, \"Emredersiniz, Bir Numara!\" dedi."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.50,
+      "comm": 0.50,
+      "tech": 0.39,
+      "avgSkill": 0.47
+    }
+  },
+  {
+    "id": 193,
+    "en": {
+      "originalFeedback": "Now is the time to try something new."
+    },
+    "tr": {
+      "originalFeedback": "Şimdi yeni bir şeyler denemenin zamanı."
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.35,
+      "comm": 0.39,
+      "tech": 0.52,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 194,
+    "en": {
+      "originalFeedback": "OK, I found a candidate, but we might as well just promote the cleaning lady."
+    },
+    "tr": {
+      "originalFeedback": "Tamam, bir aday buldum ama temizlikçiyi terfi ettirsek de olur."
+    },
+    "skills": {
+      "mgmt": 0.56,
+      "acct": 0.56,
+      "comm": 0.56,
+      "tech": 0.22,
+      "avgSkill": 0.47
+    }
+  },
+  {
+    "id": 195,
+    "en": {
+      "originalFeedback": "OMG, give this person a brain."
+    },
+    "tr": {
+      "originalFeedback": "Aman Tanrım, bu kişiye bir beyin verin."
+    },
+    "skills": {
+      "mgmt": 0.57,
+      "acct": 0.57,
+      "comm": 0.36,
+      "tech": 0.86,
+      "avgSkill": 0.59
+    }
+  },
+  {
+    "id": 196,
+    "en": {
+      "originalFeedback": "Only family would hire <Name>. I think he/she faked his/her transcripts."
+    },
+    "tr": {
+      "originalFeedback": "Sadece ailesi <isim>'ı işe alırdı. Sanırım transkriptlerini taklit etmiş."
+    },
+    "skills": {
+      "mgmt": 0.45,
+      "acct": 0.45,
+      "comm": 0.36,
+      "tech": 0.73,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 197,
+    "en": {
+      "originalFeedback": "Oral hygiene is not a strong suit for <Name>, but his/her grades weren't bad."
+    },
+    "tr": {
+      "originalFeedback": "Ağız hijyeni <isim>'ın güçlü yanı değil, ama notları fena değildi."
+    },
+    "skills": {
+      "mgmt": 0.45,
+      "acct": 0.36,
+      "comm": 0.45,
+      "tech": 0.55,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 198,
+    "en": {
+      "originalFeedback": "Over lunch, <Name> explained that meat is murder. I found it extreme, but are we in the food business, anyway?"
+    },
+    "tr": {
+      "originalFeedback": "Öğle yemeğinde <isim>, etin cinayet olduğunu açıkladı. Bunu aşırı buldum ama zaten gıda işinde miyiz ki?"
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.29,
+      "comm": 0.71,
+      "tech": 0.43,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 199,
+    "en": {
+      "originalFeedback": "Prior to starting the interview, I was asked to sign a non-disclosure agreement. I had to cancel this one."
+    },
+    "tr": {
+      "originalFeedback": "Görüşmeye başlamadan önce, bir gizlilik sözleşmesi imzalamam istendi. Bunu iptal etmek zorunda kaldım."
+    },
+    "skills": {
+      "mgmt": 0.77,
+      "acct": 0.41,
+      "comm": 0.41,
+      "tech": 0.36,
+      "avgSkill": 0.49
+    }
+  },
+  {
+    "id": 200,
+    "en": {
+      "originalFeedback": "Regardless of his/her schoolwork, the reference letter <Name> gave me from his/her favorite teacher assures me he/she will always remember to fly a kite."
+    },
+    "tr": {
+      "originalFeedback": "Okul çalışmalarından bağımsız olarak, <isim>'ın en sevdiği öğretmeninden bana verdiği referans mektubu, her zaman uçurtma uçurmayı hatırlayacağına dair bana güvence veriyor."
+    },
+    "skills": {
+      "mgmt": 0.22,
+      "acct": 0.33,
+      "comm": 0.56,
+      "tech": 0.67,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 201,
+    "en": {
+      "originalFeedback": "Showing up in Star Trek, Next Generation uniform was kind of a red flag for me at the beginning, but <Name> also clearly did not shower for the last few days - so I sent him/her home right away."
+    },
+    "tr": {
+      "originalFeedback": "Star Trek: Yeni Nesil üniformasıyla gelmesi başlangıçta benim için bir tür tehlike işaretiydi, ama <isim> ayrıca son birkaç gündür açıkça duş almamıştı - bu yüzden onu hemen eve gönderdim."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.36,
+      "comm": 0.43,
+      "tech": 0.64,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 202,
+    "en": {
+      "originalFeedback": "Sir, the level of the applicants is horrible. I need a vacation. But <Name> is the most acceptable."
+    },
+    "tr": {
+      "originalFeedback": "Efendim, başvuranların seviyesi korkunç. Tatile ihtiyacım var. Ama <isim> en kabul edilebilir olanı."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.29,
+      "comm": 0.29,
+      "tech": 0.29,
+      "avgSkill": 0.32
+    }
+  },
+  {
+    "id": 203,
+    "en": {
+      "originalFeedback": "So apparently, if you issue bonds yourself you can deduct those from those you bought and save on accounting fees. At least that's what <Name> explained to me."
+    },
+    "tr": {
+      "originalFeedback": "Görünüşe göre, eğer kendiniz tahvil çıkarırsanız, bunları satın aldıklarınızdan düşebilir ve muhasebe ücretlerinden tasarruf edebilirsiniz. En azından <isim>'ın bana açıkladığı buydu."
+    },
+    "skills": {
+      "mgmt": 0.52,
+      "acct": 1.46,
+      "comm": 0.49,
+      "tech": 0.48,
+      "avgSkill": 0.74
+    }
+  },
+  {
+    "id": 204,
+    "en": {
+      "originalFeedback": "The answer of <Name> about his/her salary expectations was: \"Make me an offer I can't refuse.\""
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın maaş beklentileri hakkındaki cevabı şuydu: \"Bana reddedemeyeceğim bir teklif yap.\""
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.35,
+      "comm": 0.71,
+      "tech": 0.47,
+      "avgSkill": 0.51
+    }
+  },
+  {
+    "id": 205,
+    "en": {
+      "originalFeedback": "The answer to 'why do you think you are qualified for this position?' was 'Yo, I know I gots this!' I'm pretty sure <Name> flashed some gang signs on the way out."
+    },
+    "tr": {
+      "originalFeedback": "'Neden bu pozisyon için nitelikli olduğunuzu düşünüyorsunuz?' sorusunun cevabı 'Yo, bu iş bende biliyorum!' idi. <isim>'ın çıkarken bazı çete işaretleri yaptığına oldukça eminim."
+    },
+    "skills": {
+      "mgmt": 0.43,
+      "acct": 0.29,
+      "comm": 0.14,
+      "tech": 0.57,
+      "avgSkill": 0.36
+    }
+  },
+  {
+    "id": 206,
+    "en": {
+      "originalFeedback": "The answers were fine, but the way he/she kept stroking his/her emotional support cat was a little creepy."
+    },
+    "tr": {
+      "originalFeedback": "Cevaplar iyiydi, ama duygusal destek kedisini okşayıp durma şekli biraz ürkütücüydü."
+    },
+    "skills": {
+      "mgmt": 0.42,
+      "acct": 0.67,
+      "comm": 0.50,
+      "tech": 0.25,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 207,
+    "en": {
+      "originalFeedback": "The candidate kept telling me how much he/she learned from his/her sibling. I contacted his/her sibling for an interview next week."
+    },
+    "tr": {
+      "originalFeedback": "Aday sürekli kardeşinden ne kadar çok şey öğrendiğini anlatıp durdu. Kardeşiyle gelecek hafta bir görüşme için iletişime geçtim."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.45,
+      "comm": 0.64,
+      "tech": 0.36,
+      "avgSkill": 0.45
+    }
+  },
+  {
+    "id": 208,
+    "en": {
+      "originalFeedback": "The candidate looked extremely young, but claimed to have over 40 years business experience. When questioned, he/she asked if I've heard of Benjamin Button."
+    },
+    "tr": {
+      "originalFeedback": "Aday son derece genç görünüyordu, ancak 40 yılı aşkın iş deneyimi olduğunu iddia etti. Sorgulandığında, Benjamin Button'ı duyup duymadığımı sordu."
+    },
+    "skills": {
+      "mgmt": 0.67,
+      "acct": 0.60,
+      "comm": 0.47,
+      "tech": 0.67,
+      "avgSkill": 0.60
+    }
+  },
+  {
+    "id": 209,
+    "en": {
+      "originalFeedback": "The candidate was remarkably attentive to me the entire time, getting me coffee and even offering to wash my feet. Do we have a customer service opening?"
+    },
+    "tr": {
+      "originalFeedback": "Aday tüm süre boyunca bana karşı dikkat çekici derecede ilgiliydi, bana kahve getirdi ve hatta ayaklarımı yıkamayı teklif etti. Müşteri hizmetleri açığımız var mı?"
+    },
+    "skills": {
+      "mgmt": 0.25,
+      "acct": 0.44,
+      "comm": 0.38,
+      "tech": 0.31,
+      "avgSkill": 0.34
+    }
+  },
+  {
+    "id": 210,
+    "en": {
+      "originalFeedback": "The candidate wasn't sure yet if he/she wanted to work here. <Name> said it would be based on the number of \"hotties\" in the office."
+    },
+    "tr": {
+      "originalFeedback": "Aday henüz burada çalışmak isteyip istemediğinden emin değildi. <isim> bunun ofisteki \"ateşli hatunların\" sayısına bağlı olacağını söyledi."
+    },
+    "skills": {
+      "mgmt": 0.75,
+      "acct": 0.25,
+      "comm": 0.58,
+      "tech": 0.25,
+      "avgSkill": 0.46
+    }
+  },
+  {
+    "id": 211,
+    "en": {
+      "originalFeedback": "The interview with <Name> was a nightmare. I thought of vacationing at Crystal Lake; even Jason would be less disturbing."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ile görüşme bir kabustu. Kristal Göl'de tatil yapmayı düşündüm; Jason bile daha az rahatsız edici olurdu."
+    },
+    "skills": {
+      "mgmt": 0.44,
+      "acct": 0.63,
+      "comm": 0.44,
+      "tech": 0.25,
+      "avgSkill": 0.44
+    }
+  },
+  {
+    "id": 212,
+    "en": {
+      "originalFeedback": "The interview with <Name> was an hour I will never get back again in my life."
+    },
+    "tr": {
+      "originalFeedback": "<isim> ile görüşme hayatımda bir daha asla geri alamayacağım bir saatti."
+    },
+    "skills": {
+      "mgmt": 0.37,
+      "acct": 0.37,
+      "comm": 0.37,
+      "tech": 0.26,
+      "avgSkill": 0.34
+    }
+  },
+  {
+    "id": 213,
+    "en": {
+      "originalFeedback": "The most noticable thing <Name> said during the interview was that he/she likes to save money, and that it is why he/she doesn't have furniture."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın görüşme sırasında söylediği en dikkat çekici şey, para biriktirmeyi sevdiği ve bu yüzden mobilyası olmadığıydı."
+    },
+    "skills": {
+      "mgmt": 0.36,
+      "acct": 0.14,
+      "comm": 0.43,
+      "tech": 0.43,
+      "avgSkill": 0.34
+    }
+  },
+  {
+    "id": 214,
+    "en": {
+      "originalFeedback": "The most uninteresting and downright boring interviewee I've ever talked to. We should hire <Name> to handle the office plants."
+    },
+    "tr": {
+      "originalFeedback": "Şimdiye kadar konuştuğum en ilginç olmayan ve düpedüz sıkıcı görüşmeci. Ofis bitkileriyle ilgilenmesi için <isim>'ı işe almalıyız."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.67,
+      "comm": 0.44,
+      "tech": 0.56,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 215,
+    "en": {
+      "originalFeedback": "The recommendations for <Name> all checked out. His/her professor said we would be foolish not to hire."
+    },
+    "tr": {
+      "originalFeedback": "<isim> için yapılan tavsiyelerin hepsi doğrulandı. Profesörü, işe almazsak aptallık edeceğimizi söyledi."
+    },
+    "skills": {
+      "mgmt": 1.57,
+      "acct": 0.48,
+      "comm": 0.57,
+      "tech": 0.55,
+      "avgSkill": 0.79
+    }
+  },
+  {
+    "id": 216,
+    "en": {
+      "originalFeedback": "The unpredictable grows through unbridled brightness."
+    },
+    "tr": {
+      "originalFeedback": "Öngörülemeyen, dizginsiz parlaklıkla büyür."
+    },
+    "skills": {
+      "mgmt": 0.65,
+      "acct": 0.35,
+      "comm": 0.35,
+      "tech": 0.65,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 217,
+    "en": {
+      "originalFeedback": "There are some answers left blank on the application, so I think <Name> is not detail oriented."
+    },
+    "tr": {
+      "originalFeedback": "Başvuruda bazı cevaplar boş bırakılmış, bu yüzden <isim>'ın detay odaklı olmadığını düşünüyorum."
+    },
+    "skills": {
+      "mgmt": 0.38,
+      "acct": 0.38,
+      "comm": 0.29,
+      "tech": 0.43,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 218,
+    "en": {
+      "originalFeedback": "There are two paths; you can't go back, but there's still time to change the road you're on."
+    },
+    "tr": {
+      "originalFeedback": "İki yol var; geri dönemezsin ama üzerinde olduğun yolu değiştirmek için hala zaman var."
+    },
+    "skills": {
+      "mgmt": 0.59,
+      "acct": 0.59,
+      "comm": 0.18,
+      "tech": 0.35,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 219,
+    "en": {
+      "originalFeedback": "This one is a university dropout who was unemployed the last 4 years. <Name> says he/she is very eager to learn."
+    },
+    "tr": {
+      "originalFeedback": "Bu kişi üniversite terk ve son 4 yıldır işsiz. <isim> öğrenmeye çok hevesli olduğunu söylüyor."
+    },
+    "skills": {
+      "mgmt": 0.56,
+      "acct": 0.61,
+      "comm": 0.50,
+      "tech": 0.50,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 220,
+    "en": {
+      "originalFeedback": "This one might be the answer to our problems. <Name> brought his/her own towel and discussed thoroughly the relevance of 42 to the universe and everything."
+    },
+    "tr": {
+      "originalFeedback": "Bu kişi sorunlarımızın cevabı olabilir. <isim> kendi havlusunu getirdi ve 42'nin evren ve her şeyle olan ilgisini etraflıca tartıştı."
+    },
+    "skills": {
+      "mgmt": 1.38,
+      "acct": 0.59,
+      "comm": 0.55,
+      "tech": 0.55,
+      "avgSkill": 0.77
+    }
+  },
+  {
+    "id": 221,
+    "en": {
+      "originalFeedback": "This person began the answer to every question with \"I'm so sorry but...\""
+    },
+    "tr": {
+      "originalFeedback": "Bu kişi her sorunun cevabına \"Çok üzgünüm ama...\" ile başladı."
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.47,
+      "comm": 0.47,
+      "tech": 0.47,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 222,
+    "en": {
+      "originalFeedback": "To put it in the language <Name> was using: AFAIK IMHO LOL"
+    },
+    "tr": {
+      "originalFeedback": "<isim>'ın kullandığı dille ifade etmek gerekirse: BKB IMHO LOL"
+    },
+    "skills": {
+      "mgmt": 0.53,
+      "acct": 0.47,
+      "comm": 0.37,
+      "tech": 0.32,
+      "avgSkill": 0.42
+    }
+  },
+  {
+    "id": 223,
+    "en": {
+      "originalFeedback": "Unyielding passion leads to stronger neural pathways."
+    },
+    "tr": {
+      "originalFeedback": "Boyun eğmez tutku, daha güçlü sinirsel yollara yol açar."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.47,
+      "comm": 0.33,
+      "tech": 0.67,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 224,
+    "en": {
+      "originalFeedback": "We should really get these bushes trimmed; it is obvious I'm ignoring him/her when I stare at the window."
+    },
+    "tr": {
+      "originalFeedback": "Bu çalıları gerçekten budatmalıyız; pencereye baktığımda onu görmezden geldiğim açıkça belli oluyor."
+    },
+    "skills": {
+      "mgmt": 0.59,
+      "acct": 0.45,
+      "comm": 0.59,
+      "tech": 0.32,
+      "avgSkill": 0.49
+    }
+  },
+  {
+    "id": 225,
+    "en": {
+      "originalFeedback": "When <Name> was offended by a question, I said, \"It's not personal, just business.\" He/She began whistling the Godfather theme."
+    },
+    "tr": {
+      "originalFeedback": "<isim> bir soruya alındığında, \"Kişisel değil, sadece iş.\" dedim. Baba temasını ıslıkla çalmaya başladı."
+    },
+    "skills": {
+      "mgmt": 0.20,
+      "acct": 0.50,
+      "comm": 0.50,
+      "tech": 0.30,
+      "avgSkill": 0.38
+    }
+  },
+  {
+    "id": 226,
+    "en": {
+      "originalFeedback": "When asked about his/her business philosophy, <Name> replied, \"The spice must flow.\" Hire him/her now!"
+    },
+    "tr": {
+      "originalFeedback": "İş felsefesi sorulduğunda <isim> \"Baharat akmalı.\" diye cevap verdi. Onu şimdi işe alın!"
+    },
+    "skills": {
+      "mgmt": 1.40,
+      "acct": 0.43,
+      "comm": 0.58,
+      "tech": 0.50,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 227,
+    "en": {
+      "originalFeedback": "When asked about his/her hobby, <Name> described his/her gun. I do not think it's a fit - maybe a phone job."
+    },
+    "tr": {
+      "originalFeedback": "Hobisi sorulduğunda <isim> silahını tarif etti. Uygun olduğunu düşünmüyorum - belki bir telefon işi."
+    },
+    "skills": {
+      "mgmt": 0.29,
+      "acct": 0.14,
+      "comm": 0.14,
+      "tech": 0.43,
+      "avgSkill": 0.25
+    }
+  },
+  {
+    "id": 228,
+    "en": {
+      "originalFeedback": "When asked at the close of the interview if <Name> had any further questions, he/she replied \"Yes, when can I start?\" ... I like his/her gumption! I say yes!"
+    },
+    "tr": {
+      "originalFeedback": "Görüşmenin sonunda <isim>'a başka sorusu olup olmadığı sorulduğunda, \"Evet, ne zaman başlayabilirim?\" diye cevap verdi... Cesaretini sevdim! Evet diyorum!"
+    },
+    "skills": {
+      "mgmt": 0.37,
+      "acct": 0.32,
+      "comm": 0.37,
+      "tech": 0.58,
+      "avgSkill": 0.41
+    }
+  },
+  {
+    "id": 229,
+    "en": {
+      "originalFeedback": "When asked what his/her qualifications were, <Name> asked when the company talent show was."
+    },
+    "tr": {
+      "originalFeedback": "Niteliklerinin ne olduğu sorulduğunda, <isim> şirket yetenek gösterisinin ne zaman olduğunu sordu."
+    },
+    "skills": {
+      "mgmt": 0.33,
+      "acct": 0.47,
+      "comm": 0.60,
+      "tech": 0.53,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 230,
+    "en": {
+      "originalFeedback": "When hungry, order more chinese food."
+    },
+    "tr": {
+      "originalFeedback": "Açken, daha fazla Çin yemeği sipariş edin."
+    },
+    "skills": {
+      "mgmt": 0.61,
+      "acct": 0.61,
+      "comm": 0.33,
+      "tech": 0.50,
+      "avgSkill": 0.51
+    }
+  },
+  {
+    "id": 231,
+    "en": {
+      "originalFeedback": "When I asked <Name> at the end of the interview if he/she had plans for the night he/she said: \"The same thing I do every night, try to take over the world!\""
+    },
+    "tr": {
+      "originalFeedback": "Görüşmenin sonunda <isim>'a gece için planları olup olmadığını sorduğumda şöyle dedi: \"Her gece yaptığım aynı şeyi, dünyayı ele geçirmeye çalışmak!\""
+    },
+    "skills": {
+      "mgmt": 0.31,
+      "acct": 0.31,
+      "comm": 0.38,
+      "tech": 0.46,
+      "avgSkill": 0.37
+    }
+  },
+  {
+    "id": 232,
+    "en": {
+      "originalFeedback": "When I asked <Name> what he/she knew about our company, he/she said: Knowledge is like underwear. It is useful to have but not necessary to show off."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'a şirketimiz hakkında ne bildiğini sorduğumda şöyle dedi: Bilgi iç çamaşırı gibidir. Sahip olmak faydalıdır ama sergilemek gerekli değildir."
+    },
+    "skills": {
+      "mgmt": 0.38,
+      "acct": 0.46,
+      "comm": 0.31,
+      "tech": 0.15,
+      "avgSkill": 0.33
+    }
+  },
+  {
+    "id": 233,
+    "en": {
+      "originalFeedback": "When I asked <Name> what his/her greatest strength is, he/she answered: \"I see dead people\"."
+    },
+    "tr": {
+      "originalFeedback": "<isim>'a en büyük gücünün ne olduğunu sorduğumda, şöyle cevap verdi: \"Ölü insanları görüyorum\"."
+    },
+    "skills": {
+      "mgmt": 0.17,
+      "acct": 0.42,
+      "comm": 0.58,
+      "tech": 0.00,
+      "avgSkill": 0.29
+    }
+  },
+  {
+    "id": 234,
+    "en": {
+      "originalFeedback": "When I asked about a strategy for the electronics industry, <Name> replied, \"The sand must flow.\" I see the truth of it."
+    },
+    "tr": {
+      "originalFeedback": "Elektronik endüstrisi için bir strateji sorduğumda <isim>, \"Kum akmalı.\" diye cevap verdi. Bunun doğruluğunu görüyorum."
+    },
+    "skills": {
+      "mgmt": 1.41,
+      "acct": 0.56,
+      "comm": 0.63,
+      "tech": 0.62,
+      "avgSkill": 0.81
+    }
+  },
+  {
+    "id": 235,
+    "en": {
+      "originalFeedback": "When I commented about his/her shorts, he/she asked me, \"You don't have casual Fridays here?\""
+    },
+    "tr": {
+      "originalFeedback": "Şortu hakkında yorum yaptığımda bana, \"Burada rahat Cuma'larınız yok mu?\" diye sordu."
+    },
+    "skills": {
+      "mgmt": 0.60,
+      "acct": 0.40,
+      "comm": 0.33,
+      "tech": 0.40,
+      "avgSkill": 0.43
+    }
+  },
+  {
+    "id": 236,
+    "en": {
+      "originalFeedback": "When I commented on the candidate's excellent suit, he/she stood up, said \"You ain't seen nothin' yet,\" then tore it off - revealing a provocative, sequin-studded leotard."
+    },
+    "tr": {
+      "originalFeedback": "Adayın mükemmel takım elbisesi hakkında yorum yaptığımda, ayağa kalktı, \"Daha hiçbir şey görmedin,\" dedi, sonra onu yırttı - kışkırtıcı, payetli bir mayo ortaya çıkardı."
+    },
+    "skills": {
+      "mgmt": 0.75,
+      "acct": 0.38,
+      "comm": 0.50,
+      "tech": 0.31,
+      "avgSkill": 0.48
+    }
+  },
+  {
+    "id": 237,
+    "en": {
+      "originalFeedback": "When I said that his/her joke was funny <Name> said: \"Funny? I mean, funny like I'm a clown? I amuse you?\""
+    },
+    "tr": {
+      "originalFeedback": "Şakasının komik olduğunu söylediğimde <isim> dedi ki: \"Komik mi? Yani, palyaço gibi komik mi? Seni eğlendiriyor muyum?\""
+    },
+    "skills": {
+      "mgmt": 0.58,
+      "acct": 0.58,
+      "comm": 0.47,
+      "tech": 0.89,
+      "avgSkill": 0.63
+    }
+  },
+  {
+    "id": 238,
+    "en": {
+      "originalFeedback": "While buying your interview clothes on the way in to suit your mood may seem like a good idea, clown costumes are distracting."
+    },
+    "tr": {
+      "originalFeedback": "Görüşme kıyafetlerinizi ruh halinize uyacak şekilde içeri girerken satın almak iyi bir fikir gibi görünse de, palyaço kostümleri dikkat dağıtıcıdır."
+    },
+    "skills": {
+      "mgmt": 0.54,
+      "acct": 0.31,
+      "comm": 0.38,
+      "tech": 0.38,
+      "avgSkill": 0.40
+    }
+  },
+  {
+    "id": 239,
+    "en": {
+      "originalFeedback": "While in college, <Name> was a member of a comic troupe. His/her \"silly walk\" was quite impressive. John Cleese would hire him/her."
+    },
+    "tr": {
+      "originalFeedback": "Üniversitedeyken <isim> bir komedi topluluğunun üyesiydi. \"Aptal yürüyüşü\" oldukça etkileyiciydi. John Cleese onu işe alırdı."
+    },
+    "skills": {
+      "mgmt": 0.48,
+      "acct": 0.50,
+      "comm": 1.31,
+      "tech": 0.57,
+      "avgSkill": 0.73
+    }
+  },
+  {
+    "id": 240,
+    "en": {
+      "originalFeedback": "While interesting, <Name> talked so much I only asked one question."
+    },
+    "tr": {
+      "originalFeedback": "İlginç olsa da, <isim> o kadar çok konuştu ki sadece bir soru sorabildim."
+    },
+    "skills": {
+      "mgmt": 0.24,
+      "acct": 0.24,
+      "comm": 0.19,
+      "tech": 0.48,
+      "avgSkill": 0.29
+    }
+  },
+  {
+    "id": 241,
+    "en": {
+      "originalFeedback": "While re-arranging my desk, <Name> explained that a clean work space is an efficient workplace. I told him/her to get out, but I'll let you decide."
+    },
+    "tr": {
+      "originalFeedback": "Masamı yeniden düzenlerken <isim>, temiz bir çalışma alanının verimli bir işyeri olduğunu açıkladı. Ona dışarı çıkmasını söyledim ama kararı size bırakıyorum."
+    },
+    "skills": {
+      "mgmt": 1.37,
+      "acct": 0.49,
+      "comm": 0.68,
+      "tech": 0.60,
+      "avgSkill": 0.78
+    }
+  },
+  {
+    "id": 242,
+    "en": {
+      "originalFeedback": "While the cookies were okay, <Name> insisted his/her stroopwafels were amazing."
+    },
+    "tr": {
+      "originalFeedback": "Kurabiyeler fena olmasa da, <isim> stroopwafel'larının harika olduğu konusunda ısrar etti."
+    },
+    "skills": {
+      "mgmt": 0.45,
+      "acct": 0.27,
+      "comm": 0.09,
+      "tech": 0.45,
+      "avgSkill": 0.32
+    }
+  },
+  {
+    "id": 243,
+    "en": {
+      "originalFeedback": "Who let the dogs out? Who? Who?"
+    },
+    "tr": {
+      "originalFeedback": "Köpekleri kim saldı? Kim? Kim?"
+    },
+    "skills": {
+      "mgmt": 0.75,
+      "acct": 0.58,
+      "comm": 0.50,
+      "tech": 0.33,
+      "avgSkill": 0.54
+    }
+  },
+  {
+    "id": 244,
+    "en": {
+      "originalFeedback": "Who you gonna call?"
+    },
+    "tr": {
+      "originalFeedback": "Kimi arayacaksın?"
+    },
+    "skills": {
+      "mgmt": 0.21,
+      "acct": 0.53,
+      "comm": 0.68,
+      "tech": 0.53,
+      "avgSkill": 0.49
+    }
+  },
+  {
+    "id": 245,
+    "en": {
+      "originalFeedback": "Why would you bring your mom to the interview!?"
+    },
+    "tr": {
+      "originalFeedback": "Neden anneni görüşmeye getirirsin ki!?"
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.78,
+      "comm": 0.22,
+      "tech": 0.61,
+      "avgSkill": 0.50
+    }
+  },
+  {
+    "id": 246,
+    "en": {
+      "originalFeedback": "Would you like some Girl Scout cookies? <Name> got me to buy 3 boxes of each with the petty cash to support his/her daughter."
+    },
+    "tr": {
+      "originalFeedback": "Biraz İzci kurabiyesi ister misiniz? <isim>, kızını desteklemek için küçük kasadan her birinden 3 kutu almamı sağladı."
+    },
+    "skills": {
+      "mgmt": 0.50,
+      "acct": 0.53,
+      "comm": 1.14,
+      "tech": 0.42,
+      "avgSkill": 0.65
+    }
+  },
+  {
+    "id": 247,
+    "en": {
+      "originalFeedback": "You learn from your mistakes. You will learn a lot today!"
+    },
+    "tr": {
+      "originalFeedback": "Hatalarından ders çıkarırsın. Bugün çok şey öğreneceksin!"
+    },
+    "skills": {
+      "mgmt": 0.52,
+      "acct": 0.30,
+      "comm": 0.57,
+      "tech": 0.70,
+      "avgSkill": 0.52
+    }
+  },
+  {
+    "id": 248,
+    "en": {
+      "originalFeedback": "You must try, or hate yourself for not trying."
+    },
+    "tr": {
+      "originalFeedback": "Denemelisin ya da denemediğin için kendinden nefret etmelisin."
+    },
+    "skills": {
+      "mgmt": 0.39,
+      "acct": 0.67,
+      "comm": 0.50,
+      "tech": 0.44,
+      "avgSkill": 0.51
+    }
+  }
+]
