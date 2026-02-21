@@ -19,6 +19,8 @@ export async function loadAuthDataOnce() {
 
     STATE.auth.companyId = c?.companyId ?? null;
     STATE.auth.realmId = c?.realmId ?? null;
+    STATE.auth.productionModifier = c?.productionModifier ?? null;
+    STATE.auth.salesModifier = c?.salesModifier ?? null;
     STATE.auth.loaded = true;
   } catch (e) {
     STATE.auth.error = String(e?.message || e);

@@ -13,6 +13,8 @@ export const STATE = {
   auth: {
     companyId: null,
     realmId: null,
+    productionModifier: null,
+    salesModifier: null,
     loaded: false,
     loading: false,
     error: null,

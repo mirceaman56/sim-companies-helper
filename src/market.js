@@ -18,7 +18,7 @@ export async function fetchMarket(realmId, productId) {
   const now = Date.now();
   const cacheKey = `${realmId}:${productId}`;
   const cached = STATE.marketCache.get(cacheKey);
-  if (cached && now - cached.ts < 30000) return cached.data;
+  if (cached && now - cached.ts < 60000) return cached.data;
 
   const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
   const res = await fetch(url, { credentials: "include" });
