@@ -27,7 +27,7 @@ export function initContractHelper() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) {
       const n = Number(saved);
-      if (Number.isFinite(n) && n > 0 && n <= 100) discountPct = n;
+      if (Number.isFinite(n) && n >= 0 && n <= 100) discountPct = n;
     }
   } catch { /* ignore */ }
 
@@ -386,6 +386,7 @@ function injectIfNeeded() {
         font-weight: 500;
         color: #333;
       ">
+        <option value="0"${discountPct === 0 ? " selected" : ""}>+0%</option>
         <option value="1"${discountPct === 1 ? " selected" : ""}>-1%</option>
         <option value="2"${discountPct === 2 ? " selected" : ""}>-2%</option>
         <option value="3"${discountPct === 3 ? " selected" : ""}>-3%</option>
