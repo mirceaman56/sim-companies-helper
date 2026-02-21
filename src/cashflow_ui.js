@@ -1,6 +1,6 @@
 // cashflow_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
 
@@ -80,10 +80,7 @@ export function updateCashflowPanel() {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div class="scx-panel-title">${t("todaysNetProfit")}</div>
         <button class="scx-copy-btn" data-copy-action="cashflow" data-tooltip="Copy text">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
+          ${COPY_BUTTON_SVG}
         </button>
       </div>
       
@@ -152,13 +149,7 @@ export function updateCashflowPanel() {
   `;
 
   // Wire up copy button
-  const copyBtn = contentEl.querySelector('.scx-copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const text = formatCashflowAsText(today, yesterday);
-      copyToClipboard(text, copyBtn);
-    });
-  }
+  wireCopyButton(contentEl, () => formatCashflowAsText(today, yesterday));
 }
 
 function renderBreakdownRow(label, amount, color) {

@@ -1,5 +1,106 @@
 import { STATE } from "./state.js";
 
+/** Market fee charged on market sales (4%) */
+export const MARKET_FEE = 0.04;
+
+/** Transport container product ID in SimCompanies */
+export const TRANSPORT_RESOURCE_ID = 13;
+
+/**
+ * Parse a locale-agnostic number from text.
+ *   EN: 1,234.56  (comma = thousands, dot = decimal)
+ *   DE: 1.234,56  (dot = thousands, comma = decimal)
+ * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
+ * @param {string} raw
+ * @returns {number}
+ */
+export function parseLocaleNumber(raw) {
+  let s = String(raw).trim();
+  const lastComma = s.lastIndexOf(',');
+  const lastDot = s.lastIndexOf('.');
+  if (lastComma > lastDot) {
+    const afterComma = s.slice(lastComma + 1);
+    if (/^\d{1,2}$/.test(afterComma)) {
+      // German decimal: remove dots (thousands), replace comma with dot
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      // Comma is thousands separator (3 digits after)
+      s = s.replace(/,/g, '');
+    }
+  } else {
+    // Dot is last or no comma — standard: remove commas (thousands)
+    s = s.replace(/,/g, '');
+  }
+  const m = s.match(/-?\s*([0-9]+(\.[0-9]+)?)/);
+  return m ? Number(m[1]) : NaN;
+}
+
+/**
+ * Extract product ID from a row containing an encyclopedia resource link.
+ * @param {Element} row - DOM element containing the product link
+ * @returns {number|null} Product ID or null
+ */
+export function extractProductIdFromRow(row) {
+  if (!row) return null;
+  const a = row.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
+  const href = a?.getAttribute("href") || "";
+  const m = href.match(/\/resource\/(\d+)\//);
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * Find the info column (div.right-border containing an h3) within a row.
+ * This is the column that holds product name, profit, finishes, etc.
+ * @param {Element} row - DOM element of the row
+ * @returns {Element|null}
+ */
+export function getInfoColumn(row) {
+  if (!row) return null;
+  const cols = row.querySelectorAll('div.right-border');
+  return [...cols].find(c => c.querySelector('h3')) || null;
+}
+
+/** SVG markup for the standard copy-to-clipboard button icon */
+export const COPY_BUTTON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>`;
+
+/**
+ * Wire up a copy-to-clipboard button inside a container element.
+ * Finds the .scx-copy-btn, attaches a click handler that calls getTextFn()
+ * and copies the result. Uses capture phase to intercept before other handlers.
+ *
+ * @param {Element} containerEl - Parent element containing a .scx-copy-btn
+ * @param {Function} getTextFn - Returns the text string to copy (may be async)
+ */
+export function wireCopyButton(containerEl, getTextFn) {
+  if (!containerEl) return;
+
+  const handleCopyClick = async (e) => {
+    const btn = e.target.closest('.scx-copy-btn');
+    if (!btn) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    try {
+      const text = await getTextFn();
+      await copyToClipboard(text, btn);
+    } catch (err) {
+      console.debug("[SimHelper] Copy error:", err);
+    }
+  };
+
+  // Remove old listener if it exists
+  if (containerEl._copyClickHandler) {
+    containerEl.removeEventListener('click', containerEl._copyClickHandler, true);
+  }
+
+  containerEl._copyClickHandler = handleCopyClick;
+  containerEl.addEventListener('click', handleCopyClick, true);
+}
+
 /**
  * Format a number as money with thousands separators
  * @param {number} x - The amount to format

@@ -60,5 +60,6 @@ export const STATE = {
 
   // market
   marketCache: new Map(), // `${realmId}:${productId}` -> { ts, data }
+  marketDeltaCache: new Map(), // `${realmId}:${productId}` -> { ts, delta } for warehouse UI
   marketState: { status: "idle", productId: null, realmId: null, data: null, error: null },
 };

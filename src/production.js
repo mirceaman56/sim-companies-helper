@@ -3,8 +3,7 @@
 import { fetchMarketPrice } from "./market.js";
 import recipesData from "./recipes.json";
 import { t } from "./i18n.js";
-
-const MARKET_FEE = 0.04; // 4% fee on market sales
+import { MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
 
 /**
  * Get all recipes
@@ -47,16 +46,16 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
   const recipe = getRecipeByProductId(productId);
   if (!recipe) return null;
 
-  // 1. Determine Transport Container Price (ID 13) and Product Price
+  // 1. Determine Transport Container Price and Product Price
   let containerPrice = 0;
   let productMarketPrice = 0;
 
   try {
     if (realmId != null) {
       // Container Price
-      containerPrice = pricesMap?.get(13);
+      containerPrice = pricesMap?.get(TRANSPORT_RESOURCE_ID);
       if (!Number.isFinite(containerPrice)) {
-        containerPrice = await fetchMarketPrice(realmId, 13);
+        containerPrice = await fetchMarketPrice(realmId, TRANSPORT_RESOURCE_ID);
       }
 
       // Product Market Price (for profit analysis)

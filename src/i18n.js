@@ -1,6 +1,7 @@
 // i18n.js
 // Lightweight internationalization based on page URL path.
 // Detects /de/ prefix → German, otherwise English (default).
+import { parseLocaleNumber } from "./utils.js";
 
 const STRINGS = {
   en: {
@@ -1500,20 +1501,8 @@ export function getLang() {
 
 /**
  * Parse a locale-formatted number string into a JS number.
- * German: "." = thousands, "," = decimal  (e.g. "31.825" → 31825, "1,95" → 1.95)
- * English: "," = thousands, "." = decimal (e.g. "31,825" → 31825, "1.95" → 1.95)
+ * Re-exports the shared parseLocaleNumber from utils.js for backward compatibility.
  * @param {string} raw
  * @returns {number}
  */
-export function parseLocalNumber(raw) {
-  let s = String(raw).trim();
-  if (currentLang === "de") {
-    // Remove thousands separator (.) then swap decimal comma → dot
-    s = s.replace(/\./g, "").replace(/,/, ".");
-  } else {
-    // Remove thousands separator (,)
-    s = s.replace(/,/g, "");
-  }
-  const m = s.match(/-?\s*([0-9]+(?:\.[0-9]+)?)/);
-  return m ? Number(m[1]) : NaN;
-}
+export const parseLocalNumber = parseLocaleNumber;

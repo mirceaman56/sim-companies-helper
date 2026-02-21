@@ -1,7 +1,7 @@
 // production_ui.js
 // Renders production helper section in the sidebar
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard, parseLocaleNumber, extractProductIdFromRow, getInfoColumn, COPY_BUTTON_SVG, wireCopyButton, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
@@ -18,14 +18,6 @@ let pricesCache = null;
 let currentRow = null;
 
 /**
- * Find the info column (div.right-border containing an h3) within a row.
- */
-function getInfoColumn(row) {
-  const cols = row.querySelectorAll('div.right-border');
-  return [...cols].find(c => c.querySelector('h3')) || null;
-}
-
-/**
  * Find the data-wrapper div inside an active production info column.
  * Active rows have: h3 + div{div, div, div, div} (producing qty, sourcing, quality, cost).
  */
@@ -40,32 +32,9 @@ function getDataWrapper(infoCol) {
 
 /**
  * Parse a locale-agnostic number from text.
- *   EN: 1,234.56  (comma = thousands, dot = decimal)
- *   DE: 1.234,56  (dot = thousands, comma = decimal)
- * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
+ * Delegates to the shared parseLocaleNumber from utils.
  */
-function parseLocalNum(raw) {
-  let s = String(raw).trim();
-  const lastComma = s.lastIndexOf(',');
-  const lastDot = s.lastIndexOf('.');
-  if (lastComma > lastDot) {
-    const afterComma = s.slice(lastComma + 1);
-    if (/^\d{1,2}$/.test(afterComma)) {
-      s = s.replace(/\./g, '').replace(',', '.');
-    } else {
-      s = s.replace(/,/g, '');
-    }
-  } else {
-    s = s.replace(/,/g, '');
-  }
-  const m = s.match(/-?\s*([0-9]+(?:\.[0-9]+)?)/);
-  return m ? Number(m[1]) : NaN;
-}
-
-/**
- * Extract the first dollar value ($X.XX or $X,XX) from a text string.
- * Handles both EN and DE locale formats.
- */
+const parseLocalNum = parseLocaleNumber;
 function extractDollarValue(text) {
   if (!text) return null;
   const match = text.match(/\$\s*([\d.,]+)/);
@@ -109,20 +78,6 @@ function getProductionRowFromTarget(target) {
   }
 
   return null;
-}
-
-/**
- * Extract product ID from a production row
- */
-function extractProductIdFromRow(row) {
-  if (!row) {
-    return null;
-  }
-  const a = row?.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
-  const href = a?.getAttribute("href") || "";
-  const m = href.match(/\/resource\/(\d+)\//);
-  const productId = m ? Number(m[1]) : null;
-  return productId;
 }
 
 /**
@@ -460,7 +415,7 @@ async function renderProductAnalysis(contentEl, recipe) {
 
     try {
       // Just fetch product and container
-      const productIds = [currentProductId, 13]; 
+      const productIds = [currentProductId, TRANSPORT_RESOURCE_ID]; 
       pricesCache = await fetchMarketPrices(realmId, productIds);
     } catch (e) {
       contentEl.innerHTML = `<div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
@@ -589,14 +544,11 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <div class="scx-flex-spaced scx-margin-bottom-6">
         <div class="scx-prod-title">${escapeHtml(recipe.name)}</div>
         <button class="scx-copy-btn" data-copy-action="production" data-tooltip="Copy text">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
+          ${COPY_BUTTON_SVG}
         </button>
       </div>
       
-      <div class="scx-color-999 scx-font-8 scx-margin-bottom-4">
+      <div class="scx-color-999 scx-font-10 scx-margin-bottom-4">
         ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
         <span class="scx-badge-active">${t("active")}</span>
         ${buildingLevel ? `<span class="scx-badge-level">${t('lvl')} ${buildingLevel}</span>` : ''}
@@ -741,41 +693,22 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
     </div>
   `;
 
-  // Wire up copy button using capture phase to intercept before other handlers
-  const handleCopyClick = async (e) => {
-    if (!e.target.closest('.scx-copy-btn')) return;
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    try {
-      const text = formatProductionAsText(
-        recipe, 
-        analysis, 
-        currentQuantity, 
-        buildingLevel, 
-        upgradeMultiplier, 
-        upgradedProduction, 
-        productionIncrease, 
-        projectedMarketProfit, 
-        projectedContractProfit, 
-        marketProfitDelta, 
-        contractProfitDelta
-      );
-      await copyToClipboard(text);
-    } catch (err) {
-      console.error('Copy error:', err);
-    }
-  };
-  
-  // Remove old listener if it exists
-  if (contentEl._copyClickHandler) {
-    contentEl.removeEventListener('click', contentEl._copyClickHandler, true);
-  }
-  
-  // Store and attach new listener
-  contentEl._copyClickHandler = handleCopyClick;
-  contentEl.addEventListener('click', handleCopyClick, true);
+  // Wire up copy button
+  wireCopyButton(contentEl, () =>
+    formatProductionAsText(
+      recipe, 
+      analysis, 
+      currentQuantity, 
+      buildingLevel, 
+      upgradeMultiplier, 
+      upgradedProduction, 
+      productionIncrease, 
+      projectedMarketProfit, 
+      projectedContractProfit, 
+      marketProfitDelta, 
+      contractProfitDelta
+    )
+  );
 }
 
 /**

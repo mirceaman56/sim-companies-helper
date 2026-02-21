@@ -1,6 +1,6 @@
 // retail_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard } from "./utils.js";
+import { formatMoney, escapeHtml, copyToClipboard, parseLocaleNumber, extractProductIdFromRow, getInfoColumn, COPY_BUTTON_SVG, wireCopyButton, MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
@@ -26,46 +26,8 @@ export function classifyProfitPerMin(ppm) {
  */
 export const RetailHelper = (() => {
   // ---------- parsing ----------
-  /**
-   * Parse a number from text, handling both locale formats:
-   *   EN: 1,234.56  (comma = thousands, dot = decimal)
-   *   DE: 1.234,56  (dot = thousands, comma = decimal)
-   * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
-   */
-  function parseNumber(text) {
-    let s = String(text).trim();
-    // Find the last comma or dot
-    const lastComma = s.lastIndexOf(',');
-    const lastDot = s.lastIndexOf('.');
-    if (lastComma > lastDot) {
-      // Comma is last — check if it's a decimal separator (1-2 digits after)
-      const afterComma = s.slice(lastComma + 1);
-      if (/^\d{1,2}$/.test(afterComma)) {
-        // German decimal: remove dots (thousands), replace comma with dot
-        s = s.replace(/\./g, '').replace(',', '.');
-      } else {
-        // Comma is thousands separator (3 digits after)
-        s = s.replace(/,/g, '');
-      }
-    } else {
-      // Dot is last or no comma — standard: remove commas (thousands)
-      s = s.replace(/,/g, '');
-    }
-    const m = s.match(/-?\s*([0-9]+(\.[0-9]+)?)/);
-    return m ? Number(m[1]) : NaN;
-  }
-  function parseMoney(text) {
-    return parseNumber(text);
-  }
-
-  /**
-   * Find the info column (div.right-border containing an h3) within a row.
-   * This is the column that holds product name, profit, finishes, etc.
-   */
-  function getInfoColumn(row) {
-    const cols = row.querySelectorAll('div.right-border');
-    return [...cols].find(c => c.querySelector('h3')) || null;
-  }
+  const parseNumber = parseLocaleNumber;
+  const parseMoney = parseLocaleNumber;
 
   // Supports EN: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m"
   // Supports DE: "12s", "8m", "1st 5m", "1t 5st", "13st, 31m" (st = Stunden, t = Tage)
@@ -133,12 +95,7 @@ export const RetailHelper = (() => {
     return Math.abs(val);
   }
 
-  function extractProductId(row) {
-    const a = row?.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
-    const href = a?.getAttribute("href") || "";
-    const m = href.match(/\/resource\/(\d+)\//);
-    return m ? Number(m[1]) : null;
-  }
+  const extractProductId = extractProductIdFromRow;
 
   function computeMetrics({ profitPerUnit, qty, seconds }) {
     const totalProfit = profitPerUnit * qty;
@@ -436,7 +393,7 @@ export async function updatePanel() {
 
   const renderers = RetailHelper.renderers;
   const productName = escapeHtml(renderers.getProductName(row));
-  const productId = extractProductId(row);
+  const productId = extractProductIdFromRow(row);
 
   // Profit area
   const metrics = renderers.getMetrics(row);
@@ -447,7 +404,7 @@ export async function updatePanel() {
   // realmId can be 0, so checks must be explicit
   if (realmId !== null && realmId !== undefined) {
      // Check if we have fresh container price in catch
-     const cacheKey = `${realmId}:13`;
+     const cacheKey = `${realmId}:${TRANSPORT_RESOURCE_ID}`;
      const cachedContainer = STATE.marketCache.get(cacheKey);
      if (!cachedContainer || (Date.now() - cachedContainer.ts > 60000)) {
          // Trigger fetch (async, update callback is just updatePanel)
@@ -478,7 +435,7 @@ export async function updatePanel() {
               // Helper to get cached container price (ID 13)
               // We use STATE.marketCache directly or a helper if available
               // We'll peek into the cache directly as we triggered fetch above
-              const containerCache = STATE.marketCache.get(`${realmId}:13`);
+              const containerCache = STATE.marketCache.get(`${realmId}:${TRANSPORT_RESOURCE_ID}`);
               const containerListing = containerCache ? getCheapestListing(containerCache.data) : null;
               
               // Relaxed cache check: allow up to 5 minutes old, or just exists
@@ -493,8 +450,8 @@ export async function updatePanel() {
                   const avgCost = (inv.totalCost / inv.amount) || 0;
                   
                   // Market Sells
-                  // Revenue = Price * 0.96 * Qty
-                  const marketRevenue = cheapest.price * 0.96 * qty;
+                  // Revenue = Price * (1 - MARKET_FEE) * Qty
+                  const marketRevenue = cheapest.price * (1 - MARKET_FEE) * qty;
                   
                   // Costs = (AvgCost * Qty) + (TransportUnits * Qty * ContainerPrice)
                   const cogs = avgCost * qty;
@@ -595,10 +552,7 @@ export async function updatePanel() {
           ${productName}
         </div>
         <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="Copy text">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
+          ${COPY_BUTTON_SVG}
         </button>
       </div>
 
@@ -618,20 +572,8 @@ export async function updatePanel() {
   `;
 
   // Wire up copy button
-  const copyBtn = contentEl.querySelector('.scx-copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const text = formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData);
-      copyToClipboard(text, copyBtn);
-    });
-  }
-}
-
-// Helpers needed in scope but not exported or previously defined in closure
-function extractProductId(row) {
-    const a = row?.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
-    const href = a?.getAttribute("href") || "";
-    const m = href.match(/\/resource\/(\d+)\//);
-    return m ? Number(m[1]) : null;
+  wireCopyButton(contentEl, () =>
+    formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData)
+  );
 }
 

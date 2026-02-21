@@ -11,6 +11,7 @@ import { updateProductionPanel, setupProductionRowListeners } from "./production
 import { initChatFilter } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
 import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
+import { initWarehouseHelper } from "./warehouse_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 
@@ -49,6 +50,9 @@ async function init() {
 
   // Contract helper for discount pricing
   initContractHelper();
+
+  // Warehouse helper for market price deltas
+  initWarehouseHelper();
 
   // Setup production row listeners FIRST to close race condition window
   // (attach listeners before user can interact)

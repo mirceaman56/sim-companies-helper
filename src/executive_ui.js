@@ -31,40 +31,69 @@ const PAGE_SKILL_MAPPING = {
 
 /**
  * Extract executive skills from the page
- * Looks for the skills table and returns an object with skill levels
+ * Uses DOM structure only: finds tbody with 4 skill rows and extracts numeric values
+ * Works in any language - relies on row order, not text content
  * @returns {Object} Skills object with keys like {mgmt: 1, acct: 0, comm: 2, tech: 2}
  */
 function extractExecutiveSkills() {
   const skills = {};
   
-  // Find the skills table - usually in a div with specific structure
-  // Looking for table rows with skill names and values
-  const rows = document.querySelectorAll('table tbody tr, div[class*="css"] tbody tr');
+  // Find tbody elements (skill tables use tbody)
+  const tbodies = document.querySelectorAll('tbody');
   
-  let foundSkills = false;
-  
-  for (const row of rows) {
-    const cells = row.querySelectorAll('td');
-    if (cells.length >= 2) {
-      const skillName = cells[0].textContent.trim().toLowerCase();
-      const valueText = cells[1].textContent.trim();
+  for (const tbody of tbodies) {
+    const rows = tbody.querySelectorAll('tr');
+    
+    // Check if this tbody has 4 rows (the skills table has exactly 4 skill rows)
+    if (rows.length !== 4) continue;
+    
+    let skillCount = 0;
+    const skillOrder = ['mgmt', 'acct', 'comm', 'tech'];
+    
+    // Try to extract skill values from each row
+    for (const row of rows) {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 2) break; // Not a valid skill row
       
-      // Try to extract the number from the value cell
-      const match = valueText.match(/^\d+/);
-      if (match) {
-        const value = parseInt(match[0], 10);
-        
-        // Map skill name to our standard keys
-        const skillKey = PAGE_SKILL_MAPPING[skillName];
-        if (skillKey) {
-          skills[skillKey] = value;
-          foundSkills = true;
+      // Look for a span with a number in the second cell
+      const secondCell = cells[1];
+      const spans = secondCell.querySelectorAll('span');
+      
+      let skillValue = null;
+      
+      // Find the first span containing a number
+      for (const span of spans) {
+        const text = span.textContent.trim();
+        const num = parseInt(text, 10);
+        if (!isNaN(num) && num >= 0 && num <= 10) {
+          skillValue = num;
+          break;
         }
       }
+      
+      // If no span found, try to parse the cell text directly
+      if (skillValue === null) {
+        const cellText = secondCell.textContent.trim();
+        const match = cellText.match(/^\d+/);
+        if (match) {
+          skillValue = parseInt(match[0], 10);
+        }
+      }
+      
+      if (skillValue !== null) {
+        const skillKey = skillOrder[skillCount];
+        skills[skillKey] = skillValue;
+        skillCount++;
+      }
+    }
+    
+    // If we found all 4 skills, return them
+    if (skillCount === 4) {
+      return skills;
     }
   }
   
-  return foundSkills ? skills : null;
+  return null;
 }
 
 /**
@@ -187,37 +216,55 @@ function getSkillAssessment(skillValue) {
 
 /**
  * Extract HR feedback from the page element
- * Looks for specific text patterns on executive pages
- * @todo: create a more robust extraction method of the HR feedback using a sample element
+ * Uses DOM structure only: finds containers with tables, a bold label, and extracts text after empty divs
+ * Language-agnostic and class-name agnostic
  */
 function extractHRFeedback() {
-  // Look for common HR feedback elements
-  const selectors = [
-    '.hr-feedback',
-    '[data-hr-feedback]',
-    'div[class*="feedback"]',
-    'div[class*="conclusion"]',
-    '.executive-notes'
-  ];
+  // Strategy: Find a div container that has:
+  // 1. At least one table (direct child)
+  // 2. A bold tag (the label)
+  // 3. An empty div followed by text content
   
-  for (const selector of selectors) {
-    const element = document.querySelector(selector);
-    if (element && element.textContent.trim()) {
-      return element.textContent.trim();
-    }
-  }
+  const allDivs = document.querySelectorAll('div');
   
-  // Fallback: look for text containing common HR keywords
-  const bodyText = document.body.innerText;
-  const lines = bodyText.split('\n');
-  
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.length > 20 && 
-        (trimmed.includes('would') || trimmed.includes('hire') || 
-         trimmed.includes('fit') || trimmed.includes('expect') ||
-         trimmed.includes('believe') || trimmed.includes('asked'))) {
-      return trimmed;
+  for (const div of allDivs) {
+    // Check if this div has direct table children
+    const directTables = Array.from(div.children).filter(child => child.tagName === 'TABLE');
+    if (directTables.length === 0) continue;
+    
+    // Check if this div contains a bold tag (likely the label)
+    const boldTags = div.querySelectorAll('b');
+    if (boldTags.length === 0) continue;
+    
+    // Look for an empty div (no children, no text) within this container
+    const directDivChildren = Array.from(div.children).filter(child => child.tagName === 'DIV');
+    for (let i = 0; i < directDivChildren.length; i++) {
+      const currentDiv = directDivChildren[i];
+      
+      // Check if this is an empty div (no children and no text content)
+      if (currentDiv.children.length === 0 && currentDiv.textContent.trim() === '') {
+        // Look for text node immediately after this empty div
+        let nextNode = currentDiv.nextSibling;
+        
+        // Keep looking for text nodes (skip comment nodes, etc.)
+        while (nextNode) {
+          if (nextNode.nodeType === Node.TEXT_NODE) {
+            const text = nextNode.textContent.trim();
+            if (text.length > 20) {
+              // Found substantial text content
+              return text;
+            }
+          } else if (nextNode.nodeType === Node.ELEMENT_NODE) {
+            // If we hit another element, try to extract its text
+            const text = nextNode.textContent.trim();
+            if (text.length > 20) {
+              return text;
+            }
+            break; // Stop if we hit a complex element
+          }
+          nextNode = nextNode.nextSibling;
+        }
+      }
     }
   }
   

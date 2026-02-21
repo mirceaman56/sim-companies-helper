@@ -7,11 +7,10 @@ import { t } from "./i18n.js";
 import { SIDEBAR_ID } from "./state.js";
 import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
-import { formatMoney } from "./utils.js";
+import { formatMoney, parseLocaleNumber, TRANSPORT_RESOURCE_ID } from "./utils.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const STORAGE_KEY = "scx-contract-discount";
-const TRANSPORT_RESOURCE_ID = 13; // Transport container in SimCompanies
 
 let discountPct = 3; // default
 
@@ -105,27 +104,10 @@ function getLowestSellerPrice() {
 }
 
 /**
- * Parse a price string like "1.800" or "56.500" into a number.
+ * Parse a price string. Delegates to shared parseLocaleNumber.
  * SimCompanies uses "." as decimal with 3 decimal places.
  */
-function parsePrice(raw) {
-  let s = raw.trim();
-  if (!s) return NaN;
-
-  // Handle thousands separator: if there's a comma before a dot, comma is thousands
-  // e.g. "1,234.567" → "1234.567"
-  // If comma is the last separator with 3 digits after → treat as decimal (German)
-  const lastDot = s.lastIndexOf(".");
-  const lastComma = s.lastIndexOf(",");
-
-  if (lastDot > lastComma) {
-    s = s.replace(/,/g, "");
-  } else if (lastComma > lastDot) {
-    s = s.replace(/\./g, "").replace(",", ".");
-  }
-
-  return parseFloat(s);
-}
+const parsePrice = parseLocaleNumber;
 
 /**
  * Set a React-controlled input's value properly.

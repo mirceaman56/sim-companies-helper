@@ -274,7 +274,7 @@
 .scx-prod-title {
   font-weight: 600;
   color: #333;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .scx-prod-info-row {
@@ -292,24 +292,33 @@
 .scx-badge-active {
   background: #e3f2fd;
   color: #1565c0;
-  padding: 0px 3px;
-  border-radius: 2px;
-  margin-left: 3px;
-  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
 }
 
 .scx-badge-level {
   background: #f3e5f5;
   color: #7b1fa2;
-  padding: 0px 3px;
-  border-radius: 2px;
-  margin-left: 3px;
-  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
 }
 
 .scx-box {
   padding: 6px;
   border-radius: 3px;
+}
+
+.scx-box-blue,
+.scx-box-yellow,
+.scx-box-purple,
+.scx-box-green,
+.scx-box-light-gray {
+  padding: 8px;
+  border-radius: 4px;
 }
 
 .scx-box-blue { background: #e3f2fd; }
@@ -424,6 +433,10 @@
 
 .scx-font-9 {
   font-size: 10px;
+}
+
+.scx-font-10 {
+  font-size: 11px;
 }
 
 .scx-color-999 {
