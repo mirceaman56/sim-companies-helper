@@ -132,6 +132,21 @@
         "transport": 0.1
     },
     {
+        "id": 139,
+        "name": "Fodder",
+        "materials": [
+            {
+                "id": 6,
+                "quantity": 10
+            },
+            {
+                "id": 120,
+                "quantity": 0.5
+            }
+        ],
+        "transport": 1
+    },
+    {
         "id": 40,
         "name": "Cotton",
         "materials": [
