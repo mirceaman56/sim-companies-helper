@@ -1,5 +1,5 @@
 
-import { registerSection, getSectionContent } from "./sidebar.js";
+import { getSectionContent } from "./sidebar.js";
 import { STATE } from "./state.js";
 import { escapeHtml } from "./utils.js";
 import recipes from "./recipes.json";
@@ -48,6 +48,25 @@ function createFilterContent() {
         padding: 4px;
         border: 1px solid #ddd;
         border-radius: 4px;
+      }
+      .scx-quality-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 4px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+      }
+      .scx-quality-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .scx-quality-label input {
+        cursor: pointer;
       }
       .scx-chat-btn {
         padding: 6px 12px;
@@ -119,6 +138,12 @@ function createFilterContent() {
           <!-- Populated by JS -->
         </select>
       </div>
+      <div class="scx-chat-row">
+        <label style="font-size: 12px; font-weight: bold;">Quality (Optional):</label>
+      </div>
+      <div class="scx-quality-container" id="scx-filter-quality">
+        <!-- Populated by JS -->
+      </div>
       <button id="scx-filter-action" class="scx-chat-btn">${t("startSearch")}</button>
     </div>
     <div id="scx-filter-status" class="scx-status"></div>
@@ -132,14 +157,20 @@ function createFilterContent() {
   const sortedRecipes = [...recipes].sort((a, b) => a.name.localeCompare(b.name));
   
   sortedRecipes.forEach(recipe => {
-    // Only include transportable items? Or all? User said "products". All recipes usually define products.
-    // Some might be research or non-tradeable, but users trade mostly everything.
-    // Using ID as value.
     const option = document.createElement("option");
     option.value = recipe.id;
     option.textContent = recipe.name;
     productSelect.appendChild(option);
   });
+
+  // Populate quality checkboxes
+  const qualityContainer = container.querySelector("#scx-filter-quality");
+  for (let q = 1; q <= 10; q++) {
+    const label = document.createElement("label");
+    label.className = "scx-quality-label";
+    label.innerHTML = `<input type="checkbox" value="Q${q}" id="scx-quality-${q}"> Q${q}`;
+    qualityContainer.appendChild(label);
+  }
 
   // Event Listeners
   const actionBtn = container.querySelector("#scx-filter-action");
@@ -211,6 +242,15 @@ async function startSearch(container) {
   const productId = parseInt(productSelect.value);
   const productName = productSelect.options[productSelect.selectedIndex].text;
   
+  // Get selected quality values
+  const selectedQualities = [];
+  for (let q = 1; q <= 10; q++) {
+    const checkbox = container.querySelector(`#scx-quality-${q}`);
+    if (checkbox && checkbox.checked) {
+      selectedQualities.push(`Q${q}`);
+    }
+  }
+  
   if (!productId) return;
 
   isSearching = true;
@@ -224,7 +264,7 @@ async function startSearch(container) {
   updateStatus(container, `${t("searchingFor")} ${filterType} ${productName}...`);
 
   try {
-    await fetchMessages(container, filterType, productId, searchController.signal);
+    await fetchMessages(container, filterType, productId, selectedQualities, searchController.signal);
   } catch (err) {
     if (err.name === 'AbortError') {
       updateStatus(container, t("searchStopped"));
@@ -246,7 +286,7 @@ function stopSearch() {
   }
 }
 
-async function fetchMessages(container, filterType, productId, signal) {
+async function fetchMessages(container, filterType, productId, selectedQualities, signal) {
   const baseUrl = "https://www.simcompanies.com/api/v2/chatroom/S/";
   let currentUrl = baseUrl;
   let pageCount = 0;
@@ -258,12 +298,15 @@ async function fetchMessages(container, filterType, productId, signal) {
   const buyRegex = /\b(buy|buying)\b/i;
   const sellRegex = /\b(sell|selling)\b/i;
   
-  // Product tag regex. Usually :re-ID:
-  // Sometimes people might type it manually, but assume the system tag :re-ID:
-  const productTagStr = `:re-${productId}:`; 
-  
-  // User also mentioned :pr-33, so let's support both just in case
-  const productTagRegex = new RegExp(`:(re|pr)-${productId}:`, "i");
+  const productTagRegex = new RegExp(`:(re)-${productId}:`, "i");
+
+  // Build quality regex pattern if qualities are selected
+  let qualityRegex = null;
+  if (selectedQualities.length > 0) {
+    // Create pattern like: Q0|Q1|Q2|Q3 (case-insensitive)
+    const qualityPattern = selectedQualities.join("|");
+    qualityRegex = new RegExp(`\\b(${qualityPattern})\\b`, "i");
+  }
 
   // Calculate cutoff time (8 hours ago)
   const cutoffTime = Date.now() - (8 * 60 * 60 * 1000);
@@ -293,8 +336,12 @@ async function fetchMessages(container, filterType, productId, signal) {
       const body = msg.body || "";
       const matchesType = filterType === "buy" ? buyRegex.test(body) : sellRegex.test(body);
       const matchesProduct = productTagRegex.test(body);
+      
+      // Check quality match: if qualities are selected, message must match one of them
+      // If no qualities are selected, this check passes (no filtering)
+      const matchesQuality = qualityRegex === null || qualityRegex.test(body);
 
-      if (matchesType && matchesProduct) {
+      if (matchesType && matchesProduct && matchesQuality) {
         addResult(container, msg);
         foundCount++;
       }
