@@ -139,7 +139,7 @@ function createFilterContent() {
         </select>
       </div>
       <div class="scx-chat-row">
-        <label style="font-size: 12px; font-weight: bold;">Quality (Optional):</label>
+        <label style="font-size: 12px; font-weight: bold;">${t("qualityOptional")}</label>
       </div>
       <div class="scx-quality-container" id="scx-filter-quality">
         <!-- Populated by JS -->

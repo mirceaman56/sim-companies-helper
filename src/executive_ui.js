@@ -20,6 +20,19 @@ const SKILL_LABELS = {
   tech: 'Technology'
 };
 
+/**
+ * Get translated skill label
+ */
+function getSkillLabel(skillKey) {
+  const labelMap = {
+    mgmt: 'management',
+    acct: 'accounting',
+    comm: 'communication',
+    tech: 'technology'
+  };
+  return t(labelMap[skillKey]) || SKILL_LABELS[skillKey];
+}
+
 // Mapping for page skill names to standard keys
 const PAGE_SKILL_MAPPING = {
   'management': 'mgmt',
@@ -199,17 +212,17 @@ function getSkillAssessment(skillValue) {
   if (skillValue >= 1.4) {
     return {
       class: 'scx-hr-blurp-skill-keeper',
-      label: 'Keeper'
+      label: t('keeper')
     };
   } else if (skillValue >= 1.3) {
     return {
       class: 'scx-hr-blurp-skill-works',
-      label: 'Works'
+      label: t('works')
     };
   } else {
     return {
       class: 'scx-hr-blurp-skill-garbage',
-      label: 'Garbage'
+      label: t('garbage')
     };
   }
 }
@@ -279,7 +292,7 @@ function createSkillElementHTML(skillKey, skillValue) {
   
   return `
     <div class="scx-hr-blurp-skill-item ${assessment.class}">
-      <div class="scx-hr-blurp-skill-label">${escapeHtml(SKILL_LABELS[skillKey])}</div>
+      <div class="scx-hr-blurp-skill-label">${escapeHtml(getSkillLabel(skillKey))}</div>
       <div class="scx-hr-blurp-skill-value">${skillValue.toFixed(2)}</div>
       <div class="scx-hr-blurp-skill-assessment">${escapeHtml(assessment.label)}</div>
     </div>
@@ -294,18 +307,18 @@ function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
   
   return `
     <div class="scx-skill-breakdown-row">
-      <div class="scx-skill-breakdown-label">${escapeHtml(SKILL_LABELS[skillKey])}</div>
+      <div class="scx-skill-breakdown-label">${escapeHtml(getSkillLabel(skillKey))}</div>
       <div class="scx-skill-breakdown-values">
         <div class="scx-skill-breakdown-value scx-skill-breakdown-total">
-          <div class="scx-skill-breakdown-total-label">Total</div>
+          <div class="scx-skill-breakdown-total-label">${t('total')}</div>
           <div class="scx-skill-breakdown-total-value">${totalValue}</div>
         </div>
         <div class="scx-skill-breakdown-value scx-skill-breakdown-organic">
-          <div class="scx-skill-breakdown-organic-label">Organic</div>
+          <div class="scx-skill-breakdown-organic-label">${t('organic')}</div>
           <div class="scx-skill-breakdown-organic-value">${organicValue}</div>
         </div>
         <div class="scx-skill-breakdown-value scx-skill-breakdown-training">
-          <div class="scx-skill-breakdown-training-label">Training</div>
+          <div class="scx-skill-breakdown-training-label">${t('training')}</div>
           <div class="scx-skill-breakdown-training-value">${trainingValue || 0}</div>
         </div>
       </div>
@@ -319,8 +332,8 @@ function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
 function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
   let html = `
     <div class="scx-skill-breakdown-section">
-      <div class="scx-skill-breakdown-section-label">Skills Breakdown</div>
-      <div class="scx-skill-breakdown-description">Total skills and their sources</div>
+      <div class="scx-skill-breakdown-section-label">${t('skillsBreakdown')}</div>
+      <div class="scx-skill-breakdown-description">${t('skillsBreakdownDescription')}</div>
   `;
   
   // Add rows for each skill
@@ -340,7 +353,7 @@ function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
 function createFeedbackSectionHTML(feedbackText) {
   return `
     <div class="scx-hr-blurp-feedback-section">
-      <div class="scx-hr-blurp-feedback-label">Extracted Feedback</div>
+      <div class="scx-hr-blurp-feedback-label">${t('extractedFeedback')}</div>
       <div class="scx-hr-blurp-feedback-text">${escapeHtml(feedbackText)}</div>
     </div>
   `;
@@ -356,7 +369,7 @@ function createSkillsSectionHTML(matchedEntry) {
   
   let html = `
     <div class="scx-hr-blurp-skills-section">
-      <div class="scx-hr-blurp-skills-label">HR Skills Assessment</div>
+      <div class="scx-hr-blurp-skills-label">${t('hrSkillsAssessment')}</div>
   `;
   
   for (const skillKey of SKILL_KEYS) {
@@ -383,7 +396,7 @@ function createFooterHTML(matchedEntry) {
   
   return `
     <div class="${footerClass}">
-      <div class="scx-hr-blurp-footer-label">Average Skill</div>
+      <div class="scx-hr-blurp-footer-label">${t('averageSkill')}</div>
       <div class="scx-hr-blurp-footer-value">${matchedEntry.skills.avgSkill.toFixed(2)}</div>
     </div>
   `;
@@ -396,7 +409,7 @@ function createNavigationMessageHTML() {
   return `
     <div class="scx-executive-empty-state">
       <div class="scx-executive-empty-message">
-        Navigate to your executives page for details
+        ${t('navigateToExecutives')}
       </div>
     </div>
   `;
