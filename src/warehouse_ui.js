@@ -5,32 +5,120 @@
 
 import recipes from './recipes.json';
 import { fetchMarketPrice } from './market.js';
-import { getRealmId } from './auth.js';
+import { getRealmId, loadAuthDataOnce } from './auth.js';
 import { STATE } from './state.js';
 import { formatMoney } from './utils.js';
 
-// Map product names to recipe IDs for quick lookup
-function buildRecipeNameMap() {
-  const map = new Map();
+// Map product kinds (IDs) to recipe info, and names to IDs
+function buildRecipeMaps() {
+  const kindMap = new Map();
+  const nameMap = new Map();
   for (const recipe of recipes) {
-    map.set(recipe.name.toLowerCase(), recipe.id);
+    kindMap.set(recipe.id, recipe);
+    nameMap.set(recipe.name, recipe.id);
   }
-  return map;
+  return { kindMap, nameMap };
 }
 
-const recipeNameMap = buildRecipeNameMap();
+const { kindMap: recipeMap, nameMap: recipeNameMap } = buildRecipeMaps();
 
 /**
- * Extract product ID from a product name using recipes.json
+ * Get product name by kind ID (from recipes.json)
  */
-function getProductIdByName(productName) {
-  const normalized = productName.toLowerCase().trim();
-  return recipeNameMap.get(normalized) || null;
+function getProductNameByKind(kind) {
+  const recipe = recipeMap.get(kind);
+  return recipe ? recipe.name : null;
 }
 
 /**
- * Extract all inventory items from the page DOM
- * Returns array of {element, name, sourcingCost}
+ * Get product ID (kind) by product name
+ */
+function getProductIdByName(name) {
+  return recipeNameMap.get(name) || null;
+}
+
+/**
+ * Fetch inventory data from API and group by kind (product type)
+ * Calculate weighted average quality for each product
+ * Returns array of {kind, name, totalAmount, weightedQuality, sourcingCost}
+ */
+async function fetchInventoryItems() {
+  try {
+    // Ensure auth data is loaded
+    await loadAuthDataOnce();
+    
+    const companyId = STATE.auth.companyId;
+    if (!companyId) {
+      console.warn('[WarehouseUI] Cannot fetch inventory: no company ID');
+      return [];
+    }
+
+    const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
+    const response = await fetch(url, { credentials: 'include' });
+
+    if (!response.ok) {
+      console.warn(`[WarehouseUI] Failed to fetch inventory: ${response.status}`);
+      return [];
+    }
+
+    const rawItems = await response.json();
+
+    // Group items by kind and calculate weighted average quality
+    const kindMap = new Map();
+
+    for (const item of rawItems) {
+      const { kind, amount, quality } = item;
+
+      if (!kindMap.has(kind)) {
+        kindMap.set(kind, {
+          kind,
+          totalAmount: 0,
+          qualityWeightSum: 0, // sum of (quality * amount)
+        });
+      }
+
+      const entry = kindMap.get(kind);
+      entry.totalAmount += amount;
+      entry.qualityWeightSum += quality * amount;
+    }
+
+    // Convert to inventory items with weighted average quality
+    // Get DOM items for sourcing cost (already calculated by UI)
+    const domItems = extractPageInventoryItems();
+    const domItemsByName = new Map();
+    for (const domItem of domItems) {
+      domItemsByName.set(domItem.name, domItem);
+    }
+
+    const items = [];
+    for (const [kind, entry] of kindMap) {
+      const productName = getProductNameByKind(kind);
+      if (!productName) continue; // Skip unknown products
+
+      const domItem = domItemsByName.get(productName);
+      if (!domItem) continue; // Skip if not found in DOM
+
+      const weightedQuality = entry.qualityWeightSum / entry.totalAmount;
+
+      items.push({
+        kind,
+        name: productName,
+        totalAmount: entry.totalAmount,
+        weightedQuality,
+        sourcingCost: domItem.sourcingCost,
+      });
+    }
+
+    return items;
+  } catch (error) {
+    console.error('[WarehouseUI] Error fetching inventory:', error);
+    return [];
+  }
+}
+
+/**
+ * Extract all inventory items from the page DOM (fallback)
+ * Returns array of {element, name, sourcingCost, quality}
  */
 function extractPageInventoryItems() {
   const items = [];
@@ -40,9 +128,14 @@ function extractPageInventoryItems() {
   
   for (const card of itemCards) {
     const label = card.getAttribute('aria-label') || '';
-    // Parse: "Seeds, quantity 291829, average sourcing cost $0.20"
+    // Parse: "Seeds, quantity 291829, average sourcing cost $0.20" or with quality
     const nameMatch = label.match(/^([^,]+),/);
     const costMatch = label.match(/\$([0-9,.]+)(?:\s|$)/);
+    
+    // Try to extract quality from aria-label (if format includes it)
+    // Could be "Seeds, quality 2, quantity 291829, average sourcing cost $0.20"
+    const qualityMatch = label.match(/quality\s+([0-9]+)/);
+    const quality = qualityMatch ? parseInt(qualityMatch[1], 10) : 0;
     
     if (nameMatch && costMatch) {
       const name = nameMatch[1].trim();
@@ -52,6 +145,7 @@ function extractPageInventoryItems() {
         element: card,
         name,
         sourcingCost: Number.isFinite(sourcingCost) ? sourcingCost : 0,
+        quality: Number.isFinite(quality) ? quality : 0,
       });
     }
   }
@@ -125,7 +219,7 @@ function getOrCreateMarketButton(cardElement) {
  * Handle market button click
  */
 async function handleMarketButtonClick(button, item) {
-  const { element, name, sourcingCost } = item;
+  const { element, name, sourcingCost, weightedQuality } = item;
   const productId = getProductIdByName(name);
   
   if (!productId) {
@@ -146,7 +240,7 @@ async function handleMarketButtonClick(button, item) {
   
   try {
     const realmId = getRealmId();
-    const marketPrice = await fetchMarketPrice(realmId, productId);
+    const marketPrice = await fetchMarketPrice(realmId, productId, weightedQuality);
     
     if (marketPrice === null) {
       button.textContent = 'No price';
@@ -203,18 +297,39 @@ async function handleMarketButtonClick(button, item) {
 /**
  * Add market buttons to all inventory items
  */
-function injectMarketButtons() {
-  const items = extractPageInventoryItems();
+async function injectMarketButtons() {
+  // Get DOM items for button attachment and API items for accurate data
+  const domItems = extractPageInventoryItems();
+  const apiItems = await fetchInventoryItems();
   
-  for (const item of items) {
-    const button = getOrCreateMarketButton(item.element);
+  // Create a map of product names from API for quick lookup
+  const apiItemsByName = new Map();
+  for (const apiItem of apiItems) {
+    apiItemsByName.set(apiItem.name, apiItem);
+  }
+  
+  // Merge DOM and API data, preferring API data when available
+  for (const domItem of domItems) {
+    const apiItem = apiItemsByName.get(domItem.name);
+    
+    // Use API data (weighted quality, accurate sourcing cost) if available
+    if (apiItem) {
+      domItem.weightedQuality = apiItem.weightedQuality;
+      domItem.totalAmount = apiItem.totalAmount;
+      domItem.sourcingCost = apiItem.sourcingCost;
+    } else {
+      // Fallback to DOM-extracted data
+      domItem.weightedQuality = domItem.quality;
+    }
+    
+    const button = getOrCreateMarketButton(domItem.element);
     
     // Only attach listener if not already attached
     if (!button.dataset.listenerAttached) {
       button.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        handleMarketButtonClick(button, item);
+        handleMarketButtonClick(button, domItem);
       });
       button.dataset.listenerAttached = 'true';
     }
