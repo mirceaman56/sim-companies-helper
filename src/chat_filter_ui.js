@@ -165,7 +165,7 @@ function createFilterContent() {
 
   // Populate quality checkboxes
   const qualityContainer = container.querySelector("#scx-filter-quality");
-  for (let q = 1; q <= 10; q++) {
+  for (let q = 1; q <= 12; q++) {
     const label = document.createElement("label");
     label.className = "scx-quality-label";
     label.innerHTML = `<input type="checkbox" value="Q${q}" id="scx-quality-${q}"> Q${q}`;
@@ -244,7 +244,7 @@ async function startSearch(container) {
   
   // Get selected quality values
   const selectedQualities = [];
-  for (let q = 1; q <= 10; q++) {
+  for (let q = 1; q <= 12; q++) {
     const checkbox = container.querySelector(`#scx-quality-${q}`);
     if (checkbox && checkbox.checked) {
       selectedQualities.push(`Q${q}`);

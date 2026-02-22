@@ -9,7 +9,6 @@ vi.mock("../src/state.js", () => ({
 }));
 
 import { fetchMarketPrice } from "../src/market.js";
-import * as marketModule from "../src/market.js";
 import { STATE } from "../src/state.js";
 
 const mockMarketData = [
