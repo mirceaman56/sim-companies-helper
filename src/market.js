@@ -61,14 +61,32 @@ export async function fetchMarket(realmId, productId) {
   return data;
 }
 
-export async function fetchMarketPrice(realmId, productId) {
+export async function fetchMarketPrice(realmId, productId, quality = 0) {
   try {
     const data = await fetchMarket(realmId, productId);
-    const listing = data?.[0];
-    if (listing && Number.isFinite(listing.price)) {
-      return listing.price;
+    if (!Array.isArray(data) || data.length === 0) return null;
+
+    // Find exact quality match
+    const exactMatch = data.find(item => Number.isFinite(item.quality) && item.quality === quality);
+    if (exactMatch && Number.isFinite(exactMatch.price)) {
+      console.log("Found exact match {} with price {}", exactMatch.quality, exactMatch.price);
+      return exactMatch.price;
     }
-    return null;
+
+    // If no exact match, find the closest quality
+    let closestListing = data[0];
+    let closestDifference = Math.abs((data[0].quality ?? 0) - quality);
+
+    for (const listing of data) {
+      if (!Number.isFinite(listing.quality)) continue;
+      const difference = Math.abs(listing.quality - quality);
+      if (difference < closestDifference) {
+        closestDifference = difference;
+        closestListing = listing;
+      }
+    }
+
+    return closestListing && Number.isFinite(closestListing.price) ? closestListing.price : null;
   } catch (e) {
     console.warn(`Failed to fetch price for product ${productId}:`, e);
     return null;
