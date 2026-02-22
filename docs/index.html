@@ -14,7 +14,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 40px auto;
       padding: 0 20px;
       display: grid;
@@ -220,15 +220,77 @@
     li {
       margin-bottom: 8px;
     }
+
+    /* Lightbox Modal */
+    .scx-lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    .scx-lightbox.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scx-lightbox img {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+      animation: slideIn 0.2s ease-out;
+    }
+
+    .scx-lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .scx-lightbox-close:hover {
+      color: #ccc;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    img[data-lightbox] {
+      cursor: zoom-in;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Lightbox Modal -->
+  <div id="scx-lightbox" class="scx-lightbox">
+    <span class="scx-lightbox-close">&times;</span>
+    <img id="scx-lightbox-img" src="" alt="Full size screenshot">
+  </div>
 
   <div class="container">
     <!-- Left Column: Content -->
     <div class="main-content">
       <div class="header">
-        <img src="icon-128.png" alt="Logo" class="logo" onerror="this.onerror=null;this.src='https://placehold.co/128x128/eee/333?text=SC';"> 
+        <img src="./icons/128.png" alt="Logo" class="logo" onerror="this.onerror=null;this.src='https://placehold.co/128x128/eee/333?text=SC';"> 
         <div>
           <h1>Sim Companies Helper</h1>
           <p class="subtitle">Quality of life improvements for your business empire.</p>
@@ -250,7 +312,7 @@
 
       <div class="video-grid">
         <div class="video-card">
-          <iframe width="100%" height="315" src="https://www.youtube.com/embed/S_nsDoA4tBI" title="Sim Companies Helper Extension Overview" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 12px 12px 0 0;"></iframe>
+          <iframe width="100%" height="315" src="https://www.youtube.com/embed/S_nsDoA4tBI?modestbranding=1" title="Sim Companies Helper Extension Overview" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius: 12px 12px 0 0;"></iframe>
           <div class="video-info">
             <span class="video-title">Extension Overview</span>
             <span class="video-desc">A complete walkthrough of the Sim Companies Helper extension features.</span>
@@ -266,16 +328,154 @@
         <li>Drag and drop the zip file or click <strong>Load Unpacked</strong>.</li>
       </ol>
       
-      <h2>What it does</h2>
-      <ul>
-        <li><strong>Retail Profit Mastery</strong> – Instantly see Profit Per Minute (PPM) for retail items with color-coded indicators. Compare retail vs. market prices including transport costs to maximize profitability.</li>
-        <li><strong>Smart Production</strong> – Get real-time cost analysis for production items and custom contract profit calculations to make informed manufacturing decisions.</li>
-        <li><strong>Executive Recruitment</strong> – Analyze executive skills with detailed organic vs. training breakdown. Match HR feedback against expert profiles to recruit top talent and understand their growth potential.</li>
-        <li><strong>Cashflow Insights</strong> – View your daily income vs. expenses breakdown and compare performance against yesterday to track business trends.</li>
-        <li><strong>Chat Search</strong> – Search the Sales Chat for specific products to quickly find buyers and sellers in the market.</li>
-        <li><strong>Privacy-First</strong> – All data stays in your browser with no tracking or external data transmission.</li>
-      </ul>
+      <h2>Features in Action</h2>
 
+      <!-- Feature 1: Warehouse Price Comparison -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #3498db;">
+        <h3 style="margin-top: 0;">Warehouse Price Comparison</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Tired of manually checking market prices for every inventory item? The warehouse helper adds a "market price" button 
+          directly on your inventory page. Click any button to instantly see the market price compared to your sourcing cost. 
+          Products with higher quality get smarter price matching—the extension finds exact quality matches first, then falls 
+          back to the closest available quality if needed. All calculations use your weighted average quality across units, ensuring 
+          accurate comparisons for mixed-quality inventory.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Production.png" 
+               alt="Warehouse price comparison feature" 
+               data-lightbox="./screenshots/Production.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Warehouse with market price buttons];'">
+        </div>
+      </div>
+
+      <!-- Feature 2: Smart Retail Analysis -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #27ae60;">
+        <h3 style="margin-top: 0;">Smart Retail Analysis</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Maximize your retail profits with instant Profit Per Minute (PPM) calculations for each item. The extension analyzes 
+          your selling price against market costs, accounting for transport expenses automatically. Color-coded indicators show 
+          at a glance which products are most profitable (green = great margins, red = consider adjusting prices). No more guesswork—
+          just pure profit analysis built right into your retail dashboard.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Retail.png" 
+               alt="Retail PPM analysis" 
+               data-lightbox="./screenshots/Retail.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Retail products with PPM colors];'">
+        </div>
+      </div>
+
+      <!-- Feature 3: Production Optimization -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #e74c3c;">
+        <h3 style="margin-top: 0;">Production Optimization</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Maximize manufacturing profitability with instant cost analysis. The extension calculates total production costs 
+          by analyzing ingredient prices, production modifiers, and labor efficiency. See detailed breakdowns per unit and batch 
+          quantities to make informed production decisions. Compare costs across different scenarios and optimize your production 
+          chain for maximum profit margins.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Production.png" 
+               alt="Production optimization" 
+               data-lightbox="./screenshots/Production.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Production page with cost analysis];'">
+        </div>
+      </div>
+
+      <!-- Feature 3b: Contract Assistant -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #c0392b;">
+        <h3 style="margin-top: 0;">Contract Assistant</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Evaluate contract opportunities with confidence. When sending custom contracts, the assistant calculates profit margins 
+          instantly and compares against market sale profitability. Set your desired discount percentage and automatically populate 
+          competitive pricing. Never send an unprofitable contract again—every deal is backed by numbers.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Contract.png" 
+               alt="Contract assistant" 
+               data-lightbox="./screenshots/Contract.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Contract pricing helper];'">
+        </div>
+      </div>
+
+      <!-- Feature 4: Cashflow Dashboard -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #9b59b6;">
+        <h3 style="margin-top: 0;">Cashflow Dashboard</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Know exactly where your money is going. The cashflow insights page breaks down your daily income and expenses by 
+          category—see how much you're spending on each operation type and where your revenue comes from. Compare today against 
+          yesterday to track trends and spot opportunities. Understanding your financial rhythm is key to strategic planning.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Financials.png" 
+               alt="Cashflow dashboard" 
+               data-lightbox="./screenshots/Financials.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Cashflow breakdown];'">
+        </div>
+      </div>
+
+      <!-- Feature 5: Skill Breakdown -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #f39c12;">
+        <h3 style="margin-top: 0;">Executive Skill Breakdown</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Get detailed insights into executive candidate capabilities. The extension analyzes each candidate's skills with 
+          comprehensive breakdown showing organic skill levels versus training potential. Understand which competencies are 
+          naturally high and which can be developed through training to make informed recruitment decisions.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Executives_1.png" 
+               alt="Executive skill breakdown" 
+               data-lightbox="./screenshots/Executives_1.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Executive skill breakdown];'">
+        </div>
+      </div>
+
+      <!-- Feature 5b: Hiring and HR Feedback -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #d68910;">
+        <h3 style="margin-top: 0;">Hiring and HR Feedback</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Match HR feedback against expert profiles to understand true growth potential. The tool compares candidate assessments 
+          and performance indicators against industry benchmarks, helping you identify high-potential hires and predict long-term 
+          value. Make strategic recruitment decisions backed by data-driven insights about each candidate's trajectory.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Executives_2.png" 
+               alt="HR feedback analysis" 
+               data-lightbox="./screenshots/Executives_2.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: HR feedback analysis];'">
+        </div>
+      </div>
+
+      <!-- Feature 6: Chat Search -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #16a085;">
+        <h3 style="margin-top: 0;">Quick Chat Search</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Finding the right trade partner in chat shouldn't be like finding a needle in a haystack. Filter the sales chat for 
+          specific products to quickly identify who's buying or selling what you need. Perfect for negotiating bulk deals or 
+          finding niche buyers for your premium products.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Chat_Filter.png" 
+               alt="Chat search feature" 
+               data-lightbox="./screenshots/Chat_Filter.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
+               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Chat with search filter];'">
+        </div>
+      </div>
+
+      <h2>Privacy & Security</h2>
+      <p>
+        <strong>All your data stays in your browser.</strong> The Sim Companies Helper extension doesn't send any data to external servers 
+        or collect usage information. We only access the data you see in Sim Companies to provide instant insights. No tracking, 
+        no analytics, no surprises—just pure functionality.
+      </p>
     </div>
 
     <!-- Right Column: Sidebar -->
@@ -293,5 +493,43 @@
     </div>
   </div>
 
+  <script>
+    // Lightbox functionality
+    const lightbox = document.getElementById('scx-lightbox');
+    const lightboxImg = document.getElementById('scx-lightbox-img');
+    const closeBtn = document.querySelector('.scx-lightbox-close');
+
+    // Open lightbox when clicking a screenshot
+    document.querySelectorAll('[data-lightbox]').forEach(img => {
+      img.addEventListener('click', () => {
+        const src = img.getAttribute('data-lightbox');
+        lightboxImg.src = src;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    // Close lightbox
+    const closeLightbox = () => {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
+
+    // Close on background click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
+  </script>
 </body>
 </html>
