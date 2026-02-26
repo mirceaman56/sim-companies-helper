@@ -28,178 +28,25 @@ function createFilterContent() {
   const container = document.createElement("div");
   container.className = "scx-chat-filter";
   container.innerHTML = `
-    <style>
-      .scx-chat-filter {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .scx-chat-controls {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .scx-chat-row {
-        display: flex;
-        gap: 8px;
-      }
-      .scx-chat-select {
-        flex: 1;
-        padding: 6px 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.95);
-        color: #333;
-        font-size: 13px;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-chat-select {
-          background: rgba(60, 80, 100, 0.8);
-          color: #e0e0e0;
-          border-color: #555;
-        }
-      }
-      .scx-quality-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.95);
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-quality-container {
-          border-color: #555;
-          background: rgba(60, 80, 100, 0.6);
-        }
-      }
-      .scx-quality-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        user-select: none;
-        font-size: 12px;
-        color: #333;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-quality-label {
-          color: #e0e0e0;
-        }
-      }
-      .scx-quality-label input[type="checkbox"] {
-        cursor: pointer;
-        width: 16px;
-        height: 16px;
-        accent-color: #4CAF50;
-      }
-      .scx-chat-btn {
-        padding: 6px 12px;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 13px;
-      }
-      .scx-chat-btn:disabled {
-        background: #888;
-        cursor: not-allowed;
-      }
-      .scx-chat-btn.stop {
-        background: #f44336;
-      }
-      .scx-chat-results {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        max-height: 400px;
-        overflow-y: auto;
-        border-top: 1px solid #ccc;
-        padding-top: 8px;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-chat-results {
-          border-top-color: #555;
-        }
-      }
-      .scx-chat-message {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 11px;
-        background: #fafafa;
-        color: #333;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-chat-message {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: #444;
-          color: #e0e0e0;
-        }
-      }
-      .scx-chat-message-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
-        color: inherit;
-      }
-      .scx-chat-message-company {
-        font-weight: bold;
-        color: #0d7c3a;
-        text-decoration: none;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-chat-message-company {
-          color: #66bb6a;
-        }
-      }
-      .scx-chat-message-company:hover {
-        text-decoration: underline;
-        color: #1976d2;
-      }
-      .scx-chat-message-body {
-        white-space: pre-wrap;
-        color: #1565c0;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-chat-message-body {
-          color: #64b5f6;
-        }
-      }
-      .scx-status {
-        font-size: 11px;
-        color: #555;
-        font-style: italic;
-      }
-      @media (prefers-color-scheme: dark) {
-        .scx-status {
-          color: #aaa;
-        }
-      }
-    </style>
-    
     <div class="scx-chat-controls">
       <div class="scx-chat-row">
-        <select id="scx-filter-type" class="scx-chat-select">
+        <select id="scx-filter-type" class="scx-select" style="flex: 1;">
           <option value="buy">${t("buying")}</option>
           <option value="sell">${t("selling")}</option>
         </select>
       </div>
       <div class="scx-chat-row">
-        <select id="scx-filter-product" class="scx-chat-select">
+        <select id="scx-filter-product" class="scx-select" style="flex: 1;">
           <!-- Populated by JS -->
         </select>
       </div>
       <div class="scx-chat-row">
-        <label style="font-size: 12px; font-weight: bold;">${t("qualityOptional")}</label>
+        <label class="scx-label" style="margin-bottom: 0;">${t("qualityOptional")}</label>
       </div>
       <div class="scx-quality-container" id="scx-filter-quality">
         <!-- Populated by JS -->
       </div>
-      <button id="scx-filter-action" class="scx-chat-btn">${t("startSearch")}</button>
+      <button id="scx-filter-action" class="scx-btn scx-btn-primary" style="width: 100%;">${t("startSearch")}</button>
     </div>
     <div id="scx-filter-status" class="scx-status"></div>
     <div id="scx-filter-results" class="scx-chat-results"></div>

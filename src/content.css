@@ -1,58 +1,497 @@
-/* ============ CSS Variables for Colors ============ */
+/* ============ CSS Variables - Minimalist Design ============ */
 :root {
+  /* Primary Semantic Colors */
+  --scx-color-success: #2e7d32;      /* Dark Green */
+  --scx-color-error: #c62828;        /* Dark Red */
+  --scx-color-warning: #d68e00;      /* Dark Orange */
+  --scx-color-info: #1565c0;         /* Dark Blue */
+  --scx-color-purple: #6a1b9a;       /* Dark Purple */
+  
+  /* Category Colors - Income Types */
+  --scx-category-retail: #2e7d32;
+  --scx-category-contracts: #1565c0;
+  --scx-category-market: #d68e00;
+  --scx-category-other: #666666;
+  
+  /* Category Colors - Expense Types */
+  --scx-category-production: #c62828;
+  --scx-category-wages: #d32f2f;
+  --scx-category-market-buy: #c2185b;
+  --scx-category-contract-exp: #6a1b9a;
+  --scx-category-fees: #5d4037;
+  --scx-category-construction: #d68e00;
+  --scx-category-accounting: #455a64;
+  
+  /* Legacy color names */
   --scx-color-blue: #1565c0;
   --scx-color-green: #2e7d32;
   --scx-color-red: #c62828;
-  --scx-color-orange: #ff6f00;
-  --scx-color-purple: #7b1fa2;
+  --scx-color-orange: #d68e00;
   --scx-color-brown: #5d4037;
-  --scx-color-dark-brown: #4a148c;
-  --scx-color-forest: #558b2f;
+  --scx-color-dark-purple: #6a1b9a;
+
+  /* ============ Spacing ============ */
+  --scx-spacing-xs: 4px;
+  --scx-spacing-sm: 8px;
+  --scx-spacing-md: 12px;
+  --scx-spacing-lg: 16px;
+  --scx-spacing-xl: 20px;
+
+  /* ============ Backgrounds - White Minimalist ============ */
+  --scx-bg-primary: #ffffff;         /* Main white background */
+  --scx-bg-secondary: #f8f8f8;       /* Light gray */
+  --scx-bg-tertiary: #ffffff;        /* White */
+  --scx-bg-subtle: #f5f5f5;          /* Very light gray */
   
-  --scx-status-good-bg: rgba(76, 175, 80, 0.2);
-  --scx-status-good-color: #4caf50;
-  --scx-status-okay-bg: rgba(255, 193, 7, 0.2);
-  --scx-status-okay-color: #ffc107;
-  --scx-status-bad-bg: rgba(244, 67, 54, 0.2);
-  --scx-status-bad-color: #f44336;
+  /* Status backgrounds */
+  --scx-bg-success: #f0f8f0;         /* Very light green */
+  --scx-bg-success-light: #f5fbf5;   /* Lighter green */
+  --scx-bg-error: #fdf5f5;           /* Very light red */
+  --scx-bg-warning: #fffaf0;         /* Very light orange */
+  --scx-bg-info: #f5f9ff;            /* Very light blue */
+  --scx-bg-accent: #f8f5fb;          /* Very light purple */
+  --scx-bg-neutral: #f8f8f8;         /* Light gray */
+  --scx-bg-light: #ffffff;           /* White */
+  
+  /* ============ Borders - Simple ============ */
+  --scx-border-light: 1px solid #e0e0e0;
+  --scx-border-light-gray: 1px solid #e8e8e8;
+  --scx-border-light-alt: 1px solid #eeeeee;
+  --scx-border-medium: 1px solid #d0d0d0;
+  --scx-border-medium-gray: 1px solid #cccccc;
+  --scx-border-medium-light: 1px solid #bebebe;
+  --scx-border-dark: 1px solid #999999;
+  --scx-border-dark-gray: 1px solid #666666;
+  
+  /* ============ Text Colors - Simple & Contrast ============ */
+  --scx-text-primary: #000000;
+  --scx-text-secondary: #555555;
+  --scx-text-muted: #999999;
+  
+  --scx-text-success: #2e7d32;
+  --scx-text-success-dark: #1b5e20;
+  --scx-text-error: #c62828;
+  --scx-text-warning: #d68e00;
+  --scx-text-warning-alt: #b85d00;
+  --scx-text-info: #1565c0;
+  --scx-text-info-dark: #0d47a1;
+  --scx-text-secondary-alt: #555555;
+  --scx-text-primary-dark: #000000;
+
+  /* ============ Status Colors - Good/Okay/Bad ============ */
+  --scx-status-good-color: #2e7d32;      /* Dark Green */
+  --scx-status-good-bg: #f0f8f0;         /* Light Green */
+  --scx-status-okay-color: #d68e00;      /* Dark Orange */
+  --scx-status-okay-bg: #fffaf0;         /* Light Orange */
+  --scx-status-bad-color: #c62828;       /* Dark Red */
+  --scx-status-bad-bg: #fdf5f5;          /* Light Red */
+  --scx-input-border: #e0e0e0;           /* Light Gray */
+
+  /* ============ Typography ============ */
+  --scx-font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --scx-font-size-xs: 10px;
+  --scx-font-size-sm: 11px;
+  --scx-font-size-base: 12px;
+  --scx-font-size-md: 13px;
+  --scx-font-size-lg: 14px;
+  --scx-font-size-xl: 16px;
+  --scx-font-weight-normal: 500;
+  --scx-font-weight-semibold: 600;
+  --scx-font-weight-bold: 700;
+  --scx-font-weight-heavy: 900;
+
+  /* ============ Borders & Shadows - Simple ============ */
+  --scx-border-radius-sm: 3px;
+  --scx-border-radius-md: 4px;
+  --scx-border-radius-lg: 8px;
+  --scx-border-radius-xl: 12px;
+  --scx-border-radius-full: 999px;
+
+  --scx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --scx-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --scx-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  /* ============ Form Input Styling ============ */
+  --scx-input-bg: #ffffff;
+  --scx-input-text: #000000;
 }
 
-/* Right-side helper sidebar */
-.scx-sidebar {
+/* ============ Form Elements ============ */
+.scx-select {
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-base);
+  padding: var(--scx-spacing-sm) var(--scx-spacing-sm);
+  border: var(--scx-border-medium);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-input-bg);
+  color: var(--scx-input-text);
+}
+
+.scx-select:focus {
+  outline: none;
+  border-color: var(--scx-color-info);
+}
+
+.scx-label {
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+}
+
+/* ============ Buttons - Simple ============ */
+.scx-btn {
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-bold);
+  padding: var(--scx-spacing-sm) var(--scx-spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--scx-border-radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scx-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.scx-btn-primary {
+  background: var(--scx-color-success);
+  color: white;
+  border-color: var(--scx-color-success);
+}
+
+.scx-btn-primary:hover:not(:disabled) {
+  background: #1b5e20;
+}
+
+.scx-btn.stop {
+  background: var(--scx-color-error) !important;
+}
+
+.scx-btn:disabled {
+  background: #999999;
+}
+
+/* ============ Sidebar Container & Sections ============ */
+#scx-sidebar {
   position: fixed;
-  top: 110px;
-  right: 18px;
-  width: 320px;
-  max-height: calc(100vh - 140px);
-  overflow: auto;
-  z-index: 999999;
-
-  border-radius: 14px;
-  padding: 14px 14px 12px;
-
-  background: rgba(235, 235, 235, 0.90);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0,0,0,0.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: rgba(0,0,0,0.86);
+  right: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
 }
 
-.scx-sidebar-header {
+.scx-section {
+  background: var(--scx-bg-tertiary);
+  border: var(--scx-border-medium-gray);
+  border-radius: 8px;
+  box-shadow: var(--scx-shadow-sm);
+  width: 350px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scx-section.collapsed {
+  width: 180px;
+}
+
+.scx-section:hover {
+  box-shadow: var(--scx-shadow-lg);
+}
+
+.scx-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: var(--scx-border-light-gray);
+  background: linear-gradient(135deg, var(--scx-bg-neutral) 0%, var(--scx-bg-tertiary) 100%);
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.scx-section.collapsed .scx-section-header {
+  border-bottom: none;
+  border-radius: 7px;
+}
+
+.scx-section-title {
+  font-weight: 600;
+  color: var(--scx-text-primary);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
 }
 
-.scx-sidebar-title {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.35px;
+.scx-section-toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.3s ease;
+  color: var(--scx-text-muted);
+}
+
+.scx-section.collapsed .scx-section-toggle {
+  transform: rotate(-90deg);
+}
+
+.scx-section-content {
+  padding: 12px;
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.scx-section.collapsed .scx-section-content {
+  max-height: 0;
+  padding: 0;
+  opacity: 0;
+}
+
+/* Snapping effect: sections merge borders when adjacent and expanded */
+#scx-sidebar > .scx-section {
+  position: relative;
+}
+
+#scx-sidebar > .scx-section + .scx-section {
+  margin-top: 0;
+}
+
+/* When adjacent expanded sections, remove the border between them */
+#scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) {
+  margin-top: -1px;
+  border-top: none;
+}
+
+#scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) .scx-section-header {
+  border-top: var(--scx-border-medium-gray);
+}
+
+/* Adjust border-radius for snapped sections */
+#scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+#scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed):last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+#scx-sidebar > .scx-section:not(.collapsed):last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Section Panel & Component Styles */
+.scx-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scx-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-panel-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 11px;
   text-transform: uppercase;
-  opacity: 0.85;
+  letter-spacing: 0.5px;
+}
+
+.scx-chip {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.scx-chip-na { background: var(--scx-bg-light); color: var(--scx-text-muted); }
+.scx-chip-bad { background: var(--scx-bg-error); color: var(--scx-color-error); }
+.scx-chip-excellent { background: var(--scx-bg-success); color: var(--scx-text-success-dark); }
+.scx-chip-good { background: var(--scx-bg-info); color: var(--scx-color-info); }
+.scx-chip-meh { background: var(--scx-bg-warning); color: var(--scx-text-warning-alt); }
+
+.scx-big {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--scx-color-info);
+}
+
+.scx-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.scx-k {
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.scx-v {
+  color: var(--scx-text-primary);
+  font-weight: 600;
+}
+
+.scx-note {
+  font-size: 10px;
+  color: #666;
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 2px solid #ddd;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 8px 0;
+}
+
+/* Shared base styling for section content containers */
+.scx-skill-breakdown-section,
+.scx-hr-blurp-feedback-section,
+.scx-hr-blurp-skills-section {
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scx-skill-breakdown-section,
+.scx-hr-blurp-skills-section {
+  border-bottom: 1px solid #eee;
+}
+
+/* ============ Chat Filter Styles ============ */
+.scx-chat-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-md);
+}
+
+.scx-chat-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+}
+
+.scx-chat-row {
+  display: flex;
+  gap: var(--scx-spacing-sm);
+}
+
+.scx-quality-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--scx-spacing-md);
+  padding: var(--scx-spacing-md);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-tertiary);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-quality-container {
+    border: 1px solid #555;
+    background: rgba(60, 80, 100, 0.60);
+  }
+}
+
+.scx-quality-label {
+  display: flex;
+  align-items: center;
+  gap: var(--scx-spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--scx-font-size-base);
+  color: var(--scx-text-primary);
+}
+
+.scx-quality-label input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--scx-status-good-color);
+  width: 16px;
+  height: 16px;
+}
+
+.scx-chat-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+  max-height: 400px;
+  overflow-y: auto;
+  border-top: 1px solid var(--scx-input-border);
+  padding-top: var(--scx-spacing-sm);
+}
+
+.scx-chat-message {
+  padding: var(--scx-spacing-sm);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  font-size: var(--scx-font-size-sm);
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-primary);
+}
+
+.scx-chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--scx-spacing-xs);
+  color: var(--scx-text-primary);
+}
+
+.scx-chat-message-company {
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-status-good-color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.scx-chat-message-company:hover {
+  text-decoration: underline;
+  color: var(--scx-color-blue);
+}
+
+.scx-chat-message-body {
+  white-space: pre-wrap;
+  color: var(--scx-color-blue);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-chat-message-body {
+    color: #64b5f6;
+  }
+}
+
+.scx-status {
+  font-size: var(--scx-font-size-sm);
+  color: var(--scx-text-secondary);
+  font-style: italic;
 }
 
 .scx-badge {
@@ -60,26 +499,7 @@
   font-weight: 900;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(0,0,0,0.08);
-}
-
-.scx-selected {
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.55);
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-  margin-bottom: 10px;
-}
-
-.scx-selected-name {
-  font-size: 14px;
-  font-weight: 900;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+  background: #f0f0f0;
 }
 
 .scx-muted {
@@ -91,8 +511,8 @@
 .scx-panel {
   border-radius: 12px;
   padding: 12px;
-  background: rgba(255,255,255,0.55);
-  border: 1px solid rgba(0,0,0,0.08);
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
 }
 
 .scx-panel-head {
@@ -116,15 +536,15 @@
   font-weight: 900;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(0,0,0,0.08);
+  background: #f0f0f0;
   white-space: nowrap;
 }
 
-.scx-chip-excellent { background: rgba(46, 204, 113, 0.25); }
-.scx-chip-good      { background: rgba(52, 152, 219, 0.20); }
-.scx-chip-meh       { background: rgba(241, 196, 15, 0.22); }
-.scx-chip-bad       { background: rgba(231, 76, 60, 0.22); }
-.scx-chip-na        { background: rgba(127, 140, 141, 0.20); }
+.scx-chip-excellent { background: #f0f8f0; }
+.scx-chip-good      { background: #f5f9ff; }
+.scx-chip-meh       { background: #fffaf0; }
+.scx-chip-bad       { background: #fdf5f5; }
+.scx-chip-na        { background: #f5f5f5; }
 
 .scx-big {
   font-size: 20px;
@@ -133,16 +553,6 @@
   margin-bottom: 10px;
 }
 
-.scx-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
-  font-size: 12px;
-}
-
-.scx-k { opacity: 0.72; }
-.scx-v { text-align: right; font-weight: 850; }
-
 .scx-note {
   margin-top: 10px;
   font-size: 11px;
@@ -150,71 +560,47 @@
   opacity: 0.68;
 }
 
-/* --- Minimize support --- */
-.scx-sidebar {
-  transition: width 0.18s ease, transform 0.18s ease;
-}
-
-.scx-toggle {
-  appearance: none;
-  border: 0;
-  background: rgba(0,0,0,0.08);
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.scx-toggle:hover {
-  background: rgba(0,0,0,0.12);
-}
-
-.scx-sidebar.scx-minimized {
-  width: 52px;
-  padding: 10px;
-  overflow: hidden;
-}
-
-.scx-sidebar.scx-minimized .scx-selected,
-.scx-sidebar.scx-minimized .scx-panel {
-  display: none;
-}
-
-.scx-sidebar.scx-minimized .scx-sidebar-header {
-  margin-bottom: 0;
-  justify-content: center;
-}
-
-.scx-sidebar.scx-minimized .scx-sidebar-title {
-  display: none;
-}
-
-/* --- Minimized header layout --- */
-.scx-sidebar.scx-minimized {
-  width: auto;
-  min-width: 160px;
-  padding: 10px 12px;
-}
-
-.scx-sidebar.scx-minimized .scx-sidebar-header {
-  justify-content: space-between;
-}
-
-.scx-sidebar.scx-minimized .scx-sidebar-title {
-  display: block;
+.scx-note-warning {
+  border-left: 3px solid #d68e00;
+  background: #fffaf0;
+  padding: 8px 12px;
+  border-radius: 4px;
   font-size: 11px;
-  opacity: 0.85;
+  color: #333;
 }
 
-/* Hide content but keep header */
-.scx-sidebar.scx-minimized .scx-selected,
-.scx-sidebar.scx-minimized .scx-panel {
-  display: none;
+.scx-sell-hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 8px 0;
 }
 
-/* Copy button with tooltip */
+/* Sidebar Footer Buttons */
+.scx-sidebar-footer-contract,
+.scx-sidebar-footer-donate,
+.scx-sidebar-footer-bug {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 11px;
+  text-align: center;
+  color: var(--scx-text-primary);
+  transition: all 0.2s ease;
+}
+
+.scx-sidebar-footer-contract:hover,
+.scx-sidebar-footer-donate:hover,
+.scx-sidebar-footer-bug:hover {
+  background: #f8f8f8;
+  border-color: #d0d0d0;
+}
+
+/* Copy Button */
 .scx-copy-btn {
   position: relative;
   background: none;
@@ -277,13 +663,6 @@
   font-size: 14px;
 }
 
-.scx-prod-info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-}
-
 .scx-prod-qty {
   font-weight: 600;
   color: #333;
@@ -305,11 +684,6 @@
   border-radius: 3px;
   margin-left: 4px;
   font-size: 10px;
-}
-
-.scx-box {
-  padding: 6px;
-  border-radius: 3px;
 }
 
 .scx-box-blue,
@@ -359,12 +733,11 @@
 
 .scx-text-blue { color: var(--scx-color-blue); }
 .scx-text-green { color: var(--scx-color-green); }
-.scx-text-red { color: var(--scx-color-red); }
 .scx-text-orange { color: var(--scx-color-orange); }
 .scx-text-purple { color: var(--scx-color-purple); }
 .scx-text-brown { color: var(--scx-color-brown); }
-.scx-text-dark-brown { color: var(--scx-color-dark-brown); }
-.scx-text-forest { color: var(--scx-color-forest); }
+.scx-text-forest { color: #1b5e20; }
+.scx-text-dark-brown { color: #6d4c41; }
 
 .scx-text-muted {
   color: #999;
@@ -533,60 +906,6 @@
   font-weight: 700;
 }
 
-/* HR Blurp Panel */
-.scx-hr-blurp-panel {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 380px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  z-index: 10000;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.scx-hr-blurp-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px;
-  border-bottom: 1px solid #ddd;
-  border-radius: 8px 8px 0 0;
-  position: relative;
-}
-
-.scx-hr-blurp-header-title {
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.scx-hr-blurp-header-subtitle {
-  font-size: 11px;
-  opacity: 0.9;
-}
-
-.scx-hr-blurp-close-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  transition: opacity 0.2s;
-}
-
-.scx-hr-blurp-close-btn:hover {
-  opacity: 0.8;
-}
-
 .scx-hr-blurp-feedback-section {
   padding: 12px 16px;
   border-bottom: 1px solid #eee;
@@ -632,6 +951,8 @@
   margin: 4px 0;
   border-radius: 4px;
   border-left: 3px solid;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper {
@@ -753,6 +1074,8 @@
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scx-skill-breakdown-row:last-child {
@@ -809,6 +1132,18 @@
   font-weight: 700;
   font-size: 14px;
   display: block;
+}
+
+.scx-skill-breakdown-total-value {
+  color: #333;
+}
+
+.scx-skill-breakdown-organic-value {
+  color: var(--scx-text-success-dark);
+}
+
+.scx-skill-breakdown-training-value {
+  color: #1565c0;
 }
 
 /* Executive Helper Empty State */

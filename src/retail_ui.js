@@ -490,12 +490,12 @@ export async function updatePanel() {
                             <span class="scx-k">${t("costOfGoods")}</span>
                             <span class="scx-v">${formatMoney(cogs)}</span>
                         </div>
-                         <div style="display:flex; justify-content:space-between; font-size: 9px; color: #666;">
+                         <div style="display:flex; justify-content:space-between; font-size: 9px; color: var(--scx-text-muted);">
                             <span>${t("unitCostLabel")}: ${formatMoney(avgCost)}</span>
                         </div>
                     </div>
                     
-                    <div style="background: ${isRetailBetter ? '#e8f5e9' : '#fff3e0'}; padding: 8px; border-radius: 4px;">
+                    <div style="background: ${isRetailBetter ? 'var(--scx-bg-success)' : 'var(--scx-bg-warning)'}; padding: 8px; border-radius: 4px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                             <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
@@ -504,11 +504,11 @@ export async function updatePanel() {
                             <span class="scx-k">${t("retailNetProfit")}</span>
                             <span class="scx-v">${formatMoney(retailNetProfit)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? '#2e7d32' : '#e65100'};">
+                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? 'var(--scx-color-success)' : 'var(--scx-color-warning-alt)'};">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
                             <span>${formatMoney(Math.abs(diff))}</span>
                         </div>
-                        <div style="margin-top:4px; font-size:9px; color:#666;">
+                        <div style="margin-top:4px; font-size:9px; color:var(--scx-text-muted);">
                             ${t("basedOnCheapPrice")}: ${formatMoney(cheapest.price)}
                         </div>
                     </div>
@@ -523,7 +523,7 @@ export async function updatePanel() {
           } else if (ms && ms.status === 'error') {
                marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
-                <div class="scx-note" style="border-left-color: #c62828;">${t("marketError")}: ${escapeHtml(ms.error)}</div>
+                <div class="scx-note" style="border-left-color: var(--scx-color-error);">${t("marketError")}: ${escapeHtml(ms.error)}</div>
               `;
           } else {
               // Loading or Idle
@@ -539,16 +539,16 @@ export async function updatePanel() {
 
   let finePrint = "";
   if (metrics.hours > 1) {
-      finePrint += `<div style="font-size:9px; color:#666; margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
+      finePrint += `<div style="font-size:9px; color:var(--scx-text-muted); margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
   }
   if (metrics.hours > 24) {
-      finePrint += `<div style="font-size:9px; color:#666;">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
+      finePrint += `<div style="font-size:9px; color:var(--scx-text-muted);">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
   }
 
   contentEl.innerHTML = `
     <div class="scx-panel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <div style="font-weight: 600; color: #333; font-size: 12px;">
+        <div style="font-weight: 600; color: var(--scx-text-primary); font-size: 12px;">
           ${productName}
         </div>
         <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="Copy text">
