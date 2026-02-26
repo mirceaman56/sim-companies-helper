@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ Déclenché!",
   maStopped: "○ Arrêté",
   maStart: "Démarrer",
+  maReset: "Réinitialiser",
   maRateLimited: "Limité en débit, réessayer dans",
   maPrice: "Prix atteint",
   maAll: "Tous",

@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ 已触发!",
   maStopped: "○ 已停止",
   maStart: "开始",
+  maReset: "重置",
   maRateLimited: "速率受限，重试间隔",
   maPrice: "价格已达到",
   maAll: "所有",

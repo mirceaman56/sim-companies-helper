@@ -1315,6 +1315,18 @@ hr {
   background: #b71c1c !important;
 }
 
+.scx-ma-btn-reset {
+  flex: 1;
+  background: #e67e22 !important;
+  color: white !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+}
+
+.scx-ma-btn-reset:hover {
+  background: #d35400 !important;
+}
+
 .scx-ma-btn-remove {
   background: none !important;
   border: var(--scx-border-light) !important;

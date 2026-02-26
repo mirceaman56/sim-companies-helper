@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ Tetiklendi!",
   maStopped: "○ Durduruldu",
   maStart: "Başlat",
+  maReset: "Sıfırla",
   maRateLimited: "Hız sınırlaması, şuna kadar yeniden deneyin",
   maPrice: "Fiyata ulaşıldı",
   maAll: "Tümü",

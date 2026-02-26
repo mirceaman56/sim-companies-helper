@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ Attivato!",
   maStopped: "○ Fermo",
   maStart: "Avvia",
+  maReset: "Ripristina",
   maRateLimited: "Limitato di velocità, riprova tra",
   maPrice: "Prezzo raggiunto",
   maAll: "Tutti",

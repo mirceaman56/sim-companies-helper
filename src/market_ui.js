@@ -177,6 +177,25 @@ function stopAlert(container, alertId) {
 }
 
 /**
+ * Reset a triggered alert so it resumes monitoring and can fire again
+ */
+function resetAlert(container, alertId) {
+  const alert = alerts.find(a => a.id === alertId);
+  if (!alert) return;
+
+  alert.triggered = false;
+  alert.lastPrice = null;
+  alert.lastCheck = null;
+
+  if (!alert.active) {
+    startAlert(container, alertId);
+  } else {
+    checkPrice(container, alert);
+    renderAlertList(container);
+  }
+}
+
+/**
  * Remove an alert entirely
  */
 function removeAlert(container, alertId) {
@@ -405,9 +424,11 @@ function renderAlertList(container) {
         </div>
 
         <div class="scx-ma-card-actions">
-          ${alert.active
-            ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
-            : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
+          ${alert.triggered
+            ? `<button class="scx-btn scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
+            : alert.active
+              ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
+              : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
           }
           <button class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
         </div>
@@ -424,6 +445,7 @@ function renderAlertList(container) {
 
       if (action === "start") startAlert(container, alertId);
       else if (action === "stop") stopAlert(container, alertId);
+      else if (action === "reset") resetAlert(container, alertId);
       else if (action === "remove") removeAlert(container, alertId);
     });
   });

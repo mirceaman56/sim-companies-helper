@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ Spuštěno!",
   maStopped: "○ Zastaveno",
   maStart: "Spustit",
+  maReset: "Obnovit",
   maRateLimited: "Omezení rychlosti, pokusit se znovu za",
   maPrice: "Cena dosažena",
   maAll: "Vše",

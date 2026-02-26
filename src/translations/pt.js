@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ Acionado!",
   maStopped: "○ Parado",
   maStart: "Iniciar",
+  maReset: "Redefinir",
   maRateLimited: "Limitado por taxa, tente novamente em",
   maPrice: "Preço atingido",
   maAll: "Todos",

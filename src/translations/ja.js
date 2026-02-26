@@ -145,6 +145,7 @@ export default {
   maTriggered: "⚡ トリガー済み!",
   maStopped: "○ 停止",
   maStart: "開始",
+  maReset: "リセット",
   maRateLimited: "レート制限、再試行時間",
   maPrice: "価格達成",
   maAll: "すべて",
