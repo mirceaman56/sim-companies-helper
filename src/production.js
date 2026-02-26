@@ -10,7 +10,7 @@ import { MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
  */
 export function getRecipes() {
   // recipes.json is now a direct array, not wrapped in an object
-  return Array.isArray(recipesData) ? recipesData : (recipesData.recipes || []);
+  return Array.isArray(recipesData) ? recipesData : recipesData.recipes || [];
 }
 
 /**
@@ -67,13 +67,13 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
   } catch (e) {
     // Silent catch
   }
-  
+
   if (!Number.isFinite(containerPrice)) containerPrice = 0;
   if (!Number.isFinite(productMarketPrice)) productMarketPrice = 0;
 
   // 2. Calculate Base Production Cost
-  // Strictly use UI Unit Cost as requested. 
-  
+  // Strictly use UI Unit Cost as requested.
+
   if (uiUnitCost === null || !Number.isFinite(uiUnitCost)) {
     return {
       recipe,
@@ -83,7 +83,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
       transportCost: 0,
       breakEvenAnalysis: null,
       profitAnalysis: null,
-      error: t("unitCostNotFound")
+      error: t("unitCostNotFound"),
     };
   }
 
@@ -91,17 +91,17 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
 
   // 3. Calculate Transport Costs
   const transportNeeded = recipe.transport || 0; // units per item
-  
+
   // Market needs full transport
   const marketTransportCost = transportNeeded * quantity * containerPrice;
-  
+
   // Contract needs half transport
   const contractTransportCost = (transportNeeded / 2) * quantity * containerPrice;
 
   // 4. Calculate Break-even Prices
   // Market: (Base + Transport) / (1 - fee) / Qty
   const marketTotalCost = totalBaseCost + marketTransportCost;
-  const marketBreakEvenPrice = (marketTotalCost / (1 - MARKET_FEE)) / quantity;
+  const marketBreakEvenPrice = marketTotalCost / (1 - MARKET_FEE) / quantity;
 
   // Contract: (Base + Transport) / Qty (No fee)
   const contractTotalCost = totalBaseCost + contractTransportCost;
@@ -109,7 +109,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
 
   // 5. Profit Analysis (Assuming selling at Market Price)
   const sellRevenue = productMarketPrice * quantity;
-  
+
   // Market Profit
   const marketRevenueNet = sellRevenue * (1 - MARKET_FEE); // Deduct fee
   const marketProfit = marketRevenueNet - marketTotalCost;
@@ -131,23 +131,23 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
       market: {
         totalCost: marketTotalCost,
         transportCost: marketTransportCost,
-        breakEvenPrice: marketBreakEvenPrice
+        breakEvenPrice: marketBreakEvenPrice,
       },
       contract: {
         totalCost: contractTotalCost,
         transportCost: contractTransportCost,
-        breakEvenPrice: contractBreakEvenPrice
-      }
+        breakEvenPrice: contractBreakEvenPrice,
+      },
     },
     profitAnalysis: {
       market: {
         profit: marketProfit,
-        margin: marketMargin
+        margin: marketMargin,
       },
       contract: {
         profit: contractProfit,
-        margin: contractMargin
-      }
-    }
+        margin: contractMargin,
+      },
+    },
   };
 }

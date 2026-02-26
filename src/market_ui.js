@@ -1,14 +1,21 @@
 // market_ui.js
 // Market price alert notifications sidebar
 import { getSectionContent } from "./sidebar.js";
-import { getRealmId } from "./auth.js";
+import { getRealmId, loadAuthDataOnce } from "./auth.js";
+import { STATE } from "./state.js";
 import { fetchMarketPrice, fetchMarket, getRateLimitStatus } from "./market.js";
 import { formatMoney, escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
 import recipes from "./resources/recipes.json";
+import {
+  ALERT_CHECK_INTERVAL_MS,
+  ALERT_TIMER_REFRESH_MS,
+  ALERT_MAX_COUNT,
+  TOAST_DISMISS_MS,
+} from "./constants.js";
 
 const SECTION_ID = "market-alerts-section";
-const CHECK_INTERVAL_MS = 60_000; // 1 minute
+const STORAGE_KEY_PREFIX = "scx-market-alerts";
 
 // State
 let alerts = []; // { id, productId, productName, quality, targetPrice, active, intervalId, lastPrice, lastCheck, triggered }
@@ -17,13 +24,62 @@ let nextAlertId = 1;
 let timerRefreshInterval = null;
 let alertsContainer = null;
 
+function storageKey() {
+  const realmId = STATE.auth.realmId;
+  if (realmId === null || realmId === undefined) return null;
+  return `${STORAGE_KEY_PREFIX}-${realmId}`;
+}
+
+async function ensureAuth() {
+  if (STATE.auth.realmId !== null && STATE.auth.realmId !== undefined) return;
+  await loadAuthDataOnce();
+}
+
+async function saveAlerts() {
+  await ensureAuth();
+  const key = storageKey();
+  if (!key) return;
+  const serializable = alerts.map(({ intervalId, ...rest }) => rest);
+  try {
+    chrome.storage.local.set({ [key]: { alerts: serializable, nextAlertId } });
+  } catch {
+    // Fallback silently — storage unavailable in tests or non-extension contexts
+  }
+}
+
+async function loadAlerts() {
+  await ensureAuth();
+  const key = storageKey();
+  if (!key) return;
+  try {
+    const result = await chrome.storage.local.get(key);
+    const data = result[key];
+    if (!data) return;
+
+    alerts = (data.alerts || []).map((a) => ({ ...a, intervalId: null }));
+    nextAlertId = data.nextAlertId || (alerts.length ? Math.max(...alerts.map((a) => a.id)) + 1 : 1);
+  } catch {
+    // Storage unavailable — start fresh
+  }
+}
+
 /**
  * Initialize the market alerts panel
  */
-export function initMarketAlerts() {
+export async function initMarketAlerts() {
+  await loadAlerts();
+
   const content = getSectionContent(SECTION_ID);
   if (content && !content.querySelector(".scx-market-alerts")) {
     content.appendChild(createAlertsContent());
+  }
+
+  // Restart monitoring for alerts that were active before reload
+  for (const alert of alerts) {
+    if (alert.active && !alert.triggered) {
+      alert.active = false; // startAlert expects inactive
+      startAlert(alertsContainer, alert.id);
+    }
   }
 }
 
@@ -46,12 +102,12 @@ function createAlertsContent() {
   container.innerHTML = `
     <div class="scx-market-alerts-form">
       <div class="scx-market-alerts-limit">
-        <span class="scx-market-alerts-limit-text">${t("maAlertLimit")} (${alerts.length}/2)</span>
+        <span class="scx-market-alerts-limit-text">${t("maAlertLimit")} (${alerts.length}/${ALERT_MAX_COUNT})</span>
       </div>
       <div class="scx-market-alerts-row">
         <label class="scx-label">${t("maProduct")}</label>
         <select id="scx-ma-product" class="scx-select" style="width: 100%;">
-          ${sortedRecipes.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("")}
+          ${sortedRecipes.map((r) => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("")}
         </select>
       </div>
       <div class="scx-market-alerts-row">
@@ -66,7 +122,7 @@ function createAlertsContent() {
         <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="e.g. 5.00"
                class="scx-select" style="width: 100%; box-sizing: border-box;" />
       </div>
-      <button id="scx-ma-add" class="scx-btn scx-btn-primary" style="width: 100%;" ${alerts.length >= 2 ? 'disabled' : ''}>
+      <button id="scx-ma-add" class="scx-btn scx-btn-primary" style="width: 100%;" ${alerts.length >= ALERT_MAX_COUNT ? "disabled" : ""}>
         ${t("maAddAlert")}
       </button>
     </div>
@@ -88,7 +144,7 @@ function createAlertsContent() {
     if (alertsContainer) {
       renderAlertList(alertsContainer);
     }
-  }, 10_000);
+  }, ALERT_TIMER_REFRESH_MS);
 
   return container;
 }
@@ -98,10 +154,12 @@ function createAlertsContent() {
  */
 function addAlert(container) {
   // Check limit
-  if (alerts.length >= 2) {
+  if (alerts.length >= ALERT_MAX_COUNT) {
     const priceInput = container.querySelector("#scx-ma-price");
     priceInput.style.borderColor = "var(--scx-color-error)";
-    setTimeout(() => { priceInput.style.borderColor = ""; }, 2000);
+    setTimeout(() => {
+      priceInput.style.borderColor = "";
+    }, 2000);
     return;
   }
 
@@ -117,7 +175,9 @@ function addAlert(container) {
 
   if (!Number.isFinite(targetPrice) || targetPrice <= 0) {
     priceInput.style.borderColor = "var(--scx-color-error)";
-    setTimeout(() => { priceInput.style.borderColor = ""; }, 2000);
+    setTimeout(() => {
+      priceInput.style.borderColor = "";
+    }, 2000);
     return;
   }
 
@@ -135,6 +195,7 @@ function addAlert(container) {
   };
 
   alerts.push(alert);
+  saveAlerts();
   priceInput.value = "";
   renderAlertList(container);
 }
@@ -143,11 +204,12 @@ function addAlert(container) {
  * Start monitoring a specific alert
  */
 function startAlert(container, alertId) {
-  const alert = alerts.find(a => a.id === alertId);
+  const alert = alerts.find((a) => a.id === alertId);
   if (!alert || alert.active) return;
 
   alert.active = true;
   alert.triggered = false;
+  saveAlerts();
 
   // Immediate first check
   checkPrice(container, alert);
@@ -155,7 +217,7 @@ function startAlert(container, alertId) {
   // Schedule recurring checks
   alert.intervalId = setInterval(() => {
     checkPrice(container, alert);
-  }, CHECK_INTERVAL_MS);
+  }, ALERT_CHECK_INTERVAL_MS);
 
   renderAlertList(container);
 }
@@ -164,7 +226,7 @@ function startAlert(container, alertId) {
  * Stop monitoring a specific alert
  */
 function stopAlert(container, alertId) {
-  const alert = alerts.find(a => a.id === alertId);
+  const alert = alerts.find((a) => a.id === alertId);
   if (!alert) return;
 
   alert.active = false;
@@ -172,6 +234,7 @@ function stopAlert(container, alertId) {
     clearInterval(alert.intervalId);
     alert.intervalId = null;
   }
+  saveAlerts();
 
   renderAlertList(container);
 }
@@ -180,12 +243,13 @@ function stopAlert(container, alertId) {
  * Reset a triggered alert so it resumes monitoring and can fire again
  */
 function resetAlert(container, alertId) {
-  const alert = alerts.find(a => a.id === alertId);
+  const alert = alerts.find((a) => a.id === alertId);
   if (!alert) return;
 
   alert.triggered = false;
   alert.lastPrice = null;
   alert.lastCheck = null;
+  saveAlerts();
 
   if (!alert.active) {
     startAlert(container, alertId);
@@ -199,11 +263,12 @@ function resetAlert(container, alertId) {
  * Remove an alert entirely
  */
 function removeAlert(container, alertId) {
-  const alert = alerts.find(a => a.id === alertId);
+  const alert = alerts.find((a) => a.id === alertId);
   if (alert?.intervalId) {
     clearInterval(alert.intervalId);
   }
-  alerts = alerts.filter(a => a.id !== alertId);
+  alerts = alerts.filter((a) => a.id !== alertId);
+  saveAlerts();
   renderAlertList(container);
 }
 
@@ -221,7 +286,7 @@ async function checkPrice(container, alert) {
   const realmId = getRealmId();
   try {
     let price = null;
-    
+
     if (alert.quality === "all") {
       // Check all qualities for the product
       const data = await fetchMarket(realmId, alert.productId);
@@ -243,10 +308,11 @@ async function checkPrice(container, alert) {
 
     if (price !== null && price <= alert.targetPrice && !alert.triggered) {
       alert.triggered = true;
+      saveAlerts();
       showNotification(alert, price);
     } else if (price !== null && price > alert.targetPrice) {
-      // Reset trigger if price went back above target
       alert.triggered = false;
+      saveAlerts();
     }
   } catch (e) {
     console.warn(`[SimHelper] Market alert check failed for ${alert.productName}:`, e);
@@ -268,7 +334,7 @@ function playAlertSound() {
 
     // Two-tone alert: beep-beep
     osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ctx.currentTime);       // A5
+    osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
     gain.gain.setValueAtTime(0, ctx.currentTime + 0.15);
     osc.frequency.setValueAtTime(1046, ctx.currentTime + 0.2); // C6
@@ -315,7 +381,7 @@ function showNotification(alert, price) {
   `;
 
   // Auto-dismiss after 15 seconds
-  const dismissTimer = setTimeout(() => dismissToast(toast), 15_000);
+  const dismissTimer = setTimeout(() => dismissToast(toast), TOAST_DISMISS_MS);
 
   toast.querySelector(".scx-toast-close").addEventListener("click", () => {
     clearTimeout(dismissTimer);
@@ -361,10 +427,10 @@ function renderAlertList(container) {
 
   // Update limit counter and button state
   if (limitText) {
-    limitText.textContent = `${t("maAlertLimit")} (${alerts.length}/2)`;
+    limitText.textContent = `${t("maAlertLimit")} (${alerts.length}/${ALERT_MAX_COUNT})`;
   }
   if (addBtn) {
-    addBtn.disabled = alerts.length >= 2;
+    addBtn.disabled = alerts.length >= ALERT_MAX_COUNT;
   }
 
   if (alerts.length === 0) {
@@ -372,27 +438,33 @@ function renderAlertList(container) {
     return;
   }
 
-  listEl.innerHTML = alerts.map(alert => {
-    const priceColor = alert.lastPrice !== null && alert.lastPrice <= alert.targetPrice
-      ? "var(--scx-color-success)"
-      : "var(--scx-text-primary)";
+  listEl.innerHTML = alerts
+    .map((alert) => {
+      const priceColor =
+        alert.lastPrice !== null && alert.lastPrice <= alert.targetPrice
+          ? "var(--scx-color-success)"
+          : "var(--scx-text-primary)";
 
-    const statusClass = alert.active
-      ? (alert.triggered ? "scx-ma-status-triggered" : "scx-ma-status-active")
-      : "scx-ma-status-stopped";
+      const statusClass = alert.active
+        ? alert.triggered
+          ? "scx-ma-status-triggered"
+          : "scx-ma-status-active"
+        : "scx-ma-status-stopped";
 
-    const statusText = alert.active
-      ? (alert.triggered ? t("maTriggered") : t("maMonitoring"))
-      : t("maStopped");
+      const statusText = alert.active
+        ? alert.triggered
+          ? t("maTriggered")
+          : t("maMonitoring")
+        : t("maStopped");
 
-    const qualityDisplay = alert.quality === "all" ? t("maAll") : `Q${alert.quality}`;
+      const qualityDisplay = alert.quality === "all" ? t("maAll") : `Q${alert.quality}`;
 
-    const { blocked, remainingMs } = getRateLimitStatus();
-    const rateLimitWarning = blocked
-      ? `<div class="scx-ma-rate-limit">${t("maRateLimited")} ${Math.ceil(remainingMs / 60000)}m</div>`
-      : "";
+      const { blocked, remainingMs } = getRateLimitStatus();
+      const rateLimitWarning = blocked
+        ? `<div class="scx-ma-rate-limit">${t("maRateLimited")} ${Math.ceil(remainingMs / 60000)}m</div>`
+        : "";
 
-    return `
+      return `
       <div class="scx-ma-card" data-alert-id="${alert.id}">
         <div class="scx-ma-card-header">
           <div>
@@ -424,20 +496,22 @@ function renderAlertList(container) {
         </div>
 
         <div class="scx-ma-card-actions">
-          ${alert.triggered
-            ? `<button class="scx-btn scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
-            : alert.active
-              ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
-              : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
+          ${
+            alert.triggered
+              ? `<button class="scx-btn scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
+              : alert.active
+                ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
+                : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
           }
           <button class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   // Wire up action buttons
-  listEl.querySelectorAll("[data-action]").forEach(btn => {
+  listEl.querySelectorAll("[data-action]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const card = e.target.closest(".scx-ma-card");
       const alertId = Number(card.dataset.alertId);
@@ -450,3 +524,22 @@ function renderAlertList(container) {
     });
   });
 }
+
+export const _testUtils = {
+  getAlerts: () => alerts,
+  setAlerts: (a) => {
+    alerts = a;
+  },
+  getNextAlertId: () => nextAlertId,
+  setNextAlertId: (n) => {
+    nextAlertId = n;
+  },
+  addAlert,
+  startAlert,
+  stopAlert,
+  resetAlert,
+  removeAlert,
+  saveAlerts,
+  loadAlerts,
+  storageKey,
+};

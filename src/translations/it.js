@@ -27,7 +27,8 @@ export default {
   supportTheDev: "Supporta lo Sviluppatore",
   keepUpdates: "Continua a ricevere gli aggiornamenti ⊂(◉‿◉)つ",
   reportBug: "Segnala un Bug",
-  ensureProductionQuantity: "Assicurati che un bene di produzione sia selezionato e che la sua quantità sia riempita",
+  ensureProductionQuantity:
+    "Assicurati che un bene di produzione sia selezionato e che la sua quantità sia riempita",
   clickProductionBuilding: "Fai clic su un edificio di produzione per iniziare",
   qty: "Qtà",
   active: "Attivo",

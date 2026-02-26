@@ -1,23 +1,33 @@
 // retail_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard, parseLocaleNumber, extractProductIdFromRow, getInfoColumn, COPY_BUTTON_SVG, wireCopyButton, MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import {
+  formatMoney,
+  escapeHtml,
+  copyToClipboard,
+  parseLocaleNumber,
+  extractProductIdFromRow,
+  getInfoColumn,
+  COPY_BUTTON_SVG,
+  wireCopyButton,
+  MARKET_FEE,
+  TRANSPORT_RESOURCE_ID,
+} from "./utils.js";
 import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
 import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
 import { t } from "./i18n.js";
+import {
+  classifyProfitPerMin,
+  parseDurationToSeconds,
+  computeMetrics,
+  formatRetailAsText,
+} from "./retail_calc.js";
+import { MARKET_CACHE_TTL_MS } from "./constants.js";
 
 const SECTION_ID = "retail-section";
 
-export function classifyProfitPerMin(ppm) {
-  if (!Number.isFinite(ppm)) return { label: t("na"), cls: "scx-chip-na" };
-  if (ppm < 0) return { label: t("bad"), cls: "scx-chip-bad" };
-  if (ppm >= 50) return { label: t("excellent"), cls: "scx-chip-excellent" };
-  if (ppm >= 20) return { label: t("good"), cls: "scx-chip-good" };
-  if (ppm >= 5) return { label: t("meh"), cls: "scx-chip-meh" };
-  return { label: t("low"), cls: "scx-chip-meh" };
-}
-
+export { classifyProfitPerMin };
 
 /**
  * ---------------------------
@@ -29,28 +39,12 @@ export const RetailHelper = (() => {
   const parseNumber = parseLocaleNumber;
   const parseMoney = parseLocaleNumber;
 
-  // Supports EN: "12s", "8m", "1h 5m", "1d 5h", "1d, 8m"
-  // Supports DE: "12s", "8m", "1st 5m", "1t 5st", "13st, 31m" (st = Stunden, t = Tage)
-  function parseDurationToSeconds(text) {
-    const s = String(text);
-    let total = 0;
-    const d = s.match(/(\d+)\s*(?:d|t)\b/i);       // days: "d" (EN) or "t" (DE: Tage)
-    const h = s.match(/(\d+)\s*(?:h|st)\b/i);       // hours: "h" (EN) or "st" (DE: Stunden)
-    const m = s.match(/(\d+)\s*m\b/i);               // minutes
-    const sec = s.match(/(\d+)\s*s\b/i);             // seconds: "s" — \b prevents matching "st"
-    if (d) total += Number(d[1]) * 86400;
-    if (h) total += Number(h[1]) * 3600;
-    if (m) total += Number(m[1]) * 60;
-    if (sec) total += Number(sec[1]);
-    return total > 0 ? total : NaN;
-  }
-
   function extractFinishSeconds(row) {
     const infoCol = getInfoColumn(row);
     if (!infoCol) return NaN;
 
     // Duration is always in parentheses like (11h, 7m) or (13st, 31m) — language-agnostic
-    const text = infoCol.textContent || '';
+    const text = infoCol.textContent || "";
     const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
     if (paren) return parseDurationToSeconds(paren[1]);
 
@@ -62,10 +56,10 @@ export const RetailHelper = (() => {
     if (!infoCol) return NaN;
 
     // The profit div is the one containing an SVG (question-mark icon) — language-agnostic
-    const profitDiv = [...infoCol.querySelectorAll(':scope > div')].find(d => d.querySelector('svg'));
+    const profitDiv = [...infoCol.querySelectorAll(":scope > div")].find((d) => d.querySelector("svg"));
     if (!profitDiv) return NaN;
 
-    const text = profitDiv.textContent || '';
+    const text = profitDiv.textContent || "";
     // Extract dollar value — supports both EN ($1,234.56) and DE ($1.234,56)
     const match = text.match(/([-−]?)\s*\$\s*([\d.,]+)/);
     if (!match) return NaN;
@@ -75,10 +69,7 @@ export const RetailHelper = (() => {
 
     // explicit minus formats
     const hasExplicitMinus =
-      match[1].length > 0 ||
-      /-\s*\$/.test(text) ||
-      /−\s*\$/.test(text) ||
-      /\(\s*\$?\s*\d/.test(text);
+      match[1].length > 0 || /-\s*\$/.test(text) || /−\s*\$/.test(text) || /\(\s*\$?\s*\d/.test(text);
 
     if (hasExplicitMinus) return -Math.abs(val);
 
@@ -96,18 +87,6 @@ export const RetailHelper = (() => {
   }
 
   const extractProductId = extractProductIdFromRow;
-
-  function computeMetrics({ profitPerUnit, qty, seconds }) {
-    const totalProfit = profitPerUnit * qty;
-    const minutes = seconds / 60;
-    const hours = seconds / 3600;
-
-    const profitPerMin = isFinite(totalProfit) && minutes > 0 ? totalProfit / minutes : NaN;
-    const profitPerHr = profitPerMin * 60;
-    const profitPerDay = profitPerHr * 24;
-
-    return { totalProfit, profitPerMin, profitPerHr, profitPerDay, seconds, minutes, hours };
-  }
 
   // ---------- row detection ----------
   function isSellInput(target) {
@@ -132,10 +111,8 @@ export const RetailHelper = (() => {
     let el = target;
     for (let i = 0; i < 25 && el; i++) {
       const hasInputs =
-        !!el.querySelector?.('input[name="price"]') &&
-        !!el.querySelector?.('input[name="quantity"]');
-      const hasLink =
-        !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
+        !!el.querySelector?.('input[name="price"]') && !!el.querySelector?.('input[name="quantity"]');
+      const hasLink = !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
 
       if (hasInputs && hasLink) return el;
 
@@ -147,10 +124,7 @@ export const RetailHelper = (() => {
     // final: nearest ancestor with both inputs (even if link missing)
     el = target;
     for (let i = 0; i < 25 && el; i++) {
-      if (
-        el.querySelector?.('input[name="price"]') &&
-        el.querySelector?.('input[name="quantity"]')
-      ) {
+      if (el.querySelector?.('input[name="price"]') && el.querySelector?.('input[name="quantity"]')) {
         return el;
       }
       if (el === document.body) break;
@@ -165,13 +139,13 @@ export const RetailHelper = (() => {
     // Use the h3 specifically from the info column — avoids matching "Quantity" / "Price" headers
     const infoCol = getInfoColumn(row);
     if (infoCol) {
-      const h3 = infoCol.querySelector('h3');
-      if (h3) return (h3.textContent || '').trim() || "Unknown";
+      const h3 = infoCol.querySelector("h3");
+      if (h3) return (h3.textContent || "").trim() || "Unknown";
     }
     // Fallback: first h3 with content in the row
-    const h3s = row.querySelectorAll('h3');
+    const h3s = row.querySelectorAll("h3");
     for (const h of h3s) {
-      const t = (h.textContent || '').trim();
+      const t = (h.textContent || "").trim();
       if (t) return t;
     }
     return "Unknown";
@@ -218,13 +192,13 @@ export const RetailHelper = (() => {
 
       const cpu = inv.amount > 0 ? `$${formatMoney(inv.totalCost / inv.amount, { prefix: false })}` : "—";
       const src =
-        inv.marketCost > 0 && (inv.workers + inv.admin + inv.materials) > 0
+        inv.marketCost > 0 && inv.workers + inv.admin + inv.materials > 0
           ? "Mixed"
           : inv.marketCost > 0
-          ? "Market"
-          : (inv.workers + inv.admin + inv.materials) > 0
-          ? "Produced"
-          : "Unknown";
+            ? "Market"
+            : inv.workers + inv.admin + inv.materials > 0
+              ? "Produced"
+              : "Unknown";
 
       // Calculate per-unit breakdowns for display
       const amount = inv.amount || 1;
@@ -270,8 +244,7 @@ export const RetailHelper = (() => {
         };
 
       const cheapest = getCheapestListing(ms.data);
-      if (!cheapest)
-        return { status: "Empty", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
+      if (!cheapest) return { status: "Empty", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
 
       const yourPrice = parseMoney(row.querySelector('input[name="price"]')?.value ?? "");
       const youVs = isFinite(yourPrice) ? yourPrice - cheapest.price : NaN;
@@ -329,48 +302,29 @@ export const RetailHelper = (() => {
 
   function autoSelectFirstRow(scheduleUpdate) {
     if (STATE.selectedRow) return;
-    const input = document.querySelector(
-      'input[name="price"], input[name="quantity"]'
-    );
+    const input = document.querySelector('input[name="price"], input[name="quantity"]');
     const row = input ? getRowFromTarget(input) : null;
     if (row) setSelectedRow(row, scheduleUpdate);
   }
 
-  return { onFocusOrClick, autoSelectFirstRow, renderers, _testUtils: { parseNumber, parseMoney, parseDurationToSeconds, computeMetrics, getInfoColumn, extractProductId, extractFinishSeconds, extractProfitPerUnit, isSellInput, getRowFromTarget } };
+  return {
+    onFocusOrClick,
+    autoSelectFirstRow,
+    renderers,
+    _testUtils: {
+      parseNumber,
+      parseMoney,
+      parseDurationToSeconds,
+      computeMetrics,
+      getInfoColumn,
+      extractProductId,
+      extractFinishSeconds,
+      extractProfitPerUnit,
+      isSellInput,
+      getRowFromTarget,
+    },
+  };
 })();
-
-/**
- * Format retail panel data as plain text table
- */
-function formatRetailAsText(productName, metrics, productId, realmId, marketAnalysisData) {
-  const lines = [
-    `Product: ${productName}`,
-    `Profit/Min: ${formatMoney(metrics.profitPerMin)}`,
-    `Total Profit: ${formatMoney(metrics.totalProfit)}`,
-    `Profit/Hour: ${formatMoney(metrics.profitPerHr)}`,
-    `Profit/Day: ${formatMoney(metrics.profitPerDay)}`,
-    ``,
-    `Quantity: ${metrics.qty}`,
-    `Your Price: ${formatMoney(metrics.yourPrice)}`,
-    `Finish in: ${metrics.seconds}s (${metrics.hours.toFixed(2)}hrs)`,
-  ];
-  
-  // Add market analysis if available
-  if (marketAnalysisData) {
-    lines.push('');
-    lines.push('--- Retail vs Market ---');
-    lines.push(`Cost of Goods: ${formatMoney(marketAnalysisData.cogs)}`);
-    lines.push(`Unit Cost: ${formatMoney(marketAnalysisData.avgCost)}`);
-    lines.push(`Retail Net Profit: ${formatMoney(marketAnalysisData.retailNetProfit)}`);
-    lines.push(`Market Net Profit: ${formatMoney(marketAnalysisData.marketProfit)}`);
-    const diff = marketAnalysisData.retailProfit - marketAnalysisData.marketProfit;
-    const winner = diff >= 0 ? 'Retail wins by' : 'Market wins by';
-    lines.push(`${winner}: ${formatMoney(Math.abs(diff))}`);
-    lines.push(`Cheapest Market Price: ${formatMoney(marketAnalysisData.cheapestPrice)}`);
-  }
-  
-  return lines.join('\n');
-}
 
 /**
  * Render the retail helper panel content
@@ -398,87 +352,89 @@ export async function updatePanel() {
   // Profit area
   const metrics = renderers.getMetrics(row);
   const chip = classifyProfitPerMin(metrics.profitPerMin);
-  
+
   // Ensure we have container price for market comparison
   const realmId = getRealmId();
   // realmId can be 0, so checks must be explicit
   if (realmId !== null && realmId !== undefined) {
-     // Check if we have fresh container price in catch
-     const cacheKey = `${realmId}:${TRANSPORT_RESOURCE_ID}`;
-     const cachedContainer = STATE.marketCache.get(cacheKey);
-     if (!cachedContainer || (Date.now() - cachedContainer.ts > 60000)) {
-         // Trigger fetch (async, update callback is just updatePanel)
-         fetchMarket(realmId, 13).then(() => updatePanel()).catch(() => {});
-     }
+    // Check if we have fresh container price in catch
+    const cacheKey = `${realmId}:${TRANSPORT_RESOURCE_ID}`;
+    const cachedContainer = STATE.marketCache.get(cacheKey);
+    if (!cachedContainer || Date.now() - cachedContainer.ts > MARKET_CACHE_TTL_MS) {
+      // Trigger fetch (async, update callback is just updatePanel)
+      fetchMarket(realmId, 13)
+        .then(() => updatePanel())
+        .catch(() => {});
+    }
   }
-  
+
   // Market Check
   const ms = STATE.marketState;
   // Trigger market fetch for this product
   if (productId) {
-      ensureMarketFetchForProduct(productId, () => updatePanel());
+    ensureMarketFetchForProduct(productId, () => updatePanel());
   }
 
   // --- Market Comparison Calculations ---
   let marketAnalysisHTML = "";
   let marketAnalysisData = null; // Store for copy functionality
- 
-  if (productId != null && realmId != null) {
-      const inv = STATE.inventory?.byKind?.get(productId);
-      
-      // Only show if we have stock
-      if (inv && inv.amount > 0) {
-          // Check if we have market data
-          if (ms && ms.status === 'ok' && ms.productId === productId && ms.data) {
-              const cheapest = getCheapestListing(ms.data);
-              
-              // Helper to get cached container price (ID 13)
-              // We use STATE.marketCache directly or a helper if available
-              // We'll peek into the cache directly as we triggered fetch above
-              const containerCache = STATE.marketCache.get(`${realmId}:${TRANSPORT_RESOURCE_ID}`);
-              const containerListing = containerCache ? getCheapestListing(containerCache.data) : null;
-              
-              // Relaxed cache check: allow up to 5 minutes old, or just exists
-              const containerPrice = containerListing ? containerListing.price : null;
 
-              if (cheapest && Number.isFinite(containerPrice)) {
-                  const qty = metrics.qty || 1;
-                  const recipe = getRecipeByProductId(productId);
-                  const transportUnits = recipe?.transport || 0;
-                  
-                  // Avg Cost (from inventory)
-                  const avgCost = (inv.totalCost / inv.amount) || 0;
-                  
-                  // Market Sells
-                  // Revenue = Price * (1 - MARKET_FEE) * Qty
-                  const marketRevenue = cheapest.price * (1 - MARKET_FEE) * qty;
-                  
-                  // Costs = (AvgCost * Qty) + (TransportUnits * Qty * ContainerPrice)
-                  const cogs = avgCost * qty;
-                  const transportCost = transportUnits * qty * containerPrice;
-                  const marketCost = cogs + transportCost;
-                  
-                  const marketProfit = marketRevenue - marketCost;
-                  const retailProfit = metrics.totalProfit; // This is Total Retail Profit for the batch
-                  
-                  // Calculate retail net profit: profit per unit * quantity
-                  const profitPerUnit = metrics.profitPerUnit || 0;
-                  const retailNetProfit = profitPerUnit * qty;
-                  
-                  const diff = retailProfit - marketProfit;
-                  const isRetailBetter = diff >= 0;
-                  
-                  // Store market analysis data for copy functionality
-                  marketAnalysisData = {
-                    cogs,
-                    avgCost,
-                    retailNetProfit,
-                    marketProfit,
-                    retailProfit,
-                    cheapestPrice: cheapest.price
-                  };
-                  
-                  marketAnalysisHTML = `
+  if (productId != null && realmId != null) {
+    const inv = STATE.inventory?.byKind?.get(productId);
+
+    // Only show if we have stock
+    if (inv && inv.amount > 0) {
+      // Check if we have market data
+      if (ms && ms.status === "ok" && ms.productId === productId && ms.data) {
+        const cheapest = getCheapestListing(ms.data);
+
+        // Helper to get cached container price (ID 13)
+        // We use STATE.marketCache directly or a helper if available
+        // We'll peek into the cache directly as we triggered fetch above
+        const containerCache = STATE.marketCache.get(`${realmId}:${TRANSPORT_RESOURCE_ID}`);
+        const containerListing = containerCache ? getCheapestListing(containerCache.data) : null;
+
+        // Relaxed cache check: allow up to 5 minutes old, or just exists
+        const containerPrice = containerListing ? containerListing.price : null;
+
+        if (cheapest && Number.isFinite(containerPrice)) {
+          const qty = metrics.qty || 1;
+          const recipe = getRecipeByProductId(productId);
+          const transportUnits = recipe?.transport || 0;
+
+          // Avg Cost (from inventory)
+          const avgCost = inv.totalCost / inv.amount || 0;
+
+          // Market Sells
+          // Revenue = Price * (1 - MARKET_FEE) * Qty
+          const marketRevenue = cheapest.price * (1 - MARKET_FEE) * qty;
+
+          // Costs = (AvgCost * Qty) + (TransportUnits * Qty * ContainerPrice)
+          const cogs = avgCost * qty;
+          const transportCost = transportUnits * qty * containerPrice;
+          const marketCost = cogs + transportCost;
+
+          const marketProfit = marketRevenue - marketCost;
+          const retailProfit = metrics.totalProfit; // This is Total Retail Profit for the batch
+
+          // Calculate retail net profit: profit per unit * quantity
+          const profitPerUnit = metrics.profitPerUnit || 0;
+          const retailNetProfit = profitPerUnit * qty;
+
+          const diff = retailProfit - marketProfit;
+          const isRetailBetter = diff >= 0;
+
+          // Store market analysis data for copy functionality
+          marketAnalysisData = {
+            cogs,
+            avgCost,
+            retailNetProfit,
+            marketProfit,
+            retailProfit,
+            cheapestPrice: cheapest.price,
+          };
+
+          marketAnalysisHTML = `
                     <hr style="margin: 8px 0;">
                     
                     <div class="scx-panel-head" style="margin-bottom: 6px;">
@@ -495,7 +451,7 @@ export async function updatePanel() {
                         </div>
                     </div>
                     
-                    <div style="background: ${isRetailBetter ? 'var(--scx-bg-success)' : 'var(--scx-bg-warning)'}; padding: 8px; border-radius: 4px;">
+                    <div style="background: ${isRetailBetter ? "var(--scx-bg-success)" : "var(--scx-bg-warning)"}; padding: 8px; border-radius: 4px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                             <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
@@ -504,7 +460,7 @@ export async function updatePanel() {
                             <span class="scx-k">${t("retailNetProfit")}</span>
                             <span class="scx-v">${formatMoney(retailNetProfit)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? 'var(--scx-color-success)' : 'var(--scx-color-warning-alt)'};">
+                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? "var(--scx-color-success)" : "var(--scx-color-warning-alt)"};">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
                             <span>${formatMoney(Math.abs(diff))}</span>
                         </div>
@@ -513,36 +469,36 @@ export async function updatePanel() {
                         </div>
                     </div>
                   `;
-              } else {
-                  // data loading (container or cheapest price missing)
-                  marketAnalysisHTML = `
+        } else {
+          // data loading (container or cheapest price missing)
+          marketAnalysisHTML = `
                     <hr style="margin: 8px 0;">
                     <div class="scx-muted">${t("loadingMarketPrices")}</div>
                   `;
-              }
-          } else if (ms && ms.status === 'error') {
-               marketAnalysisHTML = `
+        }
+      } else if (ms && ms.status === "error") {
+        marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
                 <div class="scx-note" style="border-left-color: var(--scx-color-error);">${t("marketError")}: ${escapeHtml(ms.error)}</div>
               `;
-          } else {
-              // Loading or Idle
-              marketAnalysisHTML = `
+      } else {
+        // Loading or Idle
+        marketAnalysisHTML = `
                 <hr style="margin: 8px 0;">
                 <div class="scx-muted">${t("loadingMarketData")}</div>
               `;
-          }
       }
+    }
   }
 
   // --- HTML Render ---
 
   let finePrint = "";
   if (metrics.hours > 1) {
-      finePrint += `<div style="font-size:9px; color:var(--scx-text-muted); margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
+    finePrint += `<div style="font-size:9px; color:var(--scx-text-muted); margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
   }
   if (metrics.hours > 24) {
-      finePrint += `<div style="font-size:9px; color:var(--scx-text-muted);">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
+    finePrint += `<div style="font-size:9px; color:var(--scx-text-muted);">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
   }
 
   contentEl.innerHTML = `
@@ -573,7 +529,6 @@ export async function updatePanel() {
 
   // Wire up copy button
   wireCopyButton(contentEl, () =>
-    formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData)
+    formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData),
   );
 }
-

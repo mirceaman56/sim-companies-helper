@@ -12,7 +12,7 @@ const SECTION_ID = "cashflow-section";
 function formatCashflowAsText(today, yesterday) {
   const lines = [
     `Today's Net Profit: ${formatMoney(today.totalIncome - today.totalExpense)}`,
-    `vs Yesterday: ${formatMoney((today.totalIncome - today.totalExpense) - (yesterday.totalIncome - yesterday.totalExpense))}`,
+    `vs Yesterday: ${formatMoney(today.totalIncome - today.totalExpense - (yesterday.totalIncome - yesterday.totalExpense))}`,
     ``,
     `INCOMES:`,
     `  Retail: ${formatMoney(today.incomeByType.s)}`,
@@ -32,7 +32,7 @@ function formatCashflowAsText(today, yesterday) {
     `  Other: ${formatMoney(today.expenseByType.other)}`,
     `  Total: ${formatMoney(today.totalExpense)}`,
   ];
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 export function updateCashflowPanel() {
@@ -87,11 +87,11 @@ export function updateCashflowPanel() {
       <!-- Net Profit Summary -->
       <div style="text-align:center; padding-bottom:12px; border-bottom:var(--scx-border-light-alt); margin-bottom:12px;">
         <div class="scx-k">${t("todaysNetProfit")}</div>
-        <div style="font-size: 20px; font-weight: 700; color: ${netProfit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+        <div style="font-size: 20px; font-weight: 700; color: ${netProfit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
           ${formatMoney(netProfit)}
         </div>
-        <div style="font-size: 10px; color:${netProfitDiff >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
-          ${netProfitDiff >= 0 ? '+' : ''}${formatMoney(netProfitDiff)} ${t("vsYesterday")}
+        <div style="font-size: 10px; color:${netProfitDiff >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+          ${netProfitDiff >= 0 ? "+" : ""}${formatMoney(netProfitDiff)} ${t("vsYesterday")}
         </div>
       </div>
 
@@ -99,8 +99,8 @@ export function updateCashflowPanel() {
       <div style="margin-bottom: 16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <div class="scx-panel-title">${t("incomes")}</div>
-          <div style="font-size:10px; font-weight:600; color:${incomePct >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
-             ${incomePct > 0 ? '+' : ''}${Math.round(incomePct)}%
+          <div style="font-size:10px; font-weight:600; color:${incomePct >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+             ${incomePct > 0 ? "+" : ""}${Math.round(incomePct)}%
           </div>
         </div>
         
@@ -109,10 +109,10 @@ export function updateCashflowPanel() {
              <span style="color: var(--scx-text-success-dark);">${t("total")}</span>
              <span style="color: var(--scx-text-success-dark);">${formatMoney(today.totalIncome)}</span>
            </div>
-           ${renderBreakdownRow(t("retail"), today.incomeByType.s, 'var(--scx-category-retail)')}
-           ${renderBreakdownRow(t("contracts"), today.incomeByType.t, 'var(--scx-category-contracts)')}
-           ${renderBreakdownRow(t("marketLabel"), today.incomeByType.m, 'var(--scx-category-market)')}
-           ${today.incomeByType.other > 0 ? renderBreakdownRow(t("other"), today.incomeByType.other, 'var(--scx-category-other)') : ''}
+           ${renderBreakdownRow(t("retail"), today.incomeByType.s, "var(--scx-category-retail)")}
+           ${renderBreakdownRow(t("contracts"), today.incomeByType.t, "var(--scx-category-contracts)")}
+           ${renderBreakdownRow(t("marketLabel"), today.incomeByType.m, "var(--scx-category-market)")}
+           ${today.incomeByType.other > 0 ? renderBreakdownRow(t("other"), today.incomeByType.other, "var(--scx-category-other)") : ""}
         </div>
       </div>
 
@@ -120,8 +120,8 @@ export function updateCashflowPanel() {
       <div style="margin-bottom: 12px;">
          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <div class="scx-panel-title">${t("expenses")}</div>
-          <div style="font-size:10px; font-weight:600; color:${expensePct <= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
-             ${expensePct > 0 ? '+' : ''}${Math.round(expensePct)}%
+          <div style="font-size:10px; font-weight:600; color:${expensePct <= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+             ${expensePct > 0 ? "+" : ""}${Math.round(expensePct)}%
           </div>
         </div>
 
@@ -130,14 +130,14 @@ export function updateCashflowPanel() {
              <span style="color: var(--scx-color-error);">${t("total")}</span>
              <span style="color: var(--scx-color-error);">${formatMoney(today.totalExpense)}</span>
            </div>
-           ${renderBreakdownRow(t("production"), today.expenseByType.p, 'var(--scx-category-production)')}
-           ${renderBreakdownRow(t("wages"), today.expenseByType.w, 'var(--scx-category-wages)')}
-           ${renderBreakdownRow(t("marketBuy"), today.expenseByType.m, 'var(--scx-category-market-buy)')}
-           ${renderBreakdownRow(t("contracts"), today.expenseByType.t, 'var(--scx-category-contract-exp)')}
-           ${renderBreakdownRow(t("fees"), today.expenseByType.f, 'var(--scx-category-fees)')}
-           ${renderBreakdownRow(t("construction"), today.expenseByType.c, 'var(--scx-category-construction)')}
-           ${renderBreakdownRow(t("accounting"), today.expenseByType.A, 'var(--scx-category-accounting)')}
-           ${today.expenseByType.other > 0 ? renderBreakdownRow(t("other"), today.expenseByType.other, 'var(--scx-category-other)') : ''}
+           ${renderBreakdownRow(t("production"), today.expenseByType.p, "var(--scx-category-production)")}
+           ${renderBreakdownRow(t("wages"), today.expenseByType.w, "var(--scx-category-wages)")}
+           ${renderBreakdownRow(t("marketBuy"), today.expenseByType.m, "var(--scx-category-market-buy)")}
+           ${renderBreakdownRow(t("contracts"), today.expenseByType.t, "var(--scx-category-contract-exp)")}
+           ${renderBreakdownRow(t("fees"), today.expenseByType.f, "var(--scx-category-fees)")}
+           ${renderBreakdownRow(t("construction"), today.expenseByType.c, "var(--scx-category-construction)")}
+           ${renderBreakdownRow(t("accounting"), today.expenseByType.A, "var(--scx-category-accounting)")}
+           ${today.expenseByType.other > 0 ? renderBreakdownRow(t("other"), today.expenseByType.other, "var(--scx-category-other)") : ""}
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export function updateCashflowPanel() {
 }
 
 function renderBreakdownRow(label, amount, color) {
-  if (!amount || amount <= 0) return '';
+  if (!amount || amount <= 0) return "";
   return `
     <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:2px;">
       <span style="color:var(--scx-text-muted);">${label}</span>

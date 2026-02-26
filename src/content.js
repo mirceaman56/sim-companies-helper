@@ -15,6 +15,7 @@ import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initMarketAlerts, updateMarketAlertsPanel } from "./market_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
+import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
 
 /**
  * Sync legacy cashflow state for backward compatibility.
@@ -22,8 +23,8 @@ import { t } from "./i18n.js";
  */
 function syncLegacyCashflowState() {
   STATE.cashflow.items = STATE.cashflow.todayItems || [];
-  STATE.cashflow.summary =
-    STATE.cashflow.todaySummary || STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
+  STATE.cashflow.summary = STATE.cashflow.todaySummary ||
+    STATE.cashflow.summary || { salesCount: 0, salesMoney: 0 };
 }
 
 async function init() {
@@ -47,12 +48,9 @@ async function init() {
   setSectionUpdateFn("retail-section", updateRetailPanel);
   setSectionUpdateFn("executive-section", updateExecutivePanel);
   setSectionUpdateFn("market-alerts-section", updateMarketAlertsPanel);
-  
+
   // Chat filter is static, init once
   initChatFilter();
-
-  // Market alerts init
-  initMarketAlerts();
 
   // Contract helper for discount pricing
   initContractHelper();
@@ -64,25 +62,28 @@ async function init() {
   // (attach listeners before user can interact)
   setupProductionRowListeners();
 
-  // Load initial data
+  // Load initial data — auth must complete before realm-scoped features
   try {
     await loadAuthDataOnce();
     if (STATE.auth.error) {
-      console.warn('[SimHelper] Auth failed:', STATE.auth.error);
+      console.warn("[SimHelper] Auth failed:", STATE.auth.error);
     }
 
     await loadInventoryOnce();
     if (STATE.inventory.error) {
-      console.warn('[SimHelper] Inventory failed:', STATE.inventory.error);
+      console.warn("[SimHelper] Inventory failed:", STATE.inventory.error);
     }
 
     await loadCashflowToday();
     if (STATE.cashflow.error) {
-      console.warn('[SimHelper] Cashflow failed:', STATE.cashflow.error);
+      console.warn("[SimHelper] Cashflow failed:", STATE.cashflow.error);
     }
   } catch (e) {
-    console.error('[SimHelper] Critical initialization failure:', e);
+    console.error("[SimHelper] Critical initialization failure:", e);
   }
+
+  // Market alerts init — must run after auth so storageKey() uses the real realm ID
+  await initMarketAlerts();
 
   // Sync legacy cashflow state for backward compatibility
   syncLegacyCashflowState();
@@ -97,19 +98,25 @@ async function init() {
 init();
 
 // Event listeners for retail helper
-window.addEventListener("focusin", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);
-window.addEventListener("click", (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)), true);
+window.addEventListener(
+  "focusin",
+  (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)),
+  true,
+);
+window.addEventListener(
+  "click",
+  (e) => RetailHelper.onFocusOrClick(e, () => runSafe(updateRetailPanel)),
+  true,
+);
 
-// Optional: Auto-refresh cashflow periodically (every 5 minutes)
-const CASHFLOW_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(async () => {
   try {
     await loadCashflowToday({ force: true });
     if (STATE.cashflow.error) {
-      console.warn('[SimHelper] Cashflow refresh failed:', STATE.cashflow.error);
+      console.warn("[SimHelper] Cashflow refresh failed:", STATE.cashflow.error);
     }
   } catch (e) {
-    console.error('[SimHelper] Cashflow refresh error:', e);
+    console.error("[SimHelper] Cashflow refresh error:", e);
   }
 
   syncLegacyCashflowState();

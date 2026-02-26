@@ -1,11 +1,22 @@
 // production_ui.js
 // Renders production helper section in the sidebar
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard, parseLocaleNumber, extractProductIdFromRow, getInfoColumn, COPY_BUTTON_SVG, wireCopyButton, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import {
+  formatMoney,
+  escapeHtml,
+  copyToClipboard,
+  parseLocaleNumber,
+  extractProductIdFromRow,
+  getInfoColumn,
+  COPY_BUTTON_SVG,
+  wireCopyButton,
+  TRANSPORT_RESOURCE_ID,
+} from "./utils.js";
 import { getSectionContent, registerSection } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
 import { t } from "./i18n.js";
+import { extractDollarValue, calculateUpgradeMultiplier, formatProductionAsText } from "./production_calc.js";
 
 const SECTION_ID = "production-section";
 
@@ -23,7 +34,7 @@ let currentRow = null;
  */
 function getDataWrapper(infoCol) {
   for (const child of infoCol.children) {
-    if (child.tagName === 'DIV' && child.querySelectorAll(':scope > div').length >= 3) {
+    if (child.tagName === "DIV" && child.querySelectorAll(":scope > div").length >= 3) {
       return child;
     }
   }
@@ -35,15 +46,6 @@ function getDataWrapper(infoCol) {
  * Delegates to the shared parseLocaleNumber from utils.
  */
 const parseLocalNum = parseLocaleNumber;
-function extractDollarValue(text) {
-  if (!text) return null;
-  const match = text.match(/\$\s*([\d.,]+)/);
-  if (match) {
-    const val = parseLocalNum(match[1]);
-    return Number.isFinite(val) ? val : null;
-  }
-  return null;
-}
 
 /**
  * Detect production row from target element.
@@ -61,14 +63,14 @@ function getProductionRowFromTarget(target) {
     const hasProductLink = !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
 
     if (hasProductLink) {
-        const hasQtyInput = !!el.querySelector?.('input[name="amount"]');
-        // Active/completed production: info column shows dollar values ($)
-        const infoCol = getInfoColumn(el);
-        const hasDollarValue = /\$/.test(infoCol?.textContent || '');
+      const hasQtyInput = !!el.querySelector?.('input[name="amount"]');
+      // Active/completed production: info column shows dollar values ($)
+      const infoCol = getInfoColumn(el);
+      const hasDollarValue = /\$/.test(infoCol?.textContent || "");
 
-        if (hasQtyInput || hasDollarValue) {
-            return el;
-        }
+      if (hasQtyInput || hasDollarValue) {
+        return el;
+      }
     }
 
     if (el === document.body) {
@@ -100,9 +102,9 @@ function getQuantityFromRow(row) {
   if (infoCol) {
     const wrapper = getDataWrapper(infoCol);
     if (wrapper) {
-      const firstDiv = wrapper.querySelector(':scope > div');
+      const firstDiv = wrapper.querySelector(":scope > div");
       if (firstDiv) {
-        const text = firstDiv.textContent || '';
+        const text = firstDiv.textContent || "";
         // Extract the number (digits with commas or dots as thousands separators)
         const nums = text.match(/[\d.,]+/g);
         if (nums) {
@@ -134,7 +136,7 @@ function getUnitCostFromRow(row) {
   // Active production: last data div in wrapper (Cost per unit)
   const wrapper = getDataWrapper(infoCol);
   if (wrapper) {
-    const dataDivs = wrapper.querySelectorAll(':scope > div');
+    const dataDivs = wrapper.querySelectorAll(":scope > div");
     const costDiv = dataDivs[dataDivs.length - 1];
     if (costDiv) {
       return extractDollarValue(costDiv.textContent);
@@ -164,7 +166,7 @@ function getLaborCostFromRow(row) {
   if (!infoCol) return 0;
 
   // Setup production: 2nd span in info column contains the labor cost
-  const spans = infoCol.querySelectorAll(':scope > span');
+  const spans = infoCol.querySelectorAll(":scope > span");
   if (spans.length >= 2) {
     const val = extractDollarValue(spans[1].textContent);
     if (val !== null) return val;
@@ -180,16 +182,16 @@ function getLaborCostFromRow(row) {
 function extractBuildingLevelFromPage() {
   // First, try to find explicit "LEVEL X" patterns (case-insensitive)
   // Exclude elements in the header/navigation area (top ~100px)
-  const allDivs = document.querySelectorAll('div');
-  
+  const allDivs = document.querySelectorAll("div");
+
   for (const div of allDivs) {
     const rect = div.getBoundingClientRect();
-    
+
     // Skip elements in the top navigation bar (typically in top 100px of viewport)
     if (rect.top < 100) continue;
-    
-    const text = div.textContent?.trim() || '';
-    
+
+    const text = div.textContent?.trim() || "";
+
     // Look for explicit patterns like "LEVEL 10", "LEVEL 19", etc.
     // Case insensitive
     const levelMatch = text.match(/level\s+(\d+)/i);
@@ -208,18 +210,18 @@ function extractBuildingLevelFromPage() {
   // in small containers (building cards are typically compact)
   for (const div of allDivs) {
     const rect = div.getBoundingClientRect();
-    
+
     // Skip header area
     if (rect.top < 100) continue;
-    
-    const text = div.textContent?.trim() || '';
-    
+
+    const text = div.textContent?.trim() || "";
+
     // Skip if text is too long - likely not a building card
     if (text.length > 100) continue;
-    
+
     // Skip divs that seem to be part of large sections
     if (rect.width > 300 || rect.height > 200) continue;
-    
+
     // Look for a number that stands alone or with minimal text
     const match = text.match(/^\d+$|^(?:level\s+)?\d+$/i);
     if (match) {
@@ -242,12 +244,6 @@ function extractBuildingLevelFromPage() {
  * Formula: multiplier = 1 + 1/currentLevel
  * This represents the new production level after upgrading.
  */
-function calculateUpgradeMultiplier(currentLevel) {
-  if (!currentLevel || currentLevel <= 0) {
-    return null;
-  }
-  return 1 + (1 / currentLevel);
-}
 
 /**
  * Wait for labor cost to appear in the row, then resolve with the cost value
@@ -314,7 +310,7 @@ async function updateForRow(row) {
   // Wait for labor cost
   let laborCost = 0;
   if (currentUnitCost === null) {
-      laborCost = await waitForLaborCost(row);
+    laborCost = await waitForLaborCost(row);
   }
   currentLaborCost = laborCost;
 
@@ -327,15 +323,15 @@ async function updateForRow(row) {
  */
 function handleProductionInteraction(e) {
   const target = e.target;
-  
+
   // Don't handle copy button clicks
-  if (target.closest?.('.scx-copy-btn')) {
+  if (target.closest?.(".scx-copy-btn")) {
     return;
   }
-  
+
   const row = getProductionRowFromTarget(target);
   if (row) {
-    // If clicking input, handle normally. 
+    // If clicking input, handle normally.
     // If clicking elsewhere in the row, only update if it's an active row (has unit cost) or has input
     updateForRow(row);
   }
@@ -345,7 +341,7 @@ function handleProductionInteraction(e) {
  * Setup event listeners for production rows
  */
 export function setupProductionRowListeners() {
-  // Listen for clicks/focus anywhere 
+  // Listen for clicks/focus anywhere
   document.addEventListener("focusin", handleProductionInteraction, true);
   document.addEventListener("click", handleProductionInteraction, true);
 
@@ -356,9 +352,9 @@ export function setupProductionRowListeners() {
       const row = getProductionRowFromTarget(target);
       if (row && currentRow === row) {
         currentQuantity = getQuantityFromRow(row);
-        currentUnitCost = null; 
+        currentUnitCost = null;
         currentLaborCost = getLaborCostFromRow(row);
-        
+
         if (stateTimeout) clearTimeout(stateTimeout);
         stateTimeout = setTimeout(() => updateProductionPanel(), 300);
       }
@@ -415,7 +411,7 @@ async function renderProductAnalysis(contentEl, recipe) {
 
     try {
       // Just fetch product and container
-      const productIds = [currentProductId, TRANSPORT_RESOURCE_ID]; 
+      const productIds = [currentProductId, TRANSPORT_RESOURCE_ID];
       pricesCache = await fetchMarketPrices(realmId, productIds);
     } catch (e) {
       contentEl.innerHTML = `<div class="scx-note" style="border-left-color: #c62828; color: #c62828;">
@@ -427,13 +423,19 @@ async function renderProductAnalysis(contentEl, recipe) {
 
   // Analyze production (pass realmId for transport cost calculation)
   const realmId = getRealmId();
-  const analysis = await analyzeProduction(currentProductId, currentQuantity, pricesCache, realmId, currentUnitCost);
-  
+  const analysis = await analyzeProduction(
+    currentProductId,
+    currentQuantity,
+    pricesCache,
+    realmId,
+    currentUnitCost,
+  );
+
   if (!analysis || analysis.error) {
     contentEl.innerHTML = `
       <div class="scx-panel" style="padding: 12px;">
         <div class="scx-muted">Unable to analyze</div>
-        ${analysis?.error ? `<div style="font-size:9px; color:var(--scx-color-error); margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
+        ${analysis?.error ? `<div style="font-size:9px; color:var(--scx-color-error); margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ""}
         <div style="font-size:9x; color:var(--scx-text-muted); margin-top:8px;">${t("ensureProductionQuantity")}</div>
       </div>
     `;
@@ -445,78 +447,9 @@ async function renderProductAnalysis(contentEl, recipe) {
 }
 
 /**
- * Format production data as plain text table
- */
-function formatProductionAsText(recipe, analysis, quantity, buildingLevel, upgradeMultiplier, upgradedProduction, productionIncrease, projectedMarketProfit, projectedContractProfit, marketProfitDelta, contractProfitDelta) {
-  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, unitCost } = analysis;
-  const lines = [
-    `${t('product')}: ${recipe.name}`,
-    `${t('quantity')}: ${quantity}`,
-    ``,
-    `${t('costLabel')}:`,
-    `  ${t('baseUnitCost')}: ${formatMoney(unitCost)}`,
-    `  Total Production Cost: ${formatMoney(productionCost)}`,
-    ``,
-  ];
-  
-  if (breakEvenAnalysis) {
-    lines.push(
-      `${t('breakEvenMarket')}:`,
-      `  Total Cost: ${formatMoney(breakEvenAnalysis.market.totalCost)}`,
-      `  ${t('transportCost')}: ${formatMoney(breakEvenAnalysis.market.transportCost)}`,
-      `  ${t('breakEvenPrice')}: ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}`,
-      ``,
-      `${t('breakEvenContract')}:`,
-      `  Total Cost: ${formatMoney(breakEvenAnalysis.contract.totalCost)}`,
-      `  ${t('transportCost')}: ${formatMoney(breakEvenAnalysis.contract.transportCost)}`,
-      `  ${t('breakEvenPrice')}: ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}`, 
-      ``
-    );
-  }
-  
-  if (profitAnalysis) {
-    lines.push(
-      `${t('profitAnalysisText')} (at $${formatMoney(marketPrice)}):`,
-      `  ${t('marketProfit')}: ${formatMoney(profitAnalysis.market.profit)}`,
-      `  ${t('marketMargin')}: ${profitAnalysis.market.margin.toFixed(2)}%`,
-      `  ${t('contractProfit')}: ${formatMoney(profitAnalysis.contract.profit)}`,
-      `  ${t('contractMargin')}: ${profitAnalysis.contract.margin.toFixed(2)}%`,
-      ``
-    );
-  }
-
-  if (buildingLevel && upgradeMultiplier) {
-    lines.push(
-      `${t('buildingUpgradeProjection')}:`,
-      `  ${t('currentLevel')}: ${buildingLevel}`,
-      `  ${t('productionAfterUpgrade')} (${t('lvl')} ${buildingLevel + 1}): ${upgradedProduction.toFixed(2)}`,
-      `  ${t('productionIncreasePercent')}: +${productionIncrease.toFixed(2)} (${((upgradeMultiplier - 1) * 100).toFixed(1)}%)` ,
-      ``
-    );
-  }
-
-  if (projectedMarketProfit !== null && projectedContractProfit !== null) {
-    lines.push(
-      `${t('projectedProfitsAtLevel')} ${buildingLevel + 1}:`,
-      `  Market Sell: ${formatMoney(projectedMarketProfit)}`
-    );
-    if (marketProfitDelta !== null) {
-      lines.push(`    ${t('delta')}: ${formatMoney(marketProfitDelta)}`);
-    }
-    lines.push(`  Contract Sell: ${formatMoney(projectedContractProfit)}`);
-    if (contractProfitDelta !== null) {
-      lines.push(`    ${t('delta')}: ${formatMoney(contractProfitDelta)}`);
-    }
-  }
-  
-  return lines.join('\n');
-}
-
-/**
  * Render the full analysis UI
  */
 function renderAnalysisUI(contentEl, recipe, analysis) {
-  
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice } = analysis;
 
   // Extract building level from the page
@@ -551,7 +484,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <div class="scx-color-999 scx-font-10 scx-margin-bottom-4">
         ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
         <span class="scx-badge-active">${t("active")}</span>
-        ${buildingLevel ? `<span class="scx-badge-level">${t('lvl')} ${buildingLevel}</span>` : ''}
+        ${buildingLevel ? `<span class="scx-badge-level">${t("lvl")} ${buildingLevel}</span>` : ""}
       </div>
 
       <hr class="scx-hr-sm">
@@ -586,13 +519,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-brown scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.market.profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.market.profit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-font-9">
              <span class="scx-k scx-text-brown">${t("margin")}</span>
-             <span style="color:${profitAnalysis.market.margin >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span style="color:${profitAnalysis.market.margin >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
           </div>
@@ -610,13 +543,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
            <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-dark-brown scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.contract.profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.contract.profit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-font-9">
              <span class="scx-k scx-text-dark-brown">${t("margin")}</span>
-             <span style="color:${profitAnalysis.contract.margin >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span style="color:${profitAnalysis.contract.margin >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>
           </div>
@@ -626,7 +559,9 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         </div>
       </div>
 
-      ${buildingLevel && upgradeMultiplier && upgradedProduction ? `
+      ${
+        buildingLevel && upgradeMultiplier && upgradedProduction
+          ? `
       <hr class="scx-hr-sm">
 
       <div class="scx-panel-head scx-margin-bottom-4">
@@ -648,66 +583,80 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       </div>
 
       <!-- Projected Profit Section -->
-      ${projectedMarketProfit !== null && projectedContractProfit !== null ? `
+      ${
+        projectedMarketProfit !== null && projectedContractProfit !== null
+          ? `
       <div class="scx-box-light-gray" style="margin-top: 4px;">
-        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase" style="color: var(--scx-color-info);">${t('projectedProfitsAtLevel')} ${t('lvl')} ${buildingLevel + 1}</div>
+        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase" style="color: var(--scx-color-info);">${t("projectedProfitsAtLevel")} ${t("lvl")} ${buildingLevel + 1}</div>
         
         <!-- Projected Market Profit -->
         <div class="scx-profit-box-sm scx-profit-box-yellow scx-margin-bottom-4">
           <div class="scx-flex-spaced scx-font-8">
              <span class="scx-text-orange">${t("marketSell")}</span>
-             <span class="scx-text-bold" style="color:${projectedMarketProfit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span class="scx-text-bold" style="color:${projectedMarketProfit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(projectedMarketProfit)}
              </span>
           </div>
-          ${marketProfitDelta !== null ? `
+          ${
+            marketProfitDelta !== null
+              ? `
           <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
-             <span>${t('delta')}:</span>
-             <span style="color:${marketProfitDelta >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span>${t("delta")}:</span>
+             <span style="color:${marketProfitDelta >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(marketProfitDelta)}
              </span>
           </div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
 
         <!-- Projected Contract Profit -->
         <div class="scx-profit-box-sm scx-profit-box-purple">
           <div class="scx-flex-spaced scx-font-8">
              <span class="scx-text-purple">${t("contractSell")}</span>
-             <span class="scx-text-bold" style="color:${projectedContractProfit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span class="scx-text-bold" style="color:${projectedContractProfit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(projectedContractProfit)}
              </span>
           </div>
-          ${contractProfitDelta !== null ? `
+          ${
+            contractProfitDelta !== null
+              ? `
           <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
-             <span>${t('delta')}:</span>
-             <span style="color:${contractProfitDelta >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
+             <span>${t("delta")}:</span>
+             <span style="color:${contractProfitDelta >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
                ${formatMoney(contractProfitDelta)}
              </span>
           </div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
       </div>
-      ` : ''}
-      ` : ''}
+      `
+          : ""
+      }
+      `
+          : ""
+      }
     </div>
   `;
 
   // Wire up copy button
   wireCopyButton(contentEl, () =>
     formatProductionAsText(
-      recipe, 
-      analysis, 
-      currentQuantity, 
-      buildingLevel, 
-      upgradeMultiplier, 
-      upgradedProduction, 
-      productionIncrease, 
-      projectedMarketProfit, 
-      projectedContractProfit, 
-      marketProfitDelta, 
-      contractProfitDelta
-    )
+      recipe,
+      analysis,
+      currentQuantity,
+      buildingLevel,
+      upgradeMultiplier,
+      upgradedProduction,
+      productionIncrease,
+      projectedMarketProfit,
+      projectedContractProfit,
+      marketProfitDelta,
+      contractProfitDelta,
+    ),
   );
 }
 
@@ -718,15 +667,14 @@ function renderMaterialsCost(materialCosts) {
   const recipes = getRecipes();
   const materialNamesMap = new Map();
   // Build a map of material ID -> name
-  recipes.forEach(r => {
+  recipes.forEach((r) => {
     materialNamesMap.set(r.id, r.name);
   });
 
   return materialCosts
-    .map(
-      (mc) => {
-        const materialName = materialNamesMap.get(mc.materialId) || `Resource ${mc.materialId}`;
-        return `
+    .map((mc) => {
+      const materialName = materialNamesMap.get(mc.materialId) || `Resource ${mc.materialId}`;
+      return `
     <div class="scx-material-row">
       <div>
         <div class="scx-material-name">${materialName}</div>
@@ -742,8 +690,7 @@ function renderMaterialsCost(materialCosts) {
       </div>
     </div>
   `;
-      }
-    )
+    })
     .join("");
 }
 
@@ -808,4 +755,3 @@ function renderSellAnalysis(sellAnalysis, quantity) {
     </div>
   `;
 }
-

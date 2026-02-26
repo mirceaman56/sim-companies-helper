@@ -16,20 +16,20 @@ export const TRANSPORT_RESOURCE_ID = 13;
  */
 export function parseLocaleNumber(raw) {
   let s = String(raw).trim();
-  const lastComma = s.lastIndexOf(',');
-  const lastDot = s.lastIndexOf('.');
+  const lastComma = s.lastIndexOf(",");
+  const lastDot = s.lastIndexOf(".");
   if (lastComma > lastDot) {
     const afterComma = s.slice(lastComma + 1);
     if (/^\d{1,2}$/.test(afterComma)) {
       // German decimal: remove dots (thousands), replace comma with dot
-      s = s.replace(/\./g, '').replace(',', '.');
+      s = s.replace(/\./g, "").replace(",", ".");
     } else {
       // Comma is thousands separator (3 digits after)
-      s = s.replace(/,/g, '');
+      s = s.replace(/,/g, "");
     }
   } else {
     // Dot is last or no comma — standard: remove commas (thousands)
-    s = s.replace(/,/g, '');
+    s = s.replace(/,/g, "");
   }
   const m = s.match(/-?\s*([0-9]+(\.[0-9]+)?)/);
   return m ? Number(m[1]) : NaN;
@@ -56,8 +56,8 @@ export function extractProductIdFromRow(row) {
  */
 export function getInfoColumn(row) {
   if (!row) return null;
-  const cols = row.querySelectorAll('div.right-border');
-  return [...cols].find(c => c.querySelector('h3')) || null;
+  const cols = row.querySelectorAll("div.right-border");
+  return [...cols].find((c) => c.querySelector("h3")) || null;
 }
 
 /** SVG markup for the standard copy-to-clipboard button icon */
@@ -78,7 +78,7 @@ export function wireCopyButton(containerEl, getTextFn) {
   if (!containerEl) return;
 
   const handleCopyClick = async (e) => {
-    const btn = e.target.closest('.scx-copy-btn');
+    const btn = e.target.closest(".scx-copy-btn");
     if (!btn) return;
 
     e.stopPropagation();
@@ -94,11 +94,11 @@ export function wireCopyButton(containerEl, getTextFn) {
 
   // Remove old listener if it exists
   if (containerEl._copyClickHandler) {
-    containerEl.removeEventListener('click', containerEl._copyClickHandler, true);
+    containerEl.removeEventListener("click", containerEl._copyClickHandler, true);
   }
 
   containerEl._copyClickHandler = handleCopyClick;
-  containerEl.addEventListener('click', handleCopyClick, true);
+  containerEl.addEventListener("click", handleCopyClick, true);
 }
 
 /**
@@ -111,16 +111,16 @@ export function wireCopyButton(containerEl, getTextFn) {
  */
 export function formatMoney(x, options = {}) {
   if (!Number.isFinite(x)) return "—";
-  
+
   const decimals = options.decimals ?? 2;
   const prefix = options.prefix !== false; // default true
-  
+
   const sign = x < 0 ? "-" : "";
   const abs = Math.abs(x).toFixed(decimals);
-  const parts = abs.split('.');
-  const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const parts = abs.split(".");
+  const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const decimal = parts[1];
-  
+
   const formatted = `${integer}.${decimal}`;
   return prefix ? `${sign}$${formatted}` : `${sign}${formatted}`;
 }
@@ -148,7 +148,7 @@ export function scheduleUpdate(callback) {
       try {
         const res = callback();
         if (res instanceof Promise) {
-          res.catch(err => console.debug("[SimHelper] Render (async) error:", err));
+          res.catch((err) => console.debug("[SimHelper] Render (async) error:", err));
         }
       } catch (err) {
         console.debug("[SimHelper] Render error:", err);
@@ -186,6 +186,3 @@ export async function copyToClipboard(text, feedbackEl) {
     console.error("Failed to copy:", err);
   }
 }
-
-
-

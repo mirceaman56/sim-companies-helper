@@ -28,7 +28,9 @@ export function initContractHelper() {
       const n = Number(saved);
       if (Number.isFinite(n) && n >= 0 && n <= 100) discountPct = n;
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   // Observe DOM changes to inject when contract elements are present
   const observer = new MutationObserver(() => {
@@ -52,8 +54,7 @@ export function initContractHelper() {
  */
 function hasContractElements() {
   return !!(
-    document.querySelector('input[name="price"]') &&
-    document.querySelector('a[href*="market/resource"]')
+    document.querySelector('input[name="price"]') && document.querySelector('a[href*="market/resource"]')
   );
 }
 
@@ -115,9 +116,7 @@ const parsePrice = parseLocaleNumber;
  * native HTMLInputElement setter and dispatch an input event.
  */
 function setInputValue(input, value) {
-  const nativeSetter = Object.getOwnPropertyDescriptor(
-    HTMLInputElement.prototype, "value"
-  )?.set;
+  const nativeSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
 
   if (nativeSetter) {
     nativeSetter.call(input, value);
@@ -293,7 +292,7 @@ async function calculateAndDisplayProfit() {
   }
 
   const profit = revenue - totalSourcing - totalTransport;
-  const profitColor = profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)';
+  const profitColor = profit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)";
 
   resultDiv.innerHTML = `
     <div style="display:flex; justify-content:space-between;">
@@ -431,7 +430,11 @@ function injectIfNeeded() {
   // Event: dropdown change
   document.getElementById("scx-contract-discount-select").addEventListener("change", (e) => {
     discountPct = Number(e.target.value);
-    try { localStorage.setItem(STORAGE_KEY, String(discountPct)); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(STORAGE_KEY, String(discountPct));
+    } catch {
+      /* ignore */
+    }
     updateButtonLabel();
   });
 

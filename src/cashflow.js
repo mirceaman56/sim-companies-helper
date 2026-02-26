@@ -33,7 +33,7 @@ function isYesterdayLocal(dtStr) {
 function computeSummary(items) {
   let totalIncome = 0;
   let totalExpense = 0;
-  
+
   // Breakdown objects
   const incomeByType = { s: 0, m: 0, t: 0, other: 0 };
   const expenseByType = { p: 0, w: 0, m: 0, t: 0, f: 0, c: 0, A: 0, r: 0, other: 0 }; // A=Accounting, r=Research? w=wages
@@ -41,10 +41,10 @@ function computeSummary(items) {
   for (const it of items) {
     const m = Number(it.money || 0);
     const cat = it.category;
-    
+
     if (m > 0) {
       totalIncome += m;
-      if (['s', 'm', 't'].includes(cat)) {
+      if (["s", "m", "t"].includes(cat)) {
         incomeByType[cat] += m;
       } else {
         incomeByType.other += m;
@@ -52,7 +52,7 @@ function computeSummary(items) {
     } else if (m < 0) {
       const absM = Math.abs(m);
       totalExpense += absM;
-      if (['p', 'w', 'm', 't', 'f', 'c', 'A'].includes(cat)) {
+      if (["p", "w", "m", "t", "f", "c", "A"].includes(cat)) {
         expenseByType[cat] += absM;
       } else {
         expenseByType.other += absM;
@@ -60,11 +60,11 @@ function computeSummary(items) {
     }
   }
 
-  return { 
-    totalIncome, 
-    totalExpense, 
-    incomeByType, 
-    expenseByType 
+  return {
+    totalIncome,
+    totalExpense,
+    incomeByType,
+    expenseByType,
   };
 }
 

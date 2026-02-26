@@ -92,12 +92,13 @@ export function ensureFooter() {
          <span style="color: #e91e63; font-size: 12px;">❤</span> ${t("supportTheDev")}
       </div>
       <div style="font-size: 9px; color: #999; text-align: center;">${t("keepUpdates")}</div>
-    `
+    `,
   );
 
   // 2. Bug Report Button
-  const bugUrl = "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=Bug%3A%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
-  
+  const bugUrl =
+    "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=Bug%3A%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
+
   ensureFooterButton(
     container,
     "scx-sidebar-footer-bug",
@@ -106,7 +107,7 @@ export function ensureFooter() {
       <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
          <span style="color: #ef6c00; font-size: 12px;">🐛</span> ${t("reportBug")}
       </div>
-    `
+    `,
   );
 }
 
@@ -169,4 +170,3 @@ export function setSectionUpdateFn(sectionId, updateFn) {
     }
   }
 }
-

@@ -42,18 +42,17 @@ function rebuildInventoryIndex(items) {
     if (!Number.isFinite(kind)) continue;
 
     const amount = Number(it.amount || 0);
-    const totalCost = (Number.isFinite(sumCost(it.cost)) ? sumCost(it.cost) : 0);
+    const totalCost = Number.isFinite(sumCost(it.cost)) ? sumCost(it.cost) : 0;
 
-    const existing =
-      byKind.get(kind) || {
-        kind,
-        amount: 0,
-        totalCost: 0,
-        marketCost: 0,
-        workers: 0,
-        admin: 0,
-        materials: 0,
-      };
+    const existing = byKind.get(kind) || {
+      kind,
+      amount: 0,
+      totalCost: 0,
+      marketCost: 0,
+      workers: 0,
+      admin: 0,
+      materials: 0,
+    };
 
     existing.amount += amount;
     existing.totalCost += totalCost;
@@ -63,11 +62,7 @@ function rebuildInventoryIndex(items) {
     existing.workers += c.workers || 0;
     existing.admin += c.admin || 0;
     existing.materials +=
-      (c.material1 || 0) +
-      (c.material2 || 0) +
-      (c.material3 || 0) +
-      (c.material4 || 0) +
-      (c.material5 || 0);
+      (c.material1 || 0) + (c.material2 || 0) + (c.material3 || 0) + (c.material4 || 0) + (c.material5 || 0);
 
     byKind.set(kind, existing);
   }

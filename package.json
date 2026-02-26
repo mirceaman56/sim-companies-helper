@@ -6,6 +6,10 @@
     "build": "vite build",
     "pack": "node scripts/pack-extension.mjs",
     "release:local": "npm run build && npm run pack",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -13,8 +17,12 @@
     "string-similarity-js": "^2.1.4"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "archiver": "^7.0.1",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
     "vite": "^5.0.0",
     "vitest": "^4.0.18"
   }

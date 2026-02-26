@@ -3,6 +3,9 @@ import { resolve } from "path";
 import { copyFileSync, mkdirSync } from "fs";
 
 export default defineConfig({
+  test: {
+    setupFiles: ["./tests/setup.js"],
+  },
   build: {
     outDir: "dist",
     emptyOutDir: true,

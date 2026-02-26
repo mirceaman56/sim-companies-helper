@@ -29,7 +29,7 @@ function parseQty(txt) {
  */
 function uniqueBy(arr, keyFn) {
   const seen = new Set();
-  return arr.filter(x => {
+  return arr.filter((x) => {
     const k = keyFn(x);
     if (seen.has(k)) return false;
     seen.add(k);
@@ -49,28 +49,28 @@ function extractRecipe() {
   // structure: <div class="col-xs-4 text-center"> ... <div>Seeds</div> ...
   // take the first child <div> after the image container that is not empty and not a price/label
   let name = null;
-  const card = document.querySelector('.col-xs-4.text-center');
+  const card = document.querySelector(".col-xs-4.text-center");
   if (card) {
-    const divs = [...card.querySelectorAll(':scope > div')];
+    const divs = [...card.querySelectorAll(":scope > div")];
     // divs often look like: [imgWrap, nameDiv, priceDiv, ...]
     // choose the one that is plain text and not containing <a> or <img>
     const nameDiv =
-      divs.find(d => d && d.textContent && !d.querySelector('a, img') && d.textContent.trim().length > 0) ||
+      divs.find((d) => d && d.textContent && !d.querySelector("a, img") && d.textContent.trim().length > 0) ||
       divs[1]; // fallback: common position
     name = nameDiv?.textContent?.trim() ?? null;
   }
 
   // Get materials: each ingredient span block
-  const materialSpans = [...document.querySelectorAll('span.css-1jhg4e6.e1d2gsfs3')];
+  const materialSpans = [...document.querySelectorAll("span.css-1jhg4e6.e1d2gsfs3")];
 
   const materials = materialSpans
-    .map(span => {
+    .map((span) => {
       const a = span.querySelector('a[href^="/encyclopedia/0/resource/"]');
-      const href = a?.getAttribute('href') || "";
+      const href = a?.getAttribute("href") || "";
       const mMatch = href.match(/\/resource\/(\d+)\//);
       const mid = mMatch ? Number(mMatch[1]) : null;
 
-      const qtyText = span.querySelector('span.css-1kqm584')?.textContent ?? "";
+      const qtyText = span.querySelector("span.css-1kqm584")?.textContent ?? "";
       const quantity = parseQty(qtyText);
 
       if (!mid || quantity == null) return null;
@@ -81,7 +81,7 @@ function extractRecipe() {
   const result = {
     id,
     name,
-    materials: uniqueBy(materials, x => x.id)
+    materials: uniqueBy(materials, (x) => x.id),
   };
 
   return result;
@@ -92,7 +92,7 @@ function extractRecipe() {
  */
 export function initRecipeExtractor() {
   // Only run on encyclopedia resource pages
-  if (!location.pathname.includes('/encyclopedia/') || !location.pathname.includes('/resource/')) {
+  if (!location.pathname.includes("/encyclopedia/") || !location.pathname.includes("/resource/")) {
     return;
   }
 
@@ -107,7 +107,7 @@ export function initRecipeExtractor() {
     }
 
     // Check if this recipe is already in the array
-    const alreadyExists = recipesArray.some(r => r.id === recipe.id);
+    const alreadyExists = recipesArray.some((r) => r.id === recipe.id);
     if (alreadyExists && currentResourceId === recipe.id) {
       return;
     }
@@ -125,7 +125,7 @@ export function initRecipeExtractor() {
     }
 
     // Create panel
-    const panel = document.createElement('div');
+    const panel = document.createElement("div");
     panel.id = EXTRACTOR_PANEL_ID;
     panel.style.cssText = `
       position: fixed;
@@ -252,7 +252,7 @@ export function initRecipeExtractor() {
   // Watch for page changes using MutationObserver on the main content area
   const observer = new MutationObserver(() => {
     // Re-check if we're still on an encyclopedia page and show extractor for current resource
-    if (location.pathname.includes('/encyclopedia/') && location.pathname.includes('/resource/')) {
+    if (location.pathname.includes("/encyclopedia/") && location.pathname.includes("/resource/")) {
       showExtractor();
     }
   });
@@ -261,12 +261,12 @@ export function initRecipeExtractor() {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    attributes: false
+    attributes: false,
   });
 
   // Also listen for history changes (back/forward navigation)
-  window.addEventListener('popstate', () => {
-    if (location.pathname.includes('/encyclopedia/') && location.pathname.includes('/resource/')) {
+  window.addEventListener("popstate", () => {
+    if (location.pathname.includes("/encyclopedia/") && location.pathname.includes("/resource/")) {
       showExtractor();
     }
   });

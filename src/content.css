@@ -1,18 +1,18 @@
 /* ============ CSS Variables - Minimalist Design ============ */
 :root {
   /* Primary Semantic Colors */
-  --scx-color-success: #2e7d32;      /* Dark Green */
-  --scx-color-error: #c62828;        /* Dark Red */
-  --scx-color-warning: #d68e00;      /* Dark Orange */
-  --scx-color-info: #1565c0;         /* Dark Blue */
-  --scx-color-purple: #6a1b9a;       /* Dark Purple */
-  
+  --scx-color-success: #2e7d32; /* Dark Green */
+  --scx-color-error: #c62828; /* Dark Red */
+  --scx-color-warning: #d68e00; /* Dark Orange */
+  --scx-color-info: #1565c0; /* Dark Blue */
+  --scx-color-purple: #6a1b9a; /* Dark Purple */
+
   /* Category Colors - Income Types */
   --scx-category-retail: #2e7d32;
   --scx-category-contracts: #1565c0;
   --scx-category-market: #d68e00;
   --scx-category-other: #666666;
-  
+
   /* Category Colors - Expense Types */
   --scx-category-production: #c62828;
   --scx-category-wages: #d32f2f;
@@ -21,7 +21,7 @@
   --scx-category-fees: #5d4037;
   --scx-category-construction: #d68e00;
   --scx-category-accounting: #455a64;
-  
+
   /* Legacy color names */
   --scx-color-blue: #1565c0;
   --scx-color-green: #2e7d32;
@@ -38,21 +38,21 @@
   --scx-spacing-xl: 20px;
 
   /* ============ Backgrounds - White Minimalist ============ */
-  --scx-bg-primary: #ffffff;         /* Main white background */
-  --scx-bg-secondary: #f8f8f8;       /* Light gray */
-  --scx-bg-tertiary: #ffffff;        /* White */
-  --scx-bg-subtle: #f5f5f5;          /* Very light gray */
-  
+  --scx-bg-primary: #ffffff; /* Main white background */
+  --scx-bg-secondary: #f8f8f8; /* Light gray */
+  --scx-bg-tertiary: #ffffff; /* White */
+  --scx-bg-subtle: #f5f5f5; /* Very light gray */
+
   /* Status backgrounds */
-  --scx-bg-success: #f0f8f0;         /* Very light green */
-  --scx-bg-success-light: #f5fbf5;   /* Lighter green */
-  --scx-bg-error: #fdf5f5;           /* Very light red */
-  --scx-bg-warning: #fffaf0;         /* Very light orange */
-  --scx-bg-info: #f5f9ff;            /* Very light blue */
-  --scx-bg-accent: #f8f5fb;          /* Very light purple */
-  --scx-bg-neutral: #f8f8f8;         /* Light gray */
-  --scx-bg-light: #ffffff;           /* White */
-  
+  --scx-bg-success: #f0f8f0; /* Very light green */
+  --scx-bg-success-light: #f5fbf5; /* Lighter green */
+  --scx-bg-error: #fdf5f5; /* Very light red */
+  --scx-bg-warning: #fffaf0; /* Very light orange */
+  --scx-bg-info: #f5f9ff; /* Very light blue */
+  --scx-bg-accent: #f8f5fb; /* Very light purple */
+  --scx-bg-neutral: #f8f8f8; /* Light gray */
+  --scx-bg-light: #ffffff; /* White */
+
   /* ============ Borders - Simple ============ */
   --scx-border-light: 1px solid #e0e0e0;
   --scx-border-light-gray: 1px solid #e8e8e8;
@@ -62,12 +62,12 @@
   --scx-border-medium-light: 1px solid #bebebe;
   --scx-border-dark: 1px solid #999999;
   --scx-border-dark-gray: 1px solid #666666;
-  
+
   /* ============ Text Colors - Simple & Contrast ============ */
   --scx-text-primary: #000000;
   --scx-text-secondary: #555555;
   --scx-text-muted: #999999;
-  
+
   --scx-text-success: #2e7d32;
   --scx-text-success-dark: #1b5e20;
   --scx-text-error: #c62828;
@@ -79,13 +79,13 @@
   --scx-text-primary-dark: #000000;
 
   /* ============ Status Colors - Good/Okay/Bad ============ */
-  --scx-status-good-color: #2e7d32;      /* Dark Green */
-  --scx-status-good-bg: #f0f8f0;         /* Light Green */
-  --scx-status-okay-color: #d68e00;      /* Dark Orange */
-  --scx-status-okay-bg: #fffaf0;         /* Light Orange */
-  --scx-status-bad-color: #c62828;       /* Dark Red */
-  --scx-status-bad-bg: #fdf5f5;          /* Light Red */
-  --scx-input-border: #e0e0e0;           /* Light Gray */
+  --scx-status-good-color: #2e7d32; /* Dark Green */
+  --scx-status-good-bg: #f0f8f0; /* Light Green */
+  --scx-status-okay-color: #d68e00; /* Dark Orange */
+  --scx-status-okay-bg: #fffaf0; /* Light Orange */
+  --scx-status-bad-color: #c62828; /* Dark Red */
+  --scx-status-bad-bg: #fdf5f5; /* Light Red */
+  --scx-input-border: #e0e0e0; /* Light Gray */
 
   /* ============ Typography ============ */
   --scx-font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -154,8 +154,9 @@
 }
 
 .scx-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  background: #999999;
 }
 
 .scx-btn-primary {
@@ -169,11 +170,7 @@
 }
 
 .scx-btn.stop {
-  background: var(--scx-color-error) !important;
-}
-
-.scx-btn:disabled {
-  background: #999999;
+  background: var(--scx-color-error);
 }
 
 /* ============ Sidebar Container & Sections ============ */
@@ -253,7 +250,10 @@
   padding: 12px;
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    padding 0.3s ease,
+    opacity 0.3s ease;
   opacity: 1;
 }
 
@@ -303,40 +303,66 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-light);
 }
 
 .scx-panel-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .scx-panel-title {
-  font-weight: 600;
+  font-weight: 900;
   color: #333;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.25px;
+  opacity: 0.85;
 }
 
 .scx-chip {
   display: inline-block;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  background: #f0f0f0;
+  white-space: nowrap;
 }
 
-.scx-chip-na { background: var(--scx-bg-light); color: var(--scx-text-muted); }
-.scx-chip-bad { background: var(--scx-bg-error); color: var(--scx-color-error); }
-.scx-chip-excellent { background: var(--scx-bg-success); color: var(--scx-text-success-dark); }
-.scx-chip-good { background: var(--scx-bg-info); color: var(--scx-color-info); }
-.scx-chip-meh { background: var(--scx-bg-warning); color: var(--scx-text-warning-alt); }
+.scx-chip-na {
+  background: var(--scx-bg-light);
+  color: var(--scx-text-muted);
+}
+.scx-chip-bad {
+  background: var(--scx-bg-error);
+  color: var(--scx-color-error);
+}
+.scx-chip-excellent {
+  background: var(--scx-bg-success);
+  color: var(--scx-text-success-dark);
+}
+.scx-chip-good {
+  background: var(--scx-bg-info);
+  color: var(--scx-color-info);
+}
+.scx-chip-meh {
+  background: var(--scx-bg-warning);
+  color: var(--scx-text-warning-alt);
+}
 
 .scx-big {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 950;
   color: var(--scx-color-info);
+  line-height: 1.1;
+  margin-bottom: 10px;
 }
 
 .scx-grid {
@@ -357,12 +383,15 @@
 }
 
 .scx-note {
-  font-size: 10px;
+  font-size: 11px;
   color: #666;
   background: #fafafa;
   padding: 8px;
   border-radius: 4px;
   border-left: 2px solid #ddd;
+  margin-top: 10px;
+  line-height: 1.3;
+  opacity: 0.68;
 }
 
 hr {
@@ -418,7 +447,7 @@ hr {
 @media (prefers-color-scheme: dark) {
   .scx-quality-container {
     border: 1px solid #555;
-    background: rgba(60, 80, 100, 0.60);
+    background: rgba(60, 80, 100, 0.6);
   }
 }
 
@@ -507,59 +536,6 @@ hr {
   opacity: 0.72;
 }
 
-/* ROI panel */
-.scx-panel {
-  border-radius: 12px;
-  padding: 12px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-}
-
-.scx-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.scx-panel-title {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.25px;
-  opacity: 0.85;
-  text-transform: uppercase;
-}
-
-.scx-chip {
-  font-size: 11px;
-  font-weight: 900;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #f0f0f0;
-  white-space: nowrap;
-}
-
-.scx-chip-excellent { background: #f0f8f0; }
-.scx-chip-good      { background: #f5f9ff; }
-.scx-chip-meh       { background: #fffaf0; }
-.scx-chip-bad       { background: #fdf5f5; }
-.scx-chip-na        { background: #f5f5f5; }
-
-.scx-big {
-  font-size: 20px;
-  font-weight: 950;
-  line-height: 1.1;
-  margin-bottom: 10px;
-}
-
-.scx-note {
-  margin-top: 10px;
-  font-size: 11px;
-  line-height: 1.3;
-  opacity: 0.68;
-}
-
 .scx-note-warning {
   border-left: 3px solid #d68e00;
   background: #fffaf0;
@@ -638,7 +614,7 @@ hr {
 }
 
 .scx-copy-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 115%;
   left: 50%;
@@ -695,11 +671,21 @@ hr {
   border-radius: 4px;
 }
 
-.scx-box-blue { background: #e3f2fd; }
-.scx-box-yellow { background: #fff8e1; }
-.scx-box-purple { background: #f3e5f5; }
-.scx-box-green { background: #e8f5e9; }
-.scx-box-light-gray { background: #f0f4f8; }
+.scx-box-blue {
+  background: #e3f2fd;
+}
+.scx-box-yellow {
+  background: #fff8e1;
+}
+.scx-box-purple {
+  background: #f3e5f5;
+}
+.scx-box-green {
+  background: #e8f5e9;
+}
+.scx-box-light-gray {
+  background: #f0f4f8;
+}
 
 .scx-profit-box-sm {
   padding: 4px;
@@ -731,13 +717,27 @@ hr {
   flex-direction: column;
 }
 
-.scx-text-blue { color: var(--scx-color-blue); }
-.scx-text-green { color: var(--scx-color-green); }
-.scx-text-orange { color: var(--scx-color-orange); }
-.scx-text-purple { color: var(--scx-color-purple); }
-.scx-text-brown { color: var(--scx-color-brown); }
-.scx-text-forest { color: #1b5e20; }
-.scx-text-dark-brown { color: #6d4c41; }
+.scx-text-blue {
+  color: var(--scx-color-blue);
+}
+.scx-text-green {
+  color: var(--scx-color-green);
+}
+.scx-text-orange {
+  color: var(--scx-color-orange);
+}
+.scx-text-purple {
+  color: var(--scx-color-purple);
+}
+.scx-text-brown {
+  color: var(--scx-color-brown);
+}
+.scx-text-forest {
+  color: #1b5e20;
+}
+.scx-text-dark-brown {
+  color: #6d4c41;
+}
 
 .scx-text-muted {
   color: #999;
@@ -1286,59 +1286,51 @@ hr {
   background: var(--scx-bg-subtle);
 }
 
+.scx-ma-card-actions .scx-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
 .scx-ma-btn-start {
   flex: 1;
-  background: var(--scx-color-success) !important;
-  color: white !important;
-  font-size: 11px !important;
-  padding: 4px 8px !important;
+  background: var(--scx-color-success);
+  color: white;
 }
 
 .scx-ma-btn-start:hover {
-  background: #1b5e20 !important;
-}
-
-.scx-btn:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
+  background: #1b5e20;
 }
 
 .scx-ma-btn-stop {
   flex: 1;
-  background: var(--scx-color-error) !important;
-  color: white !important;
-  font-size: 11px !important;
-  padding: 4px 8px !important;
+  background: var(--scx-color-error);
+  color: white;
 }
 
 .scx-ma-btn-stop:hover {
-  background: #b71c1c !important;
+  background: #b71c1c;
 }
 
 .scx-ma-btn-reset {
   flex: 1;
-  background: #e67e22 !important;
-  color: white !important;
-  font-size: 11px !important;
-  padding: 4px 8px !important;
+  background: #e67e22;
+  color: white;
 }
 
 .scx-ma-btn-reset:hover {
-  background: #d35400 !important;
+  background: #d35400;
 }
 
 .scx-ma-btn-remove {
-  background: none !important;
-  border: var(--scx-border-light) !important;
-  color: var(--scx-text-muted) !important;
-  font-size: 11px !important;
-  padding: 4px 8px !important;
+  background: none;
+  border: var(--scx-border-light);
+  color: var(--scx-text-muted);
   min-width: 28px;
 }
 
 .scx-ma-btn-remove:hover {
-  color: var(--scx-color-error) !important;
-  border-color: var(--scx-color-error) !important;
+  color: var(--scx-color-error);
+  border-color: var(--scx-color-error);
 }
 
 /* ============ Toast Notifications ============ */
@@ -1369,7 +1361,9 @@ hr {
   pointer-events: auto;
   opacity: 0;
   transform: translateY(-20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
   font-family: var(--scx-font-family);
 }
 
@@ -1428,5 +1422,7 @@ hr {
 }
 
 @media (max-width: 1200px) {
-  .scx-sidebar { display: none; }
+  .scx-sidebar {
+    display: none;
+  }
 }

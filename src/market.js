@@ -1,9 +1,7 @@
 // market.js
 import { STATE } from "./state.js";
 import { getRealmId } from "./auth.js";
-
-// Rate-limit protection: block all market calls for 10 minutes after a 429
-const RATE_LIMIT_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS } from "./constants.js";
 let rateLimitedUntil = 0;
 
 /**
@@ -41,7 +39,7 @@ export async function fetchMarket(realmId, productId) {
 
   const cacheKey = `${realmId}:${productId}`;
   const cached = STATE.marketCache.get(cacheKey);
-  if (cached && now - cached.ts < 60000) return cached.data;
+  if (cached && now - cached.ts < MARKET_CACHE_TTL_MS) return cached.data;
 
   const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
   const res = await fetch(url, { credentials: "include" });
@@ -67,7 +65,7 @@ export async function fetchMarketPrice(realmId, productId, quality = 0) {
     if (!Array.isArray(data) || data.length === 0) return null;
 
     // Find exact quality match
-    const exactMatch = data.find(item => Number.isFinite(item.quality) && item.quality === quality);
+    const exactMatch = data.find((item) => Number.isFinite(item.quality) && item.quality === quality);
     if (exactMatch && Number.isFinite(exactMatch.price)) {
       console.log("Found exact match {} with price {}", exactMatch.quality, exactMatch.price);
       return exactMatch.price;

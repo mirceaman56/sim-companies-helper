@@ -4,20 +4,20 @@
  * and HR feedback assessment matching against hr_blurp.json data
  */
 
-import { stringSimilarity } from 'string-similarity-js';
-import hrBlurpData from './resources/hr_blurp.json';
-import { t } from './i18n.js';
-import { getSectionContent } from './sidebar.js';
-import { escapeHtml } from './utils.js';
+import { stringSimilarity } from "string-similarity-js";
+import hrBlurpData from "./resources/hr_blurp.json";
+import { t } from "./i18n.js";
+import { getSectionContent } from "./sidebar.js";
+import { escapeHtml } from "./utils.js";
 
-const SECTION_ID = 'executive-section';
-const SIMILARITY_THRESHOLD = 0.70;
-const SKILL_KEYS = ['mgmt', 'acct', 'comm', 'tech'];
+const SECTION_ID = "executive-section";
+const SIMILARITY_THRESHOLD = 0.7;
+const SKILL_KEYS = ["mgmt", "acct", "comm", "tech"];
 const SKILL_LABELS = {
-  mgmt: 'Management',
-  acct: 'Accounting',
-  comm: 'Communication',
-  tech: 'Technology'
+  mgmt: "Management",
+  acct: "Accounting",
+  comm: "Communication",
+  tech: "Technology",
 };
 
 /**
@@ -25,21 +25,21 @@ const SKILL_LABELS = {
  */
 function getSkillLabel(skillKey) {
   const labelMap = {
-    mgmt: 'management',
-    acct: 'accounting',
-    comm: 'communication',
-    tech: 'technology'
+    mgmt: "management",
+    acct: "accounting",
+    comm: "communication",
+    tech: "technology",
   };
   return t(labelMap[skillKey]) || SKILL_LABELS[skillKey];
 }
 
 // Mapping for page skill names to standard keys
 const PAGE_SKILL_MAPPING = {
-  'management': 'mgmt',
-  'accounting': 'acct',
-  'communication': 'comm',
-  'science': 'tech',
-  'technology': 'tech'
+  management: "mgmt",
+  accounting: "acct",
+  communication: "comm",
+  science: "tech",
+  technology: "tech",
 };
 
 /**
@@ -50,30 +50,30 @@ const PAGE_SKILL_MAPPING = {
  */
 function extractExecutiveSkills() {
   const skills = {};
-  
+
   // Find tbody elements (skill tables use tbody)
-  const tbodies = document.querySelectorAll('tbody');
-  
+  const tbodies = document.querySelectorAll("tbody");
+
   for (const tbody of tbodies) {
-    const rows = tbody.querySelectorAll('tr');
-    
+    const rows = tbody.querySelectorAll("tr");
+
     // Check if this tbody has 4 rows (the skills table has exactly 4 skill rows)
     if (rows.length !== 4) continue;
-    
+
     let skillCount = 0;
-    const skillOrder = ['mgmt', 'acct', 'comm', 'tech'];
-    
+    const skillOrder = ["mgmt", "acct", "comm", "tech"];
+
     // Try to extract skill values from each row
     for (const row of rows) {
-      const cells = row.querySelectorAll('td');
+      const cells = row.querySelectorAll("td");
       if (cells.length < 2) break; // Not a valid skill row
-      
+
       // Look for a span with a number in the second cell
       const secondCell = cells[1];
-      const spans = secondCell.querySelectorAll('span');
-      
+      const spans = secondCell.querySelectorAll("span");
+
       let skillValue = null;
-      
+
       // Find the first span containing a number
       for (const span of spans) {
         const text = span.textContent.trim();
@@ -83,7 +83,7 @@ function extractExecutiveSkills() {
           break;
         }
       }
-      
+
       // If no span found, try to parse the cell text directly
       if (skillValue === null) {
         const cellText = secondCell.textContent.trim();
@@ -92,20 +92,20 @@ function extractExecutiveSkills() {
           skillValue = parseInt(match[0], 10);
         }
       }
-      
+
       if (skillValue !== null) {
         const skillKey = skillOrder[skillCount];
         skills[skillKey] = skillValue;
         skillCount++;
       }
     }
-    
+
     // If we found all 4 skills, return them
     if (skillCount === 4) {
       return skills;
     }
   }
-  
+
   return null;
 }
 
@@ -116,19 +116,19 @@ function extractExecutiveSkills() {
  */
 function extractTrainingSkills() {
   const trainingSkills = {};
-  
+
   // Look for training entries - they typically show "Skill +X" format
   const pageText = document.body.innerText;
-  const lines = pageText.split('\n');
-  
+  const lines = pageText.split("\n");
+
   // Also search in DOM for specific patterns
-  const allElements = document.querySelectorAll('*');
-  
+  const allElements = document.querySelectorAll("*");
+
   for (const element of allElements) {
     // Only check text nodes
     if (element.childNodes.length === 0 && element.textContent) {
       const text = element.textContent;
-      
+
       // Match patterns like "Communication +1", "Science +2", etc
       const matches = text.match(/(\w+)\s*\+(\d+)/g);
       if (matches) {
@@ -137,7 +137,7 @@ function extractTrainingSkills() {
           if (parts && parts.length === 3) {
             const skillName = parts[1].toLowerCase();
             const value = parseInt(parts[2], 10);
-            
+
             const skillKey = PAGE_SKILL_MAPPING[skillName];
             if (skillKey) {
               trainingSkills[skillKey] = (trainingSkills[skillKey] || 0) + value;
@@ -147,21 +147,21 @@ function extractTrainingSkills() {
       }
     }
   }
-  
+
   // Also search the page text for training skill indicators
   for (const line of lines) {
     const skillMatch = line.match(/(\w+)\s*\+(\d+)/);
     if (skillMatch && skillMatch.length === 3) {
       const skillName = skillMatch[1].toLowerCase();
       const value = parseInt(skillMatch[2], 10);
-      
+
       const skillKey = PAGE_SKILL_MAPPING[skillName];
       if (skillKey) {
         trainingSkills[skillKey] = (trainingSkills[skillKey] || 0) + value;
       }
     }
   }
-  
+
   return Object.keys(trainingSkills).length > 0 ? trainingSkills : null;
 }
 
@@ -171,10 +171,10 @@ function extractTrainingSkills() {
 function calculateSimilarity(a, b) {
   const aStr = String(a).toLowerCase().trim();
   const bStr = String(b).toLowerCase().trim();
-  
+
   if (!aStr || !bStr) return 0;
   if (aStr === bStr) return 1.0;
-  
+
   // Use string-similarity library
   return stringSimilarity(aStr, bStr);
 }
@@ -185,23 +185,23 @@ function calculateSimilarity(a, b) {
  */
 function findBestMatchingEntry(feedbackText) {
   if (!feedbackText) return null;
-  
+
   let bestMatch = null;
   let bestScore = SIMILARITY_THRESHOLD;
-  
+
   // Check all entries to find best match (don't stop at first)
   for (const entry of hrBlurpData) {
     // Try to match against English feedback (primary language)
-    const originalFeedback = entry.en?.originalFeedback || '';
+    const originalFeedback = entry.en?.originalFeedback || "";
     const score = calculateSimilarity(feedbackText, originalFeedback);
-    
+
     // Update best match if this score is higher
     if (score > bestScore) {
       bestScore = score;
       bestMatch = entry;
     }
   }
-  
+
   return bestMatch;
 }
 
@@ -211,18 +211,18 @@ function findBestMatchingEntry(feedbackText) {
 function getSkillAssessment(skillValue) {
   if (skillValue >= 1.4) {
     return {
-      class: 'scx-hr-blurp-skill-keeper',
-      label: t('keeper')
+      class: "scx-hr-blurp-skill-keeper",
+      label: t("keeper"),
     };
   } else if (skillValue >= 1.3) {
     return {
-      class: 'scx-hr-blurp-skill-works',
-      label: t('works')
+      class: "scx-hr-blurp-skill-works",
+      label: t("works"),
     };
   } else {
     return {
-      class: 'scx-hr-blurp-skill-garbage',
-      label: t('garbage')
+      class: "scx-hr-blurp-skill-garbage",
+      label: t("garbage"),
     };
   }
 }
@@ -237,28 +237,28 @@ function extractHRFeedback() {
   // 1. At least one table (direct child)
   // 2. A bold tag (the label)
   // 3. An empty div followed by text content
-  
-  const allDivs = document.querySelectorAll('div');
-  
+
+  const allDivs = document.querySelectorAll("div");
+
   for (const div of allDivs) {
     // Check if this div has direct table children
-    const directTables = Array.from(div.children).filter(child => child.tagName === 'TABLE');
+    const directTables = Array.from(div.children).filter((child) => child.tagName === "TABLE");
     if (directTables.length === 0) continue;
-    
+
     // Check if this div contains a bold tag (likely the label)
-    const boldTags = div.querySelectorAll('b');
+    const boldTags = div.querySelectorAll("b");
     if (boldTags.length === 0) continue;
-    
+
     // Look for an empty div (no children, no text) within this container
-    const directDivChildren = Array.from(div.children).filter(child => child.tagName === 'DIV');
+    const directDivChildren = Array.from(div.children).filter((child) => child.tagName === "DIV");
     for (let i = 0; i < directDivChildren.length; i++) {
       const currentDiv = directDivChildren[i];
-      
+
       // Check if this is an empty div (no children and no text content)
-      if (currentDiv.children.length === 0 && currentDiv.textContent.trim() === '') {
+      if (currentDiv.children.length === 0 && currentDiv.textContent.trim() === "") {
         // Look for text node immediately after this empty div
         let nextNode = currentDiv.nextSibling;
-        
+
         // Keep looking for text nodes (skip comment nodes, etc.)
         while (nextNode) {
           if (nextNode.nodeType === Node.TEXT_NODE) {
@@ -280,7 +280,7 @@ function extractHRFeedback() {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -289,7 +289,7 @@ function extractHRFeedback() {
  */
 function createSkillElementHTML(skillKey, skillValue) {
   const assessment = getSkillAssessment(skillValue);
-  
+
   return `
     <div class="scx-hr-blurp-skill-item ${assessment.class}">
       <div class="scx-hr-blurp-skill-label">${escapeHtml(getSkillLabel(skillKey))}</div>
@@ -304,21 +304,21 @@ function createSkillElementHTML(skillKey, skillValue) {
  */
 function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
   const organicValue = Math.max(0, totalValue - (trainingValue || 0));
-  
+
   return `
     <div class="scx-skill-breakdown-row">
       <div class="scx-skill-breakdown-label">${escapeHtml(getSkillLabel(skillKey))}</div>
       <div class="scx-skill-breakdown-values">
         <div class="scx-skill-breakdown-value scx-skill-breakdown-total">
-          <div class="scx-skill-breakdown-total-label">${t('total')}</div>
+          <div class="scx-skill-breakdown-total-label">${t("total")}</div>
           <div class="scx-skill-breakdown-total-value">${totalValue}</div>
         </div>
         <div class="scx-skill-breakdown-value scx-skill-breakdown-organic">
-          <div class="scx-skill-breakdown-organic-label">${t('organic')}</div>
+          <div class="scx-skill-breakdown-organic-label">${t("organic")}</div>
           <div class="scx-skill-breakdown-organic-value">${organicValue}</div>
         </div>
         <div class="scx-skill-breakdown-value scx-skill-breakdown-training">
-          <div class="scx-skill-breakdown-training-label">${t('training')}</div>
+          <div class="scx-skill-breakdown-training-label">${t("training")}</div>
           <div class="scx-skill-breakdown-training-value">${trainingValue || 0}</div>
         </div>
       </div>
@@ -332,18 +332,18 @@ function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
 function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
   let html = `
     <div class="scx-skill-breakdown-section">
-      <div class="scx-skill-breakdown-section-label">${t('skillsBreakdown')}</div>
-      <div class="scx-skill-breakdown-description">${t('skillsBreakdownDescription')}</div>
+      <div class="scx-skill-breakdown-section-label">${t("skillsBreakdown")}</div>
+      <div class="scx-skill-breakdown-description">${t("skillsBreakdownDescription")}</div>
   `;
-  
+
   // Add rows for each skill
   for (const skillKey of SKILL_KEYS) {
     const totalValue = executiveSkills[skillKey] || 0;
-    const trainingValue = trainingSkills ? (trainingSkills[skillKey] || 0) : 0;
+    const trainingValue = trainingSkills ? trainingSkills[skillKey] || 0 : 0;
     html += createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue);
   }
-  
-  html += '</div>';
+
+  html += "</div>";
   return html;
 }
 
@@ -353,7 +353,7 @@ function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
 function createFeedbackSectionHTML(feedbackText) {
   return `
     <div class="scx-hr-blurp-feedback-section">
-      <div class="scx-hr-blurp-feedback-label">${t('extractedFeedback')}</div>
+      <div class="scx-hr-blurp-feedback-label">${t("extractedFeedback")}</div>
       <div class="scx-hr-blurp-feedback-text">${escapeHtml(feedbackText)}</div>
     </div>
   `;
@@ -364,22 +364,22 @@ function createFeedbackSectionHTML(feedbackText) {
  */
 function createSkillsSectionHTML(matchedEntry) {
   if (!matchedEntry || !matchedEntry.skills) {
-    return '';
+    return "";
   }
-  
+
   let html = `
     <div class="scx-hr-blurp-skills-section">
-      <div class="scx-hr-blurp-skills-label">${t('hrSkillsAssessment')}</div>
+      <div class="scx-hr-blurp-skills-label">${t("hrSkillsAssessment")}</div>
   `;
-  
+
   for (const skillKey of SKILL_KEYS) {
     const skillValue = matchedEntry.skills[skillKey];
     if (skillValue !== undefined) {
       html += createSkillElementHTML(skillKey, skillValue);
     }
   }
-  
-  html += '</div>';
+
+  html += "</div>";
   return html;
 }
 
@@ -388,15 +388,15 @@ function createSkillsSectionHTML(matchedEntry) {
  */
 function createFooterHTML(matchedEntry) {
   if (!matchedEntry || !matchedEntry.skills || !matchedEntry.skills.avgSkill) {
-    return '';
+    return "";
   }
-  
+
   const avgAssessment = getSkillAssessment(matchedEntry.skills.avgSkill);
-  const footerClass = `scx-hr-blurp-footer scx-hr-blurp-footer-${avgAssessment.class.replace('scx-hr-blurp-skill-', '')}`;
-  
+  const footerClass = `scx-hr-blurp-footer scx-hr-blurp-footer-${avgAssessment.class.replace("scx-hr-blurp-skill-", "")}`;
+
   return `
     <div class="${footerClass}">
-      <div class="scx-hr-blurp-footer-label">${t('averageSkill')}</div>
+      <div class="scx-hr-blurp-footer-label">${t("averageSkill")}</div>
       <div class="scx-hr-blurp-footer-value">${matchedEntry.skills.avgSkill.toFixed(2)}</div>
     </div>
   `;
@@ -409,7 +409,7 @@ function createNavigationMessageHTML() {
   return `
     <div class="scx-executive-empty-state">
       <div class="scx-executive-empty-message">
-        ${t('navigateToExecutives')}
+        ${t("navigateToExecutives")}
       </div>
     </div>
   `;
@@ -422,39 +422,39 @@ export function updateExecutivePanel() {
   // Get the section content container
   const content = getSectionContent(SECTION_ID);
   if (!content) return;
-  
+
   // Check if we're on an executive page
   if (!isExecutivePage()) {
     content.innerHTML = createNavigationMessageHTML();
     return;
   }
-  
+
   const executiveSkills = extractExecutiveSkills();
   const trainingSkills = extractTrainingSkills();
   const feedbackText = extractHRFeedback();
-  
+
   // If we don't have any data, show empty state
   if (!executiveSkills && !feedbackText) {
     return;
   }
-  
+
   // Try to find HR blurp match if we have feedback
   let matchedEntry = null;
   let hasHRFeedback = false;
-  
+
   if (feedbackText) {
     matchedEntry = findBestMatchingEntry(feedbackText);
     hasHRFeedback = matchedEntry !== null;
   }
-  
+
   // Build HTML for the panel
-  let html = '';
-  
+  let html = "";
+
   // Always show skills breakdown if we have skills data
   if (executiveSkills) {
     html += createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills);
   }
-  
+
   // Show HR assessment only if we have feedback and matched entry
   if (hasHRFeedback && feedbackText && matchedEntry) {
     html += createFeedbackSectionHTML(feedbackText);
@@ -464,7 +464,7 @@ export function updateExecutivePanel() {
     // Show feedback even if no match found
     html += createFeedbackSectionHTML(feedbackText);
   }
-  
+
   // Update content
   content.innerHTML = html;
 }
@@ -475,13 +475,13 @@ export function updateExecutivePanel() {
 function isExecutivePage() {
   const path = window.location.pathname;
   const executivePages = [
-    '/headquarters/executives/coo/',
-    '/headquarters/executives/cfo/',
-    '/headquarters/executives/cto/',
-    '/headquarters/executives/cmo/'
+    "/headquarters/executives/coo/",
+    "/headquarters/executives/cfo/",
+    "/headquarters/executives/cto/",
+    "/headquarters/executives/cmo/",
   ];
-  
-  return executivePages.some(page => path.includes(page));
+
+  return executivePages.some((page) => path.includes(page));
 }
 
 /**
@@ -490,4 +490,3 @@ function isExecutivePage() {
 export function initExecutiveHelper() {
   // Initialization is handled by the sidebar system via setSectionUpdateFn
 }
-
