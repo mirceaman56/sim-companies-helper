@@ -12,6 +12,7 @@ import { initChatFilter } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
 import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
+import { initMarketAlerts, updateMarketAlertsPanel } from "./market_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 
@@ -33,6 +34,7 @@ async function init() {
   registerSection("production-section", t("productionHelper"), "⚙️");
   registerSection("retail-section", t("retailHelper"), "🏪");
   registerSection("cashflow-section", t("financialsHelper"), "💲");
+  registerSection("market-alerts-section", t("marketAlerts"), "🔔");
   registerSection("chat-section", t("chatFilter"), "💬");
   registerSection("executive-section", t("executiveHelper"), "👔");
 
@@ -44,9 +46,13 @@ async function init() {
   setSectionUpdateFn("production-section", updateProductionPanel);
   setSectionUpdateFn("retail-section", updateRetailPanel);
   setSectionUpdateFn("executive-section", updateExecutivePanel);
+  setSectionUpdateFn("market-alerts-section", updateMarketAlertsPanel);
   
   // Chat filter is static, init once
   initChatFilter();
+
+  // Market alerts init
+  initMarketAlerts();
 
   // Contract helper for discount pricing
   initContractHelper();
