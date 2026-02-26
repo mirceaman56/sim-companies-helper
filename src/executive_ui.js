@@ -5,7 +5,7 @@
  */
 
 import { stringSimilarity } from 'string-similarity-js';
-import hrBlurpData from './hr_blurp.json';
+import hrBlurpData from './resources/hr_blurp.json';
 import { t } from './i18n.js';
 import { getSectionContent } from './sidebar.js';
 import { escapeHtml } from './utils.js';

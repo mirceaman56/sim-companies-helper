@@ -27,9 +27,10 @@ export default defineConfig({
       enforce: "post",
       generateBundle() {
         mkdirSync(resolve(__dirname, "dist"), { recursive: true });
+        mkdirSync(resolve(__dirname, "dist/resources"), { recursive: true });
         copyFileSync(
-          resolve(__dirname, "src/recipes.json"),
-          resolve(__dirname, "dist/recipes.json")
+          resolve(__dirname, "src/resources/recipes.json"),
+          resolve(__dirname, "dist/resources/recipes.json")
         );
       }
     }

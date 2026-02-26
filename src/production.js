@@ -1,7 +1,7 @@
 // production.js
 // Handles recipe data and production cost calculations
 import { fetchMarketPrice } from "./market.js";
-import recipesData from "./recipes.json";
+import recipesData from "./resources/recipes.json";
 import { t } from "./i18n.js";
 import { MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
 

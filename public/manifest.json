@@ -19,7 +19,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["recipes.json"],
+      "resources": ["resources/recipes.json"],
       "matches": ["https://www.simcompanies.com/*"]
     }
   ]

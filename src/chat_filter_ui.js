@@ -2,7 +2,7 @@
 import { getSectionContent } from "./sidebar.js";
 import { STATE } from "./state.js";
 import { escapeHtml } from "./utils.js";
-import recipes from "./recipes.json";
+import recipes from "./resources/recipes.json";
 import { t } from "./i18n.js";
 
 const SECTION_ID = "chat-section";

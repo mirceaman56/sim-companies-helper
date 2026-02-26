@@ -3,7 +3,7 @@
  * Adds on-demand market price comparison buttons to inventory items
  */
 
-import recipes from './recipes.json';
+import recipes from './resources/recipes.json';
 import { fetchMarketPrice } from './market.js';
 import { getRealmId, loadAuthDataOnce } from './auth.js';
 import { STATE } from './state.js';
