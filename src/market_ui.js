@@ -67,10 +67,15 @@ async function loadAlerts() {
  * Initialize the market alerts panel
  */
 export async function initMarketAlerts() {
-  await loadAlerts();
-
   const content = getSectionContent(SECTION_ID);
   if (content && !content.querySelector(".scx-market-alerts")) {
+    content.innerHTML = `<p class="scx-note">${t("loading")}…</p>`;
+  }
+
+  await loadAlerts();
+
+  if (content) {
+    content.innerHTML = "";
     content.appendChild(createAlertsContent());
   }
 

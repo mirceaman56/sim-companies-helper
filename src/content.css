@@ -576,6 +576,143 @@ hr {
   border-color: #d0d0d0;
 }
 
+/* Sidebar dark theme – align with game UI (dark grey/charcoal) */
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-section {
+    background: #2d2d2d;
+    border-color: #555;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  #scx-sidebar .scx-section-header {
+    background: #252525;
+    border-bottom-color: #555;
+  }
+
+  #scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) .scx-section-header {
+    border-top-color: #555;
+  }
+
+  #scx-sidebar .scx-section-title {
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-section-toggle {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-section-content {
+    background: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-panel {
+    background: #383838;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-panel-title {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-label,
+  #scx-sidebar label {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-note {
+    color: #b0b0b0;
+    background: #383838;
+    border-left-color: #555;
+  }
+
+  #scx-sidebar select,
+  #scx-sidebar input[type="text"],
+  #scx-sidebar input[type="number"] {
+    background: #383838;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-sidebar-footer-contract,
+  #scx-sidebar .scx-sidebar-footer-donate,
+  #scx-sidebar .scx-sidebar-footer-bug {
+    background: #383838;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-sidebar-footer-contract:hover,
+  #scx-sidebar .scx-sidebar-footer-donate:hover,
+  #scx-sidebar .scx-sidebar-footer-bug:hover {
+    background: #454545;
+    border-color: #666;
+  }
+
+  #scx-sidebar .scx-chat-message {
+    background: #383838;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-chat-message-header {
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-chat-message-company {
+    color: #81c784;
+  }
+
+  #scx-sidebar .scx-chat-message-company:hover {
+    color: #90caf9;
+  }
+
+  #scx-sidebar .scx-chat-message-body {
+    color: #64b5f6;
+  }
+
+  #scx-sidebar .scx-chat-results {
+    border-top-color: #555;
+  }
+
+  #scx-sidebar .scx-quality-container {
+    border-color: #555;
+    background: #383838;
+  }
+
+  #scx-sidebar .scx-quality-label {
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-status {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-badge {
+    background: #454545;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-chip {
+    background: #454545;
+    color: #e0e0e0;
+  }
+
+  #scx-sidebar .scx-chip-na {
+    background: #383838;
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-copy-btn {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-copy-btn:hover {
+    color: #e0e0e0;
+  }
+}
+
 /* Copy Button */
 .scx-copy-btn {
   position: relative;
@@ -1331,6 +1468,75 @@ hr {
 .scx-ma-btn-remove:hover {
   color: var(--scx-color-error);
   border-color: var(--scx-color-error);
+}
+
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-market-alerts-limit {
+    background: rgba(21, 101, 192, 0.25);
+    border-left-color: #64b5f6;
+  }
+
+  #scx-sidebar .scx-market-alerts-limit-text {
+    color: #90caf9;
+  }
+
+  #scx-sidebar .scx-market-alerts-empty {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-card {
+    background: #383838;
+    border-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-card-header {
+    background: #252525;
+    border-bottom-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-product-link {
+    color: #64b5f6;
+  }
+
+  #scx-sidebar .scx-ma-quality-badge {
+    background: rgba(21, 101, 192, 0.35);
+    color: #90caf9;
+  }
+
+  #scx-sidebar .scx-ma-status-active {
+    color: #81c784;
+  }
+
+  #scx-sidebar .scx-ma-status-triggered {
+    color: #ffb74d;
+  }
+
+  #scx-sidebar .scx-ma-status-stopped {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-rate-limit {
+    color: #ef9a9a;
+  }
+
+  #scx-sidebar .scx-ma-card-actions {
+    background: #252525;
+    border-top-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-btn-remove {
+    border-color: #555;
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-btn-remove:hover {
+    color: #ef9a9a;
+    border-color: #ef5350;
+  }
+
+  #scx-sidebar .scx-market-alerts .scx-color-999 {
+    color: #b0b0b0;
+  }
 }
 
 /* ============ Toast Notifications ============ */

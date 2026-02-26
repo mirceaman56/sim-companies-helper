@@ -6,7 +6,7 @@ export const MARKET_CACHE_TTL_MS = 60_000; // 1 minute
 export const RATE_LIMIT_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
 // Market alerts
-export const ALERT_CHECK_INTERVAL_MS = 60_000; // 1 minute
+export const ALERT_CHECK_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 export const ALERT_TIMER_REFRESH_MS = 10_000; // 10 seconds
 export const ALERT_MAX_COUNT = 2;
 export const TOAST_DISMISS_MS = 15_000; // 15 seconds
