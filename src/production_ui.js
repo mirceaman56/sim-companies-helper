@@ -433,8 +433,8 @@ async function renderProductAnalysis(contentEl, recipe) {
     contentEl.innerHTML = `
       <div class="scx-panel" style="padding: 12px;">
         <div class="scx-muted">Unable to analyze</div>
-        ${analysis?.error ? `<div style="font-size:9px; color:#c62828; margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
-        <div style="font-size:9x; color:#999; margin-top:8px;">${t("ensureProductionQuantity")}</div>
+        ${analysis?.error ? `<div style="font-size:9px; color:var(--scx-color-error); margin-top:4px;">${escapeHtml(analysis.error)}</div>` : ''}
+        <div style="font-size:9x; color:var(--scx-text-muted); margin-top:8px;">${t("ensureProductionQuantity")}</div>
       </div>
     `;
     return;
@@ -586,13 +586,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-brown scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.market.profit >= 0 ? '#2e7d32' : '#c62828'};">
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.market.profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-font-9">
              <span class="scx-k scx-text-brown">${t("margin")}</span>
-             <span style="color:${profitAnalysis.market.margin >= 0 ? '#2e7d32' : '#c62828'};">
+             <span style="color:${profitAnalysis.market.margin >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
           </div>
@@ -610,13 +610,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
            <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-dark-brown scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.contract.profit >= 0 ? '#2e7d32' : '#c62828'};">
+             <span class="scx-text-bold scx-font-9" style="color:${profitAnalysis.contract.profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-font-9">
              <span class="scx-k scx-text-dark-brown">${t("margin")}</span>
-             <span style="color:${profitAnalysis.contract.margin >= 0 ? '#2e7d32' : '#c62828'};">
+             <span style="color:${profitAnalysis.contract.margin >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>
           </div>
@@ -650,20 +650,20 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <!-- Projected Profit Section -->
       ${projectedMarketProfit !== null && projectedContractProfit !== null ? `
       <div class="scx-box-light-gray" style="margin-top: 4px;">
-        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase" style="color: #1a237e;">${t('projectedProfitsAtLevel')} ${t('lvl')} ${buildingLevel + 1}</div>
+        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase" style="color: var(--scx-color-info);">${t('projectedProfitsAtLevel')} ${t('lvl')} ${buildingLevel + 1}</div>
         
         <!-- Projected Market Profit -->
         <div class="scx-profit-box-sm scx-profit-box-yellow scx-margin-bottom-4">
           <div class="scx-flex-spaced scx-font-8">
              <span class="scx-text-orange">${t("marketSell")}</span>
-             <span class="scx-text-bold" style="color:${projectedMarketProfit >= 0 ? '#2e7d32' : '#c62828'};">
+             <span class="scx-text-bold" style="color:${projectedMarketProfit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(projectedMarketProfit)}
              </span>
           </div>
           ${marketProfitDelta !== null ? `
           <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
              <span>${t('delta')}:</span>
-             <span style="color:${marketProfitDelta >= 0 ? '#2e7d32' : '#c62828'};">
+             <span style="color:${marketProfitDelta >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(marketProfitDelta)}
              </span>
           </div>
@@ -674,14 +674,14 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         <div class="scx-profit-box-sm scx-profit-box-purple">
           <div class="scx-flex-spaced scx-font-8">
              <span class="scx-text-purple">${t("contractSell")}</span>
-             <span class="scx-text-bold" style="color:${projectedContractProfit >= 0 ? '#2e7d32' : '#c62828'};">
+             <span class="scx-text-bold" style="color:${projectedContractProfit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(projectedContractProfit)}
              </span>
           </div>
           ${contractProfitDelta !== null ? `
           <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
              <span>${t('delta')}:</span>
-             <span style="color:${contractProfitDelta >= 0 ? '#2e7d32' : '#c62828'};">
+             <span style="color:${contractProfitDelta >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)'};">
                ${formatMoney(contractProfitDelta)}
              </span>
           </div>
@@ -760,8 +760,8 @@ function renderSellAnalysis(sellAnalysis, quantity) {
   }
 
   const isProfitable = sellAnalysis.profit > 0;
-  const profitColor = isProfitable ? "#2e7d32" : "#c62828";
-  const profitBg = isProfitable ? "#e8f5e9" : "#ffebee";
+  const profitColor = isProfitable ? "var(--scx-color-success)" : "var(--scx-color-error)";
+  const profitBg = isProfitable ? "var(--scx-bg-success)" : "var(--scx-bg-error)";
 
   return `
     <hr class="scx-sell-hr">

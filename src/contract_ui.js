@@ -264,7 +264,7 @@ async function calculateAndDisplayProfit() {
   const price = getPriceValue();
 
   if (!amount || !price) {
-    resultDiv.innerHTML = `<div style="color:#999; text-align:center; font-size:10px;">${t("contractSetValues")}</div>`;
+    resultDiv.innerHTML = `<div style="color:var(--scx-text-muted); text-align:center; font-size:10px;">${t("contractSetValues")}</div>`;
     resultDiv.style.display = "block";
     return;
   }
@@ -293,18 +293,18 @@ async function calculateAndDisplayProfit() {
   }
 
   const profit = revenue - totalSourcing - totalTransport;
-  const profitColor = profit >= 0 ? "#27ae60" : "#e74c3c";
+  const profitColor = profit >= 0 ? 'var(--scx-color-success)' : 'var(--scx-color-error)';
 
   resultDiv.innerHTML = `
     <div style="display:flex; justify-content:space-between;">
       <span>${t("contractRevenue")}</span>
       <span>${formatMoney(revenue)}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; color:#e67e22;">
+    <div style="display:flex; justify-content:space-between; color:var(--scx-color-warning);">
       <span>${t("contractSourcing")}</span>
       <span>-${formatMoney(totalSourcing)}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; color:#e67e22;">
+    <div style="display:flex; justify-content:space-between; color:var(--scx-color-warning);">
       <span>${t("contractTransportCost")}</span>
       <span>-${formatMoney(totalTransport)}</span>
     </div>
@@ -335,10 +335,10 @@ function injectIfNeeded() {
   container.className = "scx-sidebar-footer-contract";
   container.style.cssText = `
     width: 180px;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: var(--scx-bg-tertiary);
+    border: var(--scx-border-medium-gray);
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--scx-shadow-sm);
     margin-top: 4px;
     box-sizing: border-box;
     overflow: hidden;
@@ -354,19 +354,19 @@ function injectIfNeeded() {
   `;
 
   container.innerHTML = `
-    <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px; color:#555;">
+    <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px; color:var(--scx-text-secondary-alt);">
       <span style="font-size: 12px;">📝</span> ${t("contractApplyTooltip")}
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
       <select id="scx-contract-discount-select" title="${t("contractDiscountLabel")}" style="
-        background: #f5f5f5;
-        border: 1px solid #ccc;
+        background: var(--scx-bg-neutral);
+        border: var(--scx-border-medium-light);
         border-radius: 6px;
         padding: 5px 6px;
         font-size: 12px;
         cursor: pointer;
         font-weight: 500;
-        color: #333;
+        color: var(--scx-text-primary);
       ">
         <option value="0"${discountPct === 0 ? " selected" : ""}>+0%</option>
         <option value="1"${discountPct === 1 ? " selected" : ""}>-1%</option>
@@ -376,7 +376,7 @@ function injectIfNeeded() {
         <option value="5"${discountPct === 5 ? " selected" : ""}>-5%</option>
       </select>
       <button id="scx-contract-apply-btn" title="${t("contractApplyTooltip")}" style="
-        background: #3498db;
+        background: var(--scx-color-info);
         color: white;
         border: none;
         border-radius: 6px;
@@ -390,9 +390,9 @@ function injectIfNeeded() {
         ${t("contractApplyBtn")}${discountPct}%
       </button>
     </div>
-    <div style="border-top: 1px solid #eee; padding-top: 8px; width: 100%;">
+    <div style="border-top: var(--scx-border-light-alt); padding-top: 8px; width: 100%;">
       <button id="scx-contract-calc-btn" style="
-        background: #2ecc71;
+        background: var(--scx-color-success);
         color: white;
         border: none;
         border-radius: 6px;

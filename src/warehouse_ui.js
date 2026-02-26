@@ -207,8 +207,8 @@ function getOrCreateMarketButton(cardElement) {
     transition: background 0.2s, color 0.2s;
   `;
 
-  button.onmouseover = () => { button.style.background = '#222'; };
-  button.onmouseout = () => { button.style.background = 'black'; };
+  button.onmouseover = () => { button.style.background = 'var(--scx-text-primary)'; };
+  button.onmouseout = () => { button.style.background = 'var(--scx-text-primary-dark,black)'; };
 
   wrapper.appendChild(button);
 

@@ -247,7 +247,7 @@ describe("updateCashflowPanel", () => {
 
     expect(mockContentEl.innerHTML).toContain("Error");
     expect(mockContentEl.innerHTML).toContain("Failed to fetch data");
-    expect(mockContentEl.innerHTML).toContain("#c62828");
+    expect(mockContentEl.innerHTML).toContain("var(--scx-color-error)");
   });
 
   it("displays no data message when no cashflow data available", () => {
@@ -340,7 +340,7 @@ describe("updateCashflowPanel", () => {
 
     const html = mockContentEl.innerHTML;
     // Profit increased from 300000 to 1000000 (+700000)
-    expect(html).toContain("#2e7d32"); // green color for positive
+    expect(html).toContain("var(--scx-color-success)"); // green color for positive
   });
 
   it("shows negative color for profit decrease", () => {
@@ -365,7 +365,7 @@ describe("updateCashflowPanel", () => {
 
     const html = mockContentEl.innerHTML;
     // Profit decreased from 300000 to -500000 (-800000)
-    expect(html).toContain("#c62828"); // red color for negative
+    expect(html).toContain("var(--scx-color-error)"); // red color for negative
   });
 
   it("includes breakdown rows with formatted thousands separators", () => {
