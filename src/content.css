@@ -116,6 +116,46 @@
   --scx-input-text: #000000;
 }
 
+/* ============ Dark Theme CSS Variables ============ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Override text colors for dark theme */
+    --scx-text-primary: #e0e0e0;
+    --scx-text-secondary: #b0b0b0;
+    --scx-text-muted: #808080;
+
+    /* Override background colors for dark theme */
+    --scx-bg-primary: #1e1e1e;
+    --scx-bg-secondary: #2d2d2d;
+    --scx-bg-tertiary: #383838;
+    --scx-bg-subtle: #2d2d2d;
+
+    /* Override border colors for dark theme */
+    --scx-border-light: 1px solid #555;
+    --scx-border-light-gray: 1px solid #555;
+    --scx-border-light-alt: 1px solid #555;
+    --scx-border-medium: 1px solid #555;
+    --scx-border-medium-gray: 1px solid #555;
+    --scx-border-medium-light: 1px solid #666;
+    --scx-border-dark: 1px solid #888;
+    --scx-border-dark-gray: 1px solid #999;
+
+    /* Override form input for dark theme */
+    --scx-input-bg: #383838;
+    --scx-input-text: #e0e0e0;
+    --scx-input-border: #555;
+
+    /* Override status backgrounds for dark theme */
+    --scx-bg-success: #1b5e20;
+    --scx-bg-success-light: #2e7d32;
+    --scx-bg-error: #b71c1c;
+    --scx-bg-warning: #d68e00;
+    --scx-bg-info: #1565c0;
+    --scx-bg-accent: #6a1b9a;
+    --scx-bg-neutral: #383838;
+  }
+}
+
 /* ============ Form Elements ============ */
 .scx-select {
   font-family: var(--scx-font-family);
@@ -319,7 +359,7 @@
 
 .scx-panel-title {
   font-weight: 900;
-  color: #333;
+  color: var(--scx-text-primary);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.25px;
@@ -384,11 +424,11 @@
 
 .scx-note {
   font-size: 11px;
-  color: #666;
-  background: #fafafa;
+  color: var(--scx-text-secondary);
+  background: var(--scx-bg-subtle);
   padding: 8px;
   border-radius: 4px;
-  border-left: 2px solid #ddd;
+  border-left: 2px solid var(--scx-border-medium);
   margin-top: 10px;
   line-height: 1.3;
   opacity: 0.68;
@@ -396,7 +436,7 @@
 
 hr {
   border: none;
-  border-top: 1px solid #f0f0f0;
+  border-top: var(--scx-border-light);
   margin: 8px 0;
 }
 
@@ -411,7 +451,7 @@ hr {
 
 .scx-skill-breakdown-section,
 .scx-hr-blurp-skills-section {
-  border-bottom: 1px solid #eee;
+  border-bottom: var(--scx-border-light);
 }
 
 /* ============ Chat Filter Styles ============ */
@@ -542,16 +582,15 @@ hr {
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 11px;
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-sell-hr {
   border: none;
-  border-top: 1px solid #e0e0e0;
+  border-top: var(--scx-border-light);
   margin: 8px 0;
 }
 
-/* Sidebar Footer Buttons */
 .scx-sidebar-footer-contract,
 .scx-sidebar-footer-donate,
 .scx-sidebar-footer-bug {
@@ -559,9 +598,9 @@ hr {
   width: 100%;
   padding: 8px 12px;
   margin-top: 8px;
-  border: 1px solid #e0e0e0;
+  border: var(--scx-border-light);
   border-radius: 4px;
-  background: #ffffff;
+  background: var(--scx-bg-primary);
   cursor: pointer;
   font-size: 11px;
   text-align: center;
@@ -572,8 +611,8 @@ hr {
 .scx-sidebar-footer-contract:hover,
 .scx-sidebar-footer-donate:hover,
 .scx-sidebar-footer-bug:hover {
-  background: #f8f8f8;
-  border-color: #d0d0d0;
+  background: var(--scx-bg-secondary);
+  border-color: var(--scx-border-medium);
 }
 
 /* Sidebar dark theme – align with game UI (dark grey/charcoal) */
@@ -709,7 +748,7 @@ hr {
   }
 
   #scx-sidebar .scx-copy-btn:hover {
-    color: #e0e0e0;
+    color: var(--scx-text-primary);
   }
 }
 
@@ -718,7 +757,7 @@ hr {
   position: relative;
   background: none;
   border: none;
-  color: #666;
+  color: var(--scx-text-secondary);
   cursor: pointer;
   font-size: 11px;
   padding: 2px 6px;
@@ -757,7 +796,7 @@ hr {
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-bottom-color: #333;
+  border-bottom-color: var(--scx-bg-tertiary);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -772,13 +811,13 @@ hr {
 /* Production UI styling */
 .scx-prod-title {
   font-weight: 600;
-  color: #333;
+  color: var(--scx-text-primary);
   font-size: 14px;
 }
 
 .scx-prod-qty {
   font-weight: 600;
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-badge-active {
@@ -877,7 +916,7 @@ hr {
 }
 
 .scx-text-muted {
-  color: #999;
+  color: var(--scx-text-muted);
   font-size: 9px;
 }
 
@@ -950,11 +989,11 @@ hr {
 }
 
 .scx-color-999 {
-  color: #999;
+  color: var(--scx-text-muted);
 }
 
 .scx-color-333 {
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-material-row {
@@ -963,16 +1002,16 @@ hr {
   align-items: center;
   margin-bottom: 6px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: var(--scx-border-light);
 }
 
 .scx-material-name {
-  color: #333;
+  color: var(--scx-text-primary);
   font-weight: 500;
 }
 
 .scx-material-qty {
-  color: #999;
+  color: var(--scx-text-muted);
   font-size: 10px;
 }
 
@@ -981,12 +1020,12 @@ hr {
 }
 
 .scx-material-unit-price {
-  color: #666;
+  color: var(--scx-text-secondary);
   font-weight: 500;
 }
 
 .scx-material-total-cost {
-  color: #333;
+  color: var(--scx-text-primary);
   font-weight: 600;
 }
 
@@ -1032,7 +1071,7 @@ hr {
 }
 
 .scx-sell-profit-center {
-  background: #fafafa;
+  background: var(--scx-bg-subtle);
   padding: 8px;
   border-radius: 4px;
   text-align: center;
@@ -1045,23 +1084,23 @@ hr {
 
 .scx-hr-blurp-feedback-section {
   padding: 12px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: var(--scx-border-light);
 }
 
 .scx-hr-blurp-feedback-label {
   font-size: 10px;
   font-weight: 600;
-  color: #666;
+  color: var(--scx-text-secondary);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
 
 .scx-hr-blurp-feedback-text {
   font-size: 11px;
-  color: #333;
+  color: var(--scx-text-primary);
   line-height: 1.4;
   font-style: italic;
-  background: #f5f5f5;
+  background: var(--scx-bg-subtle);
   padding: 8px;
   border-radius: 3px;
   max-height: 60px;
@@ -1075,7 +1114,7 @@ hr {
 .scx-hr-blurp-skills-label {
   font-size: 11px;
   font-weight: 600;
-  color: #666;
+  color: var(--scx-text-secondary);
   text-transform: uppercase;
   margin-bottom: 12px;
 }
@@ -1111,7 +1150,7 @@ hr {
   flex: 0 0 100px;
   font-weight: 600;
   font-size: 12px;
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-hr-blurp-skill-value {
@@ -1155,8 +1194,8 @@ hr {
 
 .scx-hr-blurp-footer {
   padding: 12px 16px;
-  border-top: 2px solid #eee;
-  background: #f9f9f9;
+  border-top: 2px solid var(--scx-border-light);
+  background: var(--scx-bg-subtle);
   border-radius: 0 0 8px 8px;
   display: flex;
   justify-content: space-between;
@@ -1165,7 +1204,7 @@ hr {
 
 .scx-hr-blurp-footer-label {
   font-weight: 600;
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-hr-blurp-footer-value {
@@ -1188,20 +1227,20 @@ hr {
 /* Skills Breakdown Section */
 .scx-skill-breakdown-section {
   padding: 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: var(--scx-border-light);
 }
 
 .scx-skill-breakdown-section-label {
   font-size: 11px;
   font-weight: 600;
-  color: #666;
+  color: var(--scx-text-secondary);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
 
 .scx-skill-breakdown-description {
   font-size: 10px;
-  color: #999;
+  color: var(--scx-text-muted);
   margin-bottom: 12px;
 }
 
@@ -1210,7 +1249,7 @@ hr {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: var(--scx-border-light);
   width: 100%;
   box-sizing: border-box;
 }
@@ -1223,7 +1262,7 @@ hr {
   flex: 0 0 80px;
   font-weight: 600;
   font-size: 12px;
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-skill-breakdown-values {
@@ -1241,7 +1280,7 @@ hr {
 }
 
 .scx-skill-breakdown-total {
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-skill-breakdown-organic {
@@ -1258,7 +1297,7 @@ hr {
   font-size: 9px;
   font-weight: 500;
   text-transform: uppercase;
-  color: #999;
+  color: var(--scx-text-muted);
   display: block;
   margin-bottom: 2px;
 }
@@ -1272,7 +1311,7 @@ hr {
 }
 
 .scx-skill-breakdown-total-value {
-  color: #333;
+  color: var(--scx-text-primary);
 }
 
 .scx-skill-breakdown-organic-value {
@@ -1294,7 +1333,7 @@ hr {
 
 .scx-executive-empty-message {
   text-align: center;
-  color: #999;
+  color: var(--scx-text-muted);
   font-size: 13px;
   line-height: 1.5;
   font-style: italic;
