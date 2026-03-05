@@ -150,4 +150,7 @@ export default {
   maPrice: "価格達成",
   maAll: "すべて",
   maAlertLimit: "最大2つのアラート",
+  upgradeBuyMessage: "購入メッセージ",
+  upgradeDiscount: "割引:",
+  upgradeCopyTooltip: "購入メッセージをコピー",
 };

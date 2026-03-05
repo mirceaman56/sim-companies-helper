@@ -121,7 +121,7 @@ export function formatMoney(x, options = {}) {
   const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const decimal = parts[1];
 
-  const formatted = `${integer}.${decimal}`;
+  const formatted = decimal ? `${integer}.${decimal}` : integer;
   return prefix ? `${sign}$${formatted}` : `${sign}${formatted}`;
 }
 
