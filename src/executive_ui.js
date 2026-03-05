@@ -474,14 +474,8 @@ export function updateExecutivePanel() {
  */
 function isExecutivePage() {
   const path = window.location.pathname;
-  const executivePages = [
-    "/headquarters/executives/coo/",
-    "/headquarters/executives/cfo/",
-    "/headquarters/executives/cto/",
-    "/headquarters/executives/cmo/",
-  ];
-
-  return executivePages.some((page) => path.includes(page));
+  // Match both specific roles (coo, cfo, cto, cmo) and group executives (g1, g2, g3, etc.)
+  return /\/headquarters\/executives\/(coo|cfo|cto|cmo|g\d+)\/$/.test(path);
 }
 
 /**
