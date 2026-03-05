@@ -150,4 +150,7 @@ export default {
   maPrice: "Fiyata ulaşıldı",
   maAll: "Tümü",
   maAlertLimit: "Maks 2 uyarı",
+  upgradeBuyMessage: "Satın alma mesajı",
+  upgradeDiscount: "İndirim:",
+  upgradeCopyTooltip: "Satın alma mesajını kopyala",
 };

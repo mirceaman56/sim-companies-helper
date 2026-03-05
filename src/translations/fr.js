@@ -151,4 +151,7 @@ export default {
   maPrice: "Prix atteint",
   maAll: "Tous",
   maAlertLimit: "Max 2 alertes",
+  upgradeBuyMessage: "Message d'achat",
+  upgradeDiscount: "Remise :",
+  upgradeCopyTooltip: "Copier le message d'achat",
 };

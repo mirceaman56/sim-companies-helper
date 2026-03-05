@@ -150,4 +150,7 @@ export default {
   maPrice: "Cena dosažena",
   maAll: "Vše",
   maAlertLimit: "Max 2 upozornění",
+  upgradeBuyMessage: "Nákupní zpráva",
+  upgradeDiscount: "Sleva:",
+  upgradeCopyTooltip: "Kopírovat nákupní zprávu",
 };

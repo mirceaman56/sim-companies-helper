@@ -12,6 +12,7 @@ import { initChatFilter } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
 import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
+import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initMarketAlerts, updateMarketAlertsPanel } from "./market_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
@@ -57,6 +58,9 @@ async function init() {
 
   // Warehouse helper for market price deltas
   initWarehouseHelper();
+
+  // Upgrade buy message helper for building upgrade popup
+  initUpgradeBuyMessage();
 
   // Setup production row listeners FIRST to close race condition window
   // (attach listeners before user can interact)

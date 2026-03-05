@@ -150,4 +150,7 @@ export default {
   maPrice: "价格已达到",
   maAll: "所有",
   maAlertLimit: "最多2个警报",
+  upgradeBuyMessage: "购买消息",
+  upgradeDiscount: "折扣:",
+  upgradeCopyTooltip: "复制购买消息",
 };
