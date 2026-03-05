@@ -15,7 +15,6 @@ const RESOURCES_BY_ROW = [
   [111, 0],
 ];
 
-
 export function initUpgradeBuyMessage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -79,7 +78,7 @@ function allPricesPopulated(modal) {
   const rows = modal.querySelectorAll("tbody tr");
   for (const row of rows) {
     const cells = row.querySelectorAll("td");
-    const hasColspan2 = Array.from(cells).some(td => td.getAttribute("colspan") === "2");
+    const hasColspan2 = Array.from(cells).some((td) => td.getAttribute("colspan") === "2");
     if (!hasColspan2) continue;
     const lastCell = cells[cells.length - 1];
     const bold = lastCell.querySelector("b");
@@ -149,7 +148,13 @@ function parseResourceRows(modal) {
     const price = parseLocaleNumber(match[2]);
     if (!Number.isFinite(price) || price <= 0) continue;
 
-    resources.push({ recipeId, requiredQty: Math.round(requiredQty), warehouse: Math.round(warehouse), price, decimals });
+    resources.push({
+      recipeId,
+      requiredQty: Math.round(requiredQty),
+      warehouse: Math.round(warehouse),
+      price,
+      decimals,
+    });
   }
 
   return resources;
@@ -164,19 +169,21 @@ function allItemsNeeded(resources, mult) {
 }
 
 function buildBuyMessage(resources, mult, discount) {
-  const parts = resources.map(({ recipeId, requiredQty, warehouse, price, decimals }) => {
-    const totalNeeded = requiredQty * mult;
-    const neededToBuy = Math.max(0, totalNeeded - warehouse);
+  const parts = resources
+    .map(({ recipeId, requiredQty, warehouse, price, decimals }) => {
+      const totalNeeded = requiredQty * mult;
+      const neededToBuy = Math.max(0, totalNeeded - warehouse);
 
-    if (neededToBuy === 0) return null;
-    
-    const discountedPrice = price * (1 - discount / 100);
-    const rounded = Math.round(discountedPrice * 10 ** decimals) / 10 ** decimals;
-    const formatted = formatMoney(rounded, { decimals, prefix: true });
-    const recipeTag = `:re-${recipeId}:`;
-    return `${neededToBuy} ${recipeTag} @ ${formatted}`;
-  }).filter(p => p !== null);
-  
+      if (neededToBuy === 0) return null;
+
+      const discountedPrice = price * (1 - discount / 100);
+      const rounded = Math.round(discountedPrice * 10 ** decimals) / 10 ** decimals;
+      const formatted = formatMoney(rounded, { decimals, prefix: true });
+      const recipeTag = `:re-${recipeId}:`;
+      return `${neededToBuy} ${recipeTag} @ ${formatted}`;
+    })
+    .filter((p) => p !== null);
+
   return `Buying
 ${parts.join("\n")}`;
 }
