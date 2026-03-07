@@ -22,7 +22,11 @@ import {
   parseDurationToSeconds,
   computeMetrics,
   formatRetailAsText,
+  computeRetailTrends,
+  computeOpportunityScore,
+  getRetailBadge,
 } from "./retail_calc.js";
+import { fetchRetailInfoForProduct, getCachedRetailInfo } from "./retail_market.js";
 import { MARKET_CACHE_TTL_MS } from "./constants.js";
 
 const SECTION_ID = "retail-section";
@@ -375,6 +379,16 @@ export async function updatePanel() {
     ensureMarketFetchForProduct(productId, () => updatePanel());
   }
 
+  // Retail info (saturation / opportunity) — kick off async fetch, re-render on completion
+  if (productId != null && realmId != null) {
+    const cached = getCachedRetailInfo(productId);
+    if (!cached) {
+      fetchRetailInfoForProduct(realmId, productId)
+        .then(() => updatePanel())
+        .catch(() => {});
+    }
+  }
+
   // --- Market Comparison Calculations ---
   let marketAnalysisHTML = "";
   let marketAnalysisData = null; // Store for copy functionality
@@ -491,6 +505,59 @@ export async function updatePanel() {
     }
   }
 
+  // --- Market Pulse (saturation + opportunity score) ---
+  let marketPulseHTML = "";
+  if (productId != null && realmId != null) {
+    const retailInfo = getCachedRetailInfo(productId);
+    if (retailInfo) {
+      const trends = computeRetailTrends(retailInfo);
+      const score = computeOpportunityScore(trends);
+      const badge = getRetailBadge(score, trends);
+
+      const fmtPct = (v) => {
+        if (!Number.isFinite(v)) return "—";
+        const sign = v >= 0 ? "+" : "";
+        return `${sign}${(v * 100).toFixed(1)}%`;
+      };
+
+      const satArrow = trends && trends.satDelta7d < -0.005 ? "↓" : trends && trends.satDelta7d > 0.005 ? "↑" : "→";
+      const priceArrow = trends && trends.priceDelta7d > 0.005 ? "↑" : trends && trends.priceDelta7d < -0.005 ? "↓" : "→";
+      const satArrowColor =
+        satArrow === "↓" ? "var(--scx-color-success)" : satArrow === "↑" ? "var(--scx-color-error)" : "var(--scx-text-muted)";
+      const priceArrowColor =
+        priceArrow === "↑" ? "var(--scx-color-success)" : priceArrow === "↓" ? "var(--scx-color-error)" : "var(--scx-text-muted)";
+
+      marketPulseHTML = `
+        <hr class="scx-hr-sm">
+        <div class="scx-panel-head" style="margin-bottom:6px;">
+          <div class="scx-panel-title">${t("marketPulse")}</div>
+          <div class="scx-chip ${badge.cls}">${t(badge.label)}</div>
+        </div>
+        <div class="scx-grid">
+          <span class="scx-k">${t("currentSaturation")}</span>
+          <span class="scx-v">
+            ${trends ? trends.currentSat.toFixed(2) : "—"}
+            <span style="color:${satArrowColor};">${satArrow} ${fmtPct(trends?.satDelta7d)}</span>
+          </span>
+          <span class="scx-k">${t("avgRetailPrice")}</span>
+          <span class="scx-v">
+            ${trends ? formatMoney(trends.currentPrice) : "—"}
+            <span style="color:${priceArrowColor};">${priceArrow} ${fmtPct(trends?.priceDelta7d)}</span>
+          </span>
+        </div>
+        <div class="scx-note scx-margin-top-2" style="font-style:normal;">${t(badge.verdict)}</div>
+      `;
+    } else {
+      marketPulseHTML = `
+        <hr class="scx-hr-sm">
+        <div class="scx-panel-head" style="margin-bottom:6px;">
+          <div class="scx-panel-title">${t("marketPulse")}</div>
+        </div>
+        <div class="scx-text-muted scx-font-9">${t("loadingMarketData")}</div>
+      `;
+    }
+  }
+
   // --- HTML Render ---
 
   let finePrint = "";
@@ -523,6 +590,7 @@ export async function updatePanel() {
       
       ${finePrint}
 
+      ${marketPulseHTML}
       ${marketAnalysisHTML}
     </div>
   `;
