@@ -39,7 +39,7 @@ async function saveAlerts() {
   await ensureAuth();
   const key = storageKey();
   if (!key) return;
-  const serializable = alerts.map(({ intervalId, ...rest }) => rest);
+  const serializable = alerts.map(({ intervalId: _intervalId, ...rest }) => rest);
   try {
     chrome.storage.local.set({ [key]: { alerts: serializable, nextAlertId } });
   } catch {
@@ -281,7 +281,7 @@ function removeAlert(container, alertId) {
  * Check current market price against alert target
  */
 async function checkPrice(container, alert) {
-  const { blocked, remainingMs } = getRateLimitStatus();
+  const { blocked } = getRateLimitStatus();
   if (blocked) {
     alert.lastCheck = Date.now();
     renderAlertList(container);
@@ -348,7 +348,7 @@ function playAlertSound() {
 
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.5);
-  } catch (e) {
+  } catch {
     // Audio not available — silent fallback
   }
 }

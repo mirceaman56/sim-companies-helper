@@ -223,7 +223,7 @@ function getOrCreateMarketButton(cardElement) {
  * Handle market button click
  */
 async function handleMarketButtonClick(button, item) {
-  const { element, name, sourcingCost, weightedQuality } = item;
+  const { name, sourcingCost, weightedQuality } = item;
   const productId = getProductIdByName(name);
 
   if (!productId) {

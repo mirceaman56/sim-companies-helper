@@ -153,6 +153,22 @@
     --scx-bg-info: #1565c0;
     --scx-bg-accent: #6a1b9a;
     --scx-bg-neutral: #383838;
+
+    /* Fix dark text colors that become invisible on dark status backgrounds */
+    --scx-text-success-dark: #a5d6a7;
+
+    /* Lighter category colors for dark mode (used on dark-bg status blocks) */
+    --scx-category-retail: #81c784;
+    --scx-category-contracts: #64b5f6;
+    --scx-category-market: #ffb300;
+    --scx-category-other: #9e9e9e;
+    --scx-category-production: #ef9a9a;
+    --scx-category-wages: #ef9a9a;
+    --scx-category-market-buy: #f48fb1;
+    --scx-category-contract-exp: #ce93d8;
+    --scx-category-fees: #bcaaa4;
+    --scx-category-construction: #ffcc80;
+    --scx-category-accounting: #b0bec5;
   }
 }
 
@@ -861,6 +877,24 @@ hr {
 }
 .scx-box-light-gray {
   background: #f0f4f8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-box-blue {
+    background: #1a2a3a;
+  }
+  .scx-box-yellow {
+    background: #2a2410;
+  }
+  .scx-box-purple {
+    background: #251a2e;
+  }
+  .scx-box-green {
+    background: #172519;
+  }
+  .scx-box-light-gray {
+    background: #2a2a2a;
+  }
 }
 
 .scx-profit-box-sm {
@@ -1669,5 +1703,68 @@ hr {
 @media (max-width: 1200px) {
   .scx-sidebar {
     display: none;
+  }
+}
+
+/* ============ Cashflow Panel ============ */
+.scx-cf-net {
+  font-size: var(--scx-font-size-xl);
+  font-weight: var(--scx-font-weight-bold);
+  line-height: 1.2;
+}
+
+.scx-cf-block {
+  padding: var(--scx-spacing-sm);
+  border-radius: var(--scx-border-radius-md);
+}
+
+.scx-cf-income {
+  background: var(--scx-bg-success-light);
+}
+
+.scx-cf-expense {
+  background: var(--scx-bg-error);
+}
+
+.scx-cf-block-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: var(--scx-font-weight-bold);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.scx-cf-income .scx-cf-block-total {
+  color: var(--scx-text-success-dark);
+}
+
+.scx-cf-expense .scx-cf-block-total {
+  color: var(--scx-color-error);
+}
+
+.scx-cf-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--scx-font-size-sm);
+  margin-top: 2px;
+}
+
+.scx-cf-row .scx-text-muted {
+  color: var(--scx-text-secondary);
+}
+
+.scx-cf-row-value {
+  font-weight: var(--scx-font-weight-normal);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-cf-block-total {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .scx-cf-income .scx-cf-block-total,
+  .scx-cf-expense .scx-cf-block-total {
+    color: #ffffff;
   }
 }

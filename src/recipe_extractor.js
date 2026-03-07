@@ -232,7 +232,7 @@ export function initRecipeExtractor() {
         setTimeout(() => {
           feedback.style.display = "none";
         }, 2000);
-      } catch (e) {
+      } catch {
         // Fallback: select text
         textarea.select();
         document.execCommand("copy");

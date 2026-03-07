@@ -10,7 +10,7 @@ import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { initChatFilter } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
-import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
+import { updateExecutivePanel } from "./executive_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initMarketAlerts, updateMarketAlertsPanel } from "./market_ui.js";

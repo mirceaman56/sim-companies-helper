@@ -128,7 +128,7 @@ describe("renderBreakdownRow", () => {
     expect(html).toContain("Production");
     expect(html).toContain("$1,234,567.89");
     expect(html).toContain("#c62828");
-    expect(html).toContain("display:flex");
+    expect(html).toContain("scx-cf-row");
   });
 
   it("returns empty string for zero amount", () => {
