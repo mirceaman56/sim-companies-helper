@@ -64,7 +64,7 @@ export async function analyzeProduction(productId, quantity, pricesMap, realmId 
         productMarketPrice = await fetchMarketPrice(realmId, productId);
       }
     }
-  } catch (e) {
+  } catch {
     // Silent catch
   }
 

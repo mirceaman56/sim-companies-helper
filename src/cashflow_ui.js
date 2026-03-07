@@ -1,6 +1,6 @@
 // cashflow_ui.js
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, copyToClipboard, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
+import { formatMoney, escapeHtml, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
 
@@ -77,7 +77,7 @@ export function updateCashflowPanel() {
 
   contentEl.innerHTML = `
     <div class="scx-panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div class="scx-panel-head" style="margin-bottom: 12px;">
         <div class="scx-panel-title">${t("todaysNetProfit")}</div>
         <button class="scx-copy-btn" data-copy-action="cashflow" data-tooltip="Copy text">
           ${COPY_BUTTON_SVG}
@@ -87,28 +87,28 @@ export function updateCashflowPanel() {
       <!-- Net Profit Summary -->
       <div style="text-align:center; padding-bottom:12px; border-bottom:var(--scx-border-light-alt); margin-bottom:12px;">
         <div class="scx-k">${t("todaysNetProfit")}</div>
-        <div style="font-size: 20px; font-weight: 700; color: ${netProfit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+        <div class="scx-cf-net" style="color: ${netProfit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"}">
           ${formatMoney(netProfit)}
         </div>
-        <div style="font-size: 10px; color:${netProfitDiff >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+        <div class="scx-font-9" style="color:${netProfitDiff >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"}">
           ${netProfitDiff >= 0 ? "+" : ""}${formatMoney(netProfitDiff)} ${t("vsYesterday")}
         </div>
       </div>
 
       <!-- Income Section -->
       <div style="margin-bottom: 16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div class="scx-panel-head">
           <div class="scx-panel-title">${t("incomes")}</div>
-          <div style="font-size:10px; font-weight:600; color:${incomePct >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+          <div class="scx-font-9 scx-text-semibold" style="color:${incomePct >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"}">
              ${incomePct > 0 ? "+" : ""}${Math.round(incomePct)}%
           </div>
         </div>
         
-        <div style="background:var(--scx-bg-success-light); padding:8px; border-radius:4px;">
-           <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid rgba(46, 125, 50, 0.2); padding-bottom:4px;">
-             <span style="color: var(--scx-text-success-dark);">${t("total")}</span>
-             <span style="color: var(--scx-text-success-dark);">${formatMoney(today.totalIncome)}</span>
-           </div>
+        <div class="scx-cf-block scx-cf-income">
+          <div class="scx-cf-block-total">
+            <span>${t("total")}</span>
+            <span>${formatMoney(today.totalIncome)}</span>
+          </div>
            ${renderBreakdownRow(t("retail"), today.incomeByType.s, "var(--scx-category-retail)")}
            ${renderBreakdownRow(t("contracts"), today.incomeByType.t, "var(--scx-category-contracts)")}
            ${renderBreakdownRow(t("marketLabel"), today.incomeByType.m, "var(--scx-category-market)")}
@@ -118,18 +118,18 @@ export function updateCashflowPanel() {
 
       <!-- Expense Section -->
       <div style="margin-bottom: 12px;">
-         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div class="scx-panel-head">
           <div class="scx-panel-title">${t("expenses")}</div>
-          <div style="font-size:10px; font-weight:600; color:${expensePct <= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"};">
+          <div class="scx-font-9 scx-text-semibold" style="color:${expensePct <= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)"}">
              ${expensePct > 0 ? "+" : ""}${Math.round(expensePct)}%
           </div>
         </div>
 
-        <div style="background:var(--scx-bg-error); padding:8px; border-radius:4px;">
-           <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px; border-bottom:1px solid rgba(198, 40, 40, 0.2); padding-bottom:4px;">
-             <span style="color: var(--scx-color-error);">${t("total")}</span>
-             <span style="color: var(--scx-color-error);">${formatMoney(today.totalExpense)}</span>
-           </div>
+        <div class="scx-cf-block scx-cf-expense">
+          <div class="scx-cf-block-total">
+            <span>${t("total")}</span>
+            <span>${formatMoney(today.totalExpense)}</span>
+          </div>
            ${renderBreakdownRow(t("production"), today.expenseByType.p, "var(--scx-category-production)")}
            ${renderBreakdownRow(t("wages"), today.expenseByType.w, "var(--scx-category-wages)")}
            ${renderBreakdownRow(t("marketBuy"), today.expenseByType.m, "var(--scx-category-market-buy)")}
@@ -143,7 +143,7 @@ export function updateCashflowPanel() {
 
       <!-- Transactions Link -->
       <div style="text-align:center; margin-top:12px;">
-         <div class="scx-muted" style="font-size: 9px;">${t("latest")}: ${formatRefreshTime(cf.lastRefreshAt)}</div>
+         <div class="scx-text-muted scx-font-9">${t("latest")}: ${formatRefreshTime(cf.lastRefreshAt)}</div>
       </div>
     </div>
   `;
@@ -155,9 +155,9 @@ export function updateCashflowPanel() {
 function renderBreakdownRow(label, amount, color) {
   if (!amount || amount <= 0) return "";
   return `
-    <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:2px;">
-      <span style="color:var(--scx-text-muted);">${label}</span>
-      <span style="font-weight:500; color:${color};">${formatMoney(amount)}</span>
+    <div class="scx-cf-row">
+      <span class="scx-text-muted">${label}</span>
+      <span class="scx-cf-row-value" style="color:${color};">${formatMoney(amount)}</span>
     </div>
   `;
 }

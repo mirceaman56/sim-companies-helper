@@ -1,6 +1,6 @@
 // sidebar.js
 // Main sidebar container system with collapsible sections that snap together
-import { SIDEBAR_ID, STATE } from "./state.js";
+import { SIDEBAR_ID } from "./state.js";
 import { escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
 

@@ -3,7 +3,6 @@ import { STATE } from "./state.js";
 import {
   formatMoney,
   escapeHtml,
-  copyToClipboard,
   parseLocaleNumber,
   extractProductIdFromRow,
   getInfoColumn,
@@ -12,10 +11,10 @@ import {
   MARKET_FEE,
   TRANSPORT_RESOURCE_ID,
 } from "./utils.js";
-import { ensureMarketFetchForProduct, getCheapestListing, fetchMarketPrice, fetchMarket } from "./market.js";
+import { ensureMarketFetchForProduct, getCheapestListing, fetchMarket } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { getRecipeByProductId } from "./production.js";
-import { registerSection, getSectionContent, setSectionUpdateFn } from "./sidebar.js";
+import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
 import {
   classifyProfitPerMin,

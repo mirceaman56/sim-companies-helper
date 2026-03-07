@@ -1,10 +1,8 @@
 // production_ui.js
 // Renders production helper section in the sidebar
-import { STATE } from "./state.js";
 import {
   formatMoney,
   escapeHtml,
-  copyToClipboard,
   parseLocaleNumber,
   extractProductIdFromRow,
   getInfoColumn,
@@ -12,7 +10,7 @@ import {
   wireCopyButton,
   TRANSPORT_RESOURCE_ID,
 } from "./utils.js";
-import { getSectionContent, registerSection } from "./sidebar.js";
+import { getSectionContent } from "./sidebar.js";
 import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
 import { getRealmId } from "./auth.js";
 import { t } from "./i18n.js";
@@ -23,6 +21,7 @@ const SECTION_ID = "production-section";
 // Store current state
 let currentProductId = null;
 let currentQuantity = 1;
+// eslint-disable-next-line no-unused-vars
 let currentLaborCost = 0;
 let currentUnitCost = null; // Stored from UI if available
 let pricesCache = null;
@@ -663,6 +662,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
 /**
  * Render materials cost breakdown
  */
+// eslint-disable-next-line no-unused-vars
 function renderMaterialsCost(materialCosts) {
   const recipes = getRecipes();
   const materialNamesMap = new Map();
@@ -697,7 +697,8 @@ function renderMaterialsCost(materialCosts) {
 /**
  * Render sell analysis
  */
-function renderSellAnalysis(sellAnalysis, quantity) {
+// eslint-disable-next-line no-unused-vars
+function renderSellAnalysis(sellAnalysis, _quantity) {
   if (!sellAnalysis || !Number.isFinite(sellAnalysis.profit)) {
     return `
       <div class="scx-note scx-note-warning">
