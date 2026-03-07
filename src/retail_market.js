@@ -28,10 +28,9 @@ export async function fetchRetailInfo(realmId) {
   if (_inflight) return _inflight;
 
   _inflight = (async () => {
-    const res = await fetch(
-      `https://www.simcompanies.com/api/v4/${realmId}/resources-retail-info/`,
-      { credentials: "include" },
-    );
+    const res = await fetch(`https://www.simcompanies.com/api/v4/${realmId}/resources-retail-info/`, {
+      credentials: "include",
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
     // Keep base-quality items only (quality === null)

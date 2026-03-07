@@ -520,12 +520,22 @@ export async function updatePanel() {
         return `${sign}${(v * 100).toFixed(1)}%`;
       };
 
-      const satArrow = trends && trends.satDelta7d < -0.005 ? "↓" : trends && trends.satDelta7d > 0.005 ? "↑" : "→";
-      const priceArrow = trends && trends.priceDelta7d > 0.005 ? "↑" : trends && trends.priceDelta7d < -0.005 ? "↓" : "→";
+      const satArrow =
+        trends && trends.satDelta7d < -0.005 ? "↓" : trends && trends.satDelta7d > 0.005 ? "↑" : "→";
+      const priceArrow =
+        trends && trends.priceDelta7d > 0.005 ? "↑" : trends && trends.priceDelta7d < -0.005 ? "↓" : "→";
       const satArrowColor =
-        satArrow === "↓" ? "var(--scx-color-success)" : satArrow === "↑" ? "var(--scx-color-error)" : "var(--scx-text-muted)";
+        satArrow === "↓"
+          ? "var(--scx-color-success)"
+          : satArrow === "↑"
+            ? "var(--scx-color-error)"
+            : "var(--scx-text-muted)";
       const priceArrowColor =
-        priceArrow === "↑" ? "var(--scx-color-success)" : priceArrow === "↓" ? "var(--scx-color-error)" : "var(--scx-text-muted)";
+        priceArrow === "↑"
+          ? "var(--scx-color-success)"
+          : priceArrow === "↓"
+            ? "var(--scx-color-error)"
+            : "var(--scx-text-muted)";
 
       marketPulseHTML = `
         <hr class="scx-hr-sm">
