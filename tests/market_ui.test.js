@@ -251,7 +251,17 @@ describe("alert persistence", () => {
     const key = _testUtils.storageKey();
     storageStore[key] = {
       alerts: [
-        { id: 10, productId: 1, productName: "W", quality: "all", targetPrice: 1, active: false, triggered: false, lastPrice: null, lastCheck: null },
+        {
+          id: 10,
+          productId: 1,
+          productName: "W",
+          quality: "all",
+          targetPrice: 1,
+          active: false,
+          triggered: false,
+          lastPrice: null,
+          lastCheck: null,
+        },
       ],
     };
 

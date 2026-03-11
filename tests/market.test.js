@@ -57,7 +57,7 @@ describe("fetchMarketPrice", () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve(mockMarketData),
-      })
+      }),
     );
   });
 

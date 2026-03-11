@@ -86,7 +86,7 @@ export function ensureFooter() {
   ensureFooterButton(
     container,
     "scx-sidebar-footer-donate",
-    "https://buy.stripe.com/5kQ8wR6QM8SidOJ8cF8IU00",
+    "https://www.paypal.com/ncp/payment/4JT8U4WKDXMD6",
     `
       <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
          <span style="color: #e91e63; font-size: 12px;">❤</span> ${t("supportTheDev")}

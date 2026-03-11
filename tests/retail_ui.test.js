@@ -8,14 +8,34 @@ vi.mock("../src/state.js", () => ({ STATE: {} }));
 vi.mock("../src/market.js", () => ({}));
 vi.mock("../src/auth.js", () => ({}));
 vi.mock("../src/production.js", () => ({}));
-vi.mock("../src/sidebar.js", () => ({ registerSection: vi.fn(), getSectionContent: vi.fn(), setSectionUpdateFn: vi.fn() }));
+vi.mock("../src/sidebar.js", () => ({
+  registerSection: vi.fn(),
+  getSectionContent: vi.fn(),
+  setSectionUpdateFn: vi.fn(),
+}));
 
 import { classifyProfitPerMin, RetailHelper } from "../src/retail_ui.js";
 
-const { parseNumber, parseDurationToSeconds, computeMetrics, getInfoColumn, extractProductId, extractFinishSeconds, isSellInput, getRowFromTarget } = RetailHelper._testUtils;
+const {
+  parseNumber,
+  parseDurationToSeconds,
+  computeMetrics,
+  getInfoColumn,
+  extractProductId,
+  extractFinishSeconds,
+  isSellInput,
+  getRowFromTarget,
+} = RetailHelper._testUtils;
 
 /** Helper: build a minimal retail row DOM fragment */
-function makeRow({ productName = "Apples", productId = 42, price = "10.00", qty = "100", profit = "$5.00", duration = "(1h 5m)" } = {}) {
+function makeRow({
+  productName = "Apples",
+  productId = 42,
+  price = "10.00",
+  qty = "100",
+  profit = "$5.00",
+  duration = "(1h 5m)",
+} = {}) {
   const row = document.createElement("div");
 
   // Info column (div.right-border with h3)

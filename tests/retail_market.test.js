@@ -3,11 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
 
-import {
-  computeRetailTrends,
-  computeOpportunityScore,
-  getRetailBadge,
-} from "../src/retail_calc.js";
+import { computeRetailTrends, computeOpportunityScore, getRetailBadge } from "../src/retail_calc.js";
 import {
   fetchRetailInfo,
   fetchRetailInfoForProduct,
@@ -29,7 +25,10 @@ function makeRetailData(n, { price = 10, demand = 0.15, saturation = 1.65 } = {}
 }
 
 /** Build a stub retail-info item with the last day overridden. */
-function makeItem(dbLetter, { basePrice = 10, baseSat = 1.65, baseDemand = 0.15, lastPrice, lastSat, lastDemand, count = 10 } = {}) {
+function makeItem(
+  dbLetter,
+  { basePrice = 10, baseSat = 1.65, baseDemand = 0.15, lastPrice, lastSat, lastDemand, count = 10 } = {},
+) {
   const data = makeRetailData(count, { price: basePrice, saturation: baseSat, demand: baseDemand });
   // override last day
   data[data.length - 1] = {
@@ -39,7 +38,13 @@ function makeItem(dbLetter, { basePrice = 10, baseSat = 1.65, baseDemand = 0.15,
     amountSoldRestaurant: 0,
     date: "2026-03-06",
   };
-  return { dbLetter, quality: null, averagePrice: lastPrice ?? basePrice, saturation: lastSat ?? baseSat, retailData: data };
+  return {
+    dbLetter,
+    quality: null,
+    averagePrice: lastPrice ?? basePrice,
+    saturation: lastSat ?? baseSat,
+    retailData: data,
+  };
 }
 
 // ─── computeRetailTrends ─────────────────────────────────────────────────────
