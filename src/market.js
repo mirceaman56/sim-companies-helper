@@ -3,6 +3,8 @@ import { STATE } from "./state.js";
 import { getRealmId } from "./auth.js";
 import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS } from "./constants.js";
 let rateLimitedUntil = 0;
+// One in-flight promise per cacheKey — prevents duplicate concurrent requests for the same product
+const _inflight = new Map();
 
 /**
  * Check if market calls are currently blocked due to rate limiting.
@@ -27,36 +29,47 @@ export function getCheapestListing(listings) {
 
 export async function fetchMarket(realmId, productId) {
   const now = Date.now();
+  const cacheKey = `${realmId}:${productId}`;
 
-  // If rate-limited, return cached data if available, otherwise throw
+  // If rate-limited, return cached data if available, otherwise throw immediately
   if (now < rateLimitedUntil) {
-    const cacheKey = `${realmId}:${productId}`;
     const cached = STATE.marketCache.get(cacheKey);
     if (cached) return cached.data;
     const remainMin = Math.ceil((rateLimitedUntil - now) / 60000);
     throw new Error(`Rate limited — retrying in ${remainMin}m`);
   }
 
-  const cacheKey = `${realmId}:${productId}`;
   const cached = STATE.marketCache.get(cacheKey);
   if (cached && now - cached.ts < MARKET_CACHE_TTL_MS) return cached.data;
 
-  const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
-  const res = await fetch(url, { credentials: "include" });
+  // Coalesce concurrent requests for the same product into one network call
+  if (_inflight.has(cacheKey)) return _inflight.get(cacheKey);
 
-  if (res.status === 429) {
-    rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-    console.warn(`[SimHelper] 429 rate-limited — pausing all market calls for 10 minutes`);
-    // Return stale cache if we have it, otherwise throw
-    if (cached) return cached.data;
-    throw new Error("Rate limited by server — pausing market calls for 10 minutes");
-  }
+  const promise = (async () => {
+    try {
+      const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
+      const res = await fetch(url, { credentials: "include" });
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (res.status === 429) {
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+        console.warn(`[SimHelper] 429 rate-limited — pausing all market calls for 10 minutes`);
+        // Return stale cache if we have it, otherwise throw
+        if (cached) return cached.data;
+        throw new Error("Rate limited by server — pausing market calls for 10 minutes");
+      }
 
-  const data = await res.json();
-  STATE.marketCache.set(cacheKey, { ts: now, data });
-  return data;
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      STATE.marketCache.set(cacheKey, { ts: now, data });
+      return data;
+    } finally {
+      _inflight.delete(cacheKey);
+    }
+  })();
+
+  _inflight.set(cacheKey, promise);
+  return promise;
 }
 
 export async function fetchMarketPrice(realmId, productId, quality = 0) {
@@ -67,7 +80,6 @@ export async function fetchMarketPrice(realmId, productId, quality = 0) {
     // Find exact quality match
     const exactMatch = data.find((item) => Number.isFinite(item.quality) && item.quality === quality);
     if (exactMatch && Number.isFinite(exactMatch.price)) {
-      console.log("Found exact match {} with price {}", exactMatch.quality, exactMatch.price);
       return exactMatch.price;
     }
 

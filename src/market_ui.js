@@ -24,6 +24,18 @@ let nextAlertId = 1;
 let timerRefreshInterval = null;
 let alertsContainer = null;
 
+// Debounces renderAlertList so rapid-fire completions from concurrent checkPrice calls
+// collapse into a single DOM update per animation frame.
+let _renderScheduled = false;
+function scheduleRenderAlertList(container) {
+  if (_renderScheduled) return;
+  _renderScheduled = true;
+  requestAnimationFrame(() => {
+    _renderScheduled = false;
+    renderAlertList(container);
+  });
+}
+
 function storageKey() {
   const realmId = STATE.auth.realmId;
   if (realmId === null || realmId === undefined) return null;
@@ -79,11 +91,15 @@ export async function initMarketAlerts() {
     content.appendChild(createAlertsContent());
   }
 
-  // Restart monitoring for alerts that were active before reload
+  // Restart monitoring for alerts that were active before reload.
+  // Stagger starts by 1.5s each so their intervals never stay synchronized,
+  // preventing bursts of concurrent API calls on every check cycle.
+  let staggerMs = 0;
   for (const alert of alerts) {
     if (alert.active && !alert.triggered) {
       alert.active = false; // startAlert expects inactive
-      startAlert(alertsContainer, alert.id);
+      setTimeout(() => startAlert(alertsContainer, alert.id), staggerMs);
+      staggerMs += 1500;
     }
   }
 }
@@ -284,7 +300,7 @@ async function checkPrice(container, alert) {
   const { blocked } = getRateLimitStatus();
   if (blocked) {
     alert.lastCheck = Date.now();
-    renderAlertList(container);
+    scheduleRenderAlertList(container);
     return;
   }
 
@@ -323,7 +339,7 @@ async function checkPrice(container, alert) {
     console.warn(`[SimHelper] Market alert check failed for ${alert.productName}:`, e);
   }
 
-  renderAlertList(container);
+  scheduleRenderAlertList(container);
 }
 
 /**
