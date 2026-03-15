@@ -9,6 +9,11 @@ import { getRealmId, loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
 
+const INVENTORY_CACHE_TTL_MS = 5000;
+let cachedInventoryItems = [];
+let inventoryFetchedAt = 0;
+let inventoryFetchPromise = null;
+
 // Map product kinds (IDs) to recipe info, and names to IDs
 function buildRecipeMaps() {
   const kindMap = new Map();
@@ -43,77 +48,94 @@ function getProductIdByName(name) {
  * Returns array of {kind, name, totalAmount, weightedQuality, sourcingCost}
  */
 async function fetchInventoryItems() {
-  try {
-    // Ensure auth data is loaded
-    await loadAuthDataOnce();
+  const now = Date.now();
+  if (now - inventoryFetchedAt < INVENTORY_CACHE_TTL_MS) {
+    return cachedInventoryItems;
+  }
 
-    const companyId = STATE.auth.companyId;
-    if (!companyId) {
-      console.warn("[WarehouseUI] Cannot fetch inventory: no company ID");
-      return [];
-    }
+  if (inventoryFetchPromise) {
+    return inventoryFetchPromise;
+  }
 
-    const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
-    const response = await fetch(url, { credentials: "include" });
+  inventoryFetchPromise = (async () => {
+    try {
+      // Ensure auth data is loaded
+      await loadAuthDataOnce();
 
-    if (!response.ok) {
-      console.warn(`[WarehouseUI] Failed to fetch inventory: ${response.status}`);
-      return [];
-    }
+      const companyId = STATE.auth.companyId;
+      if (!companyId) {
+        console.warn("[WarehouseUI] Cannot fetch inventory: no company ID");
+        return [];
+      }
 
-    const rawItems = await response.json();
+      const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
+      const response = await fetch(url, { credentials: "include" });
 
-    // Group items by kind and calculate weighted average quality
-    const kindMap = new Map();
+      if (!response.ok) {
+        console.warn(`[WarehouseUI] Failed to fetch inventory: ${response.status}`);
+        return [];
+      }
 
-    for (const item of rawItems) {
-      const { kind, amount, quality } = item;
+      const rawItems = await response.json();
 
-      if (!kindMap.has(kind)) {
-        kindMap.set(kind, {
+      // Group items by kind and calculate weighted average quality
+      const kindMap = new Map();
+
+      for (const item of rawItems) {
+        const { kind, amount, quality } = item;
+
+        if (!kindMap.has(kind)) {
+          kindMap.set(kind, {
+            kind,
+            totalAmount: 0,
+            qualityWeightSum: 0, // sum of (quality * amount)
+          });
+        }
+
+        const entry = kindMap.get(kind);
+        entry.totalAmount += amount;
+        entry.qualityWeightSum += quality * amount;
+      }
+
+      // Convert to inventory items with weighted average quality
+      // Get DOM items for sourcing cost (already calculated by UI)
+      const domItems = extractPageInventoryItems();
+      const domItemsByName = new Map();
+      for (const domItem of domItems) {
+        domItemsByName.set(domItem.name, domItem);
+      }
+
+      const items = [];
+      for (const [kind, entry] of kindMap) {
+        const productName = getProductNameByKind(kind);
+        if (!productName) continue; // Skip unknown products
+
+        const domItem = domItemsByName.get(productName);
+        if (!domItem) continue; // Skip if not found in DOM
+
+        const weightedQuality = entry.qualityWeightSum / entry.totalAmount;
+
+        items.push({
           kind,
-          totalAmount: 0,
-          qualityWeightSum: 0, // sum of (quality * amount)
+          name: productName,
+          totalAmount: entry.totalAmount,
+          weightedQuality,
+          sourcingCost: domItem.sourcingCost,
         });
       }
 
-      const entry = kindMap.get(kind);
-      entry.totalAmount += amount;
-      entry.qualityWeightSum += quality * amount;
+      cachedInventoryItems = items;
+      inventoryFetchedAt = Date.now();
+      return items;
+    } catch (error) {
+      console.error("[WarehouseUI] Error fetching inventory:", error);
+      return cachedInventoryItems;
+    } finally {
+      inventoryFetchPromise = null;
     }
+  })();
 
-    // Convert to inventory items with weighted average quality
-    // Get DOM items for sourcing cost (already calculated by UI)
-    const domItems = extractPageInventoryItems();
-    const domItemsByName = new Map();
-    for (const domItem of domItems) {
-      domItemsByName.set(domItem.name, domItem);
-    }
-
-    const items = [];
-    for (const [kind, entry] of kindMap) {
-      const productName = getProductNameByKind(kind);
-      if (!productName) continue; // Skip unknown products
-
-      const domItem = domItemsByName.get(productName);
-      if (!domItem) continue; // Skip if not found in DOM
-
-      const weightedQuality = entry.qualityWeightSum / entry.totalAmount;
-
-      items.push({
-        kind,
-        name: productName,
-        totalAmount: entry.totalAmount,
-        weightedQuality,
-        sourcingCost: domItem.sourcingCost,
-      });
-    }
-
-    return items;
-  } catch (error) {
-    console.error("[WarehouseUI] Error fetching inventory:", error);
-    return [];
-  }
+  return inventoryFetchPromise;
 }
 
 /**
@@ -442,3 +464,12 @@ export function initWarehouseHelper() {
     startObserver();
   }
 }
+
+export const _testUtils = {
+  fetchInventoryItems,
+  resetInventoryCache() {
+    cachedInventoryItems = [];
+    inventoryFetchedAt = 0;
+    inventoryFetchPromise = null;
+  },
+};
