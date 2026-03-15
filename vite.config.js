@@ -15,13 +15,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         content: resolve(__dirname, "src/content.js"),
-        contentStyle: resolve(__dirname, "src/content.css")
+        background: resolve(__dirname, "src/background.js"),
+        contentStyle: resolve(__dirname, "src/content.css"),
       },
       output: {
         entryFileNames: "[name].js",
-        assetFileNames: "[name][extname]"
-      }
-    }
+        assetFileNames: "[name][extname]",
+      },
+    },
   },
   plugins: [
     {
@@ -33,9 +34,9 @@ export default defineConfig({
         mkdirSync(resolve(__dirname, "dist/resources"), { recursive: true });
         copyFileSync(
           resolve(__dirname, "src/resources/recipes.json"),
-          resolve(__dirname, "dist/resources/recipes.json")
+          resolve(__dirname, "dist/resources/recipes.json"),
         );
-      }
-    }
-  ]
+      },
+    },
+  ],
 });

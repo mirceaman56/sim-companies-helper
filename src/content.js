@@ -14,6 +14,7 @@ import { updateExecutivePanel } from "./executive_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initMarketAlerts, updateMarketAlertsPanel } from "./market_ui.js";
+import { initWhatsNewToast } from "./whats_new_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
@@ -31,6 +32,10 @@ function syncLegacyCashflowState() {
 async function init() {
   // Initialize the sidebar container
   ensureSidebarContainer();
+
+  // Show "What's New" toast if this is the first visit after install/minor update.
+  // Non-blocking by design.
+  initWhatsNewToast();
 
   // Register sections - Order: Production, Retail, Financials, Chat, Executive
   registerSection("production-section", t("productionHelper"), "⚙️");
