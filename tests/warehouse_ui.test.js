@@ -19,6 +19,7 @@ import { _testUtils } from "../src/warehouse_ui.js";
 describe("fetchInventoryItems", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date("2020-01-01T00:00:00Z"));
     _testUtils.resetInventoryCache();
     document.body.innerHTML = `
       <div role="link" aria-label="Apples, quantity 100, average sourcing cost $1.50"></div>
