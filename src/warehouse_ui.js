@@ -124,8 +124,13 @@ async function fetchInventoryItems() {
         });
       }
 
-      cachedInventoryItems = items;
-      inventoryFetchedAt = Date.now();
+      // Only cache the result if it is non-empty, or if the API itself returned no items.
+      // This avoids caching an empty DOM-filtered result when the DOM is not yet ready.
+      const shouldUpdateCache = items.length > 0 || rawItems.length === 0;
+      if (shouldUpdateCache) {
+        cachedInventoryItems = items;
+        inventoryFetchedAt = Date.now();
+      }
       return items;
     } catch (error) {
       console.error("[WarehouseUI] Error fetching inventory:", error);
