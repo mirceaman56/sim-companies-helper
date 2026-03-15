@@ -87,7 +87,7 @@ export function ensureFooter() {
 
   // 2. Bug Report Button
   const bugUrl =
-    "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=Bug%3A%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
+    "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=%5BBug%5D%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
 
   ensureFooterButton(
     container,
@@ -108,14 +108,10 @@ function ensureSupportCard(container) {
   card.className = "scx-sidebar-footer-support";
   card.innerHTML = `
     <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-paypal">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0;vertical-align:middle">
-        <path fill="#003087" d="M7.5 21H5l2.7-17h6.2c2.8 0 4.6 1.5 4.6 3.9 0 3.9-3 6.1-6.8 6.1H9.2L7.5 21z"/>
-        <path fill="#009cde" d="M20.5 7.8c0 4-3.1 7-7.7 7h-2.6l-1.1 6.2H6.4L8.8 5h6.2c3.3 0 5.5 1.7 5.5 2.8z" opacity=".55"/>
-      </svg>
-      ${t("supportTheDev")}
+      <span>❤</span> ${t("supportTheDev")}
     </button>
     <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-kofi">
-      <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="${t("supportOnKofi")}" class="scx-kofi-badge">
+      <span>☕</span> ${t("supportOnKofi")}
     </button>
   `;
 
