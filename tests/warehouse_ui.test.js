@@ -55,7 +55,7 @@ describe("fetchInventoryItems", () => {
     );
 
     await _testUtils.fetchInventoryItems();
-    vi.advanceTimersByTime(5001);
+    vi.advanceTimersByTime(_testUtils.INVENTORY_CACHE_TTL_MS + 1);
     await _testUtils.fetchInventoryItems();
 
     expect(global.fetch).toHaveBeenCalledTimes(2);
