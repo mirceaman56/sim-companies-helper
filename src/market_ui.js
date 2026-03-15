@@ -24,6 +24,13 @@ let nextAlertId = 1;
 let timerRefreshInterval = null;
 let alertsContainer = null;
 
+function flashInputError(input) {
+  input.classList.add("scx-input-error");
+  setTimeout(() => {
+    input.classList.remove("scx-input-error");
+  }, 2000);
+}
+
 // Debounces renderAlertList so rapid-fire completions from concurrent checkPrice calls
 // collapse into a single DOM update per animation frame.
 let _renderScheduled = false;
@@ -127,23 +134,23 @@ function createAlertsContent() {
       </div>
       <div class="scx-market-alerts-row">
         <label class="scx-label">${t("maProduct")}</label>
-        <select id="scx-ma-product" class="scx-select" style="width: 100%;">
+        <select id="scx-ma-product" class="scx-select scx-width-full">
           ${sortedRecipes.map((r) => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("")}
         </select>
       </div>
       <div class="scx-market-alerts-row">
         <label class="scx-label">${t("maQuality")}</label>
-        <select id="scx-ma-quality" class="scx-select" style="width: 100%;">
+        <select id="scx-ma-quality" class="scx-select scx-width-full">
           <option value="all">${t("maAll")}</option>
           ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">Q${i + 1}</option>`).join("")}
         </select>
       </div>
       <div class="scx-market-alerts-row">
         <label class="scx-label">${t("maTargetPrice")}</label>
-        <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="e.g. 5.00"
-               class="scx-select" style="width: 100%; box-sizing: border-box;" />
+        <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="${t("maTargetPricePlaceholder")}"
+               class="scx-select scx-width-full" />
       </div>
-      <button id="scx-ma-add" class="scx-btn scx-btn-primary" style="width: 100%;" ${alerts.length >= ALERT_MAX_COUNT ? "disabled" : ""}>
+      <button id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full" ${alerts.length >= ALERT_MAX_COUNT ? "disabled" : ""}>
         ${t("maAddAlert")}
       </button>
     </div>
@@ -177,10 +184,7 @@ function addAlert(container) {
   // Check limit
   if (alerts.length >= ALERT_MAX_COUNT) {
     const priceInput = container.querySelector("#scx-ma-price");
-    priceInput.style.borderColor = "var(--scx-color-error)";
-    setTimeout(() => {
-      priceInput.style.borderColor = "";
-    }, 2000);
+    flashInputError(priceInput);
     return;
   }
 
@@ -195,10 +199,7 @@ function addAlert(container) {
   const targetPrice = parseFloat(priceInput.value);
 
   if (!Number.isFinite(targetPrice) || targetPrice <= 0) {
-    priceInput.style.borderColor = "var(--scx-color-error)";
-    setTimeout(() => {
-      priceInput.style.borderColor = "";
-    }, 2000);
+    flashInputError(priceInput);
     return;
   }
 

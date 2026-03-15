@@ -30,23 +30,23 @@ function createFilterContent() {
   container.innerHTML = `
     <div class="scx-chat-controls">
       <div class="scx-chat-row">
-        <select id="scx-filter-type" class="scx-select" style="flex: 1;">
+        <select id="scx-filter-type" class="scx-select scx-flex-1">
           <option value="buy">${t("buying")}</option>
           <option value="sell">${t("selling")}</option>
         </select>
       </div>
       <div class="scx-chat-row">
-        <select id="scx-filter-product" class="scx-select" style="flex: 1;">
+        <select id="scx-filter-product" class="scx-select scx-flex-1">
           <!-- Populated by JS -->
         </select>
       </div>
       <div class="scx-chat-row">
-        <label class="scx-label" style="margin-bottom: 0;">${t("qualityOptional")}</label>
+        <label class="scx-label scx-label-inline">${t("qualityOptional")}</label>
       </div>
       <div class="scx-quality-container" id="scx-filter-quality">
         <!-- Populated by JS -->
       </div>
-      <button id="scx-filter-action" class="scx-btn scx-btn-primary" style="width: 100%;">${t("startSearch")}</button>
+      <button id="scx-filter-action" class="scx-btn scx-btn-primary scx-width-full">${t("startSearch")}</button>
     </div>
     <div id="scx-filter-status" class="scx-status"></div>
     <div id="scx-filter-results" class="scx-chat-results"></div>
@@ -143,6 +143,7 @@ async function startSearch(container) {
   const filterType = typeSelect.value;
   const productId = parseInt(productSelect.value);
   const productName = productSelect.options[productSelect.selectedIndex].text;
+  const filterTypeLabel = typeSelect.options[typeSelect.selectedIndex].text;
 
   // Get selected quality values
   const selectedQualities = [];
@@ -163,7 +164,7 @@ async function startSearch(container) {
 
   actionBtn.textContent = t("stop");
   actionBtn.classList.add("stop");
-  updateStatus(container, `${t("searchingFor")} ${filterType} ${productName}...`);
+  updateStatus(container, `${t("searchingFor")} ${filterTypeLabel} ${productName}...`);
 
   try {
     await fetchMessages(container, filterType, productId, selectedQualities, searchController.signal);
@@ -172,7 +173,7 @@ async function startSearch(container) {
       updateStatus(container, t("searchStopped"));
     } else {
       console.error(err);
-      updateStatus(container, "Error: " + err.message);
+      updateStatus(container, `${t("genericError")}: ${err.message}`);
     }
   } finally {
     isSearching = false;
@@ -215,7 +216,10 @@ async function fetchMessages(container, filterType, productId, selectedQualities
   while (foundCount < targetCount && pageCount < maxPages) {
     if (signal.aborted) return;
 
-    updateStatus(container, `Scanning page ${pageCount + 1}... Found: ${foundCount}`);
+    updateStatus(
+      container,
+      `${t("chatScanningPage")} ${pageCount + 1}... ${t("chatFoundCount")}: ${foundCount}`,
+    );
 
     const response = await fetch(currentUrl, { signal });
     if (!response.ok) throw new Error("API call failed");
@@ -230,7 +234,7 @@ async function fetchMessages(container, filterType, productId, selectedQualities
       // Check message age
       const msgTime = new Date(msg.datetime).getTime();
       if (msgTime < cutoffTime) {
-        updateStatus(container, `Done. Reached limit of 8 hours history. Found ${foundCount} messages.`);
+        updateStatus(container, `${t("chatDoneReachedLimit")} ${foundCount}.`);
         return;
       }
 

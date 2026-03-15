@@ -36,7 +36,7 @@ export function registerSection(sectionId, title, icon = "◆") {
   section.innerHTML = `
     <div class="scx-section-header">
       <div class="scx-section-title">
-        <span style="font-size: 14px;">${escapeHtml(icon)}</span>
+        <span class="scx-section-icon">${escapeHtml(icon)}</span>
         <span>${escapeHtml(title)}</span>
       </div>
       <div class="scx-section-toggle">▼</div>
@@ -94,8 +94,8 @@ export function ensureFooter() {
     "scx-sidebar-footer-bug",
     bugUrl,
     `
-      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
-         <span style="color: #ef6c00; font-size: 12px;">🐛</span> ${t("reportBug")}
+      <div class="scx-sidebar-footer-title">
+         <span class="scx-sidebar-footer-bug-icon">🐛</span> ${t("reportBug")}
       </div>
     `,
   );
@@ -130,30 +130,9 @@ function ensureFooterButton(container, className, href, innerHtml) {
 
   const btn = document.createElement("div");
   btn.className = className;
-  btn.style.cssText = `
-    width: 180px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    margin-top: 4px;
-    box-sizing: border-box;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    overflow: hidden;
-  `;
-
-  btn.onmouseenter = () => {
-    btn.style.transform = "translateY(-2px)";
-    btn.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-  };
-  btn.onmouseleave = () => {
-    btn.style.transform = "translateY(0)";
-    btn.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
-  };
 
   btn.innerHTML = `
-    <a href="${href}" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; color: #555; gap: 2px;">
+    <a href="${href}" target="_blank" rel="noreferrer" class="scx-sidebar-footer-link">
       ${innerHtml}
     </a>
   `;
