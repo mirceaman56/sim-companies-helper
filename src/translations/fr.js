@@ -33,7 +33,8 @@ export default {
   whatsNewReadMore: "Lire les notes de version complètes",
   whatsNewDismiss: "Fermer",
   whatsNewFallback: "Une nouvelle mise à jour est disponible. Cliquez ci-dessous pour voir les changements.",
-  whatsNewFetchingError: "Impossible de charger le résumé. Vous pouvez toujours lire les notes complètes ci-dessous.",
+  whatsNewFetchingError:
+    "Impossible de charger le résumé. Vous pouvez toujours lire les notes complètes ci-dessous.",
   supportTheDev: "Soutenir via PayPal",
   keepUpdates: "Continuez à recevoir les mises à jour ⊂(◉‿◉)つ",
   supportOnKofi: "Support via Ko-fi",

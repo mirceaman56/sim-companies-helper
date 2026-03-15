@@ -33,7 +33,8 @@ export default {
   whatsNewReadMore: "Vollständige Versionshinweise lesen",
   whatsNewDismiss: "Schließen",
   whatsNewFallback: "Ein neues Update ist verfügbar. Klicke unten, um die Änderungen zu sehen.",
-  whatsNewFetchingError: "Zusammenfassung konnte nicht geladen werden. Die vollständigen Hinweise sind unten verfügbar.",
+  whatsNewFetchingError:
+    "Zusammenfassung konnte nicht geladen werden. Die vollständigen Hinweise sind unten verfügbar.",
   supportTheDev: "Über PayPal unterstützen",
   keepUpdates: "Hilf mit, Updates zu ermöglichen ⊂(◉‿◉)つ",
   supportOnKofi: "Support via Ko-fi",

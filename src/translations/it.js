@@ -33,7 +33,8 @@ export default {
   whatsNewReadMore: "Leggi le note di rilascio complete",
   whatsNewDismiss: "Chiudi",
   whatsNewFallback: "È disponibile un nuovo aggiornamento. Clicca qui sotto per vedere le modifiche.",
-  whatsNewFetchingError: "Impossibile caricare il riepilogo. Puoi comunque leggere le note complete qui sotto.",
+  whatsNewFetchingError:
+    "Impossibile caricare il riepilogo. Puoi comunque leggere le note complete qui sotto.",
   supportTheDev: "Supporta tramite PayPal",
   keepUpdates: "Continua a ricevere gli aggiornamenti ⊂(◉‿◉)つ",
   supportOnKofi: "Support via Ko-fi",
