@@ -612,7 +612,7 @@ hr {
 .scx-sidebar-footer-bug {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 180px;
   margin-top: 8px;
   border: var(--scx-border-light);
   border-radius: 4px;
