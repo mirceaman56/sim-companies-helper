@@ -34,7 +34,7 @@ describe("fetchInventoryItems", () => {
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve([{ kind: 1, amount: 100, quality: 2 }]),
+        json: () => Promise.resolve([{ kind: 3, amount: 100, quality: 2 }]),
       }),
     );
 
@@ -42,6 +42,7 @@ describe("fetchInventoryItems", () => {
     const second = await _testUtils.fetchInventoryItems();
 
     expect(first).toEqual(second);
+    expect(first.length).toBeGreaterThan(0);
     expect(global.fetch).toHaveBeenCalledTimes(1);
   });
 
@@ -49,7 +50,7 @@ describe("fetchInventoryItems", () => {
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve([{ kind: 1, amount: 100, quality: 2 }]),
+        json: () => Promise.resolve([{ kind: 3, amount: 100, quality: 2 }]),
       }),
     );
 
