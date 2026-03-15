@@ -65,7 +65,7 @@ async function fetchInventoryItems() {
       const companyId = STATE.auth.companyId;
       if (!companyId) {
         console.warn("[WarehouseUI] Cannot fetch inventory: no company ID");
-        return [];
+        return cachedInventoryItems.length ? cachedInventoryItems : [];
       }
 
       const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
@@ -73,7 +73,7 @@ async function fetchInventoryItems() {
 
       if (!response.ok) {
         console.warn(`[WarehouseUI] Failed to fetch inventory: ${response.status}`);
-        return [];
+        return cachedInventoryItems.length ? cachedInventoryItems : [];
       }
 
       const rawItems = await response.json();
