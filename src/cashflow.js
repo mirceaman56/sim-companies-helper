@@ -52,7 +52,7 @@ function computeSummary(items) {
     } else if (m < 0) {
       const absM = Math.abs(m);
       totalExpense += absM;
-      if (["p", "w", "m", "t", "f", "c", "A"].includes(cat)) {
+      if (["p", "w", "m", "t", "f", "c", "A", "r"].includes(cat)) {
         expenseByType[cat] += absM;
       } else {
         expenseByType.other += absM;
@@ -132,3 +132,7 @@ export async function loadCashflowToday({ force = false } = {}) {
     STATE.cashflow.loading = false;
   }
 }
+
+export const _testUtils = {
+  computeSummary,
+};
