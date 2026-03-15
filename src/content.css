@@ -1772,6 +1772,27 @@ hr {
   color: var(--scx-text-secondary);
 }
 
+.scx-whats-new-list {
+  margin: 6px 0 6px 18px;
+  padding: 0;
+}
+
+.scx-whats-new-list li {
+  margin: 2px 0;
+}
+
+.scx-whats-new-error {
+  font-size: 11px;
+  color: var(--scx-text-muted);
+  margin-top: 2px;
+}
+
+.scx-whats-new-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
 .scx-toast-close {
   background: none;
   border: none;
