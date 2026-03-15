@@ -15,24 +15,30 @@ export const TRANSPORT_RESOURCE_ID = 13;
  * @returns {number}
  */
 export function parseLocaleNumber(raw) {
-  let s = String(raw).trim();
+  let s = String(raw).trim().replace(/\s+/g, "");
+  const numeric = s.match(/-?[\d.,]+/);
+  if (!numeric) return NaN;
+  s = numeric[0];
   const lastComma = s.lastIndexOf(",");
   const lastDot = s.lastIndexOf(".");
-  if (lastComma > lastDot) {
-    const afterComma = s.slice(lastComma + 1);
-    if (/^\d{1,2}$/.test(afterComma)) {
-      // German decimal: remove dots (thousands), replace comma with dot
-      s = s.replace(/\./g, "").replace(",", ".");
-    } else {
-      // Comma is thousands separator (3 digits after)
-      s = s.replace(/,/g, "");
-    }
-  } else {
-    // Dot is last or no comma — standard: remove commas (thousands)
-    s = s.replace(/,/g, "");
+
+  if (lastComma !== -1 && lastDot !== -1) {
+    const decimalSep = lastComma > lastDot ? "," : ".";
+    const thousandsSep = decimalSep === "," ? "." : ",";
+    s = s.replace(new RegExp(`\\${thousandsSep}`, "g"), "");
+    if (decimalSep === ",") s = s.replace(",", ".");
+    return Number(s);
   }
-  const m = s.match(/-?\s*([0-9]+(\.[0-9]+)?)/);
-  return m ? Number(m[1]) : NaN;
+
+  if (lastComma !== -1) {
+    const afterComma = s.slice(lastComma + 1);
+    if (/^\d{1,3}$/.test(afterComma) && s.slice(0, lastComma).length <= 3) {
+      return Number(s.replace(",", "."));
+    }
+    return Number(s.replace(/,/g, ""));
+  }
+
+  return Number(s.replace(/,/g, ""));
 }
 
 /**
