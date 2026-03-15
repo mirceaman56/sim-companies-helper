@@ -8,6 +8,7 @@ import { fetchMarketPrice } from "./market.js";
 import { getRealmId, loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
+import { t } from "./i18n.js";
 
 // Map product kinds (IDs) to recipe info, and names to IDs
 function buildRecipeMaps() {
@@ -190,8 +191,8 @@ function getOrCreateMarketButton(cardElement) {
   // Create the button as a sibling of the card (not inside it)
   const button = document.createElement("button");
   button.setAttribute("data-scx-market-btn", "true");
-  button.textContent = "market price";
-  button.title = "Check Market Price";
+  button.textContent = t("warehouseMarketPrice");
+  button.title = t("warehouseCheckMarketPrice");
   button.style.cssText = `
     display: block;
     width: 100%;
@@ -227,10 +228,10 @@ async function handleMarketButtonClick(button, item) {
   const productId = getProductIdByName(name);
 
   if (!productId) {
-    button.textContent = "Not found";
+    button.textContent = t("warehouseNotFound");
     button.style.color = "red";
     setTimeout(() => {
-      button.textContent = "market price";
+      button.textContent = t("warehouseMarketPrice");
       button.style.color = "white";
     }, 2000);
     return;
@@ -238,7 +239,7 @@ async function handleMarketButtonClick(button, item) {
 
   // Show loading state
   const originalText = button.textContent;
-  button.textContent = "⏳ Loading...";
+  button.textContent = t("warehouseLoading");
   button.disabled = true;
   button.style.opacity = "0.6";
 
@@ -247,7 +248,7 @@ async function handleMarketButtonClick(button, item) {
     const marketPrice = await fetchMarketPrice(realmId, productId, weightedQuality);
 
     if (marketPrice === null) {
-      button.textContent = "No price";
+      button.textContent = t("warehouseNoPrice");
       button.style.color = "red";
       setTimeout(() => {
         button.textContent = originalText;
@@ -286,7 +287,7 @@ async function handleMarketButtonClick(button, item) {
     }, 10000);
   } catch (e) {
     console.debug(`[WarehouseUI] Failed to fetch price for ${name}:`, e);
-    button.textContent = "Error";
+    button.textContent = t("genericError");
     button.style.color = "red";
     setTimeout(() => {
       button.textContent = originalText;

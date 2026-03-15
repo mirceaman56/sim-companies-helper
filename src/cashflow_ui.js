@@ -79,7 +79,7 @@ export function updateCashflowPanel() {
     <div class="scx-panel">
       <div class="scx-panel-head" style="margin-bottom: 12px;">
         <div class="scx-panel-title">${t("todaysNetProfit")}</div>
-        <button class="scx-copy-btn" data-copy-action="cashflow" data-tooltip="Copy text">
+        <button class="scx-copy-btn" data-copy-action="cashflow" data-tooltip="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>

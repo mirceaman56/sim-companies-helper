@@ -583,7 +583,7 @@ export async function updatePanel() {
         <div style="font-weight: 600; color: var(--scx-text-primary); font-size: 12px;">
           ${productName}
         </div>
-        <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="Copy text">
+        <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>
