@@ -608,27 +608,61 @@ hr {
 }
 
 .scx-sidebar-footer-contract,
-.scx-sidebar-footer-donate,
+.scx-sidebar-footer-support,
 .scx-sidebar-footer-bug {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 8px 12px;
   margin-top: 8px;
   border: var(--scx-border-light);
   border-radius: 4px;
   background: var(--scx-bg-primary);
-  cursor: pointer;
-  font-size: 11px;
-  text-align: center;
-  color: var(--scx-text-primary);
-  transition: all 0.2s ease;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .scx-sidebar-footer-contract:hover,
-.scx-sidebar-footer-donate:hover,
 .scx-sidebar-footer-bug:hover {
   background: var(--scx-bg-secondary);
   border-color: var(--scx-border-medium);
+}
+
+.scx-sidebar-footer-support-btn {
+  flex: 1;
+  width: 100%;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-family: var(--scx-font-family);
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.scx-sidebar-footer-support-btn:hover {
+  background: var(--scx-bg-secondary);
+}
+
+.scx-sidebar-footer-support-paypal span {
+  color: #e91e63;
+}
+
+.scx-sidebar-footer-support-kofi span {
+  color: #ff5e5b;
+}
+
+.scx-kofi-badge {
+  height: 28px;
+  width: auto;
+  display: block;
+  border: 0;
 }
 
 /* Sidebar dark theme – align with game UI (dark grey/charcoal) */
@@ -691,7 +725,7 @@ hr {
   }
 
   #scx-sidebar .scx-sidebar-footer-contract,
-  #scx-sidebar .scx-sidebar-footer-donate,
+  #scx-sidebar .scx-sidebar-footer-support,
   #scx-sidebar .scx-sidebar-footer-bug {
     background: #383838;
     border-color: #555;
@@ -699,10 +733,17 @@ hr {
   }
 
   #scx-sidebar .scx-sidebar-footer-contract:hover,
-  #scx-sidebar .scx-sidebar-footer-donate:hover,
   #scx-sidebar .scx-sidebar-footer-bug:hover {
     background: #454545;
     border-color: #666;
+  }
+
+  #scx-sidebar .scx-sidebar-footer-support-btn {
+    color: #c0c0c0;
+  }
+
+  #scx-sidebar .scx-sidebar-footer-support-btn:hover {
+    background: #454545;
   }
 
   #scx-sidebar .scx-chat-message {

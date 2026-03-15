@@ -24,8 +24,9 @@ export default {
   selling: "Verkaufe",
   searchingFor: "Suche nach",
   searchStopped: "Suche gestoppt.",
-  supportTheDev: "Entwickler unterstützen",
+  supportTheDev: "Support via PayPal",
   keepUpdates: "Hilf mit, Updates zu ermöglichen ⊂(◉‿◉)つ",
+  supportOnKofi: "Support via Ko-fi",
   reportBug: "Fehler melden",
   ensureProductionQuantity:
     "Stellen Sie sicher, dass ein Produktionsgut ausgewählt ist und seine Menge eingegeben ist",

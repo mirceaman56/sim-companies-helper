@@ -82,18 +82,8 @@ export function registerSection(sectionId, title, icon = "◆") {
 export function ensureFooter() {
   const container = ensureSidebarContainer();
 
-  // 1. Donation Button
-  ensureFooterButton(
-    container,
-    "scx-sidebar-footer-donate",
-    "https://www.paypal.com/ncp/payment/4JT8U4WKDXMD6",
-    `
-      <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px;">
-         <span style="color: #e91e63; font-size: 12px;">❤</span> ${t("supportTheDev")}
-      </div>
-      <div style="font-size: 9px; color: #999; text-align: center;">${t("keepUpdates")}</div>
-    `,
-  );
+  // 1. Combined support card (PayPal + Ko-fi)
+  ensureSupportCard(container);
 
   // 2. Bug Report Button
   const bugUrl =
@@ -109,6 +99,34 @@ export function ensureFooter() {
       </div>
     `,
   );
+}
+
+function ensureSupportCard(container) {
+  if (container.querySelector(".scx-sidebar-footer-support")) return;
+
+  const card = document.createElement("div");
+  card.className = "scx-sidebar-footer-support";
+  card.innerHTML = `
+    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-paypal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0;vertical-align:middle">
+        <path fill="#003087" d="M7.5 21H5l2.7-17h6.2c2.8 0 4.6 1.5 4.6 3.9 0 3.9-3 6.1-6.8 6.1H9.2L7.5 21z"/>
+        <path fill="#009cde" d="M20.5 7.8c0 4-3.1 7-7.7 7h-2.6l-1.1 6.2H6.4L8.8 5h6.2c3.3 0 5.5 1.7 5.5 2.8z" opacity=".55"/>
+      </svg>
+      ${t("supportTheDev")}
+    </button>
+    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-kofi">
+      <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="${t("supportOnKofi")}" class="scx-kofi-badge">
+    </button>
+  `;
+
+  card.querySelector(".scx-sidebar-footer-support-paypal").addEventListener("click", () => {
+    window.open("https://www.paypal.com/ncp/payment/4JT8U4WKDXMD6", "_blank");
+  });
+  card.querySelector(".scx-sidebar-footer-support-kofi").addEventListener("click", () => {
+    window.open("https://ko-fi.com/miman", "_blank");
+  });
+
+  container.appendChild(card);
 }
 
 function ensureFooterButton(container, className, href, innerHtml) {
