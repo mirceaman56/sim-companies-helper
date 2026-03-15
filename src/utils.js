@@ -32,7 +32,9 @@ export function parseLocaleNumber(raw) {
 
   if (lastComma !== -1) {
     const afterComma = s.slice(lastComma + 1);
-    if (/^\d{1,3}$/.test(afterComma) && s.slice(0, lastComma).length <= 3) {
+    // 3 digits after a lone comma is unambiguously a thousands separator (e.g. 2,880)
+    // 1-2 digits after a lone comma with ≤3 digits before is a decimal (e.g. DE: 1,5)
+    if (/^\d{1,2}$/.test(afterComma) && s.slice(0, lastComma).length <= 3) {
       return Number(s.replace(",", "."));
     }
     return Number(s.replace(/,/g, ""));
