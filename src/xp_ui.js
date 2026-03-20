@@ -112,6 +112,12 @@ function updateWidget() {
   const buildings = STATE.buildings.items || [];
   const { level, experience, experienceToNextLevel } = STATE.levelInfo;
 
+  // Error state — API call failed
+  if (STATE.buildings.error) {
+    container.innerHTML = `<button class="scx-xp-toggle scx-xp-toggle--loading" disabled title="${escapeHtml(STATE.buildings.error)}">⏱ !</button>`;
+    return;
+  }
+
   // Data not ready yet — keep the placeholder
   if (!STATE.buildings.loaded || level === null) {
     renderPlaceholder(container);
@@ -147,10 +153,6 @@ function updateWidget() {
       <div class="scx-xp-row scx-xp-breakdown">
         <span class="scx-xp-label">${escapeHtml(t("xpProspecting"))}</span>
         <span class="scx-xp-value">${breakdown.prospectingCount}</span>
-      </div>
-      <div class="scx-xp-row scx-xp-breakdown">
-        <span class="scx-xp-label">${escapeHtml(t("xpIdle"))}</span>
-        <span class="scx-xp-value">${breakdown.idleCount}</span>
       </div>
     </div>
   `;

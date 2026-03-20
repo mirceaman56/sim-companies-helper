@@ -8,11 +8,18 @@ const STORAGE_TS_KEY = "scx-buildings-ts";
 
 /**
  * Load buildings from chrome.storage.local cache or fetch from API.
+ * Uses /api/v3/companies/<id>/ and extracts infrastructure.buildings.
  * Refreshes if older than BUILDINGS_REFRESH_INTERVAL_MS.
  * @param {{ force?: boolean }} options
  */
 export async function loadBuildings({ force = false } = {}) {
   if (STATE.buildings.loading) return;
+
+  const companyId = STATE.auth.companyId;
+  if (!companyId) {
+    STATE.buildings.error = "Company ID not available";
+    return;
+  }
 
   STATE.buildings.loading = true;
   STATE.buildings.error = null;
@@ -33,19 +40,30 @@ export async function loadBuildings({ force = false } = {}) {
       }
     }
 
-    // Fetch from API
-    const res = await fetch("https://www.simcompanies.com/api/v2/companies/me/buildings/", {
+    // Fetch from the v3 company profile endpoint
+    const res = await fetch(`https://www.simcompanies.com/api/v3/companies/${companyId}/`, {
       credentials: "include",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      let msg = `HTTP ${res.status}`;
+      try {
+        const body = await res.json();
+        if (body?.message) msg = body.message;
+      } catch {
+        // ignore parse error
+      }
+      throw new Error(msg);
+    }
     const data = await res.json();
+    const buildings = data?.infrastructure?.buildings ?? [];
 
-    STATE.buildings.items = data;
+    STATE.buildings.items = buildings;
     STATE.buildings.lastRefreshAt = Date.now();
     STATE.buildings.loaded = true;
 
     // Persist to chrome.storage.local
-    await writeCachedBuildings(data);
+    await writeCachedBuildings(buildings);
   } catch (e) {
     STATE.buildings.error = String(e?.message || e);
   } finally {

@@ -101,45 +101,33 @@ describe("isBuildingUpgrading", () => {
 // ── buildingXpPerHour ──
 
 describe("buildingXpPerHour", () => {
-  it("idle building → 0", () => {
-    expect(buildingXpPerHour(makeBuilding())).toBe(0);
+  it("normal building (no busy field) → 12", () => {
+    expect(buildingXpPerHour(makeBuilding())).toBe(12);
   });
 
-  it("normal busy building → 12", () => {
+  it("normal building with busy field → 12", () => {
     expect(buildingXpPerHour(busyBuilding())).toBe(12);
   });
 
-  it("upgrading building → 36.5 (construction rate)", () => {
-    expect(
-      buildingXpPerHour(
-        makeBuilding({
-          busy: { id: 1, expanding: true, category: "b", duration: 28800 },
-        }),
-      ),
-    ).toBe(36.5);
-  });
-
-  it("recreation building level 3 busy → 40 * 3 = 120", () => {
+  it("recreation building level 3 → 40 * 3 = 120", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
           category: "other",
           image: "images/landscape/park-lvl3.png",
           size: 3,
-          busy: { id: 1, category: "r", duration: 604800 },
         }),
       ),
     ).toBe(120);
   });
 
-  it("recreation building level 5 busy → 40 * 5 = 200", () => {
+  it("recreation building level 5 → 40 * 5 = 200", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
           category: "other",
           image: "images/landscape/castle-lvl5.png",
           size: 5,
-          busy: { id: 1, category: "r", duration: 604800 },
         }),
       ),
     ).toBe(200);
@@ -152,33 +140,30 @@ describe("buildingXpPerHour", () => {
           category: "other",
           image: "images/landscape/park-lvl2.png",
           size: 2,
-          busy: { id: 1, category: "r", duration: 604800 },
         }),
       ),
     ).toBe(12);
   });
 
-  it("prospecting slot (quarry level 1, busy) → 36.5", () => {
+  it("prospecting slot (quarry level 1) → 36.5", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
           kind: "Q",
           size: 1,
           category: "production",
-          busy: { id: 1, category: "r", duration: 10800 },
         }),
       ),
     ).toBe(36.5);
   });
 
-  it("quarry level 7 busy → 12 (not a prospecting slot)", () => {
+  it("quarry level 7 → 12 (not a prospecting slot)", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
           kind: "Q",
           size: 7,
           category: "production",
-          busy: { id: 1, category: "r", duration: 172799 },
         }),
       ),
     ).toBe(12);
@@ -191,46 +176,36 @@ describe("calculateTotalXpPerHour", () => {
   it("empty buildings → 0", () => {
     const result = calculateTotalXpPerHour([]);
     expect(result.totalXpPerHour).toBe(0);
-    expect(result.breakdown.idleCount).toBe(0);
+    expect(result.breakdown.operatingCount).toBe(0);
+    expect(result.breakdown.prospectingCount).toBe(0);
   });
 
   it("mix of building types", () => {
     const buildings = [
-      // 2 busy grocery stores → 2 × 12 = 24
-      busyBuilding({ id: 1 }),
-      busyBuilding({ id: 2 }),
-      // 1 idle grocery store → 0
-      makeBuilding({ id: 3 }),
+      // 2 grocery stores → 2 × 12 = 24
+      makeBuilding({ id: 1 }),
+      makeBuilding({ id: 2 }),
       // 1 prospecting quarry → 36.5
       makeBuilding({
-        id: 4,
+        id: 3,
         kind: "Q",
         size: 1,
         category: "production",
-        busy: { id: 5, category: "r", duration: 10800 },
       }),
       // 1 recreation park level 3 → 120
       makeBuilding({
-        id: 5,
+        id: 4,
         category: "other",
         image: "images/landscape/park-lvl3.png",
         size: 3,
-        busy: { id: 6, category: "r", duration: 604800 },
-      }),
-      // 1 upgrading building → 36.5
-      makeBuilding({
-        id: 6,
-        busy: { id: 7, expanding: true, category: "b", duration: 28800 },
       }),
     ];
 
     const result = calculateTotalXpPerHour(buildings);
-    expect(result.totalXpPerHour).toBe(24 + 36.5 + 120 + 36.5);
+    expect(result.totalXpPerHour).toBe(24 + 36.5 + 120);
     expect(result.breakdown.operatingCount).toBe(2);
-    expect(result.breakdown.idleCount).toBe(1);
     expect(result.breakdown.prospectingCount).toBe(1);
     expect(result.breakdown.recreationXp).toBe(120);
-    expect(result.breakdown.upgradingCount).toBe(1);
   });
 });
 

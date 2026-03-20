@@ -64,22 +64,17 @@ export function isBuildingUpgrading(building) {
 }
 
 /**
- * Calculate XP per hour for a single building based on its type and state.
+ * Calculate XP per hour for a single building based on its type.
+ * Buildings from the v3 API have no busy state — all are assumed to be active.
  * @param {object} building - Building object from the API
  * @returns {number} XP per hour
  */
 export function buildingXpPerHour(building) {
-  // Idle buildings produce no XP
-  if (!isBuildingBusy(building)) return 0;
-
-  // Upgrading buildings earn construction XP
-  if (isBuildingUpgrading(building)) return XP_PER_HOUR_CONSTRUCTION;
-
   // Recreation buildings (Park, Castle, Lake) at level >= 3
   if (isRecreationBuilding(building)) {
     const level = building.size || 0;
     if (level >= 3) return XP_PER_HOUR_PER_LEVEL_RECREATION * level;
-    // Lower level recreation buildings earn normal building XP if busy
+    // Lower level recreation buildings earn normal building XP
     return XP_PER_HOUR_BUILDING;
   }
 
@@ -100,18 +95,12 @@ export function calculateTotalXpPerHour(buildings) {
   let operatingCount = 0;
   let recreationXp = 0;
   let prospectingCount = 0;
-  let upgradingCount = 0;
-  let idleCount = 0;
 
   for (const b of buildings) {
     const xph = buildingXpPerHour(b);
     totalXpPerHour += xph;
 
-    if (!isBuildingBusy(b)) {
-      idleCount++;
-    } else if (isBuildingUpgrading(b)) {
-      upgradingCount++;
-    } else if (isRecreationBuilding(b)) {
+    if (isRecreationBuilding(b)) {
       recreationXp += xph;
     } else if (isProspectingSlot(b)) {
       prospectingCount++;
@@ -126,8 +115,6 @@ export function calculateTotalXpPerHour(buildings) {
       operatingCount,
       recreationXp,
       prospectingCount,
-      upgradingCount,
-      idleCount,
     },
   };
 }

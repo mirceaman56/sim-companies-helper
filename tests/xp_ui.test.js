@@ -78,14 +78,13 @@ describe("XP UI Widget", () => {
     injectContainer();
     setStateLoaded(
       [
-        // 2 busy grocery stores → 2 × 12 = 24 XP/hr
+        // 2 grocery stores → 2 × 12 = 24 XP/hr (no busy field needed with v3 API)
         {
           id: 1,
           kind: "G",
           category: "sales",
           image: "images/buildings/sales/grocery_store.png",
           size: 10,
-          busy: { id: 1, category: "s", duration: 3600 },
         },
         {
           id: 2,
@@ -93,7 +92,6 @@ describe("XP UI Widget", () => {
           category: "sales",
           image: "images/buildings/sales/grocery_store.png",
           size: 11,
-          busy: { id: 2, category: "s", duration: 3600 },
         },
       ],
       20,
@@ -108,7 +106,7 @@ describe("XP UI Widget", () => {
     expect(container.textContent).toContain("26401");
   });
 
-  it("shows 0 XP/hour when all buildings are idle", () => {
+  it("shows XP/hour even when buildings have no busy field (v3 API)", () => {
     setupNavbar();
     injectContainer();
     setStateLoaded(
@@ -127,8 +125,8 @@ describe("XP UI Widget", () => {
     );
     updateWidget();
     const container = document.getElementById(CONTAINER_ID);
-    // Time should be "—" (no XP/hr)
-    expect(container.querySelector(".scx-xp-toggle").textContent).toContain("—");
+    // Building earns 12 XP/hr with v3 static data
+    expect(container.querySelector(".scx-xp-toggle").textContent).not.toContain("—");
   });
 
   it("renders toggle button", () => {
