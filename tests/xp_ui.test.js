@@ -9,10 +9,6 @@ vi.mock("../src/buildings.js", () => ({
   loadBuildings: vi.fn(() => Promise.resolve()),
 }));
 
-vi.mock("../src/constants.js", () => ({
-  BUILDINGS_REFRESH_INTERVAL_MS: 6 * 60 * 60 * 1000,
-}));
-
 global.localStorage = {
   getItem: vi.fn(() => null),
   setItem: vi.fn(),
@@ -67,14 +63,14 @@ beforeEach(() => {
 });
 
 describe("XP UI Widget", () => {
-  it("shows loading when data not loaded", () => {
+  it("shows placeholder when data not loaded", () => {
     setupNavbar();
     injectContainer();
     STATE.buildings.loaded = false;
     STATE.levelInfo.level = null;
     updateWidget();
-    const container = document.getElementById(CONTAINER_ID);
-    expect(container.textContent).toContain("loading");
+    const btn = document.querySelector(".scx-xp-toggle--loading");
+    expect(btn).not.toBeNull();
   });
 
   it("renders XP/hour and time estimate when data is loaded", () => {

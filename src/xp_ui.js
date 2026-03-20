@@ -4,17 +4,14 @@ import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { escapeHtml } from "./utils.js";
 import { calculateTotalXpPerHour, hoursToNextLevel, formatHours } from "./xp_calc.js";
-import { loadBuildings } from "./buildings.js";
-import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
 
 const CONTAINER_ID = "scx-xp-widget";
 const TOGGLE_KEY = "scx-xp-widget-visible";
 
-let refreshInterval = null;
-
 /**
- * Initialize the XP widget. Uses MutationObserver to detect the
- * level element in the navbar and inject the widget.
+ * Initialize the XP widget. The observer ONLY handles injection and removal —
+ * it never loads data or updates innerHTML, avoiding MutationObserver loops.
+ * Data loading and rendering is driven externally via updateXpWidget().
  */
 export function initXpWidget() {
   const observer = new MutationObserver(() => {
@@ -32,6 +29,14 @@ export function initXpWidget() {
   if (levelAnchor) {
     injectIfNeeded(levelAnchor);
   }
+}
+
+/**
+ * Render the current XP state into the widget.
+ * Called from content.js after buildings + level data are loaded.
+ */
+export function updateXpWidget() {
+  updateWidget();
 }
 
 /**
@@ -61,22 +66,20 @@ function setVisible(val) {
 }
 
 function injectIfNeeded(levelAnchor) {
-  if (document.getElementById(CONTAINER_ID)) {
-    updateWidget();
-    return;
-  }
+  // Already injected — observer must not touch the DOM here to avoid loops.
+  if (document.getElementById(CONTAINER_ID)) return;
 
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
   container.className = "scx-xp-widget";
 
-  // Insert after the level anchor's parent container
-  const parentDiv = levelAnchor.closest("div.css-82a6rk") || levelAnchor.parentElement;
-  if (parentDiv && parentDiv.parentElement) {
-    parentDiv.parentElement.insertBefore(container, parentDiv.nextSibling);
-  } else {
-    return;
-  }
+  // Inject inside the level container div so the dropdown sits below it.
+  const levelDiv = levelAnchor.closest("div.css-82a6rk") || levelAnchor.parentElement;
+  if (!levelDiv) return;
+
+  // Make the level container relative so our absolute dropdown is anchored to it.
+  levelDiv.style.position = "relative";
+  levelDiv.appendChild(container);
 
   container.addEventListener("click", (e) => {
     if (e.target.closest(".scx-xp-toggle")) {
@@ -89,28 +92,17 @@ function injectIfNeeded(levelAnchor) {
     }
   });
 
-  // Load buildings data and render
-  loadAndRender();
-
-  // Periodic refresh
-  if (!refreshInterval) {
-    refreshInterval = setInterval(() => {
-      loadAndRender();
-    }, BUILDINGS_REFRESH_INTERVAL_MS);
-  }
-}
-
-async function loadAndRender() {
-  await loadBuildings();
-  updateWidget();
+  // Render initial placeholder so the widget takes up no space until data loads.
+  renderPlaceholder(container);
 }
 
 function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-  }
+}
+
+function renderPlaceholder(container) {
+  // Compact placeholder — no layout impact while data is loading.
+  container.innerHTML = `<button class="scx-xp-toggle scx-xp-toggle--loading" disabled>⏱ …</button>`;
 }
 
 function updateWidget() {
@@ -120,9 +112,9 @@ function updateWidget() {
   const buildings = STATE.buildings.items || [];
   const { level, experience, experienceToNextLevel } = STATE.levelInfo;
 
-  // Not enough data yet
+  // Data not ready yet — keep the placeholder
   if (!STATE.buildings.loaded || level === null) {
-    container.innerHTML = `<span class="scx-xp-loading">${escapeHtml(t("loading"))}…</span>`;
+    renderPlaceholder(container);
     return;
   }
 

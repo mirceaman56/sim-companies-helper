@@ -1879,42 +1879,52 @@ hr {
 /* ── XP Calculator Widget ── */
 
 .scx-xp-widget {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  margin-left: var(--scx-spacing-xs);
-  vertical-align: middle;
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10000;
 }
 
 .scx-xp-toggle {
+  display: block;
+  width: 100%;
   background: none;
-  border: var(--scx-border-light);
-  border-radius: var(--scx-border-radius-md);
-  padding: 2px 8px;
+  border: none;
+  border-top: var(--scx-border-light);
+  padding: 2px 4px;
   font-family: var(--scx-font-family);
-  font-size: var(--scx-font-size-xs);
+  font-size: 9px;
   font-weight: var(--scx-font-weight-semibold);
   color: var(--scx-text-secondary);
   cursor: pointer;
   white-space: nowrap;
+  text-align: center;
   line-height: 1.4;
+  background: var(--scx-bg-secondary);
 }
 
 .scx-xp-toggle:hover {
   color: var(--scx-text-primary);
-  border-color: var(--scx-text-muted);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-xp-toggle--loading {
+  cursor: default;
+  opacity: 0.5;
 }
 
 .scx-xp-details {
   position: absolute;
   top: 100%;
-  right: 0;
-  z-index: 10000;
+  left: 0;
+  z-index: 10001;
   background: var(--scx-bg-primary);
   border: var(--scx-border-medium);
   border-radius: var(--scx-border-radius-md);
   padding: var(--scx-spacing-sm);
-  margin-top: var(--scx-spacing-xs);
+  margin-top: 2px;
   min-width: 180px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
@@ -1937,17 +1947,12 @@ hr {
 
 .scx-xp-breakdown {
   font-size: 9px;
-  color: var(--scx-text-muted);
 }
 
+.scx-xp-breakdown .scx-xp-label,
 .scx-xp-breakdown .scx-xp-value {
+  color: var(--scx-text-muted);
   font-weight: var(--scx-font-weight-normal);
-  color: var(--scx-text-muted);
-}
-
-.scx-xp-loading {
-  font-size: var(--scx-font-size-xs);
-  color: var(--scx-text-muted);
 }
 
 .scx-hidden {
