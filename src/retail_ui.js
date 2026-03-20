@@ -51,7 +51,8 @@ export const RetailHelper = (() => {
     const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
     if (paren) return parseDurationToSeconds(paren[1]);
 
-    return NaN;
+    // Fallback: game may display duration inline without parentheses
+    return parseDurationToSeconds(text);
   }
 
   function extractProfitPerUnit(row) {
@@ -59,7 +60,16 @@ export const RetailHelper = (() => {
     if (!infoCol) return NaN;
 
     // The profit div is the one containing an SVG (question-mark icon) — language-agnostic
-    const profitDiv = [...infoCol.querySelectorAll(":scope > div")].find((d) => d.querySelector("svg"));
+    const childDivs = [...infoCol.querySelectorAll(":scope > div")];
+    let profitDiv = childDivs.find((d) => d.querySelector("svg"));
+
+    // Fallback: if the game no longer renders an SVG tooltip, find a div whose
+    // entire text content is a bare dollar amount (no label text before it),
+    // e.g. "$0.30" or "−$1,234.56" but NOT "Average price: $8.67"
+    if (!profitDiv) {
+      profitDiv = childDivs.find((d) => /^\s*[-−]?\s*\$\s*[\d.,]+\s*$/.test(d.textContent));
+    }
+
     if (!profitDiv) return NaN;
 
     const text = profitDiv.textContent || "";
