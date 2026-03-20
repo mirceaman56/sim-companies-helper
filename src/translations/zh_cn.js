@@ -185,4 +185,11 @@ export default {
   retailVerdictFalling: "价格下滑，请密切关注。",
   retailVerdictStable: "市场稳定，无明显信号。",
   retailVerdictNoData: "暂无趋势数据。",
+  xpEstimate: "经验估算",
+  xpPerHour: "经验/小时",
+  xpRemaining: "剩余经验",
+  xpTimeToLevel: "升级所需时间",
+  xpOperating: "运营中",
+  xpProspecting: "探矿中",
+  xpIdle: "空闲",
 };

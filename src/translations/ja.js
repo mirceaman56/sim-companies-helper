@@ -185,4 +185,11 @@ export default {
   retailVerdictFalling: "価格が下落中。注意して監視してください。",
   retailVerdictStable: "安定した状況です。明確なシグナルはありません。",
   retailVerdictNoData: "トレンドデータはまだありません。",
+  xpEstimate: "XP見積もり",
+  xpPerHour: "XP/時間",
+  xpRemaining: "残りXP",
+  xpTimeToLevel: "レベルアップまでの時間",
+  xpOperating: "稼働中",
+  xpProspecting: "探査中",
+  xpIdle: "待機中",
 };

@@ -58,6 +58,22 @@ export const STATE = {
     lastRefreshAt: 0, // ms epoch
   },
 
+  // buildings (XP calculator)
+  buildings: {
+    loaded: false,
+    loading: false,
+    error: null,
+    items: [],
+    lastRefreshAt: 0, // ms epoch
+  },
+
+  // level info (from auth-data)
+  levelInfo: {
+    level: null,
+    experience: null,
+    experienceToNextLevel: null,
+  },
+
   // market
   marketCache: new Map(), // `${realmId}:${productId}` -> { ts, data }
   marketDeltaCache: new Map(), // `${realmId}:${productId}` -> { ts, delta } for warehouse UI

@@ -185,4 +185,11 @@ export default {
   retailVerdictFalling: "價格下滑，請密切關注。",
   retailVerdictStable: "市場穩定，無明顯訊號。",
   retailVerdictNoData: "暫無趨勢資料。",
+  xpEstimate: "經驗估算",
+  xpPerHour: "經驗/小時",
+  xpRemaining: "剩餘經驗",
+  xpTimeToLevel: "升級所需時間",
+  xpOperating: "運營中",
+  xpProspecting: "探礦中",
+  xpIdle: "閒置",
 };

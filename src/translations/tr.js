@@ -185,4 +185,11 @@ export default {
   retailVerdictFalling: "Fiyatlar düşüyor. Yakından takip edin.",
   retailVerdictStable: "Koşullar stabil. Güçlü sinyal yok.",
   retailVerdictNoData: "Henüz trend verisi mevcut değil.",
+  xpEstimate: "XP Tahmini",
+  xpPerHour: "XP/saat",
+  xpRemaining: "Kalan XP",
+  xpTimeToLevel: "Seviyeye kalan süre",
+  xpOperating: "Çalışıyor",
+  xpProspecting: "Arama",
+  xpIdle: "Boşta",
 };

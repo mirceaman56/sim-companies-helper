@@ -18,6 +18,9 @@ import { initWhatsNewToast } from "./whats_new_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
+import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
+import { initXpWidget, updateXpWidget } from "./xp_ui.js";
+import { loadBuildings } from "./buildings.js";
 
 /**
  * Sync legacy cashflow state for backward compatibility.
@@ -67,6 +70,9 @@ async function init() {
   // Upgrade buy message helper for building upgrade popup
   initUpgradeBuyMessage();
 
+  // XP calculator widget in navbar
+  initXpWidget();
+
   // Setup production row listeners FIRST to close race condition window
   // (attach listeners before user can interact)
   setupProductionRowListeners();
@@ -87,6 +93,13 @@ async function init() {
     if (STATE.cashflow.error) {
       console.warn("[SimHelper] Cashflow failed:", STATE.cashflow.error);
     }
+
+    // Load buildings after auth so the API call has a valid session.
+    await loadBuildings();
+    if (STATE.buildings.error) {
+      console.warn("[SimHelper] Buildings failed:", STATE.buildings.error);
+    }
+    updateXpWidget();
   } catch (e) {
     console.error("[SimHelper] Critical initialization failure:", e);
   }
@@ -131,3 +144,15 @@ setInterval(async () => {
   syncLegacyCashflowState();
   updateCashflowPanel();
 }, CASHFLOW_REFRESH_INTERVAL_MS);
+
+setInterval(async () => {
+  try {
+    await loadBuildings({ force: true });
+    if (STATE.buildings.error) {
+      console.warn("[SimHelper] Buildings refresh failed:", STATE.buildings.error);
+    }
+  } catch (e) {
+    console.error("[SimHelper] Buildings refresh error:", e);
+  }
+  updateXpWidget();
+}, BUILDINGS_REFRESH_INTERVAL_MS);
