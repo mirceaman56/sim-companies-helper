@@ -18,6 +18,7 @@ import { initWhatsNewToast } from "./whats_new_ui.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
+import { initXpWidget } from "./xp_ui.js";
 
 /**
  * Sync legacy cashflow state for backward compatibility.
@@ -66,6 +67,9 @@ async function init() {
 
   // Upgrade buy message helper for building upgrade popup
   initUpgradeBuyMessage();
+
+  // XP calculator widget in navbar
+  initXpWidget();
 
   // Setup production row listeners FIRST to close race condition window
   // (attach listeners before user can interact)

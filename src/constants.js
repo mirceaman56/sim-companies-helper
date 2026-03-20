@@ -17,3 +17,6 @@ export const CASHFLOW_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 // Chat filter
 export const CHAT_SEARCH_TARGET_COUNT = 500;
 export const CHAT_SEARCH_CUTOFF_HOURS = 8;
+
+// Buildings (XP calculator)
+export const BUILDINGS_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours

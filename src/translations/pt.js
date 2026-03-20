@@ -186,4 +186,11 @@ export default {
   retailVerdictFalling: "Preços em queda. Monitore de perto.",
   retailVerdictStable: "Condições estáveis. Sem sinal forte.",
   retailVerdictNoData: "Ainda não há dados de tendência disponíveis.",
+  xpEstimate: "Estimativa de XP",
+  xpPerHour: "XP/hora",
+  xpRemaining: "XP restante",
+  xpTimeToLevel: "Tempo para o nível",
+  xpOperating: "Operando",
+  xpProspecting: "Prospecção",
+  xpIdle: "Inativo",
 };

@@ -185,4 +185,11 @@ export default {
   retailVerdictFalling: "Ceny klesají. Pozorně sledujte.",
   retailVerdictStable: "Podmínky stabilní. Žádný výrazný signál.",
   retailVerdictNoData: "Trendová data zatim nejsou k dispozici.",
+  xpEstimate: "Odhad XP",
+  xpPerHour: "XP/hodinu",
+  xpRemaining: "Zbývající XP",
+  xpTimeToLevel: "Čas do dalšího levelu",
+  xpOperating: "V provozu",
+  xpProspecting: "Průzkum",
+  xpIdle: "Nečinné",
 };
