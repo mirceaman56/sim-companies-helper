@@ -20,7 +20,7 @@ import { t } from "./i18n.js";
 import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
 import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
 import { initXpWidget, updateXpWidget } from "./xp_ui.js";
-import { loadBuildings } from "./buildings.js";
+import { loadBuildings, cleanupLegacyBuildingsCache } from "./buildings.js";
 
 /**
  * Sync legacy cashflow state for backward compatibility.
@@ -83,6 +83,9 @@ async function init() {
     if (STATE.auth.error) {
       console.warn("[SimHelper] Auth failed:", STATE.auth.error);
     }
+
+    // Clean up orphaned legacy cache keys (pre-per-company-id migration)
+    await cleanupLegacyBuildingsCache();
 
     await loadInventoryOnce();
     if (STATE.inventory.error) {
