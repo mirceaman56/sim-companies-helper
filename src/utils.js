@@ -6,11 +6,26 @@ export const MARKET_FEE = 0.04;
 /** Transport container product ID in SimCompanies */
 export const TRANSPORT_RESOURCE_ID = 13;
 
+const COMMA_DECIMAL_PATH_PREFIXES = ["/de", "/fr", "/pt", "/tr", "/it", "/es", "/cs", "/pl"];
+
+function getPreferredDecimalSeparator() {
+  try {
+    const path = window.location?.pathname || "";
+    for (const prefix of COMMA_DECIMAL_PATH_PREFIXES) {
+      if (path.startsWith(prefix)) return ",";
+    }
+    return ".";
+  } catch {
+    return ".";
+  }
+}
+
 /**
  * Parse a locale-agnostic number from text.
  *   EN: 1,234.56  (comma = thousands, dot = decimal)
  *   DE: 1.234,56  (dot = thousands, comma = decimal)
- * Heuristic: the last separator followed by exactly 1-2 digits is the decimal.
+ * Heuristic: if both separators exist, the last one is decimal.
+ * If only one separator exists, prefer the decimal separator based on URL locale.
  * @param {string} raw
  * @returns {number}
  */
@@ -21,6 +36,7 @@ export function parseLocaleNumber(raw) {
   s = numeric[0];
   const lastComma = s.lastIndexOf(",");
   const lastDot = s.lastIndexOf(".");
+  const preferredDecimal = getPreferredDecimalSeparator();
 
   if (lastComma !== -1 && lastDot !== -1) {
     const decimalSep = lastComma > lastDot ? "," : ".";
@@ -31,16 +47,24 @@ export function parseLocaleNumber(raw) {
   }
 
   if (lastComma !== -1) {
-    const afterComma = s.slice(lastComma + 1);
-    // 3 digits after a lone comma is unambiguously a thousands separator (e.g. 2,880)
-    // 1-2 digits after a lone comma with ≤3 digits before is a decimal (e.g. DE: 1,5)
-    if (/^\d{1,2}$/.test(afterComma) && s.slice(0, lastComma).length <= 3) {
+    if (preferredDecimal === ",") {
       return Number(s.replace(",", "."));
     }
     return Number(s.replace(/,/g, ""));
   }
 
-  return Number(s.replace(/,/g, ""));
+  if (lastDot !== -1) {
+    if (preferredDecimal === ".") {
+      return Number(s);
+    }
+    const afterDot = s.slice(lastDot + 1);
+    if (/^\d{1,2}$/.test(afterDot) && s.slice(0, lastDot).length <= 3) {
+      return Number(s);
+    }
+    return Number(s.replace(/\./g, ""));
+  }
+
+  return Number(s);
 }
 
 /**
