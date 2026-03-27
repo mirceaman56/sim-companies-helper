@@ -57,6 +57,10 @@ export function parseLocaleNumber(raw) {
     if (preferredDecimal === ".") {
       return Number(s);
     }
+    const afterDot = s.slice(lastDot + 1);
+    if (/^\d{1,2}$/.test(afterDot) && s.slice(0, lastDot).length <= 3) {
+      return Number(s);
+    }
     return Number(s.replace(/\./g, ""));
   }
 

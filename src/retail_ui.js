@@ -51,6 +51,18 @@ export const RetailHelper = (() => {
     const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
     if (paren) return parseDurationToSeconds(paren[1]);
 
+    // Try to locate a dedicated duration element (e.g., "51m, 16s") to avoid
+    // concatenation with time-of-day strings like "08:13"
+    let durationText = "";
+    const durationPattern = /\d+\s*(?:d|t|h|st|m|s)\b/i;
+    for (const el of infoCol.querySelectorAll(":scope *")) {
+      const t = el.textContent || "";
+      if (durationPattern.test(t) && !/\d{1,2}:\d{2}/.test(t)) {
+        durationText = t;
+      }
+    }
+    if (durationText) return parseDurationToSeconds(durationText);
+
     // Fallback: game may display duration inline without parentheses
     return parseDurationToSeconds(text);
   }

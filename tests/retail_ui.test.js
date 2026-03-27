@@ -33,8 +33,8 @@ function makeRow({
   productId = 42,
   price = "10.00",
   qty = "100",
-  profit = "$5.00",
-  duration = "(1h 5m)",
+  profit = "$5,00",
+  duration = "(1st 5m)",
 } = {}) {
   const row = document.createElement("div");
 
@@ -79,18 +79,27 @@ function makeRow({
 // ─── parseNumber ────────────────────────────────────────
 describe("parseNumber", () => {
   it("parses plain integers", () => {
+    window.history.pushState({}, "", "/");
     expect(parseNumber("100")).toBe(100);
   });
 
   it("parses EN format (comma thousands, dot decimal)", () => {
+    window.history.pushState({}, "", "/");
     expect(parseNumber("1,234.56")).toBe(1234.56);
   });
 
   it("parses DE format (dot thousands, comma decimal)", () => {
+    window.history.pushState({}, "", "/de/retail");
     expect(parseNumber("1.234,56")).toBe(1234.56);
   });
 
+  it("parses DE format (comma decimal)", () => {
+    window.history.pushState({}, "", "/de/retail");
+    expect(parseNumber("1,2")).toBe(1.2);
+  });
+
   it("returns NaN for empty string", () => {
+    window.history.pushState({}, "", "/");
     expect(parseNumber("")).toBeNaN();
   });
 });
@@ -199,6 +208,69 @@ describe("extractFinishSeconds", () => {
   it("returns NaN when no duration present", () => {
     const row = makeRow({ duration: "" });
     expect(extractFinishSeconds(row)).toBeNaN();
+  });
+
+  it("avoids merging time-of-day with duration text", () => {
+    const row = document.createElement("div");
+    const infoCol = document.createElement("div");
+    infoCol.classList.add("right-border");
+    const h3 = document.createElement("h3");
+    h3.textContent = "Oranges";
+    infoCol.appendChild(h3);
+
+    const ended = document.createElement("div");
+    ended.textContent = "Beendet: 08:13";
+    const duration = document.createElement("div");
+    duration.textContent = "51m, 16s";
+    ended.appendChild(duration);
+    infoCol.appendChild(ended);
+
+    row.appendChild(infoCol);
+
+    expect(extractFinishSeconds(row)).toBe(3076);
+  });
+});
+
+// ─── Integration: DE retail profit/min ─────────────────────────
+describe("retail metrics (DE duration + profit parsing)", () => {
+  it("computes profit/min with DE decimal and time-of-day present", () => {
+    window.history.pushState({}, "", "/de/b/123/");
+
+    const row = document.createElement("div");
+
+    const infoCol = document.createElement("div");
+    infoCol.classList.add("right-border");
+    const h3 = document.createElement("h3");
+    h3.textContent = "Orangen";
+    infoCol.appendChild(h3);
+
+    const profitDiv = document.createElement("div");
+    profitDiv.textContent = "Gewinn pro Einheit: $1,74 ";
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    profitDiv.appendChild(svg);
+    infoCol.appendChild(profitDiv);
+
+    const ended = document.createElement("div");
+    ended.textContent = "Beendet: 08:13";
+    const duration = document.createElement("div");
+    duration.textContent = "51m, 16s";
+    ended.appendChild(duration);
+    infoCol.appendChild(ended);
+
+    row.appendChild(infoCol);
+
+    const qtyInput = document.createElement("input");
+    qtyInput.name = "quantity";
+    qtyInput.value = "630";
+    row.appendChild(qtyInput);
+
+    const priceInput = document.createElement("input");
+    priceInput.name = "price";
+    priceInput.value = "8.3";
+    row.appendChild(priceInput);
+
+    const metrics = RetailHelper.renderers.getMetrics(row);
+    expect(metrics.profitPerMin).toBeCloseTo(21.38, 2);
   });
 });
 
