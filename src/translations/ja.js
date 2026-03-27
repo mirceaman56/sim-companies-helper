@@ -192,4 +192,6 @@ export default {
   xpOperating: "稼働中",
   xpProspecting: "探査中",
   xpIdle: "待機中",
+  translationUnavailable: "翻訳サービスが利用できません — HR評価をスキップしました",
+  translatingFeedback: "フィードバックを翻訳中...",
 };

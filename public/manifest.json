@@ -4,7 +4,7 @@
   "version": "0.17.3",
   "description": "Various quality of life improvements for Sim Companies players.",
   "permissions": ["storage"],
-  "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
+  "host_permissions": ["https://api.github.com/*", "https://github.com/*", "https://lingva.ml/*", "https://lingva.thedaviddelta.com/*"],
   "background": {
     "service_worker": "background.js",
     "type": "module"

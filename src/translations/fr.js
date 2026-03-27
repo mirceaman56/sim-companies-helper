@@ -194,4 +194,6 @@ export default {
   xpOperating: "En activité",
   xpProspecting: "Prospection",
   xpIdle: "Inactif",
+  translationUnavailable: "Service de traduction indisponible — évaluation RH ignorée",
+  translatingFeedback: "Traduction du feedback...",
 };

@@ -192,4 +192,6 @@ export default {
   xpOperating: "Çalışıyor",
   xpProspecting: "Arama",
   xpIdle: "Boşta",
+  translationUnavailable: "Çeviri hizmeti kullanılamıyor — İK değerlendirmesi atlandı",
+  translatingFeedback: "Geri bildirim çevriliyor...",
 };

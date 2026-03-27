@@ -192,4 +192,6 @@ export default {
   xpOperating: "運營中",
   xpProspecting: "探礦中",
   xpIdle: "閒置",
+  translationUnavailable: "翻譯服務不可用 — 已跳過HR評估",
+  translatingFeedback: "正在翻譯反饋...",
 };

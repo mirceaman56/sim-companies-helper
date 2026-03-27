@@ -192,4 +192,6 @@ export default {
   xpOperating: "Działające",
   xpProspecting: "Poszukiwanie",
   xpIdle: "Bezczynne",
+  translationUnavailable: "Usługa tłumaczenia niedostępna — ocena HR pominięta",
+  translatingFeedback: "Tłumaczenie opinii...",
 };

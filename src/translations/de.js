@@ -194,4 +194,7 @@ export default {
   xpOperating: "In Betrieb",
   xpProspecting: "Erkundung",
   xpIdle: "Inaktiv",
+  translationUnavailable: "Übersetzungsdienst nicht verfügbar — HR-Bewertung übersprungen",
+  translatingFeedback: "Feedback wird übersetzt...",
+  matchedEnglishBlurb: "Zugeordneter englischer Blurb",
 };

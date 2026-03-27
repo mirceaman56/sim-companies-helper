@@ -192,4 +192,6 @@ export default {
   xpOperating: "V provozu",
   xpProspecting: "Průzkum",
   xpIdle: "Nečinné",
+  translationUnavailable: "Překladová služba nedostupná — hodnocení HR přeskočeno",
+  translatingFeedback: "Překládání zpětné vazby...",
 };

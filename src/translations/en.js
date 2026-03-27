@@ -192,4 +192,7 @@ export default {
   xpOperating: "Operating",
   xpProspecting: "Prospecting",
   xpIdle: "Idle",
+  translationUnavailable: "Translation service unavailable — HR assessment skipped",
+  translatingFeedback: "Translating feedback...",
+  matchedEnglishBlurb: "Matched English Blurb",
 };

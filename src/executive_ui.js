@@ -6,12 +6,14 @@
 
 import { stringSimilarity } from "string-similarity-js";
 import hrBlurpData from "./resources/hr_blurp.json";
-import { t } from "./i18n.js";
+import { t, getLang } from "./i18n.js";
 import { getSectionContent } from "./sidebar.js";
 import { escapeHtml } from "./utils.js";
+import { translateToEnglish } from "./translate.js";
 
 const SECTION_ID = "executive-section";
 const SIMILARITY_THRESHOLD = 0.7;
+const TRANSLATED_SIMILARITY_THRESHOLD = 0.55;
 const SKILL_KEYS = ["mgmt", "acct", "comm", "tech"];
 const SKILL_LABELS = {
   mgmt: "Management",
@@ -183,21 +185,27 @@ function calculateSimilarity(a, b) {
  * Find best matching HR blurp entry from JSON based on feedback text
  * Returns the entry with highest similarity score above threshold
  */
-function findBestMatchingEntry(feedbackText) {
+export function findBestMatchingEntry(feedbackText, langCode, { threshold = SIMILARITY_THRESHOLD } = {}) {
   if (!feedbackText) return null;
 
   let bestMatch = null;
-  let bestScore = SIMILARITY_THRESHOLD;
+  let bestScore = threshold;
 
-  // Check all entries to find best match (don't stop at first)
   for (const entry of hrBlurpData) {
-    // Try to match against English feedback (primary language)
-    const originalFeedback = entry.en?.originalFeedback || "";
-    const score = calculateSimilarity(feedbackText, originalFeedback);
+    // If a specific language is requested and the entry has that language, try it first
+    if (langCode && langCode !== "en" && entry[langCode]?.originalFeedback) {
+      const localScore = calculateSimilarity(feedbackText, entry[langCode].originalFeedback);
+      if (localScore > bestScore) {
+        bestScore = localScore;
+        bestMatch = entry;
+      }
+    }
 
-    // Update best match if this score is higher
-    if (score > bestScore) {
-      bestScore = score;
+    // Always also try English
+    const enFeedback = entry.en?.originalFeedback || "";
+    const enScore = calculateSimilarity(feedbackText, enFeedback);
+    if (enScore > bestScore) {
+      bestScore = enScore;
       bestMatch = entry;
     }
   }
@@ -360,6 +368,43 @@ function createFeedbackSectionHTML(feedbackText) {
 }
 
 /**
+ * Create HTML showing the matched English blurb for verification
+ */
+function createMatchedBlurbHTML(matchedEntry) {
+  const enFeedback = matchedEntry?.en?.originalFeedback;
+  if (!enFeedback) return "";
+
+  return `
+    <div class="scx-hr-blurp-feedback-section">
+      <div class="scx-hr-blurp-feedback-label">${escapeHtml(t("matchedEnglishBlurb"))}</div>
+      <div class="scx-hr-blurp-feedback-text" style="font-style: italic; opacity: 0.8;">${escapeHtml(enFeedback)}</div>
+    </div>
+  `;
+}
+
+/**
+ * Create HTML for translation unavailable hint
+ */
+function createTranslationUnavailableHTML() {
+  return `
+    <div class="scx-hr-blurp-feedback-section">
+      <div class="scx-hr-blurp-translation-unavailable">${escapeHtml(t("translationUnavailable"))}</div>
+    </div>
+  `;
+}
+
+/**
+ * Create HTML for translation loading state
+ */
+function createTranslatingHTML() {
+  return `
+    <div class="scx-hr-blurp-feedback-section">
+      <div class="scx-hr-blurp-translating">${escapeHtml(t("translatingFeedback"))}</div>
+    </div>
+  `;
+}
+
+/**
  * Create HTML for the HR skills section
  */
 function createSkillsSectionHTML(matchedEntry) {
@@ -418,7 +463,7 @@ function createNavigationMessageHTML() {
 /**
  * Update the executive helper panel in the sidebar
  */
-export function updateExecutivePanel() {
+export async function updateExecutivePanel() {
   // Get the section content container
   const content = getSectionContent(SECTION_ID);
   if (!content) return;
@@ -438,13 +483,36 @@ export function updateExecutivePanel() {
     return;
   }
 
+  const lang = getLang();
+
   // Try to find HR blurp match if we have feedback
   let matchedEntry = null;
-  let hasHRFeedback = false;
 
   if (feedbackText) {
-    matchedEntry = findBestMatchingEntry(feedbackText);
-    hasHRFeedback = matchedEntry !== null;
+    // First try matching against available language variants in hr_blurp.json
+    matchedEntry = findBestMatchingEntry(feedbackText, lang);
+
+    // If no match and language is not English, translate and retry
+    if (!matchedEntry && lang !== "en") {
+      // Show loading state with skills breakdown
+      let loadingHtml = "";
+      if (executiveSkills) {
+        loadingHtml += createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills);
+      }
+      loadingHtml += createFeedbackSectionHTML(feedbackText);
+      loadingHtml += createTranslatingHTML();
+      content.innerHTML = loadingHtml;
+
+      const translatedText = await translateToEnglish(feedbackText, lang);
+
+      if (translatedText) {
+        matchedEntry = findBestMatchingEntry(translatedText, "en", { threshold: TRANSLATED_SIMILARITY_THRESHOLD });
+      }
+
+      // Re-check content is still valid (user may have navigated away)
+      const currentContent = getSectionContent(SECTION_ID);
+      if (!currentContent || currentContent !== content) return;
+    }
   }
 
   // Build HTML for the panel
@@ -455,13 +523,20 @@ export function updateExecutivePanel() {
     html += createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills);
   }
 
-  // Show HR assessment only if we have feedback and matched entry
-  if (hasHRFeedback && feedbackText && matchedEntry) {
+  // Show HR assessment if we have feedback
+  if (matchedEntry && feedbackText) {
     html += createFeedbackSectionHTML(feedbackText);
+    if (lang !== "en") {
+      html += createMatchedBlurbHTML(matchedEntry);
+    }
     html += createSkillsSectionHTML(matchedEntry);
     html += createFooterHTML(matchedEntry);
+  } else if (feedbackText && lang !== "en") {
+    // Non-English, no match found — translation failed or no match after translation
+    html += createFeedbackSectionHTML(feedbackText);
+    html += createTranslationUnavailableHTML();
   } else if (feedbackText) {
-    // Show feedback even if no match found
+    // English, no match found
     html += createFeedbackSectionHTML(feedbackText);
   }
 
