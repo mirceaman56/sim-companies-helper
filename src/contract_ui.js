@@ -105,10 +105,19 @@ function getLowestSellerPrice() {
 }
 
 /**
- * Parse a price string. Delegates to shared parseLocaleNumber.
- * SimCompanies uses "." as decimal with 3 decimal places.
+ * Parse a price string.
+ * Input fields often use "." as decimal (even on /de),
+ * while market lists use localized separators.
  */
-const parsePrice = parseLocaleNumber;
+function parsePrice(raw) {
+  const s = String(raw).trim();
+  if (!s) return NaN;
+  if (s.includes(".") && !s.includes(",")) {
+    const n = Number(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  return parseLocaleNumber(s);
+}
 
 /**
  * Set a React-controlled input's value properly.
@@ -177,7 +186,7 @@ function updateButtonLabel() {
 function getAmountValue() {
   const input = document.querySelector('input[name="amount"]');
   if (!input) return null;
-  const val = parsePrice(input.value);
+  const val = parseLocaleNumber(input.value);
   return Number.isFinite(val) && val > 0 ? val : null;
 }
 
@@ -190,6 +199,12 @@ function getPriceValue() {
   const val = parsePrice(input.value);
   return Number.isFinite(val) && val > 0 ? val : null;
 }
+
+export const _testUtils = {
+  parsePrice,
+  getAmountValue,
+  getPriceValue,
+};
 
 /**
  * Extract sourcing cost per unit from the product info section.
