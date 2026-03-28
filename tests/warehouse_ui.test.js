@@ -61,4 +61,40 @@ describe("fetchInventoryItems", () => {
 
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
+
+  it("retries once for transient fetch failures", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 524 })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve([{ kind: 3, amount: 100, quality: 2 }]),
+      });
+
+    const items = await _testUtils.fetchInventoryItems();
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(items.length).toBeGreaterThan(0);
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(debugSpy).not.toHaveBeenCalledWith("[WarehouseUI] Failed to fetch inventory: 524");
+  });
+
+  it("throttles repeated logs for expected 400 failures", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+
+    global.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 400 }));
+
+    await _testUtils.fetchInventoryItems();
+    vi.advanceTimersByTime(_testUtils.INVENTORY_CACHE_TTL_MS + 1);
+    await _testUtils.fetchInventoryItems();
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(debugSpy).toHaveBeenCalledTimes(1);
+    expect(debugSpy).toHaveBeenCalledWith("[WarehouseUI] Failed to fetch inventory: 400");
+  });
 });
