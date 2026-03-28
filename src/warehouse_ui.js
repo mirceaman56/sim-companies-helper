@@ -11,9 +11,61 @@ import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
 
 const INVENTORY_CACHE_TTL_MS = 5000;
+const INVENTORY_MAX_FETCH_ATTEMPTS = 2;
+const INVENTORY_LOG_COOLDOWN_MS = 60000;
+const RETRYABLE_INVENTORY_STATUS = new Set([408, 429, 500, 502, 503, 504, 520, 522, 524]);
+
 let cachedInventoryItems = [];
 let inventoryFetchedAt = 0;
 let inventoryFetchPromise = null;
+const inventoryLogTimestamps = new Map();
+
+function shouldRetryInventoryStatus(status) {
+  return RETRYABLE_INVENTORY_STATUS.has(status);
+}
+
+function logInventory(level, message) {
+  const now = Date.now();
+  const key = `${level}:${message}`;
+  const lastLoggedAt = inventoryLogTimestamps.get(key) || 0;
+  if (now - lastLoggedAt < INVENTORY_LOG_COOLDOWN_MS) return;
+
+  inventoryLogTimestamps.set(key, now);
+  const fullMessage = `[WarehouseUI] ${message}`;
+
+  if (level === "warn") {
+    console.warn(fullMessage);
+    return;
+  }
+
+  if (level === "error") {
+    console.error(fullMessage);
+    return;
+  }
+
+  console.debug(fullMessage);
+}
+
+async function fetchInventoryResponse(companyId) {
+  const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= INVENTORY_MAX_FETCH_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(url, { credentials: "include" });
+      if (response.ok) return response;
+
+      const shouldRetry =
+        shouldRetryInventoryStatus(response.status) && attempt < INVENTORY_MAX_FETCH_ATTEMPTS;
+      if (!shouldRetry) return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt === INVENTORY_MAX_FETCH_ATTEMPTS) throw lastError;
+    }
+  }
+
+  throw lastError || new Error("Inventory fetch failed");
+}
 
 // Map product kinds (IDs) to recipe info, and names to IDs
 function buildRecipeMaps() {
@@ -65,15 +117,16 @@ async function fetchInventoryItems() {
 
       const companyId = STATE.auth.companyId;
       if (!companyId) {
-        console.warn("[WarehouseUI] Cannot fetch inventory: no company ID");
+        logInventory("debug", "Cannot fetch inventory: no company ID");
         return cachedInventoryItems.length ? cachedInventoryItems : [];
       }
 
-      const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
-      const response = await fetch(url, { credentials: "include" });
+      const response = await fetchInventoryResponse(companyId);
 
       if (!response.ok) {
-        console.warn(`[WarehouseUI] Failed to fetch inventory: ${response.status}`);
+        const level =
+          response.status === 400 || shouldRetryInventoryStatus(response.status) ? "debug" : "warn";
+        logInventory(level, `Failed to fetch inventory: ${response.status}`);
         return cachedInventoryItems.length ? cachedInventoryItems : [];
       }
 
@@ -134,7 +187,7 @@ async function fetchInventoryItems() {
       }
       return items;
     } catch (error) {
-      console.error("[WarehouseUI] Error fetching inventory:", error);
+      logInventory("warn", `Error fetching inventory: ${error?.message || "unknown error"}`);
       return cachedInventoryItems;
     } finally {
       inventoryFetchPromise = null;
@@ -473,9 +526,11 @@ export function initWarehouseHelper() {
 
 export const _testUtils = {
   fetchInventoryItems,
+  INVENTORY_CACHE_TTL_MS,
   resetInventoryCache() {
     cachedInventoryItems = [];
     inventoryFetchedAt = 0;
     inventoryFetchPromise = null;
+    inventoryLogTimestamps.clear();
   },
 };
