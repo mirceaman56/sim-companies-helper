@@ -970,20 +970,78 @@ hr {
 }
 
 @media (prefers-color-scheme: dark) {
-  .scx-box-blue {
-    background: #1a2a3a;
+  #scx-sidebar .scx-box-blue {
+    background: #1f3655;
+    border: 1px solid #355d87;
   }
-  .scx-box-yellow {
-    background: #2a2410;
+
+  #scx-sidebar .scx-box-yellow {
+    background: #4a3608;
+    border: 1px solid #7a5c17;
   }
-  .scx-box-purple {
-    background: #251a2e;
+
+  #scx-sidebar .scx-box-purple {
+    background: #3a204d;
+    border: 1px solid #6f43a3;
   }
-  .scx-box-green {
-    background: #172519;
+
+  #scx-sidebar .scx-box-green {
+    background: #1f4d2a;
+    border: 1px solid #2f7a45;
   }
-  .scx-box-light-gray {
-    background: #2a2a2a;
+
+  #scx-sidebar .scx-box-light-gray {
+    background: #2a2d33;
+    border: 1px solid #4a4f59;
+  }
+
+  #scx-sidebar .scx-profit-box-yellow {
+    background: #5a430f;
+    border: 1px solid #8d6e1e;
+  }
+
+  #scx-sidebar .scx-profit-box-purple {
+    background: #4a2a5f;
+    border: 1px solid #7d54a0;
+  }
+
+  #scx-sidebar .scx-sell-box-green {
+    background: #1f4d2a;
+    border: 1px solid #2f7a45;
+  }
+
+  #scx-sidebar .scx-sell-box-orange {
+    background: #5a3a09;
+    border: 1px solid #8a5f1b;
+  }
+
+  #scx-sidebar .scx-sell-box-blue {
+    background: #1f3655;
+    border: 1px solid #355d87;
+  }
+
+  #scx-sidebar .scx-text-blue {
+    color: #9fc9ff;
+  }
+
+  #scx-sidebar .scx-text-orange {
+    color: #ffd08b;
+  }
+
+  #scx-sidebar .scx-text-purple {
+    color: #ddbcff;
+  }
+
+  #scx-sidebar .scx-text-brown {
+    color: #ffe4bf;
+  }
+
+  #scx-sidebar .scx-text-dark-brown {
+    color: #e9d6ff;
+  }
+
+  #scx-sidebar .scx-text-forest {
+    color: #ccf6d8;
   }
 }
 
