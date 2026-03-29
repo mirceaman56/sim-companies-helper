@@ -135,8 +135,11 @@ window.addEventListener(
 );
 
 setInterval(async () => {
+  const pending = loadCashflowToday({ force: true });
+  updateCashflowPanel();
+
   try {
-    await loadCashflowToday({ force: true });
+    await pending;
     if (STATE.cashflow.error) {
       console.warn("[SimHelper] Cashflow refresh failed:", STATE.cashflow.error);
     }

@@ -56,6 +56,58 @@ export const STATE = {
     },
 
     lastRefreshAt: 0, // ms epoch
+
+    // Finance dashboard v2
+    finance: {
+      selectedPeriod: "current", // current | day | week
+      uiMode: "compact", // compact | expanded
+
+      coverage: {
+        startMs: 0,
+        endMs: 0,
+        partial: false,
+      },
+
+      datasets: {
+        transactions: [],
+        pastFinances: [],
+        outgoingContracts: [],
+      },
+
+      derived: {
+        period: null,
+        previousPeriod: null,
+        kpis: null,
+        pnl: null,
+        cashMovement: null,
+        balanceSheet: null,
+        ratios: [],
+        drivers: null,
+        salesMix: [],
+        inventoryProduction: null,
+        workforce: null,
+        alerts: [],
+        recentTransactions: [],
+      },
+
+      meta: {
+        loading: false,
+        error: null,
+        lastRefreshAt: 0,
+        rateLimitedUntil: 0,
+        partialReason: "",
+        cashBalance: null,
+      },
+
+      cache: {
+        oldestPulled: false,
+        pagesLoaded: 0,
+        transactionsFetchedUntilMs: 0,
+        lastTxFetchAt: 0,
+        lastPastFinancesAt: 0,
+        lastOutgoingContractsAt: 0,
+      },
+    },
   },
 
   // buildings (XP calculator)
