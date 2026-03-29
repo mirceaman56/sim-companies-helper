@@ -472,10 +472,18 @@ export function updateExecutivePanel() {
 /**
  * Check if current page is an executive page
  */
+function isExecutivePath(pathname) {
+  if (typeof pathname !== "string") return false;
+  // Match specific roles (coo/cfo/cto/cmo), their apprentice pages,
+  // and group executives (g1, g2, g3, etc.).
+  return (
+    /\/headquarters\/executives\/(coo|cfo|cto|cmo)(-apprentice)?\/?$/.test(pathname) ||
+    /\/headquarters\/executives\/g\d+\/?$/.test(pathname)
+  );
+}
+
 function isExecutivePage() {
-  const path = window.location.pathname;
-  // Match both specific roles (coo, cfo, cto, cmo) and group executives (g1, g2, g3, etc.)
-  return /\/headquarters\/executives\/(coo|cfo|cto|cmo|g\d+)\/$/.test(path);
+  return isExecutivePath(window.location.pathname);
 }
 
 /**
@@ -484,3 +492,7 @@ function isExecutivePage() {
 export function initExecutiveHelper() {
   // Initialization is handled by the sidebar system via setSectionUpdateFn
 }
+
+export const _testUtils = {
+  isExecutivePath,
+};

@@ -1,26 +1,48 @@
 # Sim Companies Helper
 
-Various quality of life improvements for Sim Companies players.
+A Chrome extension that adds practical, in-game tools for Sim Companies players.
 
-## Features
+## What It Adds
 
-- **Retail Profit Mastery**: Instantly see Profit Per Minute (PPM) for retail items with color-coding. Compare retail vs. market prices including transport costs.
-- **Smart Production**: Real-time costing for production items and custom contract profit calculations.
-- **Warehouse Price Comparison**: One-click market price lookup for every inventory item, with quality-aware matching and weighted average cost comparison.
-- **Contract Assistant**: Evaluate contract opportunities with discount pricing and instant profit margin calculations against market alternatives.
-- **Market Price Alerts**: Set target prices for any product and quality level. Get in-page notifications when prices drop to your target while the extension monitors in the background.
-- **Executive Recruitment**: Analyze executive skills with organic vs. training breakdown. Get HR feedback insights to recruit the best candidates and track their growth potential.
-- **Chat Search**: Search the Sales Chat for specific products to find buyers/sellers quickly.
-- **Cashflow Insights**: Daily income vs. expenses breakdown compared to yesterday.
+- Retail helper with profit-per-minute and retail vs market comparison.
+- Production and contract profit calculators.
+- Warehouse market price comparison tools.
+- Market alerts for target prices.
+- Executive helper for chief and apprentice pages.
+- Sales chat filter/search helper.
+- Financials Helper dashboard with Current/Day/Week views, KPI strip, P&L, cash movement, ratios, drivers, transactions, sales mix, inventory/production, workforce cost, and alerts.
 
-## Safe & Secure
+## Install (Local / Unpacked)
 
-- Privacy-first: No tracking, data stays in your browser.
-- Lightweight: No heavy processes.
-- Open source: Built by players, for players.
+1. Clone this repository.
+2. Install dependencies: `npm install`
+3. Build extension files: `npm run build`
+4. Open `chrome://extensions`, enable Developer mode, click `Load unpacked`, and select the `dist` folder.
+5. Open `https://www.simcompanies.com/` and the helper panels will appear in the right sidebar.
 
-## More Coming Soon
+## Development
 
-Actively developing new features like better inventory management and specialized calculators.
+```bash
+npm install
+npm run build
+npm test
+```
 
-**Note**: This is a fan-made extension, not officially affiliated with Sim Companies.
+Useful commands:
+
+- `npm run test:watch` to run tests continuously.
+- `npm run lint` / `npm run lint:fix` for linting.
+- `npm run format` / `npm run format:check` for formatting.
+
+## Privacy & Permissions
+
+- Data is processed locally in your browser for gameplay helpers.
+- Uses extension storage for user preferences and saved helper settings.
+- Manifest permissions are limited to extension storage plus required host access.
+- Privacy policy: [`docs/privacy.html`](docs/privacy.html)
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
+
+Not affiliated with Sim Companies. This is a fan-made project.

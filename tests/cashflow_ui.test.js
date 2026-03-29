@@ -1,396 +1,345 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock i18n — t() just returns the key
-vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
+vi.mock("../src/i18n.js", () => ({
+  t: (key) => key,
+}));
 
-// Mock sidebar module with proper vi.fn() inside callback
 vi.mock("../src/sidebar.js", () => ({
   getSectionContent: vi.fn(),
 }));
 
-// Mock clipboard
+vi.mock("../src/cashflow.js", () => ({
+  loadFinanceData: vi.fn(async () => {}),
+  ensureFinanceCoverage: vi.fn(async () => ({ partial: false })),
+  setFinancePeriod: vi.fn(),
+  setFinanceUiMode: vi.fn(),
+}));
+
 vi.mock("../src/utils.js", async () => {
   const actual = await vi.importActual("../src/utils.js");
   return {
     ...actual,
-    copyToClipboard: vi.fn(),
+    copyToClipboard: vi.fn(async () => {}),
   };
 });
 
-// Mock STATE — must be defined before the mock
 vi.mock("../src/state.js", () => {
-  const mockState = {
+  const state = {
     cashflow: {
       loading: false,
-      error: null,
       loaded: true,
-      lastRefreshAt: null,
-      todayItems: [],
-      yesterdayItems: [],
-      todaySummary: {
-        totalIncome: 0,
-        totalExpense: 0,
-        incomeByType: { s: 0, t: 0, m: 0, other: 0 },
-        expenseByType: { p: 0, w: 0, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-      },
-      yesterdaySummary: {
-        totalIncome: 0,
-        totalExpense: 0,
-        incomeByType: { s: 0, t: 0, m: 0, other: 0 },
-        expenseByType: { p: 0, w: 0, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
+      error: null,
+      finance: {
+        selectedPeriod: "current",
+        uiMode: "compact",
+        coverage: { partial: false },
+        datasets: {
+          transactions: [
+            {
+              id: 1,
+              _dtMs: Date.parse("2026-03-29T11:00:00.000Z"),
+              datetime: "2026-03-29T11:00:00.000Z",
+              category: "t",
+              description: "Sand contract signed by Test Corp",
+              descriptionKey: "cs-44-Test Corp",
+              money: 120000,
+            },
+          ],
+        },
+        meta: {
+          loading: false,
+          error: null,
+          lastRefreshAt: Date.parse("2026-03-29T12:00:00.000Z"),
+          rateLimitedUntil: 0,
+        },
+        derived: {
+          period: {
+            startMs: Date.parse("2026-03-29T00:00:00.000Z"),
+            endMs: Date.parse("2026-03-29T12:00:00.000Z"),
+          },
+          kpis: [
+            { id: "revenue", current: 120000, delta: 20000, pct: 20, exactness: "derived" },
+            { id: "netProfit", current: 50000, delta: -5000, pct: -9.1, exactness: "exact" },
+          ],
+          pnl: {
+            revenue: { current: 120000, delta: 20000, pct: 20 },
+            directCosts: { current: 50000, delta: 3000, pct: 6 },
+            grossProfit: { current: 70000, delta: 17000, pct: 32 },
+            overhead: { current: 20000, delta: 1000, pct: 5 },
+            operatingProfit: { current: 50000, delta: 16000, pct: 47 },
+            nonOperating: { current: 0, delta: -1000, pct: null },
+            netProfit: { current: 50000, delta: -5000, pct: -9 },
+            revenueByChannel: { retail: 0, contracts: 120000, market: 0, other: 0 },
+            expensesByBucket: {
+              production: 50000,
+              marketBuy: 0,
+              inboundContracts: 0,
+              wages: 12000,
+              fees: 2000,
+            },
+          },
+          cashMovement: {
+            inflows: { current: 120000, delta: 20000, pct: 20 },
+            outflows: { current: 70000, delta: 5000, pct: 7.7 },
+            netChange: { current: 50000, delta: -5000, pct: -9.1 },
+            openingCash: 800000,
+            closingCash: 850000,
+          },
+          balanceSheet: {
+            latest: {
+              date: "2026-03-29 01:10:09.861290+00:00",
+              currentAssets: 3000000,
+              nonCurrentAssets: 2000000,
+              total: 5000000,
+              cashAndReceivables: 1000000,
+              inventory: 2000000,
+              liabilities: -500000,
+              buildings: 1200000,
+              patents: 900000,
+              rank: 4000,
+            },
+          },
+          ratios: [
+            { id: "grossMargin", value: 58.3 },
+            { id: "operatingMargin", value: 41.7 },
+            { id: "currentRatio", value: 6 },
+          ],
+          drivers: {
+            income: [
+              { key: "cs-44-Test Corp", label: "Sand contract", income: 120000, expense: 0, net: 120000 },
+            ],
+            expenses: [
+              { key: "production-44", label: "Production of Sand", income: 0, expense: 50000, net: -50000 },
+            ],
+            changes: [{ key: "production-44", label: "Production of Sand", delta: -10000 }],
+          },
+          salesMix: [{ kind: 44, name: "Sand", revenue: 120000, share: 100 }],
+          inventoryProduction: {
+            inventoryValue: 2000000,
+            productionSpend: 50000,
+            productionVolume: 400000,
+            productionTxCount: 2,
+            outgoingContractsCount: 3,
+            outgoingContractsValue: 200000,
+          },
+          workforce: {
+            wages: 12000,
+            training: 3000,
+            accounting: 1000,
+            leadership: 4000,
+            total: 16000,
+            totalDelta: 2000,
+          },
+          alerts: [{ id: "inventoryHigh", severity: "warn" }],
+          recentTransactions: [],
+        },
       },
     },
   };
-  return { STATE: mockState };
+
+  return { STATE: state };
 });
 
-import { updateCashflowPanel } from "../src/cashflow_ui.js";
-import { _testUtils } from "../src/cashflow_ui.js";
+import { updateCashflowPanel, _testUtils } from "../src/cashflow_ui.js";
 import { STATE } from "../src/state.js";
 import { getSectionContent } from "../src/sidebar.js";
 
-const { formatCashflowAsText, renderBreakdownRow, formatRefreshTime } = _testUtils;
+const { formatRefreshTime, formatFinanceAsText, formatPct } = _testUtils;
 
-// ─── Formatting Tests ───────────────────────────────────────
-describe("formatMoney formatting in cashflow text export", () => {
-  it("formats large amounts with thousands separators in text export", () => {
-    const today = {
-      totalIncome: 1234567.89,
-      totalExpense: 234567.89,
-      incomeByType: { s: 1000000, t: 234567.89, m: 0, other: 0 },
-      expenseByType: { p: 100000, w: 50000, m: 25000, t: 10000, f: 5000, c: 2000, A: 1000, other: 1567.89 },
-    };
-    const yesterday = {
-      totalIncome: 1000000,
-      totalExpense: 200000,
-      incomeByType: { s: 900000, t: 100000, m: 0, other: 0 },
-      expenseByType: { p: 100000, w: 40000, m: 20000, t: 15000, f: 4000, c: 2000, A: 1000, other: 18000 },
-    };
-
-    const text = formatCashflowAsText(today, yesterday);
-
-    // Check that amounts have thousands separators
-    expect(text).toContain("$1,234,567.89"); // today's total income
-    expect(text).toContain("$234,567.89"); // today's total expense
-    expect(text).toContain("$1,000,000.00"); // retail income
-    expect(text).toContain("$100,000.00"); // production expense
-  });
-
-  it("formats net profit correctly with commas", () => {
-    const today = {
-      totalIncome: 1500000,
-      totalExpense: 1200000,
-      incomeByType: { s: 1000000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 1000000, w: 200000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    const yesterday = {
-      totalIncome: 1400000,
-      totalExpense: 1150000,
-      incomeByType: { s: 900000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 950000, w: 200000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-
-    const text = formatCashflowAsText(today, yesterday);
-
-    // Net profit is 300,000 today vs 250,000 yesterday
-    expect(text).toContain("$300,000.00");
-    expect(text).toContain("$50,000.00");
-  });
-
-  it("handles zero and negative amounts in formatting", () => {
-    const today = {
-      totalIncome: 10000,
-      totalExpense: 15000,
-      incomeByType: { s: 5000, t: 5000, m: 0, other: 0 },
-      expenseByType: { p: 8000, w: 7000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    const yesterday = {
-      totalIncome: 20000,
-      totalExpense: 10000,
-      incomeByType: { s: 10000, t: 10000, m: 0, other: 0 },
-      expenseByType: { p: 5000, w: 5000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-
-    const text = formatCashflowAsText(today, yesterday);
-
-    // Net profit today is -5,000, yesterday is 10,000, difference is -15,000
-    expect(text).toContain("-$5,000.00");
-    expect(text).toContain("-$15,000.00");
-  });
-});
-
-// ─── renderBreakdownRow Tests ────────────────────────────────
-describe("renderBreakdownRow", () => {
-  it("renders a breakdown row with formatted amount and commas", () => {
-    const html = renderBreakdownRow("Production", 1234567.89, "#c62828");
-
-    expect(html).toContain("Production");
-    expect(html).toContain("$1,234,567.89");
-    expect(html).toContain("#c62828");
-    expect(html).toContain("scx-cf-row");
-  });
-
-  it("returns empty string for zero amount", () => {
-    expect(renderBreakdownRow("Production", 0, "#c62828")).toBe("");
-  });
-
-  it("returns empty string for negative amount", () => {
-    expect(renderBreakdownRow("Production", -100, "#c62828")).toBe("");
-  });
-
-  it("returns empty string for falsy amount", () => {
-    expect(renderBreakdownRow("Production", null, "#c62828")).toBe("");
-    expect(renderBreakdownRow("Production", undefined, "#c62828")).toBe("");
-  });
-
-  it("formats different large amounts with thousands separators", () => {
-    expect(renderBreakdownRow("Test", 100000, "#000")).toContain("$100,000.00");
-    expect(renderBreakdownRow("Test", 5234567, "#000")).toContain("$5,234,567.00");
-  });
-});
-
-// ─── formatRefreshTime Tests ────────────────────────────────
-describe("formatRefreshTime", () => {
+describe("cashflow_ui formatting utils", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-02-17T12:00:00Z"));
+    vi.setSystemTime(new Date("2026-03-29T12:00:30.000Z"));
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it("returns 'never' for null or undefined timestamp", () => {
-    expect(formatRefreshTime(null)).toBe("never");
-    expect(formatRefreshTime(undefined)).toBe("never");
+  it("formats refresh times in seconds/minutes/hours", () => {
+    expect(formatRefreshTime(Date.now() - 10 * 1000)).toBe("10sAgo");
+    expect(formatRefreshTime(Date.now() - 5 * 60 * 1000)).toBe("5mAgo");
+    expect(formatRefreshTime(Date.now() - 2 * 3600 * 1000)).toBe("2hAgo");
   });
 
-  it("formats seconds ago correctly", () => {
-    const tenSecondsAgo = Date.now() - 10 * 1000;
-    expect(formatRefreshTime(tenSecondsAgo)).toBe("10sAgo");
-
-    const oneSecondAgo = Date.now() - 1000;
-    expect(formatRefreshTime(oneSecondAgo)).toBe("1sAgo");
+  it("formats percentage with sign", () => {
+    expect(formatPct(15.3)).toBe("+15.3%");
+    expect(formatPct(-2.11, 2)).toBe("-2.11%");
+    expect(formatPct(null)).toBe("—");
   });
 
-  it("formats minutes ago correctly", () => {
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    expect(formatRefreshTime(fiveMinutesAgo)).toBe("5mAgo");
+  it("exports finance summary as text", () => {
+    const text = formatFinanceAsText(STATE.cashflow.finance);
 
-    const oneMinuteAgo = Date.now() - 60 * 1000;
-    expect(formatRefreshTime(oneMinuteAgo)).toBe("1mAgo");
-  });
-
-  it("formats hours ago correctly", () => {
-    const twoHoursAgo = Date.now() - 2 * 3600 * 1000;
-    expect(formatRefreshTime(twoHoursAgo)).toBe("2hAgo");
-
-    const oneHourAgo = Date.now() - 3600 * 1000;
-    expect(formatRefreshTime(oneHourAgo)).toBe("1hAgo");
-  });
-
-  it("uses seconds for times less than 60 seconds", () => {
-    const fiftyNineSecondsAgo = Date.now() - 59 * 1000;
-    expect(formatRefreshTime(fiftyNineSecondsAgo)).toBe("59sAgo");
-  });
-
-  it("rounds down minutes", () => {
-    // 1 minute and 30 seconds ago = 90 seconds = 1 minute
-    const oneMinuteThirtySecondsAgo = Date.now() - 90 * 1000;
-    expect(formatRefreshTime(oneMinuteThirtySecondsAgo)).toBe("1mAgo");
-  });
-
-  it("rounds down hours", () => {
-    // 2 hours and 30 minutes ago = 9000 seconds = 2 hours and 30 minutes
-    const twoHoursThirtyMinutesAgo = Date.now() - 9000 * 1000;
-    expect(formatRefreshTime(twoHoursThirtyMinutesAgo)).toBe("2hAgo");
+    expect(text).toContain("financeKpiRevenue");
+    expect(text).toContain("$120,000.00");
+    expect(text).toContain("financeSectionPnl");
   });
 });
 
-// ─── updateCashflowPanel Tests ──────────────────────────────
 describe("updateCashflowPanel", () => {
-  let mockContentEl;
+  let content;
 
   beforeEach(() => {
-    mockContentEl = document.createElement("div");
-    getSectionContent.mockReturnValue(mockContentEl);
-    // Reset STATE to initial values
+    content = document.createElement("div");
+    getSectionContent.mockReturnValue(content);
+
     STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.error = null;
-    STATE.cashflow.todayItems = [];
-    STATE.cashflow.yesterdayItems = [];
+    STATE.cashflow.finance.meta.loading = false;
+    STATE.cashflow.finance.meta.error = null;
+    STATE.cashflow.finance.uiMode = "compact";
+    STATE.cashflow.finance.coverage.partial = false;
+    STATE.cashflow.finance.derived = {
+      period: {
+        startMs: Date.parse("2026-03-29T00:00:00.000Z"),
+        endMs: Date.parse("2026-03-29T12:00:00.000Z"),
+      },
+      kpis: [
+        { id: "revenue", current: 120000, delta: 20000, pct: 20, exactness: "derived" },
+        { id: "netProfit", current: 50000, delta: -5000, pct: -9.1, exactness: "exact" },
+      ],
+      pnl: {
+        revenue: { current: 120000, delta: 20000, pct: 20 },
+        directCosts: { current: 50000, delta: 3000, pct: 6 },
+        grossProfit: { current: 70000, delta: 17000, pct: 32 },
+        overhead: { current: 20000, delta: 1000, pct: 5 },
+        operatingProfit: { current: 50000, delta: 16000, pct: 47 },
+        nonOperating: { current: 0, delta: -1000, pct: null },
+        netProfit: { current: 50000, delta: -5000, pct: -9 },
+        revenueByChannel: { retail: 0, contracts: 120000, market: 0, other: 0 },
+        expensesByBucket: {
+          production: 50000,
+          marketBuy: 0,
+          inboundContracts: 0,
+          wages: 12000,
+          fees: 2000,
+        },
+      },
+      cashMovement: {
+        inflows: { current: 120000, delta: 20000, pct: 20 },
+        outflows: { current: 70000, delta: 5000, pct: 7.7 },
+        netChange: { current: 50000, delta: -5000, pct: -9.1 },
+        openingCash: 800000,
+        closingCash: 850000,
+      },
+      balanceSheet: {
+        latest: {
+          date: "2026-03-29 01:10:09.861290+00:00",
+          currentAssets: 3000000,
+          nonCurrentAssets: 2000000,
+          total: 5000000,
+          cashAndReceivables: 1000000,
+          inventory: 2000000,
+          liabilities: -500000,
+          buildings: 1200000,
+          patents: 900000,
+          rank: 4000,
+        },
+      },
+      ratios: [
+        { id: "grossMargin", value: 58.3 },
+        { id: "operatingMargin", value: 41.7 },
+        { id: "currentRatio", value: 6 },
+      ],
+      drivers: {
+        income: [{ key: "cs-44-Test Corp", label: "Sand contract", income: 120000, expense: 0, net: 120000 }],
+        expenses: [
+          { key: "production-44", label: "Production of Sand", income: 0, expense: 50000, net: -50000 },
+        ],
+        changes: [{ key: "production-44", label: "Production of Sand", delta: -10000 }],
+      },
+      salesMix: [{ kind: 44, name: "Sand", revenue: 120000, share: 100 }],
+      inventoryProduction: {
+        inventoryValue: 2000000,
+        productionSpend: 50000,
+        productionVolume: 400000,
+        productionTxCount: 2,
+        outgoingContractsCount: 3,
+        outgoingContractsValue: 200000,
+      },
+      workforce: {
+        wages: 12000,
+        training: 3000,
+        accounting: 1000,
+        leadership: 4000,
+        total: 16000,
+        totalDelta: 2000,
+      },
+      alerts: [{ id: "inventoryHigh", severity: "warn" }],
+      recentTransactions: [],
+    };
   });
 
-  it("returns early if no content element found", () => {
-    getSectionContent.mockReturnValue(null);
-    updateCashflowPanel();
-    expect(mockContentEl.innerHTML).toBe("");
-  });
-
-  it("displays loading message when cashflow is loading", () => {
+  it("shows loading state", () => {
     STATE.cashflow.loading = true;
-    STATE.cashflow.loaded = false;
+    STATE.cashflow.finance.derived = null;
 
     updateCashflowPanel();
 
-    expect(mockContentEl.innerHTML).toContain("loadingCashflow");
+    expect(content.innerHTML).toContain("loadingCashflow");
   });
 
-  it("displays error message when cashflow has error", () => {
+  it("shows no-data message when derived data missing", () => {
+    STATE.cashflow.finance.derived = null;
     STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = false;
-    STATE.cashflow.error = "Failed to fetch data";
 
     updateCashflowPanel();
 
-    expect(mockContentEl.innerHTML).toContain("Error");
-    expect(mockContentEl.innerHTML).toContain("Failed to fetch data");
-    expect(mockContentEl.innerHTML).toContain("var(--scx-color-error)");
+    expect(content.innerHTML).toContain("noCashflowData");
   });
 
-  it("displays no data message when no cashflow data available", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = false;
-    STATE.cashflow.error = null;
-    STATE.cashflow.todayItems = [];
-    STATE.cashflow.yesterdayItems = [];
+  it("renders compact dashboard with KPI strip", () => {
+    STATE.cashflow.finance.uiMode = "compact";
 
     updateCashflowPanel();
 
-    expect(mockContentEl.innerHTML).toContain("noCashflowData");
+    expect(content.innerHTML).toContain("financePeriodLabel");
+    expect(content.innerHTML).toContain("financeKpiRevenue");
+    expect(content.innerHTML).toContain("financeSectionAlerts");
+    expect(content.innerHTML).not.toContain("financePeriodMonth");
   });
 
-  it("displays dashboard with formatted amounts when data is available", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.error = null;
-    STATE.cashflow.todayItems = [{ id: 1 }];
-    STATE.cashflow.todaySummary = {
-      totalIncome: 1500000,
-      totalExpense: 1200000,
-      incomeByType: { s: 1000000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 1000000, w: 200000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.yesterdaySummary = {
-      totalIncome: 1400000,
-      totalExpense: 1150000,
-      incomeByType: { s: 900000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 950000, w: 200000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.lastRefreshAt = null;
+  it("renders expanded sections when ui mode is expanded", () => {
+    STATE.cashflow.finance.uiMode = "expanded";
 
     updateCashflowPanel();
 
-    const html = mockContentEl.innerHTML;
-    expect(html).toContain("todaysNetProfit");
-    expect(html).toContain("$300,000.00"); // net profit: 1500000 - 1200000
-    expect(html).toContain("$50,000.00"); // diff: (300000) - (250000)
-    expect(html).toContain("$1,500,000.00"); // today's total income
-    expect(html).toContain("$1,200,000.00"); // today's total expense
+    expect(content.innerHTML).toContain("financeSectionPnl");
+    expect(content.innerHTML).toContain("financeSectionCashMovement");
+    expect(content.innerHTML).toContain("financeSectionBalanceSheet");
+    expect(content.innerHTML).toContain("financeSectionRatios");
+    expect(content.innerHTML).toContain("financeSectionTransactions");
+    expect(content.innerHTML).toContain("financeSectionSalesMix");
+    expect(content.innerHTML).toMatch(
+      /financeOutgoingContracts<\/span>\s*<span class="scx-fin-mini-value">3<\/span>/,
+    );
+    expect(content.innerHTML).toMatch(
+      /financeProductionRuns<\/span>\s*<span class="scx-fin-mini-value">2<\/span>/,
+    );
+    expect(content.innerHTML).toMatch(/financeRank<\/span>\s*<span class="scx-fin-mini-value">4,000<\/span>/);
+    expect(content.innerHTML).not.toMatch(
+      /financeOutgoingContracts<\/span>\s*<span class="scx-fin-mini-value">\$3\.00<\/span>/,
+    );
+    expect(content.innerHTML).not.toMatch(
+      /financeProductionRuns<\/span>\s*<span class="scx-fin-mini-value">\$2\.00<\/span>/,
+    );
   });
 
-  it("calculates percentage changes correctly", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.todayItems = [{ id: 1 }];
-    STATE.cashflow.yesterdayItems = [{ id: 1 }];
-    STATE.cashflow.todaySummary = {
-      totalIncome: 2000000,
-      totalExpense: 1000000,
-      incomeByType: { s: 1000000, t: 1000000, m: 0, other: 0 },
-      expenseByType: { p: 500000, w: 500000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.yesterdaySummary = {
-      totalIncome: 1000000, // 100% increase
-      totalExpense: 500000, // 100% increase
-      incomeByType: { s: 500000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 250000, w: 250000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
+  it("renders partial coverage badge", () => {
+    STATE.cashflow.finance.coverage.partial = true;
 
     updateCashflowPanel();
 
-    const html = mockContentEl.innerHTML;
-    // Income increased 100%
-    expect(html).toContain("+100%");
-    // Expense increased 100%
-    expect(html).toContain("+100%");
+    expect(content.innerHTML).toContain("financePartialCoverage");
   });
 
-  it("shows positive color for profit increase", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.todayItems = [{ id: 1 }];
-    STATE.cashflow.yesterdayItems = [{ id: 1 }];
-    STATE.cashflow.todaySummary = {
-      totalIncome: 2000000,
-      totalExpense: 1000000, // profit: 1000000
-      incomeByType: { s: 1000000, t: 1000000, m: 0, other: 0 },
-      expenseByType: { p: 500000, w: 500000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.yesterdaySummary = {
-      totalIncome: 1500000,
-      totalExpense: 1200000, // profit: 300000
-      incomeByType: { s: 750000, t: 750000, m: 0, other: 0 },
-      expenseByType: { p: 600000, w: 600000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
+  it("renders error note when there is an error and no derived data", () => {
+    STATE.cashflow.finance.meta.error = "HTTP 500";
+    STATE.cashflow.finance.derived = null;
 
     updateCashflowPanel();
 
-    const html = mockContentEl.innerHTML;
-    // Profit increased from 300000 to 1000000 (+700000)
-    expect(html).toContain("var(--scx-color-success)"); // green color for positive
-  });
-
-  it("shows negative color for profit decrease", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.todayItems = [{ id: 1 }];
-    STATE.cashflow.yesterdayItems = [{ id: 1 }];
-    STATE.cashflow.todaySummary = {
-      totalIncome: 500000,
-      totalExpense: 1000000, // profit: -500000
-      incomeByType: { s: 500000, t: 0, m: 0, other: 0 },
-      expenseByType: { p: 800000, w: 200000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.yesterdaySummary = {
-      totalIncome: 1500000,
-      totalExpense: 1200000, // profit: 300000
-      incomeByType: { s: 1000000, t: 500000, m: 0, other: 0 },
-      expenseByType: { p: 600000, w: 600000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-
-    updateCashflowPanel();
-
-    const html = mockContentEl.innerHTML;
-    // Profit decreased from 300000 to -500000 (-800000)
-    expect(html).toContain("var(--scx-color-error)"); // red color for negative
-  });
-
-  it("includes breakdown rows with formatted thousands separators", () => {
-    STATE.cashflow.loading = false;
-    STATE.cashflow.loaded = true;
-    STATE.cashflow.todayItems = [{ id: 1 }];
-    STATE.cashflow.yesterdayItems = [{ id: 1 }];
-    STATE.cashflow.todaySummary = {
-      totalIncome: 3000000,
-      totalExpense: 2000000,
-      incomeByType: { s: 2000000, t: 1000000, m: 0, other: 0 },
-      expenseByType: { p: 1500000, w: 500000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-    STATE.cashflow.yesterdaySummary = {
-      totalIncome: 2500000,
-      totalExpense: 1800000,
-      incomeByType: { s: 1500000, t: 1000000, m: 0, other: 0 },
-      expenseByType: { p: 1500000, w: 300000, m: 0, t: 0, f: 0, c: 0, A: 0, other: 0 },
-    };
-
-    updateCashflowPanel();
-
-    const html = mockContentEl.innerHTML;
-    expect(html).toContain("$2,000,000.00"); // retail income
-    expect(html).toContain("$1,000,000.00"); // contract income / wage expense
-    expect(html).toContain("$1,500,000.00"); // production expense
+    expect(content.innerHTML).toContain("HTTP 500");
   });
 });
