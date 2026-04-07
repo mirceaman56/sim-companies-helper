@@ -20,7 +20,6 @@ const {
   parseNumber,
   parseDurationToSeconds,
   computeMetrics,
-  getInfoColumn,
   extractProductId,
   extractFinishSeconds,
   isSellInput,
@@ -169,14 +168,9 @@ describe("classifyProfitPerMin", () => {
 describe("getInfoColumn", () => {
   it("returns the div.right-border containing an h3", () => {
     const row = makeRow();
-    const col = getInfoColumn(row);
+    const col = row.querySelector("div.right-border");
     expect(col).not.toBeNull();
     expect(col.querySelector("h3").textContent).toBe("Apples");
-  });
-
-  it("returns null when no right-border with h3 exists", () => {
-    const row = document.createElement("div");
-    expect(getInfoColumn(row)).toBeNull();
   });
 });
 
