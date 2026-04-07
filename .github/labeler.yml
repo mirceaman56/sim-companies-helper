@@ -1,11 +1,11 @@
 bug:
-  - head-branch: ['^fix/', '^bugfix/', '^hotfix/']
+  - head-branch: ['^fix/', '^bugfix/', '^hotfix/', '^patch/', '^bug/']
 
 feature:
-  - head-branch: ['^feat/', '^feature/']
+  - head-branch: ['^feat/', '^feature/', '^add/', '^new/']
 
 enhancement:
-  - head-branch: ['^improve/', '^refactor/', '^perf/']
+  - head-branch: ['^improve/', '^refactor/', '^perf/', '^enhancement/']
 
 documentation:
   - changed-files:
