@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { _testUtils } from "../src/cashflow.js";
+import { STATE } from "../src/state.js";
 
 const {
   classifyTransaction,
@@ -11,7 +12,50 @@ const {
   safePctChange,
   normalizeFinancePeriod,
   applyStorageRetention,
+  getCurrentFinanceScope,
+  getFinanceStorageKey,
+  hydrateFinanceCache,
+  resetFinanceRuntime,
 } = _testUtils;
+
+function createLocalStorageMock() {
+  const store = new Map();
+
+  return {
+    get length() {
+      return store.size;
+    },
+    key(index) {
+      return Array.from(store.keys())[index] ?? null;
+    },
+    getItem(key) {
+      const k = String(key);
+      return store.has(k) ? store.get(k) : null;
+    },
+    setItem(key, value) {
+      store.set(String(key), String(value));
+    },
+    removeItem(key) {
+      store.delete(String(key));
+    },
+    clear() {
+      store.clear();
+    },
+  };
+}
+
+beforeEach(() => {
+  Object.defineProperty(globalThis, "localStorage", {
+    value: createLocalStorageMock(),
+    configurable: true,
+    writable: true,
+  });
+
+  STATE.auth.companyId = null;
+  STATE.auth.realmId = null;
+  resetFinanceRuntime(STATE.cashflow.finance);
+  localStorage.clear();
+});
 
 describe("cashflow core metrics", () => {
   it("classifies contract sale and inbound contract correctly", () => {
@@ -132,5 +176,105 @@ describe("cashflow core metrics", () => {
     expect(safePctChange(10, 0)).toBeNull();
     expect(safePctChange(0, 0)).toBe(0);
     expect(safePctChange(20, 10)).toBe(100);
+  });
+
+  it("scopes finance cache key by company and realm", () => {
+    STATE.auth.companyId = 123;
+    STATE.auth.realmId = 1;
+
+    const scope = getCurrentFinanceScope();
+    expect(scope.key).toBe("123-1");
+    expect(getFinanceStorageKey(scope.key)).toBe("scx-finance-cache-123-1");
+  });
+
+  it("rehydrates from the new realm cache and drops old realm transactions", () => {
+    const now = "2026-03-29T12:00:00.000Z";
+
+    STATE.auth.companyId = 900;
+    STATE.auth.realmId = 0;
+    localStorage.setItem(
+      "scx-finance-cache-900-0",
+      JSON.stringify({
+        v: 2,
+        ts: Date.parse(now),
+        scope: { companyId: 900, realmId: 0 },
+        datasets: {
+          transactions: [{ id: 1, datetime: now, money: 1000 }],
+          pastFinances: [],
+          outgoingContracts: [],
+        },
+        cache: {},
+        meta: {},
+        ui: {},
+      }),
+    );
+
+    STATE.auth.realmId = 1;
+    localStorage.setItem(
+      "scx-finance-cache-900-1",
+      JSON.stringify({
+        v: 2,
+        ts: Date.parse(now),
+        scope: { companyId: 900, realmId: 1 },
+        datasets: {
+          transactions: [],
+          pastFinances: [],
+          outgoingContracts: [],
+        },
+        cache: {},
+        meta: {},
+        ui: {},
+      }),
+    );
+
+    STATE.auth.realmId = 0;
+    hydrateFinanceCache();
+    expect(STATE.cashflow.finance.datasets.transactions).toHaveLength(1);
+
+    STATE.auth.realmId = 1;
+    hydrateFinanceCache();
+    expect(STATE.cashflow.finance.datasets.transactions).toHaveLength(0);
+  });
+
+  it("removes older finance cache payload versions during hydration", () => {
+    const now = "2026-03-29T12:00:00.000Z";
+    localStorage.setItem(
+      "scx-finance-cache-legacy-company-only",
+      JSON.stringify({
+        v: 1,
+        ts: Date.parse(now),
+        datasets: {
+          transactions: [{ id: 99, datetime: now, money: 2500 }],
+          pastFinances: [],
+          outgoingContracts: [],
+        },
+        cache: {},
+        meta: {},
+        ui: {},
+      }),
+    );
+
+    STATE.auth.companyId = 777;
+    STATE.auth.realmId = 1;
+    localStorage.setItem(
+      "scx-finance-cache-777-1",
+      JSON.stringify({
+        v: 2,
+        ts: Date.parse(now),
+        scope: { companyId: 777, realmId: 1 },
+        datasets: {
+          transactions: [],
+          pastFinances: [],
+          outgoingContracts: [],
+        },
+        cache: {},
+        meta: {},
+        ui: {},
+      }),
+    );
+
+    hydrateFinanceCache();
+
+    expect(localStorage.getItem("scx-finance-cache-legacy-company-only")).toBeNull();
   });
 });

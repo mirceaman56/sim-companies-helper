@@ -1,5 +1,6 @@
 // cashflow.js
 import recipesData from "./resources/recipes.json";
+import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 
 const RECENT_URL = "https://www.simcompanies.com/api/v2/companies/me/cashflow/recent/";
@@ -15,10 +16,11 @@ const CASHFLOW_ACTIVE_TTL_MS = 60 * 1000;
 const CASHFLOW_IDLE_TTL_MS = 5 * 60 * 1000;
 const PAST_FINANCES_TTL_MS = 30 * 60 * 1000;
 const OUTGOING_CONTRACTS_TTL_MS = 10 * 60 * 1000;
+const AUTH_REFRESH_TTL_MS = 30 * 1000;
 const STORAGE_RETENTION_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
 
 const MAX_PAGINATION_PAGES_PER_RUN = 120;
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 2;
 const FINANCE_PERIODS = ["current", "day", "week"];
 
 const inflightByUrl = new Map();
@@ -31,7 +33,8 @@ const schedulerState = {
   rateLimitedUntil: 0,
 };
 
-let didHydrateFinanceCache = false;
+let hydratedFinanceScopeKey = "";
+let lastFinanceAuthRefreshAt = 0;
 
 const recipes = Array.isArray(recipesData) ? recipesData : [];
 const RESOURCE_NAME_BY_KIND = new Map(recipes.map((r) => [Number(r.id), String(r.name || r.id)]));
@@ -118,10 +121,107 @@ function getFinanceState() {
   return STATE.cashflow.finance;
 }
 
-function getFinanceStorageKey() {
-  const companyId = STATE.auth?.companyId;
-  const suffix = Number.isFinite(companyId) ? String(companyId) : "anon";
-  return `scx-finance-cache-${suffix}`;
+function getCurrentFinanceScope() {
+  const companyId = Number(STATE.auth?.companyId);
+  const realmId = Number(STATE.auth?.realmId);
+
+  const hasCompany = Number.isFinite(companyId);
+  const hasRealm = Number.isFinite(realmId);
+
+  if (hasCompany && hasRealm) {
+    return {
+      key: `${companyId}-${realmId}`,
+      companyId,
+      realmId,
+    };
+  }
+
+  if (hasCompany) {
+    return {
+      key: `${companyId}-realm-unknown`,
+      companyId,
+      realmId: null,
+    };
+  }
+
+  if (hasRealm) {
+    return {
+      key: `anon-${realmId}`,
+      companyId: null,
+      realmId,
+    };
+  }
+
+  return {
+    key: "anon",
+    companyId: null,
+    realmId: null,
+  };
+}
+
+function getFinanceStorageKey(scopeKey = getCurrentFinanceScope().key) {
+  return `scx-finance-cache-${scopeKey}`;
+}
+
+function resetFinanceRuntime(finance) {
+  finance.datasets.transactions = [];
+  finance.datasets.pastFinances = [];
+  finance.datasets.outgoingContracts = [];
+
+  finance.coverage = {
+    startMs: 0,
+    endMs: 0,
+    partial: false,
+  };
+
+  finance.derived = {
+    period: null,
+    previousPeriod: null,
+    kpis: null,
+    pnl: null,
+    cashMovement: null,
+    balanceSheet: null,
+    ratios: [],
+    drivers: null,
+    salesMix: [],
+    inventoryProduction: null,
+    workforce: null,
+    alerts: [],
+    recentTransactions: [],
+  };
+
+  finance.meta.error = null;
+  finance.meta.lastRefreshAt = 0;
+  finance.meta.rateLimitedUntil = 0;
+  finance.meta.partialReason = "";
+  finance.meta.cashBalance = null;
+  finance.meta.loading = false;
+
+  finance.cache = {
+    oldestPulled: false,
+    pagesLoaded: 0,
+    transactionsFetchedUntilMs: 0,
+    lastTxFetchAt: 0,
+    lastPastFinancesAt: 0,
+    lastOutgoingContractsAt: 0,
+  };
+}
+
+function isScopeCompatible(parsedScope, currentScope) {
+  if (!parsedScope || typeof parsedScope !== "object") return true;
+
+  const parsedCompanyId = Number(parsedScope.companyId);
+  const parsedRealmId = Number(parsedScope.realmId);
+
+  if (Number.isFinite(parsedCompanyId) && Number.isFinite(currentScope.companyId)) {
+    if (parsedCompanyId !== currentScope.companyId) return false;
+  }
+
+  if (Number.isFinite(parsedRealmId) && Number.isFinite(currentScope.realmId)) {
+    if (parsedRealmId !== currentScope.realmId) return false;
+  }
+
+  return true;
 }
 
 function normalizeFinancePeriod(period) {
@@ -184,6 +284,12 @@ function cleanupStaleFinanceCaches() {
         continue;
       }
 
+      const payloadVersion = Number(parsed?.v);
+      if (!Number.isFinite(payloadVersion) || payloadVersion < STORAGE_VERSION) {
+        localStorage.removeItem(key);
+        continue;
+      }
+
       const ts = Number(parsed?.ts || 0);
       if (!Number.isFinite(ts) || ts < cutoff) {
         localStorage.removeItem(key);
@@ -194,10 +300,15 @@ function cleanupStaleFinanceCaches() {
 
 function saveFinanceCache() {
   const finance = getFinanceState();
+  const scope = getCurrentFinanceScope();
   applyStorageRetention(finance);
   const payload = {
     v: STORAGE_VERSION,
     ts: nowMs(),
+    scope: {
+      companyId: scope.companyId,
+      realmId: scope.realmId,
+    },
     datasets: {
       transactions: finance.datasets.transactions || [],
       pastFinances: finance.datasets.pastFinances || [],
@@ -216,24 +327,26 @@ function saveFinanceCache() {
   };
 
   try {
-    localStorage.setItem(getFinanceStorageKey(), JSON.stringify(payload));
+    localStorage.setItem(getFinanceStorageKey(scope.key), JSON.stringify(payload));
   } catch {}
 }
 
 function hydrateFinanceCache() {
-  if (didHydrateFinanceCache) return;
-  didHydrateFinanceCache = true;
-
+  const scope = getCurrentFinanceScope();
+  if (hydratedFinanceScopeKey === scope.key) return;
+  hydratedFinanceScopeKey = scope.key;
   const finance = getFinanceState();
+  resetFinanceRuntime(finance);
 
   try {
     cleanupStaleFinanceCaches();
 
-    const raw = localStorage.getItem(getFinanceStorageKey());
+    const raw = localStorage.getItem(getFinanceStorageKey(scope.key));
     if (!raw) return;
 
     const parsed = JSON.parse(raw);
     if (!parsed || parsed.v !== STORAGE_VERSION) return;
+    if (!isScopeCompatible(parsed.scope, scope)) return;
 
     finance.datasets.transactions = Array.isArray(parsed?.datasets?.transactions)
       ? parsed.datasets.transactions.map(normalizeTransaction).filter((x) => Number.isFinite(x._dtMs))
@@ -1089,6 +1202,16 @@ function markRateLimitFromError(error) {
   return false;
 }
 
+async function refreshFinanceAuthContext() {
+  const now = nowMs();
+  const shouldRefresh = !STATE.auth.loaded || now - lastFinanceAuthRefreshAt > AUTH_REFRESH_TTL_MS;
+
+  if (!shouldRefresh) return;
+
+  await loadAuthDataOnce({ force: true });
+  lastFinanceAuthRefreshAt = nowMs();
+}
+
 async function refreshRecentTransactions({ force = false } = {}) {
   const finance = getFinanceState();
   const now = nowMs();
@@ -1132,6 +1255,7 @@ async function refreshRecentTransactions({ force = false } = {}) {
 }
 
 export async function ensureFinanceCoverage(startMs, { reason: _reason = "" } = {}) {
+  await refreshFinanceAuthContext();
   hydrateFinanceCache();
 
   const finance = getFinanceState();
@@ -1263,6 +1387,7 @@ export function setFinanceUiMode(mode) {
 }
 
 export async function loadFinanceData({ period, force = false, reason: _reason = "auto" } = {}) {
+  await refreshFinanceAuthContext();
   hydrateFinanceCache();
 
   const finance = getFinanceState();
@@ -1339,4 +1464,8 @@ export const _testUtils = {
   safePctChange,
   normalizeFinancePeriod,
   applyStorageRetention,
+  getCurrentFinanceScope,
+  getFinanceStorageKey,
+  hydrateFinanceCache,
+  resetFinanceRuntime,
 };
