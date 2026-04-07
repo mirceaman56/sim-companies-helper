@@ -6,7 +6,9 @@ function wait(ms) {
 }
 
 function normalizeDomain(domain) {
-  return String(domain || "default").trim().toLowerCase();
+  return String(domain || "default")
+    .trim()
+    .toLowerCase();
 }
 
 function makeError(message, extra = {}) {
@@ -68,7 +70,10 @@ async function doRequest(domain, spec, attempt = 0) {
   const controller = timeoutMs > 0 ? new AbortController() : null;
   const timeoutId =
     controller && timeoutMs > 0
-      ? setTimeout(() => controller.abort(makeError("Request timeout", { code: "TIMEOUT", domain })), timeoutMs)
+      ? setTimeout(
+          () => controller.abort(makeError("Request timeout", { code: "TIMEOUT", domain })),
+          timeoutMs,
+        )
       : null;
 
   const mergedSignal = controller ? controller.signal : signal;

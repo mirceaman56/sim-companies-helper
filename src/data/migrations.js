@@ -11,10 +11,7 @@ const MIN_DOMAIN_VERSION = {
   "upgrade-multiplier": 1,
 };
 
-const LEGACY_GLOBAL_KEYS = [
-  "scx-buildings",
-  "scx-buildings-ts",
-];
+const LEGACY_GLOBAL_KEYS = ["scx-buildings", "scx-buildings-ts"];
 
 let migrationsRan = false;
 

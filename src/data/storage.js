@@ -62,7 +62,10 @@ function normalizePrefix(prefix) {
 }
 
 function normalizeDomain(domain) {
-  return String(domain || "unknown").trim().replace(/\s+/g, "-").toLowerCase();
+  return String(domain || "unknown")
+    .trim()
+    .replace(/\s+/g, "-")
+    .toLowerCase();
 }
 
 export function buildStorageKey({ domain, version, scopeKey, prefix = DEFAULT_PREFIX }) {
