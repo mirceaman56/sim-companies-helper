@@ -4,8 +4,6 @@ import {
   formatMoney,
   escapeHtml,
   parseLocaleNumber,
-  extractProductIdFromRow,
-  getInfoColumn,
   COPY_BUTTON_SVG,
   wireCopyButton,
   MARKET_FEE,
@@ -27,6 +25,12 @@ import {
 } from "./retail_calc.js";
 import { fetchRetailInfoForProduct, getCachedRetailInfo } from "./retail_market.js";
 import { MARKET_CACHE_TTL_MS } from "./constants.js";
+import {
+  findFirstRetailRow,
+  findRetailRowFromTarget,
+  isRetailSellInput,
+  readRetailRow,
+} from "./page/retail_page.js";
 
 const SECTION_ID = "retail-section";
 
@@ -43,7 +47,7 @@ export const RetailHelper = (() => {
   const parseMoney = parseLocaleNumber;
 
   function extractFinishSeconds(row) {
-    const infoCol = getInfoColumn(row);
+    const infoCol = readRetailRow(row)?.infoColumnEl;
     if (!infoCol) return NaN;
 
     // Duration is always in parentheses like (11h, 7m) or (13st, 31m) — language-agnostic
@@ -68,7 +72,7 @@ export const RetailHelper = (() => {
   }
 
   function extractProfitPerUnit(row) {
-    const infoCol = getInfoColumn(row);
+    const infoCol = readRetailRow(row)?.infoColumnEl;
     if (!infoCol) return NaN;
 
     // The profit div is the one containing an SVG (question-mark icon) — language-agnostic
@@ -111,69 +115,10 @@ export const RetailHelper = (() => {
     return Math.abs(val);
   }
 
-  const extractProductId = extractProductIdFromRow;
-
-  // ---------- row detection ----------
-  function isSellInput(target) {
-    return target instanceof Element && target.matches('input[name="price"], input[name="quantity"]');
-  }
-
-  /**
-   * Robust row finder for both themes:
-   * - walks up and returns the nearest ancestor that contains both inputs + an encyclopedia link
-   * - falls back to old wrapper classes
-   */
-  function getRowFromTarget(target) {
-    if (!(target instanceof Element)) return null;
-
-    // old wrapper fallback
-    const old = target.closest("div.css-mv4qyq");
-    if (old && old.querySelector('input[name="price"]') && old.querySelector('input[name="quantity"]')) {
-      return old;
-    }
-
-    // direct heuristic: nearest ancestor with both inputs and a resource link
-    let el = target;
-    for (let i = 0; i < 25 && el; i++) {
-      const hasInputs =
-        !!el.querySelector?.('input[name="price"]') && !!el.querySelector?.('input[name="quantity"]');
-      const hasLink = !!el.querySelector?.('a[href*="/encyclopedia/"][href*="/resource/"]');
-
-      if (hasInputs && hasLink) return el;
-
-      // some containers are too big; stop if we reached body
-      if (el === document.body) break;
-      el = el.parentElement;
-    }
-
-    // final: nearest ancestor with both inputs (even if link missing)
-    el = target;
-    for (let i = 0; i < 25 && el; i++) {
-      if (el.querySelector?.('input[name="price"]') && el.querySelector?.('input[name="quantity"]')) {
-        return el;
-      }
-      if (el === document.body) break;
-      el = el.parentElement;
-    }
-
-    return null;
-  }
+  const extractProductId = (row) => readRetailRow(row)?.productId ?? null;
 
   function getProductName(row) {
-    if (!row) return "Unknown";
-    // Use the h3 specifically from the info column — avoids matching "Quantity" / "Price" headers
-    const infoCol = getInfoColumn(row);
-    if (infoCol) {
-      const h3 = infoCol.querySelector("h3");
-      if (h3) return (h3.textContent || "").trim() || "Unknown";
-    }
-    // Fallback: first h3 with content in the row
-    const h3s = row.querySelectorAll("h3");
-    for (const h of h3s) {
-      const t = (h.textContent || "").trim();
-      if (t) return t;
-    }
-    return "Unknown";
+    return readRetailRow(row)?.productName || "Unknown";
   }
 
   // ---------- UI data adapters ----------
@@ -181,8 +126,9 @@ export const RetailHelper = (() => {
     getProductName,
 
     getMetrics(row) {
-      const qty = parseNumber(row.querySelector('input[name="quantity"]')?.value ?? "");
-      const yourPrice = parseMoney(row.querySelector('input[name="price"]')?.value ?? "");
+      const retailRow = readRetailRow(row);
+      const qty = parseNumber(retailRow?.quantityInput?.value ?? "");
+      const yourPrice = parseMoney(retailRow?.priceInput?.value ?? "");
       const profitPerUnit = extractProfitPerUnit(row);
       const seconds = extractFinishSeconds(row);
       const m = computeMetrics({ profitPerUnit, qty, seconds });
@@ -271,7 +217,7 @@ export const RetailHelper = (() => {
       const cheapest = getCheapestListing(ms.data);
       if (!cheapest) return { status: "Empty", cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
 
-      const yourPrice = parseMoney(row.querySelector('input[name="price"]')?.value ?? "");
+      const yourPrice = parseMoney(readRetailRow(row)?.priceInput?.value ?? "");
       const youVs = isFinite(yourPrice) ? yourPrice - cheapest.price : NaN;
 
       return {
@@ -287,6 +233,8 @@ export const RetailHelper = (() => {
   // ---------- selection wiring ----------
   function setSelectedRow(row, scheduleUpdate) {
     if (!row) return;
+    const retailRow = readRetailRow(row);
+    if (!retailRow) return;
 
     STATE.selectedRow = row;
 
@@ -302,8 +250,8 @@ export const RetailHelper = (() => {
     }
     STATE.selectedInputs = null;
 
-    const priceInput = row.querySelector('input[name="price"]');
-    const qtyInput = row.querySelector('input[name="quantity"]');
+    const priceInput = retailRow.priceInput;
+    const qtyInput = retailRow.quantityInput;
     const onInput = () => scheduleUpdate();
 
     priceInput?.addEventListener("input", onInput);
@@ -320,15 +268,14 @@ export const RetailHelper = (() => {
 
   function onFocusOrClick(e, scheduleUpdate) {
     const t = e.target;
-    if (!isSellInput(t)) return;
-    const row = getRowFromTarget(t);
+    if (!isRetailSellInput(t)) return;
+    const row = findRetailRowFromTarget(t);
     if (row) setSelectedRow(row, scheduleUpdate);
   }
 
   function autoSelectFirstRow(scheduleUpdate) {
     if (STATE.selectedRow) return;
-    const input = document.querySelector('input[name="price"], input[name="quantity"]');
-    const row = input ? getRowFromTarget(input) : null;
+    const row = findFirstRetailRow(document);
     if (row) setSelectedRow(row, scheduleUpdate);
   }
 
@@ -341,15 +288,20 @@ export const RetailHelper = (() => {
       parseMoney,
       parseDurationToSeconds,
       computeMetrics,
-      getInfoColumn,
       extractProductId,
       extractFinishSeconds,
       extractProfitPerUnit,
-      isSellInput,
-      getRowFromTarget,
+      isSellInput: isRetailSellInput,
+      getRowFromTarget: findRetailRowFromTarget,
     },
   };
 })();
+
+function getTrendClass(colorVar) {
+  if (colorVar === "var(--scx-color-success)") return "scx-retail-trend-positive";
+  if (colorVar === "var(--scx-color-error)") return "scx-retail-trend-negative";
+  return "scx-retail-trend-neutral";
+}
 
 /**
  * Render the retail helper panel content
@@ -359,20 +311,21 @@ export async function updatePanel() {
   if (!contentEl) return;
 
   const row = STATE.selectedRow;
+  const retailRow = readRetailRow(row);
 
-  if (!row) {
+  if (!row || !retailRow) {
     contentEl.innerHTML = `
-      <div style="text-align: center; padding: 12px;">
+      <div class="scx-retail-empty-state">
         <div class="scx-muted">${t("noItemSelected")}</div>
-        <div class="scx-muted" style="font-size: 9px; margin-top: 4px;">${t("clickToShowStats")}</div>
+        <div class="scx-muted scx-retail-empty-hint">${t("clickToShowStats")}</div>
       </div>
     `;
     return;
   }
 
   const renderers = RetailHelper.renderers;
-  const productName = escapeHtml(renderers.getProductName(row));
-  const productId = extractProductIdFromRow(row);
+  const productName = escapeHtml(retailRow.productName);
+  const productId = retailRow.productId;
 
   // Profit area
   const metrics = renderers.getMetrics(row);
@@ -470,36 +423,36 @@ export async function updatePanel() {
           };
 
           marketAnalysisHTML = `
-                    <hr style="margin: 8px 0;">
+                    <hr class="scx-hr-sm">
                     
-                    <div class="scx-panel-head" style="margin-bottom: 6px;">
+                    <div class="scx-panel-head scx-retail-panel-head">
                         <div class="scx-panel-title">${t("retailVsMarket")}</div>
                     </div>
 
-                    <div style="margin-bottom: 6px; font-size: 11px;">
-                        <div style="display:flex; justify-content:space-between;">
+                    <div class="scx-retail-analysis-block">
+                        <div class="scx-retail-row">
                             <span class="scx-k">${t("costOfGoods")}</span>
                             <span class="scx-v">${formatMoney(cogs)}</span>
                         </div>
-                         <div style="display:flex; justify-content:space-between; font-size: 9px; color: var(--scx-text-muted);">
+                         <div class="scx-retail-row scx-retail-detail-row">
                             <span>${t("unitCostLabel")}: ${formatMoney(avgCost)}</span>
                         </div>
                     </div>
                     
-                    <div style="background: ${isRetailBetter ? "var(--scx-bg-success)" : "var(--scx-bg-warning)"}; padding: 8px; border-radius: 4px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <div class="scx-retail-win-box ${isRetailBetter ? "scx-retail-win-box-retail" : "scx-retail-win-box-market"}">
+                        <div class="scx-retail-win-row">
                             <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <div class="scx-retail-win-row">
                             <span class="scx-k">${t("retailNetProfit")}</span>
                             <span class="scx-v">${formatMoney(retailNetProfit)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; font-weight:600; color: ${isRetailBetter ? "var(--scx-color-success)" : "var(--scx-color-warning-alt)"};">
+                        <div class="scx-retail-win-row scx-retail-win-row-summary ${isRetailBetter ? "scx-retail-win-row-retail" : "scx-retail-win-row-market"}">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
                             <span>${formatMoney(Math.abs(diff))}</span>
                         </div>
-                        <div style="margin-top:4px; font-size:9px; color:var(--scx-text-muted);">
+                        <div class="scx-retail-price-note">
                             ${t("basedOnCheapPrice")}: ${formatMoney(cheapest.price)}
                         </div>
                     </div>
@@ -507,19 +460,19 @@ export async function updatePanel() {
         } else {
           // data loading (container or cheapest price missing)
           marketAnalysisHTML = `
-                    <hr style="margin: 8px 0;">
+                    <hr class="scx-hr-sm">
                     <div class="scx-muted">${t("loadingMarketPrices")}</div>
                   `;
         }
       } else if (ms && ms.status === "error") {
         marketAnalysisHTML = `
-                <hr style="margin: 8px 0;">
-                <div class="scx-note" style="border-left-color: var(--scx-color-error);">${t("marketError")}: ${escapeHtml(ms.error)}</div>
+                <hr class="scx-hr-sm">
+                <div class="scx-note scx-retail-note-error">${t("marketError")}: ${escapeHtml(ms.error)}</div>
               `;
       } else {
         // Loading or Idle
         marketAnalysisHTML = `
-                <hr style="margin: 8px 0;">
+                <hr class="scx-hr-sm">
                 <div class="scx-muted">${t("loadingMarketData")}</div>
               `;
       }
@@ -560,7 +513,7 @@ export async function updatePanel() {
 
       marketPulseHTML = `
         <hr class="scx-hr-sm">
-        <div class="scx-panel-head" style="margin-bottom:6px;">
+        <div class="scx-panel-head scx-retail-panel-head">
           <div class="scx-panel-title">${t("marketPulse")}</div>
           <div class="scx-chip ${badge.cls}">${t(badge.label)}</div>
         </div>
@@ -568,20 +521,20 @@ export async function updatePanel() {
           <span class="scx-k">${t("currentSaturation")}</span>
           <span class="scx-v">
             ${trends ? trends.currentSat.toFixed(2) : "—"}
-            <span style="color:${satArrowColor};">${satArrow} ${fmtPct(trends?.satDelta7d)}</span>
+            <span class="${getTrendClass(satArrowColor)}">${satArrow} ${fmtPct(trends?.satDelta7d)}</span>
           </span>
           <span class="scx-k">${t("avgRetailPrice")}</span>
           <span class="scx-v">
             ${trends ? formatMoney(trends.currentPrice) : "—"}
-            <span style="color:${priceArrowColor};">${priceArrow} ${fmtPct(trends?.priceDelta7d)}</span>
+            <span class="${getTrendClass(priceArrowColor)}">${priceArrow} ${fmtPct(trends?.priceDelta7d)}</span>
           </span>
         </div>
-        <div class="scx-note scx-margin-top-2" style="font-style:normal;">${t(badge.verdict)}</div>
+        <div class="scx-note scx-margin-top-2 scx-retail-note-plain">${t(badge.verdict)}</div>
       `;
     } else {
       marketPulseHTML = `
         <hr class="scx-hr-sm">
-        <div class="scx-panel-head" style="margin-bottom:6px;">
+        <div class="scx-panel-head scx-retail-panel-head">
           <div class="scx-panel-title">${t("marketPulse")}</div>
         </div>
         <div class="scx-text-muted scx-font-9">${t("loadingMarketData")}</div>
@@ -593,16 +546,16 @@ export async function updatePanel() {
 
   let finePrint = "";
   if (metrics.hours > 1) {
-    finePrint += `<div style="font-size:9px; color:var(--scx-text-muted); margin-top:2px;">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
+    finePrint += `<div class="scx-retail-fine-print scx-retail-fine-print-first">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
   }
   if (metrics.hours > 24) {
-    finePrint += `<div style="font-size:9px; color:var(--scx-text-muted);">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
+    finePrint += `<div class="scx-retail-fine-print">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
   }
 
   contentEl.innerHTML = `
     <div class="scx-panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <div style="font-weight: 600; color: var(--scx-text-primary); font-size: 12px;">
+      <div class="scx-retail-header">
+        <div class="scx-retail-product-name">
           ${productName}
         </div>
         <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}">
@@ -615,7 +568,7 @@ export async function updatePanel() {
         <div class="scx-chip ${chip.cls}">${chip.label}</div>
       </div>
 
-      <div class="scx-big" style="line-height:1.1;">
+      <div class="scx-big scx-retail-ppm">
           ${isFinite(metrics.profitPerMin) ? `${formatMoney(metrics.profitPerMin)}${t("perMin")}` : "—"}
       </div>
       
@@ -628,6 +581,6 @@ export async function updatePanel() {
 
   // Wire up copy button
   wireCopyButton(contentEl, () =>
-    formatRetailAsText(renderers.getProductName(row), metrics, productId, realmId, marketAnalysisData),
+    formatRetailAsText(retailRow.productName, metrics, productId, realmId, marketAnalysisData),
   );
 }
