@@ -8,9 +8,12 @@ import { SIDEBAR_ID } from "./state.js";
 import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { formatMoney, parseLocaleNumber, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import { storage } from "./data/storage.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const STORAGE_KEY = "scx-contract-discount";
+const STORAGE_DOMAIN = "contract-discount";
+const STORAGE_VERSION = 1;
 
 let discountPct = 3; // default
 
@@ -21,16 +24,7 @@ let discountPct = 3; // default
  * the contract page is rendered (React SPA – DOM can change).
  */
 export function initContractHelper() {
-  // Load saved discount preference
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved !== null) {
-      const n = Number(saved);
-      if (Number.isFinite(n) && n >= 0 && n <= 100) discountPct = n;
-    }
-  } catch {
-    /* ignore */
-  }
+  void hydrateDiscountPreference();
 
   // Observe DOM changes to inject when contract elements are present
   const observer = new MutationObserver(() => {
@@ -45,6 +39,30 @@ export function initContractHelper() {
 
   // Initial check
   if (hasContractElements()) injectIfNeeded();
+}
+
+async function hydrateDiscountPreference() {
+  const { data } = await storage.migrate({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacy = await getRaw("local", STORAGE_KEY);
+      if (legacy == null) return { data: null };
+      return {
+        data: Number(legacy),
+        async cleanup() {
+          await removeRaw("local", STORAGE_KEY);
+        },
+      };
+    },
+  });
+
+  if (Number.isFinite(data) && data >= 0 && data <= 100) {
+    discountPct = data;
+  }
 }
 
 /**
@@ -445,11 +463,14 @@ function injectIfNeeded() {
   // Event: dropdown change
   document.getElementById("scx-contract-discount-select").addEventListener("change", (e) => {
     discountPct = Number(e.target.value);
-    try {
-      localStorage.setItem(STORAGE_KEY, String(discountPct));
-    } catch {
-      /* ignore */
-    }
+    void storage.set({
+      domain: STORAGE_DOMAIN,
+      version: STORAGE_VERSION,
+      scope: "global",
+      backend: "local",
+      refreshAuth: false,
+      data: discountPct,
+    });
     updateButtonLabel();
   });
 

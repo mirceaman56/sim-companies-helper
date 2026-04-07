@@ -4,9 +4,13 @@ import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { escapeHtml } from "./utils.js";
 import { calculateTotalXpPerHour, hoursToNextLevel, formatHours } from "./xp_calc.js";
+import { storage } from "./data/storage.js";
 
 const CONTAINER_ID = "scx-xp-widget";
 const TOGGLE_KEY = "scx-xp-widget-visible";
+const TOGGLE_DOMAIN = "xp-widget-visible";
+const TOGGLE_VERSION = 1;
+let _isVisible = true;
 
 /**
  * Initialize the XP widget. The observer ONLY handles injection and removal —
@@ -14,6 +18,7 @@ const TOGGLE_KEY = "scx-xp-widget-visible";
  * Data loading and rendering is driven externally via updateXpWidget().
  */
 export function initXpWidget() {
+  void hydrateVisibilityPreference();
   const observer = new MutationObserver(() => {
     const levelAnchor = findLevelAnchor();
     if (levelAnchor) {
@@ -28,6 +33,31 @@ export function initXpWidget() {
   const levelAnchor = findLevelAnchor();
   if (levelAnchor) {
     injectIfNeeded(levelAnchor);
+  }
+}
+
+async function hydrateVisibilityPreference() {
+  const { data } = await storage.migrate({
+    domain: TOGGLE_DOMAIN,
+    version: TOGGLE_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacy = await getRaw("local", TOGGLE_KEY);
+      if (legacy == null) return { data: null };
+      return {
+        data: legacy !== "false",
+        async cleanup() {
+          await removeRaw("local", TOGGLE_KEY);
+        },
+      };
+    },
+  });
+
+  if (typeof data === "boolean") {
+    _isVisible = data;
+    updateWidget();
   }
 }
 
@@ -49,20 +79,19 @@ function findLevelAnchor() {
 }
 
 function isVisible() {
-  try {
-    const saved = localStorage.getItem(TOGGLE_KEY);
-    return saved !== "false";
-  } catch {
-    return true;
-  }
+  return _isVisible;
 }
 
 function setVisible(val) {
-  try {
-    localStorage.setItem(TOGGLE_KEY, String(val));
-  } catch {
-    // ignore
-  }
+  _isVisible = Boolean(val);
+  void storage.set({
+    domain: TOGGLE_DOMAIN,
+    version: TOGGLE_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    data: _isVisible,
+  });
 }
 
 function injectIfNeeded(levelAnchor) {

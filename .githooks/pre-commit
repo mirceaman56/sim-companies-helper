@@ -1,0 +1,4 @@
+#!/bin/sh
+
+npm run docs:warn-instructions || true
+exit 0

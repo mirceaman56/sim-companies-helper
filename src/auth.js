@@ -1,5 +1,6 @@
 // auth.js
 import { STATE } from "./state.js";
+import { request } from "./data/apiClient.js";
 
 function applyAuthData(data) {
   const c = data?.authCompany;
@@ -26,11 +27,13 @@ export async function loadAuthDataOnce({ force = false } = {}) {
   STATE.auth.error = null;
 
   try {
-    const res = await fetch("https://www.simcompanies.com/api/v3/companies/auth-data/", {
+    const data = await request("auth", {
+      url: "https://www.simcompanies.com/api/v3/companies/auth-data/",
       credentials: "include",
+      responseType: "json",
+      retries: 1,
+      retryDelayMs: 250,
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
     applyAuthData(data);
   } catch (e) {
     STATE.auth.error = String(e?.message || e);

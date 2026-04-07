@@ -1,9 +1,13 @@
 import { t } from "./i18n.js";
 import { formatMoney, parseLocaleNumber, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
+import { storage } from "./data/storage.js";
 
 const CONTAINER_ID = "scx-upgrade-buy-msg";
 const STORAGE_KEY = "scx-upgrade-discount";
 const STORAGE_KEY_MULTIPLIER = "scx-upgrade-multiplier";
+const STORAGE_DOMAIN_DISCOUNT = "upgrade-discount";
+const STORAGE_DOMAIN_MULTIPLIER = "upgrade-multiplier";
+const STORAGE_VERSION = 1;
 
 let discountPct = 0;
 let multiplier = 1;
@@ -16,25 +20,7 @@ const RESOURCES_BY_ROW = [
 ];
 
 export function initUpgradeBuyMessage() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved !== null) {
-      const n = Number(saved);
-      if (Number.isFinite(n) && n >= 0 && n <= 5) discountPct = n;
-    }
-  } catch {
-    /* ignore */
-  }
-
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY_MULTIPLIER);
-    if (saved !== null) {
-      const n = Number(saved);
-      if (Number.isFinite(n) && n >= 1 && n <= 15) multiplier = n;
-    }
-  } catch {
-    /* ignore */
-  }
+  void hydrateSettings();
 
   const observer = new MutationObserver(() => {
     const modal = getUpgradeModal();
@@ -51,6 +37,50 @@ export function initUpgradeBuyMessage() {
 
   const modal = getUpgradeModal();
   if (modal && allPricesPopulated(modal)) injectIfNeeded();
+}
+
+async function hydrateSettings() {
+  const { data: savedDiscount } = await storage.migrate({
+    domain: STORAGE_DOMAIN_DISCOUNT,
+    version: STORAGE_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacy = await getRaw("local", STORAGE_KEY);
+      if (legacy == null) return { data: null };
+      return {
+        data: Number(legacy),
+        async cleanup() {
+          await removeRaw("local", STORAGE_KEY);
+        },
+      };
+    },
+  });
+  if (Number.isFinite(savedDiscount) && savedDiscount >= 0 && savedDiscount <= 5) {
+    discountPct = savedDiscount;
+  }
+
+  const { data: savedMultiplier } = await storage.migrate({
+    domain: STORAGE_DOMAIN_MULTIPLIER,
+    version: STORAGE_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacy = await getRaw("local", STORAGE_KEY_MULTIPLIER);
+      if (legacy == null) return { data: null };
+      return {
+        data: Number(legacy),
+        async cleanup() {
+          await removeRaw("local", STORAGE_KEY_MULTIPLIER);
+        },
+      };
+    },
+  });
+  if (Number.isFinite(savedMultiplier) && savedMultiplier >= 1 && savedMultiplier <= 15) {
+    multiplier = savedMultiplier;
+  }
 }
 
 function getUpgradeModal() {
@@ -301,11 +331,14 @@ function injectIfNeeded() {
 
   document.getElementById("scx-upgrade-discount-select").addEventListener("change", (e) => {
     discountPct = Number(e.target.value);
-    try {
-      localStorage.setItem(STORAGE_KEY, String(discountPct));
-    } catch {
-      /* ignore */
-    }
+    void storage.set({
+      domain: STORAGE_DOMAIN_DISCOUNT,
+      version: STORAGE_VERSION,
+      scope: "global",
+      backend: "local",
+      refreshAuth: false,
+      data: discountPct,
+    });
     updateBuyMessage();
   });
 
@@ -313,11 +346,14 @@ function injectIfNeeded() {
   if (multiplierSelect) {
     multiplierSelect.addEventListener("change", (e) => {
       multiplier = Number(e.target.value);
-      try {
-        localStorage.setItem(STORAGE_KEY_MULTIPLIER, String(multiplier));
-      } catch {
-        /* ignore */
-      }
+      void storage.set({
+        domain: STORAGE_DOMAIN_MULTIPLIER,
+        version: STORAGE_VERSION,
+        scope: "global",
+        backend: "local",
+        refreshAuth: false,
+        data: multiplier,
+      });
       updateBuyMessage();
     });
   }

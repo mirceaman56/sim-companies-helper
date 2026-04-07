@@ -2,6 +2,9 @@
 import recipesData from "./resources/recipes.json";
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
+import { request } from "./data/apiClient.js";
+import { storage } from "./data/storage.js";
+import { resolveScopeSync } from "./data/scope.js";
 
 const RECENT_URL = "https://www.simcompanies.com/api/v2/companies/me/cashflow/recent/";
 const PAGE_URL = (lastId) => `https://www.simcompanies.com/api/v2/companies/me/cashflow/${lastId}/`;
@@ -18,6 +21,7 @@ const PAST_FINANCES_TTL_MS = 30 * 60 * 1000;
 const OUTGOING_CONTRACTS_TTL_MS = 10 * 60 * 1000;
 const AUTH_REFRESH_TTL_MS = 30 * 1000;
 const STORAGE_RETENTION_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
+const CASHFLOW_STORAGE_DOMAIN = "cashflow-finance";
 
 const MAX_PAGINATION_PAGES_PER_RUN = 120;
 const STORAGE_VERSION = 2;
@@ -97,18 +101,22 @@ async function fetchJson(url) {
   const requestPromise = enqueueScheduled(async () => {
     await acquireRequestSlot();
 
-    const res = await fetch(url, { credentials: "include" });
-
-    if (res.status === 429) {
-      schedulerState.rateLimitedUntil = nowMs() + RATE_LIMIT_COOLDOWN_MS;
-      throw new Error("RATE_LIMIT_429");
+    try {
+      return await request("cashflow", {
+        url,
+        credentials: "include",
+        responseType: "json",
+        retries: 1,
+        retryDelayMs: 250,
+        rateLimitCooldownMs: RATE_LIMIT_COOLDOWN_MS,
+      });
+    } catch (error) {
+      if (error?.status === 429 || String(error?.message || "").includes("RATE_LIMIT_COOLDOWN")) {
+        schedulerState.rateLimitedUntil = nowMs() + RATE_LIMIT_COOLDOWN_MS;
+        throw new Error("RATE_LIMIT_429", { cause: error });
+      }
+      throw error;
     }
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    return res.json();
   }).finally(() => {
     inflightByUrl.delete(url);
   });
@@ -122,45 +130,50 @@ function getFinanceState() {
 }
 
 function getCurrentFinanceScope() {
-  const companyId = Number(STATE.auth?.companyId);
-  const realmId = Number(STATE.auth?.realmId);
-
-  const hasCompany = Number.isFinite(companyId);
-  const hasRealm = Number.isFinite(realmId);
-
-  if (hasCompany && hasRealm) {
-    return {
-      key: `${companyId}-${realmId}`,
-      companyId,
-      realmId,
-    };
-  }
-
-  if (hasCompany) {
-    return {
-      key: `${companyId}-realm-unknown`,
-      companyId,
-      realmId: null,
-    };
-  }
-
-  if (hasRealm) {
-    return {
-      key: `anon-${realmId}`,
-      companyId: null,
-      realmId,
-    };
-  }
-
+  const scoped = resolveScopeSync("scoped");
   return {
-    key: "anon",
-    companyId: null,
-    realmId: null,
+    key: scoped.scopeKey || "no-scope",
+    companyId: scoped.companyId,
+    realmId: scoped.realmId,
+    hasScope: scoped.hasScope,
   };
 }
 
 function getFinanceStorageKey(scopeKey = getCurrentFinanceScope().key) {
   return `scx-finance-cache-${scopeKey}`;
+}
+
+function getFinanceV2StorageKey(scopeKey = getCurrentFinanceScope().key) {
+  return storage.buildStorageKey({
+    domain: CASHFLOW_STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scopeKey,
+    prefix: "scx",
+  });
+}
+
+function buildFinancePayload(finance, scope) {
+  return {
+    scope: {
+      companyId: scope.companyId,
+      realmId: scope.realmId,
+    },
+    datasets: {
+      transactions: finance.datasets.transactions || [],
+      pastFinances: finance.datasets.pastFinances || [],
+      outgoingContracts: finance.datasets.outgoingContracts || [],
+    },
+    cache: finance.cache,
+    meta: {
+      cashBalance: finance.meta.cashBalance,
+      rateLimitedUntil: finance.meta.rateLimitedUntil,
+      lastRefreshAt: finance.meta.lastRefreshAt,
+    },
+    ui: {
+      selectedPeriod: finance.selectedPeriod,
+      uiMode: finance.uiMode,
+    },
+  };
 }
 
 function resetFinanceRuntime(finance) {
@@ -264,122 +277,155 @@ function applyStorageRetention(finance, { now = nowMs() } = {}) {
 }
 
 function cleanupStaleFinanceCaches() {
-  try {
-    const cutoff = nowMs() - STORAGE_RETENTION_MS;
-    for (let i = localStorage.length - 1; i >= 0; i -= 1) {
-      const key = localStorage.key(i);
-      if (!key || !key.startsWith("scx-finance-cache-")) continue;
-
-      const raw = localStorage.getItem(key);
-      if (!raw) {
-        localStorage.removeItem(key);
-        continue;
-      }
-
-      let parsed;
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        localStorage.removeItem(key);
-        continue;
-      }
-
-      const payloadVersion = Number(parsed?.v);
-      if (!Number.isFinite(payloadVersion) || payloadVersion < STORAGE_VERSION) {
-        localStorage.removeItem(key);
-        continue;
-      }
-
-      const ts = Number(parsed?.ts || 0);
-      if (!Number.isFinite(ts) || ts < cutoff) {
-        localStorage.removeItem(key);
-      }
+  const cutoff = nowMs() - STORAGE_RETENTION_MS;
+  const keys = [
+    ...storage.localSync.listByPrefix("scx-finance-cache-"),
+    ...storage.localSync.listByPrefix("scx:cashflow-finance:"),
+  ];
+  for (const item of keys) {
+    const key = item.key;
+    const raw = item.value;
+    if (!raw) {
+      storage.localSync.removeItem(key);
+      continue;
     }
-  } catch {}
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      storage.localSync.removeItem(key);
+      continue;
+    }
+
+    const payloadVersion = Number(parsed?.v);
+    if (!Number.isFinite(payloadVersion) || payloadVersion < STORAGE_VERSION) {
+      storage.localSync.removeItem(key);
+      continue;
+    }
+
+    const ts = Number(parsed?.ts || 0);
+    if (!Number.isFinite(ts) || ts < cutoff) {
+      storage.localSync.removeItem(key);
+    }
+  }
 }
 
 function saveFinanceCache() {
   const finance = getFinanceState();
   const scope = getCurrentFinanceScope();
+  if (!scope.hasScope) return;
   applyStorageRetention(finance);
-  const payload = {
+  const payload = buildFinancePayload(finance, scope);
+  const envelope = {
     v: STORAGE_VERSION,
     ts: nowMs(),
+    ttlMs: null,
     scope: {
+      mode: "scoped",
+      scopeKey: scope.key,
       companyId: scope.companyId,
       realmId: scope.realmId,
     },
-    datasets: {
-      transactions: finance.datasets.transactions || [],
-      pastFinances: finance.datasets.pastFinances || [],
-      outgoingContracts: finance.datasets.outgoingContracts || [],
-    },
-    cache: finance.cache,
-    meta: {
-      cashBalance: finance.meta.cashBalance,
-      rateLimitedUntil: finance.meta.rateLimitedUntil,
-      lastRefreshAt: finance.meta.lastRefreshAt,
-    },
-    ui: {
-      selectedPeriod: finance.selectedPeriod,
-      uiMode: finance.uiMode,
-    },
+    data: payload,
   };
 
-  try {
-    localStorage.setItem(getFinanceStorageKey(scope.key), JSON.stringify(payload));
-  } catch {}
+  storage.localSync.setItem(getFinanceV2StorageKey(scope.key), JSON.stringify(envelope));
+  storage.localSync.removeItem(getFinanceStorageKey(scope.key));
 }
 
 function hydrateFinanceCache() {
   const scope = getCurrentFinanceScope();
+  if (!scope.hasScope) return;
   if (hydratedFinanceScopeKey === scope.key) return;
   hydratedFinanceScopeKey = scope.key;
   const finance = getFinanceState();
   resetFinanceRuntime(finance);
 
-  try {
-    cleanupStaleFinanceCaches();
+  cleanupStaleFinanceCaches();
 
-    const raw = localStorage.getItem(getFinanceStorageKey(scope.key));
-    if (!raw) return;
-
-    const parsed = JSON.parse(raw);
-    if (!parsed || parsed.v !== STORAGE_VERSION) return;
-    if (!isScopeCompatible(parsed.scope, scope)) return;
-
-    finance.datasets.transactions = Array.isArray(parsed?.datasets?.transactions)
-      ? parsed.datasets.transactions.map(normalizeTransaction).filter((x) => Number.isFinite(x._dtMs))
-      : [];
-    finance.datasets.pastFinances = Array.isArray(parsed?.datasets?.pastFinances)
-      ? parsed.datasets.pastFinances
-      : [];
-    finance.datasets.outgoingContracts = Array.isArray(parsed?.datasets?.outgoingContracts)
-      ? parsed.datasets.outgoingContracts
-      : [];
-
-    finance.cache = {
-      ...finance.cache,
-      ...(parsed?.cache || {}),
-    };
-
-    finance.meta.cashBalance = Number.isFinite(parsed?.meta?.cashBalance) ? parsed.meta.cashBalance : null;
-    finance.meta.lastRefreshAt = Number.isFinite(parsed?.meta?.lastRefreshAt) ? parsed.meta.lastRefreshAt : 0;
-    finance.meta.rateLimitedUntil = Number.isFinite(parsed?.meta?.rateLimitedUntil)
-      ? parsed.meta.rateLimitedUntil
-      : 0;
-
-    finance.selectedPeriod = normalizeFinancePeriod(parsed?.ui?.selectedPeriod);
-
-    if (["compact", "expanded"].includes(parsed?.ui?.uiMode)) {
-      finance.uiMode = parsed.ui.uiMode;
+  const v2Raw = storage.localSync.getItem(getFinanceV2StorageKey(scope.key));
+  let parsed = null;
+  if (v2Raw) {
+    try {
+      const envelope = JSON.parse(v2Raw);
+      if (envelope?.v === STORAGE_VERSION && envelope?.data) {
+        parsed = envelope.data;
+      }
+    } catch {
+      parsed = null;
     }
+  }
 
-    applyStorageRetention(finance);
+  if (!parsed) {
+    const legacyRaw = storage.localSync.getItem(getFinanceStorageKey(scope.key));
+    if (legacyRaw) {
+      try {
+        const legacyParsed = JSON.parse(legacyRaw);
+        if (legacyParsed?.v === STORAGE_VERSION && isScopeCompatible(legacyParsed.scope, scope)) {
+          parsed = legacyParsed;
+          // Migrate legacy payload to v2 key.
+          const envelope = {
+            v: STORAGE_VERSION,
+            ts: nowMs(),
+            ttlMs: null,
+            scope: {
+              mode: "scoped",
+              scopeKey: scope.key,
+              companyId: scope.companyId,
+              realmId: scope.realmId,
+            },
+            data: {
+              scope: legacyParsed.scope,
+              datasets: legacyParsed.datasets,
+              cache: legacyParsed.cache,
+              meta: legacyParsed.meta,
+              ui: legacyParsed.ui,
+            },
+          };
+          storage.localSync.setItem(getFinanceV2StorageKey(scope.key), JSON.stringify(envelope));
+          storage.localSync.removeItem(getFinanceStorageKey(scope.key));
+        }
+      } catch {
+        parsed = null;
+      }
+    }
+  }
 
-    const oldest = getOldestTransactionMs(finance.datasets.transactions);
-    finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldest) ? oldest : 0;
-  } catch {}
+  if (!parsed) return;
+  if (!isScopeCompatible(parsed.scope, scope)) return;
+
+  finance.datasets.transactions = Array.isArray(parsed?.datasets?.transactions)
+    ? parsed.datasets.transactions.map(normalizeTransaction).filter((x) => Number.isFinite(x._dtMs))
+    : [];
+  finance.datasets.pastFinances = Array.isArray(parsed?.datasets?.pastFinances)
+    ? parsed.datasets.pastFinances
+    : [];
+  finance.datasets.outgoingContracts = Array.isArray(parsed?.datasets?.outgoingContracts)
+    ? parsed.datasets.outgoingContracts
+    : [];
+
+  finance.cache = {
+    ...finance.cache,
+    ...(parsed?.cache || {}),
+  };
+
+  finance.meta.cashBalance = Number.isFinite(parsed?.meta?.cashBalance) ? parsed.meta.cashBalance : null;
+  finance.meta.lastRefreshAt = Number.isFinite(parsed?.meta?.lastRefreshAt) ? parsed.meta.lastRefreshAt : 0;
+  finance.meta.rateLimitedUntil = Number.isFinite(parsed?.meta?.rateLimitedUntil)
+    ? parsed.meta.rateLimitedUntil
+    : 0;
+
+  finance.selectedPeriod = normalizeFinancePeriod(parsed?.ui?.selectedPeriod);
+
+  if (["compact", "expanded"].includes(parsed?.ui?.uiMode)) {
+    finance.uiMode = parsed.ui.uiMode;
+  }
+
+  applyStorageRetention(finance);
+
+  const oldest = getOldestTransactionMs(finance.datasets.transactions);
+  finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldest) ? oldest : 0;
 }
 
 function parseDtMs(s) {

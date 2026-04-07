@@ -2,17 +2,15 @@
 import { STATE } from "./state.js";
 import { getRealmId } from "./auth.js";
 import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS } from "./constants.js";
-let rateLimitedUntil = 0;
-// One in-flight promise per cacheKey — prevents duplicate concurrent requests for the same product
-const _inflight = new Map();
+import { request, getRateLimitStatus as getApiRateLimitStatus } from "./data/apiClient.js";
 
 /**
  * Check if market calls are currently blocked due to rate limiting.
  * @returns {{ blocked: boolean, remainingMs: number }}
  */
 export function getRateLimitStatus() {
-  const remaining = rateLimitedUntil - Date.now();
-  return { blocked: remaining > 0, remainingMs: Math.max(0, remaining) };
+  const status = getApiRateLimitStatus("market");
+  return { blocked: status.blocked, remainingMs: status.remainingMs };
 }
 
 export function getCheapestListing(listings) {
@@ -32,44 +30,37 @@ export async function fetchMarket(realmId, productId) {
   const cacheKey = `${realmId}:${productId}`;
 
   // If rate-limited, return cached data if available, otherwise throw immediately
-  if (now < rateLimitedUntil) {
+  const rateLimit = getApiRateLimitStatus("market");
+  if (rateLimit.blocked) {
     const cached = STATE.marketCache.get(cacheKey);
     if (cached) return cached.data;
-    const remainMin = Math.ceil((rateLimitedUntil - now) / 60000);
+    const remainMin = Math.ceil(rateLimit.remainingMs / 60000);
     throw new Error(`Rate limited — retrying in ${remainMin}m`);
   }
 
   const cached = STATE.marketCache.get(cacheKey);
   if (cached && now - cached.ts < MARKET_CACHE_TTL_MS) return cached.data;
 
-  // Coalesce concurrent requests for the same product into one network call
-  if (_inflight.has(cacheKey)) return _inflight.get(cacheKey);
+  try {
+    const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
+    const data = await request("market", {
+      url,
+      credentials: "include",
+      responseType: "json",
+      coalesce: true,
+      coalesceKey: cacheKey,
+      retries: 1,
+      retryDelayMs: 300,
+      rateLimitCooldownMs: RATE_LIMIT_COOLDOWN_MS,
+    });
 
-  const promise = (async () => {
-    try {
-      const url = `https://www.simcompanies.com/api/v3/market/${realmId}/${productId}/`;
-      const res = await fetch(url, { credentials: "include" });
-
-      if (res.status === 429) {
-        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-        console.warn(`[SimHelper] 429 rate-limited — pausing all market calls for 10 minutes`);
-        // Return stale cache if we have it, otherwise throw
-        if (cached) return cached.data;
-        throw new Error("Rate limited by server — pausing market calls for 10 minutes");
-      }
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const data = await res.json();
-      STATE.marketCache.set(cacheKey, { ts: now, data });
-      return data;
-    } finally {
-      _inflight.delete(cacheKey);
-    }
-  })();
-
-  _inflight.set(cacheKey, promise);
-  return promise;
+    STATE.marketCache.set(cacheKey, { ts: now, data });
+    return data;
+  } catch (error) {
+    // Return stale cache if we have it after failures.
+    if (cached) return cached.data;
+    throw error;
+  }
 }
 
 export async function fetchMarketPrice(realmId, productId, quality = 0) {

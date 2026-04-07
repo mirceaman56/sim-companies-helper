@@ -2,9 +2,11 @@
 // Fetches and caches the player's building list for the XP calculator.
 import { STATE } from "./state.js";
 import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
+import { request } from "./data/apiClient.js";
+import { storage } from "./data/storage.js";
 
-const STORAGE_KEY = (companyId) => `scx-buildings-${companyId}`;
-const STORAGE_TS_KEY = (companyId) => `scx-buildings-ts-${companyId}`;
+const STORAGE_DOMAIN = "buildings-cache";
+const STORAGE_VERSION = 1;
 
 /**
  * Load buildings from chrome.storage.local cache or fetch from API.
@@ -41,21 +43,14 @@ export async function loadBuildings({ force = false } = {}) {
     }
 
     // Fetch from the v3 company profile endpoint
-    const res = await fetch(`https://www.simcompanies.com/api/v3/companies/${companyId}/`, {
+    const data = await request("buildings", {
+      url: `https://www.simcompanies.com/api/v3/companies/${companyId}/`,
       credentials: "include",
       headers: { "X-Requested-With": "XMLHttpRequest" },
+      responseType: "json",
+      retries: 1,
+      retryDelayMs: 250,
     });
-    if (!res.ok) {
-      let msg = `HTTP ${res.status}`;
-      try {
-        const body = await res.json();
-        if (body?.message) msg = body.message;
-      } catch {
-        // ignore parse error
-      }
-      throw new Error(msg);
-    }
-    const data = await res.json();
     const buildings = data?.infrastructure?.buildings ?? [];
 
     STATE.buildings.items = buildings;
@@ -73,28 +68,49 @@ export async function loadBuildings({ force = false } = {}) {
 
 /** @returns {{ items: object[], ts: number } | null} */
 async function readCachedBuildings(companyId) {
-  try {
-    const result = await chrome.storage.local.get([STORAGE_KEY(companyId), STORAGE_TS_KEY(companyId)]);
-    const items = result[STORAGE_KEY(companyId)];
-    const ts = result[STORAGE_TS_KEY(companyId)];
-    if (Array.isArray(items) && typeof ts === "number") {
-      return { items, ts };
-    }
-  } catch {
-    // ignore
+  const { data } = await storage.migrate({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "company",
+    backend: "chrome",
+    refreshAuth: true,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const itemsKey = `scx-buildings-${companyId}`;
+      const tsKey = `scx-buildings-ts-${companyId}`;
+      const items = await getRaw("chrome", itemsKey);
+      const ts = await getRaw("chrome", tsKey);
+      if (!Array.isArray(items) || !Number.isFinite(Number(ts))) return { data: null };
+
+      return {
+        data: { items, ts: Number(ts) },
+        async cleanup() {
+          await removeRaw("chrome", itemsKey);
+          await removeRaw("chrome", tsKey);
+        },
+      };
+    },
+  });
+
+  if (data && Array.isArray(data.items) && Number.isFinite(Number(data.ts))) {
+    return {
+      items: data.items,
+      ts: Number(data.ts),
+    };
   }
+
   return null;
 }
 
 async function writeCachedBuildings(companyId, items) {
-  try {
-    await chrome.storage.local.set({
-      [STORAGE_KEY(companyId)]: items,
-      [STORAGE_TS_KEY(companyId)]: Date.now(),
-    });
-  } catch {
-    // ignore
-  }
+  const ts = Date.now();
+  await storage.set({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "company",
+    backend: "chrome",
+    refreshAuth: true,
+    data: { items, ts },
+  });
 }
 
 /**
@@ -103,9 +119,6 @@ async function writeCachedBuildings(companyId, items) {
  * Safe to call multiple times; only removes if they exist.
  */
 export async function cleanupLegacyBuildingsCache() {
-  try {
-    await chrome.storage.local.remove(["scx-buildings", "scx-buildings-ts"]);
-  } catch {
-    // ignore
-  }
+  await storage.removeRaw("chrome", "scx-buildings");
+  await storage.removeRaw("chrome", "scx-buildings-ts");
 }
