@@ -1,26 +1,43 @@
 import { escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
+import { storage } from "./data/storage.js";
 
 const KEY_WHATS_NEW = "scx-whats-new";
 const TOAST_CONTAINER_ID = "scx-toast-container";
+const STORAGE_DOMAIN = "whats-new";
+const STORAGE_VERSION = 1;
 
 async function getWhatsNewPayload() {
-  try {
-    const result = await chrome.storage.local.get(KEY_WHATS_NEW);
-    return result?.[KEY_WHATS_NEW] ?? null;
-  } catch {
-    return null;
-  }
+  const { data } = await storage.migrate({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "global",
+    backend: "chrome",
+    refreshAuth: false,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacy = await getRaw("chrome", KEY_WHATS_NEW);
+      if (legacy == null) return { data: null };
+      return {
+        data: legacy,
+        async cleanup() {
+          await removeRaw("chrome", KEY_WHATS_NEW);
+        },
+      };
+    },
+  });
+
+  return data ?? null;
 }
 
 async function setWhatsNewShown(payload) {
-  try {
-    await chrome.storage.local.set({
-      [KEY_WHATS_NEW]: { ...payload, show: false },
-    });
-  } catch {
-    // ignore
-  }
+  await storage.set({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "global",
+    backend: "chrome",
+    refreshAuth: false,
+    data: { ...payload, show: false },
+  });
 }
 
 function ensureToastContainer() {

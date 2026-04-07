@@ -9,6 +9,7 @@ import { getRealmId, loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
+import { request } from "./data/apiClient.js";
 
 const INVENTORY_CACHE_TTL_MS = 5000;
 const INVENTORY_MAX_FETCH_ATTEMPTS = 2;
@@ -52,14 +53,32 @@ async function fetchInventoryResponse(companyId) {
 
   for (let attempt = 1; attempt <= INVENTORY_MAX_FETCH_ATTEMPTS; attempt++) {
     try {
-      const response = await fetch(url, { credentials: "include" });
-      if (response.ok) return response;
-
-      const shouldRetry =
-        shouldRetryInventoryStatus(response.status) && attempt < INVENTORY_MAX_FETCH_ATTEMPTS;
-      if (!shouldRetry) return response;
+      const data = await request("inventory", {
+        url,
+        credentials: "include",
+        responseType: "json",
+        retries: 0,
+      });
+      return {
+        ok: true,
+        status: 200,
+        async json() {
+          return data;
+        },
+      };
     } catch (error) {
       lastError = error;
+      const status = Number(error?.status || 0);
+      const shouldRetry = shouldRetryInventoryStatus(status) && attempt < INVENTORY_MAX_FETCH_ATTEMPTS;
+      if (!shouldRetry) {
+        return {
+          ok: false,
+          status: status || 500,
+          async json() {
+            return null;
+          },
+        };
+      }
       if (attempt === INVENTORY_MAX_FETCH_ATTEMPTS) throw lastError;
     }
   }

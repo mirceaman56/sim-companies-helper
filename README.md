@@ -33,6 +33,9 @@ Useful commands:
 - `npm run test:watch` to run tests continuously.
 - `npm run lint` / `npm run lint:fix` for linting.
 - `npm run format` / `npm run format:check` for formatting.
+- `npm run docs:sync-instructions` to sync `.github/copilot-instructions.md` from `AGENTS.md`.
+- `npm run docs:check-instructions` to verify instruction files are in sync.
+- `npm run hooks:install` to enable a local pre-commit warning for instruction-sync drift.
 
 ## Privacy & Permissions
 

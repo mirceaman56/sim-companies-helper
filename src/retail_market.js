@@ -2,6 +2,7 @@
 // Fetches and caches SimCompanies retail-info API
 // https://www.simcompanies.com/api/v4/{realm}/resources-retail-info/
 // Data is daily-granularity, so a 4-hour TTL is appropriate.
+import { request } from "./data/apiClient.js";
 
 const RETAIL_INFO_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
@@ -28,11 +29,15 @@ export async function fetchRetailInfo(realmId) {
   if (_inflight) return _inflight;
 
   _inflight = (async () => {
-    const res = await fetch(`https://www.simcompanies.com/api/v4/${realmId}/resources-retail-info/`, {
+    const raw = await request("retail-info", {
+      url: `https://www.simcompanies.com/api/v4/${realmId}/resources-retail-info/`,
       credentials: "include",
+      responseType: "json",
+      coalesce: true,
+      coalesceKey: `realm-${realmId}`,
+      retries: 1,
+      retryDelayMs: 200,
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw = await res.json();
     // Keep base-quality items only (quality === null)
     const data = Array.isArray(raw) ? raw.filter((x) => x.quality === null) : [];
     _cache = { data, ts: Date.now() };

@@ -21,6 +21,7 @@ import { CASHFLOW_REFRESH_INTERVAL_MS } from "./constants.js";
 import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
 import { initXpWidget, updateXpWidget } from "./xp_ui.js";
 import { loadBuildings, cleanupLegacyBuildingsCache } from "./buildings.js";
+import { initializeDataPlatform } from "./data/index.js";
 
 /**
  * Sync legacy cashflow state for backward compatibility.
@@ -33,6 +34,8 @@ function syncLegacyCashflowState() {
 }
 
 async function init() {
+  await initializeDataPlatform();
+
   // Initialize the sidebar container
   ensureSidebarContainer();
 

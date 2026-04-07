@@ -1,4 +1,5 @@
 import { STATE } from "./state.js";
+import { request } from "./data/apiClient.js";
 
 /**
  * Loads inventory data once per session
@@ -17,10 +18,13 @@ export async function loadInventoryOnce() {
 
   try {
     const url = `https://www.simcompanies.com/api/v3/resources/${companyId}/`;
-    const res = await fetch(url, { credentials: "include" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const items = await res.json();
+    const items = await request("inventory", {
+      url,
+      credentials: "include",
+      responseType: "json",
+      retries: 1,
+      retryDelayMs: 200,
+    });
     STATE.inventory.items = Array.isArray(items) ? items : [];
     rebuildInventoryIndex(STATE.inventory.items);
 

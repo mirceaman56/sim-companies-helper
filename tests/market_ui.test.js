@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("../src/state.js", () => ({
   STATE: {
-    auth: { realmId: 0 },
+    auth: { realmId: 0, companyId: 999 },
     marketCache: new Map(),
     marketState: {},
   },
@@ -211,13 +211,15 @@ describe("alert persistence", () => {
 
     expect(chrome.storage.local.set).toHaveBeenCalled();
     const callArg = chrome.storage.local.set.mock.calls.at(-1)[0];
-    const key = _testUtils.storageKey();
-    expect(callArg).toHaveProperty(key);
+    const key = Object.keys(callArg).find((k) => k.startsWith("scx:market-alerts:v1:"));
+    expect(key).toBeTruthy();
 
     const saved = callArg[key];
-    expect(saved.alerts).toHaveLength(1);
-    expect(saved.alerts[0]).not.toHaveProperty("intervalId");
-    expect(saved.nextAlertId).toBe(2);
+    expect(saved).toHaveProperty("v", 1);
+    expect(saved).toHaveProperty("data");
+    expect(saved.data.alerts).toHaveLength(1);
+    expect(saved.data.alerts[0]).not.toHaveProperty("intervalId");
+    expect(saved.data.nextAlertId).toBe(2);
   });
 
   it("loadAlerts restores alerts from storage", async () => {

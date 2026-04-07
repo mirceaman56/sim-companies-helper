@@ -4,6 +4,7 @@ import { escapeHtml } from "./utils.js";
 import recipes from "./resources/recipes.json";
 import { t } from "./i18n.js";
 import { CHAT_SEARCH_TARGET_COUNT, CHAT_SEARCH_CUTOFF_HOURS } from "./constants.js";
+import { request } from "./data/apiClient.js";
 
 const SECTION_ID = "chat-section";
 
@@ -221,10 +222,14 @@ async function fetchMessages(container, filterType, productId, selectedQualities
       `${t("chatScanningPage")} ${pageCount + 1}... ${t("chatFoundCount")}: ${foundCount}`,
     );
 
-    const response = await fetch(currentUrl, { signal });
-    if (!response.ok) throw new Error("API call failed");
-
-    const messages = await response.json();
+    const messages = await request("chat", {
+      url: currentUrl,
+      signal,
+      credentials: "include",
+      responseType: "json",
+      retries: 1,
+      retryDelayMs: 200,
+    });
     if (!messages || messages.length === 0) break;
 
     // Filter messages

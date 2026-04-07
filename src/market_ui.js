@@ -6,6 +6,7 @@ import { STATE } from "./state.js";
 import { fetchMarketPrice, fetchMarket, getRateLimitStatus } from "./market.js";
 import { formatMoney, escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
+import { storage } from "./data/storage.js";
 import recipes from "./resources/recipes.json";
 import {
   ALERT_CHECK_INTERVAL_MS,
@@ -16,6 +17,8 @@ import {
 
 const SECTION_ID = "market-alerts-section";
 const STORAGE_KEY_PREFIX = "scx-market-alerts";
+const STORAGE_DOMAIN = "market-alerts";
+const STORAGE_VERSION = 1;
 
 // State
 let alerts = []; // { id, productId, productName, quality, targetPrice, active, intervalId, lastPrice, lastCheck, triggered }
@@ -23,6 +26,12 @@ let alerts = []; // { id, productId, productName, quality, targetPrice, active, 
 let nextAlertId = 1;
 let timerRefreshInterval = null;
 let alertsContainer = null;
+
+function storageKey() {
+  const realmId = STATE.auth.realmId;
+  if (realmId === null || realmId === undefined) return null;
+  return `${STORAGE_KEY_PREFIX}-${realmId}`;
+}
 
 function flashInputError(input) {
   input.classList.add("scx-input-error");
@@ -43,12 +52,6 @@ function scheduleRenderAlertList(container) {
   });
 }
 
-function storageKey() {
-  const realmId = STATE.auth.realmId;
-  if (realmId === null || realmId === undefined) return null;
-  return `${STORAGE_KEY_PREFIX}-${realmId}`;
-}
-
 async function ensureAuth() {
   if (STATE.auth.realmId !== null && STATE.auth.realmId !== undefined) return;
   await loadAuthDataOnce();
@@ -56,30 +59,42 @@ async function ensureAuth() {
 
 async function saveAlerts() {
   await ensureAuth();
-  const key = storageKey();
-  if (!key) return;
   const serializable = alerts.map(({ intervalId: _intervalId, ...rest }) => rest);
-  try {
-    chrome.storage.local.set({ [key]: { alerts: serializable, nextAlertId } });
-  } catch {
-    // Fallback silently — storage unavailable in tests or non-extension contexts
-  }
+  await storage.set({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "scoped",
+    backend: "chrome",
+    refreshAuth: true,
+    data: { alerts: serializable, nextAlertId },
+  });
 }
 
 async function loadAlerts() {
   await ensureAuth();
-  const key = storageKey();
-  if (!key) return;
-  try {
-    const result = await chrome.storage.local.get(key);
-    const data = result[key];
-    if (!data) return;
+  const realmId = STATE.auth.realmId;
+  const { data } = await storage.migrate({
+    domain: STORAGE_DOMAIN,
+    version: STORAGE_VERSION,
+    scope: "scoped",
+    backend: "chrome",
+    refreshAuth: true,
+    readLegacy: async ({ getRaw, removeRaw }) => {
+      const legacyKey = storageKey() || `${STORAGE_KEY_PREFIX}-${realmId}`;
+      const legacyData = await getRaw("chrome", legacyKey);
+      if (!legacyData) return { data: null };
+      return {
+        data: legacyData,
+        async cleanup() {
+          await removeRaw("chrome", legacyKey);
+        },
+      };
+    },
+  });
+  if (!data) return;
 
-    alerts = (data.alerts || []).map((a) => ({ ...a, intervalId: null }));
-    nextAlertId = data.nextAlertId || (alerts.length ? Math.max(...alerts.map((a) => a.id)) + 1 : 1);
-  } catch {
-    // Storage unavailable — start fresh
-  }
+  alerts = (data.alerts || []).map((a) => ({ ...a, intervalId: null }));
+  nextAlertId = data.nextAlertId || (alerts.length ? Math.max(...alerts.map((a) => a.id)) + 1 : 1);
 }
 
 /**
