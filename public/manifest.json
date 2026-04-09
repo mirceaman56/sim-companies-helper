@@ -1,10 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Sim Companies Helper",
-  "version": "0.18.7",
+  "version": "0.18.8",
   "description": "Various quality of life improvements for Sim Companies players.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*",
+    "https://github.com/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -17,16 +22,26 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.simcompanies.com/*"],
-      "js": ["content.js"],
-      "css": ["contentStyle.css"],
+      "matches": [
+        "https://www.simcompanies.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "contentStyle.css"
+      ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["resources/recipes.json"],
-      "matches": ["https://www.simcompanies.com/*"]
+      "resources": [
+        "resources/recipes.json"
+      ],
+      "matches": [
+        "https://www.simcompanies.com/*"
+      ]
     }
   ]
 }
