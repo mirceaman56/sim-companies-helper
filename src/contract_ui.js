@@ -7,10 +7,24 @@ import { t } from "./i18n.js";
 import { SIDEBAR_ID } from "./state.js";
 import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
-import { formatMoney, parseLocaleNumber, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import { formatMoney, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { storage } from "./data/storage.js";
+import {
+  findContractPriceInput,
+  getContractAmountValue,
+  getContractPriceValue,
+  getLowestSellerPrice,
+  getSourcingCostPerUnit,
+  getTransportCount,
+  hasContractPageElements,
+  parseContractPrice,
+} from "./page/contract_page.js";
 
 const CONTAINER_ID = "scx-contract-helper";
+const DISCOUNT_SELECT_ID = "scx-contract-discount-select";
+const APPLY_BUTTON_ID = "scx-contract-apply-btn";
+const CALC_BUTTON_ID = "scx-contract-calc-btn";
+const PROFIT_RESULT_ID = "scx-contract-profit-result";
 const STORAGE_KEY = "scx-contract-discount";
 const STORAGE_DOMAIN = "contract-discount";
 const STORAGE_VERSION = 1;
@@ -28,7 +42,7 @@ export function initContractHelper() {
 
   // Observe DOM changes to inject when contract elements are present
   const observer = new MutationObserver(() => {
-    if (hasContractElements()) {
+    if (hasContractPageElements()) {
       injectIfNeeded();
     } else {
       removeIfPresent();
@@ -38,7 +52,7 @@ export function initContractHelper() {
   observer.observe(document.body, { childList: true, subtree: true });
 
   // Initial check
-  if (hasContractElements()) injectIfNeeded();
+  if (hasContractPageElements()) injectIfNeeded();
 }
 
 async function hydrateDiscountPreference() {
@@ -65,76 +79,8 @@ async function hydrateDiscountPreference() {
   }
 }
 
-/**
- * Detect contract page by the presence of structural elements:
- * a price input (name="price") and a market exchange table (a[href*="market/resource"]).
- * This is language-agnostic — no URL matching needed.
- */
-function hasContractElements() {
-  return !!(
-    document.querySelector('input[name="price"]') && document.querySelector('a[href*="market/resource"]')
-  );
-}
-
 function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
-}
-
-/**
- * Find the price input by its name attribute: <input name="price" ...>
- */
-function findPriceInput() {
-  return document.querySelector('input[name="price"]');
-}
-
-/**
- * Find the lowest seller price from the exchange orders table.
- * The table lives inside an <a> with href containing "market/resource".
- * Structure: a[href*="market/resource"] > table > tbody > tr (first row)
- *   → last <td> contains the price like "$1.800".
- * Uses structural selectors only — no text matching — so it's language-safe.
- */
-function getLowestSellerPrice() {
-  // Find all links whose href contains "market/resource" (handles /de/market/resource/ etc.)
-  const marketLinks = document.querySelectorAll('a[href*="market/resource"]');
-  for (const link of marketLinks) {
-    const table = link.querySelector("table");
-    if (!table) continue;
-
-    // First row = cheapest listing
-    const firstRow = table.querySelector("tr");
-    if (!firstRow) continue;
-
-    // Price is in the last <td>
-    const cells = firstRow.querySelectorAll("td");
-    if (cells.length === 0) continue;
-
-    const priceCell = cells[cells.length - 1];
-    const priceText = priceCell?.textContent?.trim() || "";
-    // Extract the number after "$" or stand-alone number
-    const match = priceText.match(/\$?\s*([\d.,]+)/);
-    if (match) {
-      const price = parsePrice(match[1]);
-      if (Number.isFinite(price) && price > 0) return price;
-    }
-  }
-
-  return null;
-}
-
-/**
- * Parse a price string.
- * Input fields often use "." as decimal (even on /de),
- * while market lists use localized separators.
- */
-function parsePrice(raw) {
-  const s = String(raw).trim();
-  if (!s) return NaN;
-  if (s.includes(".") && !s.includes(",")) {
-    const n = Number(s);
-    return Number.isFinite(n) ? n : NaN;
-  }
-  return parseLocaleNumber(s);
 }
 
 /**
@@ -160,13 +106,13 @@ function setInputValue(input, value) {
  * Apply the discount: read lowest price, calculate discounted price, fill input.
  */
 function applyDiscount() {
-  const lowestPrice = getLowestSellerPrice();
+  const lowestPrice = getLowestSellerPrice(document);
   if (lowestPrice === null) {
     console.debug("[SimHelper] Could not find lowest seller price on the page.");
     return;
   }
 
-  const priceInput = findPriceInput();
+  const priceInput = findContractPriceInput(document);
   if (!priceInput) {
     console.debug("[SimHelper] Could not find price input on the page.");
     return;
@@ -190,7 +136,7 @@ function applyDiscount() {
 }
 
 function updateButtonLabel() {
-  const btn = document.getElementById("scx-contract-apply-btn");
+  const btn = document.getElementById(APPLY_BUTTON_ID);
   if (btn) {
     btn.textContent = `${t("contractApplyBtn")}${discountPct}%`;
   }
@@ -198,86 +144,15 @@ function updateButtonLabel() {
 
 // ── Profit calculation helpers ──────────────────────────────────
 
-/**
- * Read the amount from the contract form input.
- */
-function getAmountValue() {
-  const input = document.querySelector('input[name="amount"]');
-  if (!input) return null;
-  const val = parseLocaleNumber(input.value);
-  return Number.isFinite(val) && val > 0 ? val : null;
-}
-
-/**
- * Read the price-per-unit from the contract form input.
- */
-function getPriceValue() {
-  const input = findPriceInput();
-  if (!input) return null;
-  const val = parsePrice(input.value);
-  return Number.isFinite(val) && val > 0 ? val : null;
-}
-
 export const _testUtils = {
-  parsePrice,
-  getAmountValue,
-  getPriceValue,
+  parsePrice: parseContractPrice,
+  getAmountValue: () => getContractAmountValue(document),
+  getPriceValue: () => getContractPriceValue(document),
 };
 
-/**
- * Extract sourcing cost per unit from the product info section.
- * Finds the encyclopedia link → parent div → first span starting with "$".
- * Language-safe: uses structural selectors only.
- */
-function getSourcingCostPerUnit() {
-  const encLinks = document.querySelectorAll('a[href*="encyclopedia"]');
-  for (const link of encLinks) {
-    const container = link.closest("div");
-    if (!container) continue;
-    const spans = container.querySelectorAll("span");
-    for (const span of spans) {
-      const text = span.textContent.trim();
-      if (text.startsWith("$")) {
-        const val = parsePrice(text.slice(1));
-        if (Number.isFinite(val) && val > 0) return val;
-      }
-    }
-  }
-  return null;
-}
-
-/**
- * Extract total transport count from the contract page.
- * Finds img[src*="transport"] → parent div → sibling span with "Nx" pattern.
- * Language-safe: uses structural + image selectors only.
- */
-function getTransportCount() {
-  // There are multiple transport images on the page:
-  //   1. Sourcing section (css-1erjzjw) — contains encyclopedia links, shows per-unit transport
-  //   2. Transport total section (css-ix8ka2) — NO encyclopedia links, shows total count like "6,301x"
-  // We want #2. Distinguish by skipping containers that have encyclopedia links.
-  const transportImgs = document.querySelectorAll('img[src*="transport"]');
-  for (const img of transportImgs) {
-    const container = img.parentElement;
-    if (!container) continue;
-
-    // Skip the sourcing/ingredient section — it contains encyclopedia links
-    if (container.querySelector('a[href*="encyclopedia"]')) continue;
-
-    const spans = container.querySelectorAll("span");
-    for (const span of spans) {
-      const text = span.textContent.trim();
-      // Match patterns like "6,301x" or "6.301x" or "6301x"
-      const match = text.match(/([\d.,]+)\s*x$/i);
-      if (match) {
-        // Strip thousands separators (commas or dots) — count is always an integer
-        const raw = match[1].replace(/[.,]/g, "");
-        const val = parseInt(raw, 10);
-        if (Number.isFinite(val) && val > 0) return val;
-      }
-    }
-  }
-  return null;
+function renderResult(resultDiv, html) {
+  resultDiv.innerHTML = html;
+  resultDiv.classList.remove("scx-contract-profit-hidden");
 }
 
 /**
@@ -288,24 +163,23 @@ function getTransportCount() {
  *   Transport = transport_count × transport_market_price
  */
 async function calculateAndDisplayProfit() {
-  const resultDiv = document.getElementById("scx-contract-profit-result");
-  const calcBtn = document.getElementById("scx-contract-calc-btn");
+  const resultDiv = document.getElementById(PROFIT_RESULT_ID);
+  const calcBtn = document.getElementById(CALC_BUTTON_ID);
   if (!resultDiv) return;
 
-  const amount = getAmountValue();
-  const price = getPriceValue();
+  const amount = getContractAmountValue(document);
+  const price = getContractPriceValue(document);
 
   if (!amount || !price) {
-    resultDiv.innerHTML = `<div style="color:var(--scx-text-muted); text-align:center; font-size:10px;">${t("contractSetValues")}</div>`;
-    resultDiv.style.display = "block";
+    renderResult(resultDiv, `<div class="scx-contract-profit-empty">${t("contractSetValues")}</div>`);
     return;
   }
 
   // Loading indicator
   if (calcBtn) calcBtn.textContent = "...";
 
-  const sourcingCost = getSourcingCostPerUnit();
-  const transportCount = getTransportCount();
+  const sourcingCost = getSourcingCostPerUnit(document);
+  const transportCount = getTransportCount(document);
 
   const revenue = amount * price;
   const totalSourcing = sourcingCost ? amount * sourcingCost : 0;
@@ -325,28 +199,30 @@ async function calculateAndDisplayProfit() {
   }
 
   const profit = revenue - totalSourcing - totalTransport;
-  const profitColor = profit >= 0 ? "var(--scx-color-success)" : "var(--scx-color-error)";
+  const profitToneClass = profit >= 0 ? "scx-contract-profit-positive" : "scx-contract-profit-negative";
 
-  resultDiv.innerHTML = `
-    <div style="display:flex; justify-content:space-between;">
+  renderResult(
+    resultDiv,
+    `
+    <div class="scx-contract-profit-row">
       <span>${t("contractRevenue")}</span>
       <span>${formatMoney(revenue)}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; color:var(--scx-color-warning);">
+    <div class="scx-contract-profit-row scx-contract-profit-cost">
       <span>${t("contractSourcing")}</span>
       <span>-${formatMoney(totalSourcing)}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; color:var(--scx-color-warning);">
+    <div class="scx-contract-profit-row scx-contract-profit-cost">
       <span>${t("contractTransportCost")}</span>
       <span>-${formatMoney(totalTransport)}</span>
     </div>
-    <hr style="border:none; border-top:1px solid #ddd; margin:4px 0;">
-    <div style="display:flex; justify-content:space-between; font-weight:700; color:${profitColor};">
+    <hr class="scx-contract-profit-divider">
+    <div class="scx-contract-profit-row scx-contract-profit-total ${profitToneClass}">
       <span>${t("profit")}</span>
       <span>${formatMoney(profit)}</span>
     </div>
-  `;
-  resultDiv.style.display = "block";
+  `,
+  );
 
   // Reset button text
   if (calcBtn) calcBtn.textContent = `💰 ${t("contractCalcProfit")}`;
@@ -355,7 +231,7 @@ async function calculateAndDisplayProfit() {
 function injectIfNeeded() {
   if (document.getElementById(CONTAINER_ID)) return;
 
-  const priceInput = findPriceInput();
+  const priceInput = findContractPriceInput(document);
   if (!priceInput) return;
 
   // Find the sidebar container to append into
@@ -364,42 +240,15 @@ function injectIfNeeded() {
 
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
-  container.className = "scx-sidebar-footer-contract";
-  container.style.cssText = `
-    width: 180px;
-    background: var(--scx-bg-tertiary);
-    border: var(--scx-border-medium-gray);
-    border-radius: 8px;
-    box-shadow: var(--scx-shadow-sm);
-    margin-top: 4px;
-    box-sizing: border-box;
-    overflow: hidden;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: default;
-  `;
+  container.className = "scx-sidebar-footer-contract scx-contract-helper";
 
   container.innerHTML = `
-    <div style="font-size: 11px; font-weight: 600; display:flex; align-items:center; gap:5px; color:var(--scx-text-secondary-alt);">
-      <span style="font-size: 12px;">📝</span> ${t("contractApplyTooltip")}
+    <div class="scx-contract-title">
+      <span class="scx-contract-title-icon">📝</span>
+      <span>${t("contractApplyTooltip")}</span>
     </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
-      <select id="scx-contract-discount-select" title="${t("contractDiscountLabel")}" style="
-        background: var(--scx-bg-neutral);
-        border: var(--scx-border-medium-light);
-        border-radius: 6px;
-        padding: 5px 6px;
-        font-size: 12px;
-        cursor: pointer;
-        font-weight: 500;
-        color: var(--scx-text-primary);
-      ">
+    <div class="scx-contract-controls">
+      <select id="${DISCOUNT_SELECT_ID}" title="${t("contractDiscountLabel")}" class="scx-contract-select">
         <option value="0"${discountPct === 0 ? " selected" : ""}>+0%</option>
         <option value="1"${discountPct === 1 ? " selected" : ""}>-1%</option>
         <option value="2"${discountPct === 2 ? " selected" : ""}>-2%</option>
@@ -407,62 +256,26 @@ function injectIfNeeded() {
         <option value="4"${discountPct === 4 ? " selected" : ""}>-4%</option>
         <option value="5"${discountPct === 5 ? " selected" : ""}>-5%</option>
       </select>
-      <button id="scx-contract-apply-btn" title="${t("contractApplyTooltip")}" style="
-        background: var(--scx-color-info);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 6px 10px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 12px;
-        white-space: nowrap;
-        transition: background 0.2s;
-      ">
+      <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-contract-apply-btn">
         ${t("contractApplyBtn")}${discountPct}%
       </button>
     </div>
-    <div style="border-top: var(--scx-border-light-alt); padding-top: 8px; width: 100%;">
-      <button id="scx-contract-calc-btn" style="
-        background: var(--scx-color-success);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 5px 10px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 11px;
-        width: 100%;
-        transition: background 0.2s;
-      ">
+    <div class="scx-contract-profit-panel">
+      <button id="${CALC_BUTTON_ID}" class="scx-contract-calc-btn">
         💰 ${t("contractCalcProfit")}
       </button>
-      <div id="scx-contract-profit-result" style="
-        display: none;
-        font-size: 11px;
-        width: 100%;
-        margin-top: 6px;
-        line-height: 1.6;
-      "></div>
+      <div id="${PROFIT_RESULT_ID}" class="scx-contract-profit-result scx-contract-profit-hidden"></div>
     </div>
   `;
 
   // Append to sidebar — appears after the existing footer buttons
   sidebar.appendChild(container);
 
-  // Hover effect matching other footer buttons
-  container.onmouseenter = () => {
-    container.style.transform = "translateY(-2px)";
-    container.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-  };
-  container.onmouseleave = () => {
-    container.style.transform = "translateY(0)";
-    container.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.05)";
-  };
-
   // Event: dropdown change
-  document.getElementById("scx-contract-discount-select").addEventListener("change", (e) => {
-    discountPct = Number(e.target.value);
+  document.getElementById(DISCOUNT_SELECT_ID)?.addEventListener("change", (e) => {
+    const nextValue = Number(e.target && "value" in e.target ? e.target.value : NaN);
+    if (!Number.isFinite(nextValue)) return;
+    discountPct = nextValue;
     void storage.set({
       domain: STORAGE_DOMAIN,
       version: STORAGE_VERSION,
@@ -475,14 +288,14 @@ function injectIfNeeded() {
   });
 
   // Event: apply button click
-  document.getElementById("scx-contract-apply-btn").addEventListener("click", (e) => {
+  document.getElementById(APPLY_BUTTON_ID)?.addEventListener("click", (e) => {
     e.preventDefault();
     applyDiscount();
   });
 
   // Event: calculate profit button click
-  document.getElementById("scx-contract-calc-btn").addEventListener("click", (e) => {
+  document.getElementById(CALC_BUTTON_ID)?.addEventListener("click", (e) => {
     e.preventDefault();
-    calculateAndDisplayProfit();
+    void calculateAndDisplayProfit();
   });
 }
