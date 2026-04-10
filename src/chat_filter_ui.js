@@ -199,8 +199,8 @@ async function fetchMessages(container, filterType, productId, selectedQualities
 
   // Regex compilation
   // Buy: buy, buying, bought? usually people say "buying" or "buy"
-  const buyRegex = /\b(buy|buying)\b/i;
-  const sellRegex = /\b(sell|selling)\b/i;
+  const buyRegex = /\b(buy\w*)\b/i;
+  const sellRegex = /\b(sell\w*)\b/i;
 
   const productTagRegex = new RegExp(`:(re)-${productId}:`, "i");
 
