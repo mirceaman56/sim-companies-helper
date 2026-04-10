@@ -903,6 +903,17 @@ hr {
   color: var(--scx-color-error);
 }
 
+@media (prefers-color-scheme: dark) {
+  .scx-warehouse-market-btn {
+    background: var(--scx-bg-tertiary);
+    color: var(--scx-text-primary);
+  }
+
+  .scx-warehouse-market-btn:hover:not(:disabled) {
+    background: var(--scx-bg-neutral);
+  }
+}
+
 .scx-sidebar-footer-support-btn {
   flex: 1;
   width: 100%;
@@ -2067,6 +2078,14 @@ hr {
   font-size: 9px;
   color: var(--scx-color-error);
   font-style: italic;
+}
+
+.scx-ma-price-hit {
+  color: var(--scx-color-success);
+}
+
+.scx-ma-price-normal {
+  color: var(--scx-text-primary);
 }
 
 .scx-ma-card-actions {
