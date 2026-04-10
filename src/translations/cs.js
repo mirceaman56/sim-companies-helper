@@ -192,6 +192,7 @@ export default {
   xpTimeToLevel: "Čas do dalšího levelu",
   xpOperating: "V provozu",
   xpProspecting: "Průzkum",
+  xpCacheRefreshHint: "XP cache refreshes every 6 hours. Click refresh to update now.",
   xpIdle: "Nečinné",
   financePeriodLabel: "Period",
   financePeriodCurrent: "Current",

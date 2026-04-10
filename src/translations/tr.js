@@ -192,6 +192,7 @@ export default {
   xpTimeToLevel: "Seviyeye kalan süre",
   xpOperating: "Çalışıyor",
   xpProspecting: "Arama",
+  xpCacheRefreshHint: "XP cache refreshes every 6 hours. Click refresh to update now.",
   xpIdle: "Boşta",
   financePeriodLabel: "Period",
   financePeriodCurrent: "Current",

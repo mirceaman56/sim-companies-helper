@@ -9,6 +9,7 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 - Warehouse market price comparison tools.
 - Market alerts for target prices.
 - Executive helper for chief and apprentice pages.
+- XP calculator widget with manual refresh (cache refreshes every 6 hours by default).
 - Sales chat filter/search helper.
 - Financials Helper dashboard with Current/Day/Week views, KPI strip, P&L, cash movement, ratios, drivers, transactions, sales mix, inventory/production, workforce cost, and alerts.
 

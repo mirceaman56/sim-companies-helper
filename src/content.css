@@ -2871,12 +2871,19 @@ hr {
   }
 }
 
+.scx-xp-controls {
+  display: flex;
+  width: 100%;
+  border-top: var(--scx-border-light);
+  background: var(--scx-bg-secondary);
+}
+
 .scx-xp-toggle {
   display: block;
-  width: 100%;
+  flex: 1;
   background: none;
   border: none;
-  border-top: var(--scx-border-light);
+  border-right: var(--scx-border-light);
   padding: 2px 4px;
   font-family: var(--scx-font-family);
   font-size: 9px;
@@ -2886,7 +2893,7 @@ hr {
   white-space: nowrap;
   text-align: center;
   line-height: 1.4;
-  background: var(--scx-bg-secondary);
+  background: transparent;
 }
 
 .scx-xp-toggle:hover {
@@ -2896,6 +2903,33 @@ hr {
 
 .scx-xp-toggle--loading {
   cursor: default;
+  opacity: 0.5;
+}
+
+.scx-xp-refresh {
+  width: 22px;
+  min-width: 22px;
+  border: none;
+  background: transparent;
+  color: var(--scx-text-secondary);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.scx-xp-refresh:hover {
+  color: var(--scx-text-primary);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-xp-refresh:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.scx-xp-refresh--loading {
   opacity: 0.5;
 }
 

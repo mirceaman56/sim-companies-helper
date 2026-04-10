@@ -20,9 +20,10 @@ global.MutationObserver = vi.fn(() => ({
 }));
 
 import { STATE } from "../src/state.js";
+import { loadBuildings } from "../src/buildings.js";
 import { _testUtils } from "../src/xp_ui.js";
 
-const { updateWidget, CONTAINER_ID } = _testUtils;
+const { updateWidget, refreshBuildingsCache, CONTAINER_ID } = _testUtils;
 
 function setupNavbar() {
   document.body.innerHTML = `
@@ -51,6 +52,7 @@ function setStateLoaded(buildings = [], level = 20, experience = 83599, experien
 }
 
 beforeEach(() => {
+  vi.clearAllMocks();
   document.body.innerHTML = "";
   STATE.buildings.loaded = false;
   STATE.buildings.loading = false;
@@ -136,6 +138,21 @@ describe("XP UI Widget", () => {
     updateWidget();
     const toggle = document.querySelector(".scx-xp-toggle");
     expect(toggle).not.toBeNull();
+  });
+
+  it("renders refresh button and cache tooltip", () => {
+    setupNavbar();
+    injectContainer();
+    setStateLoaded([], 20, 83599, 110000);
+    updateWidget();
+    const refreshBtn = document.querySelector(".scx-xp-refresh");
+    expect(refreshBtn).not.toBeNull();
+    expect(refreshBtn.getAttribute("title")).toBe("xpCacheRefreshHint");
+  });
+
+  it("forces buildings refresh when requested", async () => {
+    await refreshBuildingsCache();
+    expect(loadBuildings).toHaveBeenCalledWith({ force: true });
   });
 
   it("does nothing when container is missing", () => {
