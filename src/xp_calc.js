@@ -13,8 +13,8 @@ export const XP_PER_HOUR_CONSTRUCTION = 36.5;
 /** Hours in one week (recreation building cycle) */
 export const HOURS_PER_WEEK = 168;
 
-/** Building kinds that are prospecting slots at level 1 */
-const PROSPECTING_KINDS = new Set(["Q", "M"]);
+/** Building kinds that can perform prospecting while under construction */
+const PROSPECTING_KINDS = new Set(["Q", "M", "O"]);
 
 /** Category for recreation/other buildings */
 const CATEGORY_OTHER = "other";
@@ -35,13 +35,16 @@ export function isRecreationBuilding(building) {
 }
 
 /**
- * Determine if a building is a prospecting slot
- * (Quarry/Mine at level 1).
+ * Determine if a building is currently prospecting.
+ * Prospecting is represented by a quarry/mine/oil building under construction
+ * (busy.category === "b") and not expanding.
  * @param {object} building
  * @returns {boolean}
  */
 export function isProspectingSlot(building) {
-  return PROSPECTING_KINDS.has(building.kind) && building.size === 1;
+  const kind = String(building?.kind || "").toUpperCase();
+  const isProspectingKind = PROSPECTING_KINDS.has(kind);
+  return isProspectingKind && building?.busy?.category === "b";
 }
 
 /**
@@ -78,7 +81,7 @@ export function buildingXpPerHour(building) {
     return XP_PER_HOUR_BUILDING;
   }
 
-  // Prospecting slots (Quarry/Mine at level 1)
+  // Prospecting building under construction (Quarry/Mine/Oil)
   if (isProspectingSlot(building)) return XP_PER_HOUR_CONSTRUCTION;
 
   // Normal operating building

@@ -26,7 +26,7 @@ const { updateWidget, CONTAINER_ID } = _testUtils;
 
 function setupNavbar() {
   document.body.innerHTML = `
-    <div class="css-82a6rk">
+    <div data-testid="levels-host">
       <a href="/encyclopedia/0/levels/">
         <div><span>Lv. </span><span>20 (82%)</span></div>
       </a>
@@ -38,8 +38,8 @@ function injectContainer() {
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
   container.className = "scx-xp-widget";
-  const parent = document.querySelector(".css-82a6rk");
-  parent.parentElement.insertBefore(container, parent.nextSibling);
+  const host = document.querySelector('[data-testid="levels-host"]');
+  host.appendChild(container);
 }
 
 function setStateLoaded(buildings = [], level = 20, experience = 83599, experienceToNextLevel = 110000) {

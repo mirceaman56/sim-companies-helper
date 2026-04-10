@@ -2373,6 +2373,10 @@ hr {
 
 /* ── XP Calculator Widget ── */
 
+.scx-xp-host {
+  position: relative;
+}
+
 .scx-xp-widget {
   display: block;
   position: absolute;

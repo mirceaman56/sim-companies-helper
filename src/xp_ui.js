@@ -5,6 +5,7 @@ import { t } from "./i18n.js";
 import { escapeHtml } from "./utils.js";
 import { calculateTotalXpPerHour, hoursToNextLevel, formatHours } from "./xp_calc.js";
 import { storage } from "./data/storage.js";
+import { readXpNavbarContext } from "./page/xp_page.js";
 
 const CONTAINER_ID = "scx-xp-widget";
 const TOGGLE_KEY = "scx-xp-widget-visible";
@@ -20,9 +21,9 @@ let _isVisible = true;
 export function initXpWidget() {
   void hydrateVisibilityPreference();
   const observer = new MutationObserver(() => {
-    const levelAnchor = findLevelAnchor();
-    if (levelAnchor) {
-      injectIfNeeded(levelAnchor);
+    const navContext = readXpNavbarContext(document);
+    if (navContext) {
+      injectIfNeeded(navContext);
     } else {
       removeIfPresent();
     }
@@ -30,9 +31,9 @@ export function initXpWidget() {
   observer.observe(document.body, { childList: true, subtree: true });
 
   // Also try immediately
-  const levelAnchor = findLevelAnchor();
-  if (levelAnchor) {
-    injectIfNeeded(levelAnchor);
+  const navContext = readXpNavbarContext(document);
+  if (navContext) {
+    injectIfNeeded(navContext);
   }
 }
 
@@ -75,7 +76,8 @@ export function updateXpWidget() {
  * @returns {Element|null}
  */
 function findLevelAnchor() {
-  return document.querySelector('a[href*="/encyclopedia/"][href*="/levels/"]');
+  const navContext = readXpNavbarContext(document);
+  return navContext?.levelAnchor || null;
 }
 
 function isVisible() {
@@ -94,21 +96,21 @@ function setVisible(val) {
   });
 }
 
-function injectIfNeeded(levelAnchor) {
+function injectIfNeeded(navContext) {
   // Already injected — observer must not touch the DOM here to avoid loops.
   if (document.getElementById(CONTAINER_ID)) return;
+
+  const levelAnchor = navContext?.levelAnchor;
+  const hostEl = navContext?.hostEl;
+  if (!levelAnchor || !hostEl) return;
 
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
   container.className = "scx-xp-widget";
 
-  // Inject inside the level container div so the dropdown sits below it.
-  const levelDiv = levelAnchor.closest("div.css-82a6rk") || levelAnchor.parentElement;
-  if (!levelDiv) return;
-
-  // Make the level container relative so our absolute dropdown is anchored to it.
-  levelDiv.style.position = "relative";
-  levelDiv.appendChild(container);
+  // Inject inside the level host so the dropdown is anchored beneath it.
+  hostEl.classList.add("scx-xp-host");
+  hostEl.appendChild(container);
 
   container.addEventListener("click", (e) => {
     if (e.target.closest(".scx-xp-toggle")) {
