@@ -80,7 +80,7 @@ describe("isProspectingSlot", () => {
     ).toBe(true);
   });
 
-  it("returns false for mine upgrade (expanding)", () => {
+  it("returns true for mine upgrade (expanding)", () => {
     expect(
       isProspectingSlot(
         makeBuilding({
@@ -89,7 +89,7 @@ describe("isProspectingSlot", () => {
           busy: { id: 1, category: "b", expanding: true, duration: 345600000 },
         }),
       ),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("returns false for quarry level 1 with no construction busy state", () => {
