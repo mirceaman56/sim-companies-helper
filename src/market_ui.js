@@ -1,12 +1,11 @@
 // market_ui.js
-// Market price alert notifications sidebar
+// Market alerts orchestration (state + timers + persistence + rendering).
 import { getSectionContent } from "./sidebar.js";
-import { getRealmId, loadAuthDataOnce } from "./auth.js";
+import { getRealmId } from "./auth.js";
 import { STATE } from "./state.js";
 import { fetchMarketPrice, fetchMarket, getRateLimitStatus } from "./market.js";
 import { formatMoney, escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
-import { storage } from "./data/storage.js";
 import recipes from "./resources/recipes.json";
 import {
   ALERT_CHECK_INTERVAL_MS,
@@ -14,91 +13,60 @@ import {
   ALERT_MAX_COUNT,
   TOAST_DISMISS_MS,
 } from "./constants.js";
+import {
+  appendAlert,
+  applyPriceCheckState,
+  canAddAlert,
+  createAlert,
+  findAlertById,
+  isValidTargetPrice,
+  removeAlertState,
+  resetAlertState,
+  startAlertState,
+  stopAlertState,
+} from "./market_alerts_state.js";
+import { loadAlertsSnapshot, saveAlertsSnapshot, storageKeyForRealm } from "./market_alerts_storage.js";
+import { createAlertTimers } from "./market_alerts_timers.js";
+import {
+  createAlertsContent,
+  createRenderScheduler,
+  flashInputError,
+  renderAlertList,
+  showNotification,
+} from "./market_alerts_render.js";
 
 const SECTION_ID = "market-alerts-section";
-const STORAGE_KEY_PREFIX = "scx-market-alerts";
-const STORAGE_DOMAIN = "market-alerts";
-const STORAGE_VERSION = 1;
 
-// State
-let alerts = []; // { id, productId, productName, quality, targetPrice, active, intervalId, lastPrice, lastCheck, triggered }
-
+let alerts = [];
 let nextAlertId = 1;
-let timerRefreshInterval = null;
 let alertsContainer = null;
 
+const timers = createAlertTimers({
+  checkIntervalMs: ALERT_CHECK_INTERVAL_MS,
+  refreshIntervalMs: ALERT_TIMER_REFRESH_MS,
+});
+
+const scheduleRenderAlertList = createRenderScheduler(() => {
+  renderAlertListUI(alertsContainer);
+});
+
 function storageKey() {
-  const realmId = STATE.auth.realmId;
-  if (realmId === null || realmId === undefined) return null;
-  return `${STORAGE_KEY_PREFIX}-${realmId}`;
-}
-
-function flashInputError(input) {
-  input.classList.add("scx-input-error");
-  setTimeout(() => {
-    input.classList.remove("scx-input-error");
-  }, 2000);
-}
-
-// Debounces renderAlertList so rapid-fire completions from concurrent checkPrice calls
-// collapse into a single DOM update per animation frame.
-let _renderScheduled = false;
-function scheduleRenderAlertList(container) {
-  if (_renderScheduled) return;
-  _renderScheduled = true;
-  requestAnimationFrame(() => {
-    _renderScheduled = false;
-    renderAlertList(container);
-  });
-}
-
-async function ensureAuth() {
-  if (STATE.auth.realmId !== null && STATE.auth.realmId !== undefined) return;
-  await loadAuthDataOnce();
+  return storageKeyForRealm(STATE.auth.realmId);
 }
 
 async function saveAlerts() {
-  await ensureAuth();
-  const serializable = alerts.map(({ intervalId: _intervalId, ...rest }) => rest);
-  await storage.set({
-    domain: STORAGE_DOMAIN,
-    version: STORAGE_VERSION,
-    scope: "scoped",
-    backend: "chrome",
-    refreshAuth: true,
-    data: { alerts: serializable, nextAlertId },
-  });
+  await saveAlertsSnapshot({ alerts, nextAlertId });
 }
 
 async function loadAlerts() {
-  await ensureAuth();
-  const realmId = STATE.auth.realmId;
-  const { data } = await storage.migrate({
-    domain: STORAGE_DOMAIN,
-    version: STORAGE_VERSION,
-    scope: "scoped",
-    backend: "chrome",
-    refreshAuth: true,
-    readLegacy: async ({ getRaw, removeRaw }) => {
-      const legacyKey = storageKey() || `${STORAGE_KEY_PREFIX}-${realmId}`;
-      const legacyData = await getRaw("chrome", legacyKey);
-      if (!legacyData) return { data: null };
-      return {
-        data: legacyData,
-        async cleanup() {
-          await removeRaw("chrome", legacyKey);
-        },
-      };
-    },
-  });
-  if (!data) return;
-
-  alerts = (data.alerts || []).map((a) => ({ ...a, intervalId: null }));
-  nextAlertId = data.nextAlertId || (alerts.length ? Math.max(...alerts.map((a) => a.id)) + 1 : 1);
+  const snapshot = await loadAlertsSnapshot();
+  if (!snapshot) return;
+  alerts = snapshot.alerts;
+  nextAlertId = snapshot.nextAlertId;
 }
 
 /**
- * Initialize the market alerts panel
+ * Initialize the market alerts panel.
  */
 export async function initMarketAlerts() {
   const content = getSectionContent(SECTION_ID);
@@ -110,96 +78,49 @@ export async function initMarketAlerts() {
 
   if (content) {
     content.innerHTML = "";
-    content.appendChild(createAlertsContent());
+    alertsContainer = createAlertsContent({
+      recipes,
+      alertsCount: alerts.length,
+      maxCount: ALERT_MAX_COUNT,
+      t,
+      escapeHtml,
+      onAdd: () => addAlert(alertsContainer),
+    });
+    content.appendChild(alertsContainer);
+    renderAlertListUI(alertsContainer);
+
+    timers.startRenderRefresh(() => {
+      renderAlertListUI(alertsContainer);
+    });
   }
 
-  // Restart monitoring for alerts that were active before reload.
-  // Stagger starts by 1.5s each so their intervals never stay synchronized,
-  // preventing bursts of concurrent API calls on every check cycle.
-  let staggerMs = 0;
-  for (const alert of alerts) {
-    if (alert.active && !alert.triggered) {
-      alert.active = false; // startAlert expects inactive
-      setTimeout(() => startAlert(alertsContainer, alert.id), staggerMs);
-      staggerMs += 1500;
-    }
-  }
+  const restartCandidates = alerts.filter((alert) => alert.active && !alert.triggered);
+  restartCandidates.forEach((alert) => {
+    alert.active = false;
+  });
+
+  timers.stagger(restartCandidates, (alert) => {
+    startAlert(alertsContainer, alert.id);
+  });
 }
 
 /**
- * Update the market alerts panel (called when section is expanded)
+ * Update the market alerts panel (called when section is expanded).
  */
 export function updateMarketAlertsPanel() {
-  // Panel is event-driven, no periodic refresh needed
+  // Panel is event-driven, no periodic refresh needed.
 }
 
 /**
- * Create the alerts UI
- */
-function createAlertsContent() {
-  const container = document.createElement("div");
-  container.className = "scx-market-alerts";
-
-  const sortedRecipes = [...recipes].sort((a, b) => a.name.localeCompare(b.name));
-
-  container.innerHTML = `
-    <div class="scx-market-alerts-form">
-      <div class="scx-market-alerts-limit">
-        <span class="scx-market-alerts-limit-text">${t("maAlertLimit")} (${alerts.length}/${ALERT_MAX_COUNT})</span>
-      </div>
-      <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maProduct")}</label>
-        <select id="scx-ma-product" class="scx-select scx-width-full">
-          ${sortedRecipes.map((r) => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("")}
-        </select>
-      </div>
-      <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maQuality")}</label>
-        <select id="scx-ma-quality" class="scx-select scx-width-full">
-          <option value="all">${t("maAll")}</option>
-          ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">Q${i + 1}</option>`).join("")}
-        </select>
-      </div>
-      <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maTargetPrice")}</label>
-        <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="${t("maTargetPricePlaceholder")}"
-               class="scx-select scx-width-full" />
-      </div>
-      <button id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full" ${alerts.length >= ALERT_MAX_COUNT ? "disabled" : ""}>
-        ${t("maAddAlert")}
-      </button>
-    </div>
-    <div id="scx-ma-list" class="scx-market-alerts-list"></div>
-  `;
-
-  // Wire up add button
-  const addBtn = container.querySelector("#scx-ma-add");
-  addBtn.addEventListener("click", () => addAlert(container));
-
-  // Store container reference for timer updates
-  alertsContainer = container;
-
-  // Refresh timer display every 10 seconds
-  if (timerRefreshInterval) {
-    clearInterval(timerRefreshInterval);
-  }
-  timerRefreshInterval = setInterval(() => {
-    if (alertsContainer) {
-      renderAlertList(alertsContainer);
-    }
-  }, ALERT_TIMER_REFRESH_MS);
-
-  return container;
-}
-
-/**
- * Add a new price alert
+ * Add a new price alert.
+ * @param {HTMLElement|null} container
  */
 function addAlert(container) {
-  // Check limit
-  if (alerts.length >= ALERT_MAX_COUNT) {
+  if (!container) return;
+
+  if (!canAddAlert(alerts, ALERT_MAX_COUNT)) {
     const priceInput = container.querySelector("#scx-ma-price");
-    flashInputError(priceInput);
+    if (priceInput) flashInputError(priceInput);
     return;
   }
 
@@ -213,122 +134,119 @@ function addAlert(container) {
   const quality = qualityValue === "all" ? "all" : Number(qualityValue);
   const targetPrice = parseFloat(priceInput.value);
 
-  if (!Number.isFinite(targetPrice) || targetPrice <= 0) {
+  if (!isValidTargetPrice(targetPrice)) {
     flashInputError(priceInput);
     return;
   }
 
-  const alert = {
-    id: nextAlertId++,
+  const alert = createAlert({
+    id: nextAlertId,
     productId,
     productName,
     quality,
     targetPrice,
-    active: false,
-    intervalId: null,
-    lastPrice: null,
-    lastCheck: null,
-    triggered: false,
-  };
+  });
 
-  alerts.push(alert);
-  saveAlerts();
+  alerts = appendAlert(alerts, alert);
+  nextAlertId += 1;
+
+  void saveAlerts();
+
   priceInput.value = "";
-  renderAlertList(container);
+  renderAlertListUI(container);
 }
 
 /**
- * Start monitoring a specific alert
+ * Start monitoring a specific alert.
+ * @param {HTMLElement|null} container
+ * @param {number} alertId
  */
 function startAlert(container, alertId) {
-  const alert = alerts.find((a) => a.id === alertId);
-  if (!alert || alert.active) return;
+  const alert = findAlertById(alerts, alertId);
+  if (!startAlertState(alert)) return;
 
-  alert.active = true;
-  alert.triggered = false;
-  saveAlerts();
+  void saveAlerts();
 
-  // Immediate first check
-  checkPrice(container, alert);
+  timers.startAlertInterval(alert, () => {
+    void checkPrice(container, alert);
+  });
 
-  // Schedule recurring checks
-  alert.intervalId = setInterval(() => {
-    checkPrice(container, alert);
-  }, ALERT_CHECK_INTERVAL_MS);
-
-  renderAlertList(container);
+  renderAlertListUI(container);
 }
 
 /**
- * Stop monitoring a specific alert
+ * Stop monitoring a specific alert.
+ * @param {HTMLElement|null} container
+ * @param {number} alertId
  */
 function stopAlert(container, alertId) {
-  const alert = alerts.find((a) => a.id === alertId);
+  const alert = findAlertById(alerts, alertId);
   if (!alert) return;
 
-  alert.active = false;
-  if (alert.intervalId) {
-    clearInterval(alert.intervalId);
-    alert.intervalId = null;
-  }
-  saveAlerts();
+  timers.stopAlertInterval(alert);
+  stopAlertState(alert);
 
-  renderAlertList(container);
+  void saveAlerts();
+  renderAlertListUI(container);
 }
 
 /**
- * Reset a triggered alert so it resumes monitoring and can fire again
+ * Reset a triggered alert so it resumes monitoring and can fire again.
+ * @param {HTMLElement|null} container
+ * @param {number} alertId
  */
 function resetAlert(container, alertId) {
-  const alert = alerts.find((a) => a.id === alertId);
+  const alert = findAlertById(alerts, alertId);
   if (!alert) return;
 
-  alert.triggered = false;
-  alert.lastPrice = null;
-  alert.lastCheck = null;
-  saveAlerts();
+  resetAlertState(alert);
+  void saveAlerts();
 
   if (!alert.active) {
     startAlert(container, alertId);
   } else {
-    checkPrice(container, alert);
-    renderAlertList(container);
+    void checkPrice(container, alert);
+    renderAlertListUI(container);
   }
 }
 
 /**
- * Remove an alert entirely
+ * Remove an alert entirely.
+ * @param {HTMLElement|null} container
+ * @param {number} alertId
  */
 function removeAlert(container, alertId) {
-  const alert = alerts.find((a) => a.id === alertId);
-  if (alert?.intervalId) {
-    clearInterval(alert.intervalId);
+  const alert = findAlertById(alerts, alertId);
+  if (alert) {
+    timers.stopAlertInterval(alert);
   }
-  alerts = alerts.filter((a) => a.id !== alertId);
-  saveAlerts();
-  renderAlertList(container);
+
+  alerts = removeAlertState(alerts, alertId);
+  void saveAlerts();
+  renderAlertListUI(container);
 }
 
 /**
- * Check current market price against alert target
+ * Check current market price against alert target.
+ * @param {HTMLElement|null} container
+ * @param {object} alert
  */
 async function checkPrice(container, alert) {
   const { blocked } = getRateLimitStatus();
   if (blocked) {
     alert.lastCheck = Date.now();
-    scheduleRenderAlertList(container);
+    scheduleRenderAlertList();
     return;
   }
 
   const realmId = getRealmId();
+
   try {
     let price = null;
 
     if (alert.quality === "all") {
-      // Check all qualities for the product
       const data = await fetchMarket(realmId, alert.productId);
       if (Array.isArray(data) && data.length > 0) {
-        // Find the cheapest price across all qualities
         const cheapest = data.reduce((min, item) => {
           if (!Number.isFinite(item.price)) return min;
           return !min || item.price < min.price ? item : min;
@@ -336,229 +254,53 @@ async function checkPrice(container, alert) {
         price = cheapest ? cheapest.price : null;
       }
     } else {
-      // Check specific quality
       price = await fetchMarketPrice(realmId, alert.productId, alert.quality);
     }
 
-    alert.lastPrice = price;
-    alert.lastCheck = Date.now();
+    const result = applyPriceCheckState(alert, price, Date.now());
 
-    if (price !== null && price <= alert.targetPrice && !alert.triggered) {
-      alert.triggered = true;
-      saveAlerts();
-      showNotification(alert, price);
-    } else if (price !== null && price > alert.targetPrice) {
-      alert.triggered = false;
-      saveAlerts();
+    if (result === "triggered") {
+      void saveAlerts();
+      showNotification({
+        alert,
+        price,
+        t,
+        formatMoney,
+        escapeHtml,
+        toastDismissMs: TOAST_DISMISS_MS,
+      });
+    } else if (result === "cleared") {
+      void saveAlerts();
     }
   } catch (e) {
     console.warn(`[SimHelper] Market alert check failed for ${alert.productName}:`, e);
   }
 
-  scheduleRenderAlertList(container);
+  scheduleRenderAlertList();
+  void container;
 }
 
 /**
- * Play a short beep sound using the Web Audio API
+ * Render the list of alerts.
+ * @param {HTMLElement|null} container
  */
-function playAlertSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+function renderAlertListUI(container) {
+  if (!container) return;
 
-    // Two-tone alert: beep-beep
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.setValueAtTime(0, ctx.currentTime + 0.15);
-    osc.frequency.setValueAtTime(1046, ctx.currentTime + 0.2); // C6
-    gain.gain.setValueAtTime(0.3, ctx.currentTime + 0.2);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.5);
-  } catch {
-    // Audio not available — silent fallback
-  }
-}
-
-/**
- * Show an in-page toast notification
- */
-function showNotification(alert, price) {
-  playAlertSound();
-
-  // Create toast container if it doesn't exist
-  let toastContainer = document.getElementById("scx-toast-container");
-  if (!toastContainer) {
-    toastContainer = document.createElement("div");
-    toastContainer.id = "scx-toast-container";
-    document.documentElement.appendChild(toastContainer);
-  }
-
-  const toast = document.createElement("div");
-  toast.className = "scx-toast";
-  toast.innerHTML = `
-    <div class="scx-toast-icon">🔔</div>
-    <div class="scx-toast-body">
-      <div class="scx-toast-title">
-        <a href="https://www.simcompanies.com/market/resource/${alert.productId}/"
-           target="_blank" class="scx-toast-link">
-          ${escapeHtml(alert.productName)} Q${alert.quality}
-        </a>
-      </div>
-      <div class="scx-toast-message">
-        ${t("maPrice")} ${formatMoney(price, { decimals: 3 })} ≤ ${formatMoney(alert.targetPrice, { decimals: 3 })}
-      </div>
-    </div>
-    <button class="scx-toast-close">✕</button>
-  `;
-
-  // Auto-dismiss after 15 seconds
-  const dismissTimer = setTimeout(() => dismissToast(toast), TOAST_DISMISS_MS);
-
-  toast.querySelector(".scx-toast-close").addEventListener("click", () => {
-    clearTimeout(dismissTimer);
-    dismissToast(toast);
-  });
-
-  toastContainer.appendChild(toast);
-  // Trigger entrance animation
-  requestAnimationFrame(() => toast.classList.add("scx-toast-visible"));
-}
-
-/**
- * Dismiss a toast with exit animation
- */
-function dismissToast(toast) {
-  toast.classList.remove("scx-toast-visible");
-  toast.classList.add("scx-toast-exit");
-  toast.addEventListener("transitionend", () => toast.remove(), { once: true });
-  // Fallback removal if transition doesn't fire
-  setTimeout(() => toast.remove(), 500);
-}
-
-/**
- * Format time ago string
- */
-function timeAgo(ts) {
-  if (!ts) return t("never");
-  const diff = Math.floor((Date.now() - ts) / 1000);
-  if (diff < 60) return `${diff}${t("sAgo")}`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}${t("mAgo")}`;
-  return `${Math.floor(diff / 3600)}${t("hAgo")}`;
-}
-
-/**
- * Render the list of alerts
- */
-function renderAlertList(container) {
-  const listEl = container.querySelector("#scx-ma-list");
-  const addBtn = container.querySelector("#scx-ma-add");
-  const limitText = container.querySelector(".scx-market-alerts-limit-text");
-
-  if (!listEl) return;
-
-  // Update limit counter and button state
-  if (limitText) {
-    limitText.textContent = `${t("maAlertLimit")} (${alerts.length}/${ALERT_MAX_COUNT})`;
-  }
-  if (addBtn) {
-    addBtn.disabled = alerts.length >= ALERT_MAX_COUNT;
-  }
-
-  if (alerts.length === 0) {
-    listEl.innerHTML = `<div class="scx-market-alerts-empty">${t("maNoAlerts")}</div>`;
-    return;
-  }
-
-  listEl.innerHTML = alerts
-    .map((alert) => {
-      const priceColor =
-        alert.lastPrice !== null && alert.lastPrice <= alert.targetPrice
-          ? "var(--scx-color-success)"
-          : "var(--scx-text-primary)";
-
-      const statusClass = alert.active
-        ? alert.triggered
-          ? "scx-ma-status-triggered"
-          : "scx-ma-status-active"
-        : "scx-ma-status-stopped";
-
-      const statusText = alert.active
-        ? alert.triggered
-          ? t("maTriggered")
-          : t("maMonitoring")
-        : t("maStopped");
-
-      const qualityDisplay = alert.quality === "all" ? t("maAll") : `Q${alert.quality}`;
-
-      const { blocked, remainingMs } = getRateLimitStatus();
-      const rateLimitWarning = blocked
-        ? `<div class="scx-ma-rate-limit">${t("maRateLimited")} ${Math.ceil(remainingMs / 60000)}m</div>`
-        : "";
-
-      return `
-      <div class="scx-ma-card" data-alert-id="${alert.id}">
-        <div class="scx-ma-card-header">
-          <div>
-            <a href="https://www.simcompanies.com/market/resource/${alert.productId}/"
-               target="_blank" class="scx-ma-product-link">
-              ${escapeHtml(alert.productName)}
-            </a>
-            <span class="scx-ma-quality-badge">${qualityDisplay}</span>
-          </div>
-          <span class="${statusClass}">${statusText}</span>
-        </div>
-
-        <div class="scx-ma-card-body">
-          <div class="scx-flex-row scx-font-9">
-            <span class="scx-k">${t("maTargetPrice")}</span>
-            <span class="scx-v">${formatMoney(alert.targetPrice, { decimals: 3 })}</span>
-          </div>
-          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
-            <span class="scx-k">${t("maCurrentPrice")}</span>
-            <span class="scx-v" style="color: ${priceColor};">
-              ${alert.lastPrice !== null ? formatMoney(alert.lastPrice, { decimals: 3 }) : "—"}
-            </span>
-          </div>
-          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
-            <span class="scx-k">${t("maLastChecked")}</span>
-            <span class="scx-color-999">${timeAgo(alert.lastCheck)}</span>
-          </div>
-          ${rateLimitWarning}
-        </div>
-
-        <div class="scx-ma-card-actions">
-          ${
-            alert.triggered
-              ? `<button class="scx-btn scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
-              : alert.active
-                ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
-                : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
-          }
-          <button class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
-        </div>
-      </div>
-    `;
-    })
-    .join("");
-
-  // Wire up action buttons
-  listEl.querySelectorAll("[data-action]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const card = e.target.closest(".scx-ma-card");
-      const alertId = Number(card.dataset.alertId);
-      const action = e.target.dataset.action;
-
+  renderAlertList({
+    container,
+    alerts,
+    maxCount: ALERT_MAX_COUNT,
+    t,
+    formatMoney,
+    escapeHtml,
+    getRateLimitStatus,
+    onAction: (action, alertId) => {
       if (action === "start") startAlert(container, alertId);
       else if (action === "stop") stopAlert(container, alertId);
       else if (action === "reset") resetAlert(container, alertId);
       else if (action === "remove") removeAlert(container, alertId);
-    });
+    },
   });
 }
 

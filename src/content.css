@@ -2069,6 +2069,14 @@ hr {
   font-style: italic;
 }
 
+.scx-ma-price-hit {
+  color: var(--scx-color-success);
+}
+
+.scx-ma-price-normal {
+  color: var(--scx-text-primary);
+}
+
 .scx-ma-card-actions {
   display: flex;
   gap: 6px;
