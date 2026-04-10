@@ -1,16 +1,24 @@
 /**
  * Executive Helper UI Component
  * Displays executive skills breakdown (organic vs training)
- * and HR feedback assessment matching against hr_blurp.json data
+ * and HR feedback assessment matching against hr_blurp.json data.
  */
 
 import { stringSimilarity } from "string-similarity-js";
 import hrBlurpData from "./resources/hr_blurp.json";
 import { t } from "./i18n.js";
 import { getSectionContent } from "./sidebar.js";
-import { escapeHtml } from "./utils.js";
+import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
+import {
+  getExecutivePageKind,
+  isExecutivePath,
+  readExecutiveHRFeedback,
+  readExecutiveSkills,
+  readExecutiveTrainingSkills,
+} from "./page/executive_page.js";
 
 const SECTION_ID = "executive-section";
+const REFRESH_BUTTON_ID = "scx-executive-refresh-btn";
 const SIMILARITY_THRESHOLD = 0.7;
 const SKILL_KEYS = ["mgmt", "acct", "comm", "tech"];
 const SKILL_LABELS = {
@@ -20,9 +28,6 @@ const SKILL_LABELS = {
   tech: "Technology",
 };
 
-/**
- * Get translated skill label
- */
 function getSkillLabel(skillKey) {
   const labelMap = {
     mgmt: "management",
@@ -33,169 +38,25 @@ function getSkillLabel(skillKey) {
   return t(labelMap[skillKey]) || SKILL_LABELS[skillKey];
 }
 
-// Mapping for page skill names to standard keys
-const PAGE_SKILL_MAPPING = {
-  management: "mgmt",
-  accounting: "acct",
-  communication: "comm",
-  science: "tech",
-  technology: "tech",
-};
-
-/**
- * Extract executive skills from the page
- * Uses DOM structure only: finds tbody with 4 skill rows and extracts numeric values
- * Works in any language - relies on row order, not text content
- * @returns {Object} Skills object with keys like {mgmt: 1, acct: 0, comm: 2, tech: 2}
- */
-function extractExecutiveSkills() {
-  const skills = {};
-
-  // Find tbody elements (skill tables use tbody)
-  const tbodies = document.querySelectorAll("tbody");
-
-  for (const tbody of tbodies) {
-    const rows = tbody.querySelectorAll("tr");
-
-    // Check if this tbody has 4 rows (the skills table has exactly 4 skill rows)
-    if (rows.length !== 4) continue;
-
-    let skillCount = 0;
-    const skillOrder = ["mgmt", "acct", "comm", "tech"];
-
-    // Try to extract skill values from each row
-    for (const row of rows) {
-      const cells = row.querySelectorAll("td");
-      if (cells.length < 2) break; // Not a valid skill row
-
-      // Look for a span with a number in the second cell
-      const secondCell = cells[1];
-      const spans = secondCell.querySelectorAll("span");
-
-      let skillValue = null;
-
-      // Find the first span containing a number
-      for (const span of spans) {
-        const text = span.textContent.trim();
-        const num = parseInt(text, 10);
-        if (!isNaN(num) && num >= 0 && num <= 10) {
-          skillValue = num;
-          break;
-        }
-      }
-
-      // If no span found, try to parse the cell text directly
-      if (skillValue === null) {
-        const cellText = secondCell.textContent.trim();
-        const match = cellText.match(/^\d+/);
-        if (match) {
-          skillValue = parseInt(match[0], 10);
-        }
-      }
-
-      if (skillValue !== null) {
-        const skillKey = skillOrder[skillCount];
-        skills[skillKey] = skillValue;
-        skillCount++;
-      }
-    }
-
-    // If we found all 4 skills, return them
-    if (skillCount === 4) {
-      return skills;
-    }
-  }
-
-  return null;
-}
-
-/**
- * Extract training skills from the page
- * Looks for training entries and extracts skill gains
- * @returns {Object} Training skills object with skill bonuses {comm: 2, tech: 1, etc}
- */
-function extractTrainingSkills() {
-  const trainingSkills = {};
-
-  // Look for training entries - they typically show "Skill +X" format
-  const pageText = document.body.innerText;
-  const lines = pageText.split("\n");
-
-  // Also search in DOM for specific patterns
-  const allElements = document.querySelectorAll("*");
-
-  for (const element of allElements) {
-    // Only check text nodes
-    if (element.childNodes.length === 0 && element.textContent) {
-      const text = element.textContent;
-
-      // Match patterns like "Communication +1", "Science +2", etc
-      const matches = text.match(/(\w+)\s*\+(\d+)/g);
-      if (matches) {
-        for (const match of matches) {
-          const parts = match.match(/(\w+)\s*\+(\d+)/);
-          if (parts && parts.length === 3) {
-            const skillName = parts[1].toLowerCase();
-            const value = parseInt(parts[2], 10);
-
-            const skillKey = PAGE_SKILL_MAPPING[skillName];
-            if (skillKey) {
-              trainingSkills[skillKey] = (trainingSkills[skillKey] || 0) + value;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Also search the page text for training skill indicators
-  for (const line of lines) {
-    const skillMatch = line.match(/(\w+)\s*\+(\d+)/);
-    if (skillMatch && skillMatch.length === 3) {
-      const skillName = skillMatch[1].toLowerCase();
-      const value = parseInt(skillMatch[2], 10);
-
-      const skillKey = PAGE_SKILL_MAPPING[skillName];
-      if (skillKey) {
-        trainingSkills[skillKey] = (trainingSkills[skillKey] || 0) + value;
-      }
-    }
-  }
-
-  return Object.keys(trainingSkills).length > 0 ? trainingSkills : null;
-}
-
-/**
- * Calculate similarity between two strings using string-similarity-js
- */
 function calculateSimilarity(a, b) {
-  const aStr = String(a).toLowerCase().trim();
-  const bStr = String(b).toLowerCase().trim();
+  const left = String(a).toLowerCase().trim();
+  const right = String(b).toLowerCase().trim();
 
-  if (!aStr || !bStr) return 0;
-  if (aStr === bStr) return 1.0;
+  if (!left || !right) return 0;
+  if (left === right) return 1;
 
-  // Use string-similarity library
-  return stringSimilarity(aStr, bStr);
+  return stringSimilarity(left, right);
 }
 
-/**
- * Find best matching HR blurp entry from JSON based on feedback text
- * Returns the entry with highest similarity score above threshold
- */
 function findBestMatchingEntry(feedbackText) {
   if (!feedbackText) return null;
 
   let bestMatch = null;
   let bestScore = SIMILARITY_THRESHOLD;
 
-  // Check all entries to find best match (don't stop at first)
   for (const entry of hrBlurpData) {
-    // Try to match against English feedback (primary language)
     const originalFeedback = entry.en?.originalFeedback || "";
     const score = calculateSimilarity(feedbackText, originalFeedback);
-
-    // Update best match if this score is higher
     if (score > bestScore) {
       bestScore = score;
       bestMatch = entry;
@@ -205,88 +66,35 @@ function findBestMatchingEntry(feedbackText) {
   return bestMatch;
 }
 
-/**
- * Get skill assessment color and label based on skill value
- */
 function getSkillAssessment(skillValue) {
-  if (skillValue >= 1.4) {
-    return {
-      class: "scx-hr-blurp-skill-keeper",
-      label: t("keeper"),
-    };
-  } else if (skillValue >= 1.3) {
-    return {
-      class: "scx-hr-blurp-skill-works",
-      label: t("works"),
-    };
-  } else {
-    return {
-      class: "scx-hr-blurp-skill-garbage",
-      label: t("garbage"),
-    };
-  }
+  if (skillValue >= 1.4) return { class: "scx-hr-blurp-skill-keeper", label: t("keeper") };
+  if (skillValue >= 1.3) return { class: "scx-hr-blurp-skill-works", label: t("works") };
+  return { class: "scx-hr-blurp-skill-garbage", label: t("garbage") };
 }
 
-/**
- * Extract HR feedback from the page element
- * Uses DOM structure only: finds containers with tables, a bold label, and extracts text after empty divs
- * Language-agnostic and class-name agnostic
- */
-function extractHRFeedback() {
-  // Strategy: Find a div container that has:
-  // 1. At least one table (direct child)
-  // 2. A bold tag (the label)
-  // 3. An empty div followed by text content
-
-  const allDivs = document.querySelectorAll("div");
-
-  for (const div of allDivs) {
-    // Check if this div has direct table children
-    const directTables = Array.from(div.children).filter((child) => child.tagName === "TABLE");
-    if (directTables.length === 0) continue;
-
-    // Check if this div contains a bold tag (likely the label)
-    const boldTags = div.querySelectorAll("b");
-    if (boldTags.length === 0) continue;
-
-    // Look for an empty div (no children, no text) within this container
-    const directDivChildren = Array.from(div.children).filter((child) => child.tagName === "DIV");
-    for (let i = 0; i < directDivChildren.length; i++) {
-      const currentDiv = directDivChildren[i];
-
-      // Check if this is an empty div (no children and no text content)
-      if (currentDiv.children.length === 0 && currentDiv.textContent.trim() === "") {
-        // Look for text node immediately after this empty div
-        let nextNode = currentDiv.nextSibling;
-
-        // Keep looking for text nodes (skip comment nodes, etc.)
-        while (nextNode) {
-          if (nextNode.nodeType === Node.TEXT_NODE) {
-            const text = nextNode.textContent.trim();
-            if (text.length > 20) {
-              // Found substantial text content
-              return text;
-            }
-          } else if (nextNode.nodeType === Node.ELEMENT_NODE) {
-            // If we hit another element, try to extract its text
-            const text = nextNode.textContent.trim();
-            if (text.length > 20) {
-              return text;
-            }
-            break; // Stop if we hit a complex element
-          }
-          nextNode = nextNode.nextSibling;
-        }
-      }
-    }
-  }
-
-  return null;
+function createPanelHeaderHTML() {
+  return `
+    <div class="scx-flex-spaced scx-margin-bottom-6">
+      <div class="scx-panel-title">${t("executiveHelper")}</div>
+      <div class="scx-executive-actions">
+        <button class="scx-copy-btn" data-copy-action="executive" data-tooltip="${t("copyText")}" type="button">
+          ${COPY_BUTTON_SVG}
+        </button>
+      </div>
+    </div>
+  `;
 }
 
-/**
- * Create HTML for a skill element (for HR assessment section)
- */
+function createRefreshRowHTML() {
+  return `
+    <div class="scx-executive-refresh-row">
+      <button id="${REFRESH_BUTTON_ID}" class="scx-btn scx-btn-primary scx-font-8" type="button">
+        ${t("executiveRefresh")}
+      </button>
+    </div>
+  `;
+}
+
 function createSkillElementHTML(skillKey, skillValue) {
   const assessment = getSkillAssessment(skillValue);
 
@@ -299,9 +107,6 @@ function createSkillElementHTML(skillKey, skillValue) {
   `;
 }
 
-/**
- * Create HTML for a skills breakdown row showing organic vs training
- */
 function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
   const organicValue = Math.max(0, totalValue - (trainingValue || 0));
 
@@ -326,9 +131,6 @@ function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
   `;
 }
 
-/**
- * Create HTML for the skills breakdown section
- */
 function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
   let html = `
     <div class="scx-skill-breakdown-section">
@@ -336,7 +138,6 @@ function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
       <div class="scx-skill-breakdown-description">${t("skillsBreakdownDescription")}</div>
   `;
 
-  // Add rows for each skill
   for (const skillKey of SKILL_KEYS) {
     const totalValue = executiveSkills[skillKey] || 0;
     const trainingValue = trainingSkills ? trainingSkills[skillKey] || 0 : 0;
@@ -347,9 +148,6 @@ function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
   return html;
 }
 
-/**
- * Create HTML for the HR feedback section
- */
 function createFeedbackSectionHTML(feedbackText) {
   return `
     <div class="scx-hr-blurp-feedback-section">
@@ -359,13 +157,8 @@ function createFeedbackSectionHTML(feedbackText) {
   `;
 }
 
-/**
- * Create HTML for the HR skills section
- */
 function createSkillsSectionHTML(matchedEntry) {
-  if (!matchedEntry || !matchedEntry.skills) {
-    return "";
-  }
+  if (!matchedEntry?.skills) return "";
 
   let html = `
     <div class="scx-hr-blurp-skills-section">
@@ -383,13 +176,8 @@ function createSkillsSectionHTML(matchedEntry) {
   return html;
 }
 
-/**
- * Create HTML for the footer (average skill)
- */
 function createFooterHTML(matchedEntry) {
-  if (!matchedEntry || !matchedEntry.skills || !matchedEntry.skills.avgSkill) {
-    return "";
-  }
+  if (!matchedEntry?.skills?.avgSkill) return "";
 
   const avgAssessment = getSkillAssessment(matchedEntry.skills.avgSkill);
   const footerClass = `scx-hr-blurp-footer scx-hr-blurp-footer-${avgAssessment.class.replace("scx-hr-blurp-skill-", "")}`;
@@ -402,97 +190,109 @@ function createFooterHTML(matchedEntry) {
   `;
 }
 
-/**
- * Create HTML for navigation message when not on executive page
- */
 function createNavigationMessageHTML() {
   return `
     <div class="scx-executive-empty-state">
-      <div class="scx-executive-empty-message">
-        ${t("navigateToExecutives")}
-      </div>
+      <div class="scx-executive-empty-message">${t("navigateToExecutives")}</div>
     </div>
   `;
 }
 
-/**
- * Update the executive helper panel in the sidebar
- */
+function wireRefreshButton(content) {
+  const button = content.querySelector(`#${REFRESH_BUTTON_ID}`);
+  if (!button) return;
+
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    updateExecutivePanel();
+  });
+}
+
+function buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, matchedEntry) {
+  const lines = [t("executiveHelper")];
+
+  if (executiveSkills) {
+    lines.push(`${t("skillsBreakdown")}:`);
+    for (const skillKey of SKILL_KEYS) {
+      const total = executiveSkills[skillKey] || 0;
+      const training = trainingSkills ? trainingSkills[skillKey] || 0 : 0;
+      const organic = Math.max(0, total - training);
+      lines.push(
+        `${getSkillLabel(skillKey)} ${t("total")}: ${total} | ${t("organic")}: ${organic} | ${t("training")}: ${training}`,
+      );
+    }
+  }
+
+  if (feedbackText) {
+    lines.push(`${t("extractedFeedback")}: ${feedbackText}`);
+  }
+
+  if (matchedEntry?.skills?.avgSkill) {
+    lines.push(`${t("averageSkill")}: ${matchedEntry.skills.avgSkill.toFixed(2)}`);
+  }
+
+  if (!executiveSkills && !feedbackText) {
+    lines.push(t("navigateToExecutives"));
+  }
+
+  return lines.join("\n");
+}
+
 export function updateExecutivePanel() {
-  // Get the section content container
   const content = getSectionContent(SECTION_ID);
   if (!content) return;
 
-  // Check if we're on an executive page
-  if (!isExecutivePage()) {
-    content.innerHTML = createNavigationMessageHTML();
+  const pathname = window.location.pathname;
+  if (!isExecutivePath(pathname)) {
+    content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
+    wireRefreshButton(content);
+    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null));
     return;
   }
 
-  const executiveSkills = extractExecutiveSkills();
-  const trainingSkills = extractTrainingSkills();
-  const feedbackText = extractHRFeedback();
+  const pageKind = getExecutivePageKind(pathname);
+  const executiveSkills = readExecutiveSkills(document);
+  const trainingSkills =
+    pageKind === "role" || pageKind === "apprentice" ? readExecutiveTrainingSkills(document) : null;
+  const feedbackText = pageKind === "group" ? null : readExecutiveHRFeedback(document);
+  const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
 
-  // If we don't have any data, show empty state
   if (!executiveSkills && !feedbackText) {
+    content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
+    wireRefreshButton(content);
+    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null));
     return;
   }
 
-  // Try to find HR blurp match if we have feedback
-  let matchedEntry = null;
-  let hasHRFeedback = false;
-
-  if (feedbackText) {
-    matchedEntry = findBestMatchingEntry(feedbackText);
-    hasHRFeedback = matchedEntry !== null;
-  }
-
-  // Build HTML for the panel
-  let html = "";
-
-  // Always show skills breakdown if we have skills data
+  let html = createPanelHeaderHTML();
   if (executiveSkills) {
     html += createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills);
   }
 
-  // Show HR assessment only if we have feedback and matched entry
-  if (hasHRFeedback && feedbackText && matchedEntry) {
+  if (feedbackText) {
     html += createFeedbackSectionHTML(feedbackText);
-    html += createSkillsSectionHTML(matchedEntry);
-    html += createFooterHTML(matchedEntry);
-  } else if (feedbackText) {
-    // Show feedback even if no match found
-    html += createFeedbackSectionHTML(feedbackText);
+    if (matchedEntry) {
+      html += createSkillsSectionHTML(matchedEntry);
+      html += createFooterHTML(matchedEntry);
+    }
   }
+  html += createRefreshRowHTML();
 
-  // Update content
   content.innerHTML = html;
-}
-
-/**
- * Check if current page is an executive page
- */
-function isExecutivePath(pathname) {
-  if (typeof pathname !== "string") return false;
-  // Match specific roles (coo/cfo/cto/cmo), their apprentice pages,
-  // and group executives (g1, g2, g3, etc.).
-  return (
-    /\/headquarters\/executives\/(coo|cfo|cto|cmo)(-apprentice)?\/?$/.test(pathname) ||
-    /\/headquarters\/executives\/g\d+\/?$/.test(pathname)
+  wireRefreshButton(content);
+  wireCopyButton(content, () =>
+    buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, matchedEntry),
   );
 }
 
-function isExecutivePage() {
-  return isExecutivePath(window.location.pathname);
-}
-
-/**
- * Initialize executive helper
- */
 export function initExecutiveHelper() {
-  // Initialization is handled by the sidebar system via setSectionUpdateFn
+  // Initialization is handled by the sidebar system via setSectionUpdateFn.
 }
 
 export const _testUtils = {
   isExecutivePath,
+  getExecutivePageKind,
+  readExecutiveSkills,
+  readExecutiveTrainingSkills,
+  readExecutiveHRFeedback,
 };

@@ -3,6 +3,7 @@ export default {
   retailHelper: "Perakende Yardımcısı",
   financialsHelper: "Finansal Yardımcı",
   executiveHelper: "Yönetici Yardımcısı",
+  executiveRefresh: "Refresh",
   chatFilter: "Sohbet Filtresi",
   loading: "Yükleniyor",
   loadingPrices: "Fiyatlar yükleniyor...",
