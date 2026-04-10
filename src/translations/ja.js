@@ -3,6 +3,7 @@ export default {
   retailHelper: "小売アシスタント",
   financialsHelper: "財務アシスタント",
   executiveHelper: "エグゼクティブアシスタント",
+  executiveRefresh: "Refresh",
   chatFilter: "チャットフィルター",
   loading: "ロード中",
   loadingPrices: "価格をロード中...",

@@ -1925,6 +1925,18 @@ hr {
   color: #1565c0;
 }
 
+.scx-executive-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scx-executive-refresh-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Executive Helper Empty State */
 .scx-executive-empty-state {
   padding: 20px;

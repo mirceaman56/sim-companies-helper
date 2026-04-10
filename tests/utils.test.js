@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { parseLocaleNumber } from "../src/utils.js";
+import { copyToClipboard, parseLocaleNumber } from "../src/utils.js";
 
 describe("parseLocaleNumber", () => {
   it("uses dot decimal by default", () => {
@@ -34,5 +34,29 @@ describe("parseLocaleNumber", () => {
     expect(parseLocaleNumber("1,234")).toBe(1.234);
     expect(parseLocaleNumber("1.234")).toBe(1234);
     expect(parseLocaleNumber("8.44")).toBe(8.44);
+  });
+});
+
+describe("copyToClipboard", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("restores svg content after temporary copied feedback", async () => {
+    vi.useFakeTimers();
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      configurable: true,
+    });
+
+    const button = document.createElement("button");
+    button.innerHTML = "<svg><path d='M0 0'></path></svg>";
+
+    await copyToClipboard("hello", button);
+    expect(button.textContent).toBe("✓ Copied!");
+
+    vi.advanceTimersByTime(1500);
+    expect(button.querySelector("svg")).not.toBeNull();
   });
 });

@@ -3,6 +3,7 @@ export default {
   retailHelper: "Pomocník prodeje",
   financialsHelper: "Pomocník pro finance",
   executiveHelper: "Pomocník pro vedení",
+  executiveRefresh: "Refresh",
   chatFilter: "Filtr chatu",
   loading: "Načítání",
   loadingPrices: "Načítání cen...",

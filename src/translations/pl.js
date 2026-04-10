@@ -3,6 +3,7 @@ export default {
   retailHelper: "Asystent Sprzedaży",
   financialsHelper: "Asystent Finansów",
   executiveHelper: "Asystent Kierownictwa",
+  executiveRefresh: "Refresh",
   chatFilter: "Filtr Czatu",
   loading: "Ładowanie",
   loadingPrices: "Ładowanie cen...",

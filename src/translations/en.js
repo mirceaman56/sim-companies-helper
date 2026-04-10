@@ -3,6 +3,7 @@ export default {
   retailHelper: "Retail Helper",
   financialsHelper: "Financials Helper",
   executiveHelper: "Executive Helper",
+  executiveRefresh: "Refresh",
   chatFilter: "Chat Filter",
   loading: "Loading",
   loadingPrices: "Loading prices...",

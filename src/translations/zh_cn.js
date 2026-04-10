@@ -3,6 +3,7 @@ export default {
   retailHelper: "零售助手",
   financialsHelper: "财务助手",
   executiveHelper: "执行官助手",
+  executiveRefresh: "Refresh",
   chatFilter: "聊天过滤",
   loading: "加载中",
   loadingPrices: "加载价格...",

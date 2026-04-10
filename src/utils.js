@@ -208,10 +208,17 @@ export async function copyToClipboard(text, feedbackEl) {
   try {
     await navigator.clipboard.writeText(text);
     if (feedbackEl) {
-      const orig = feedbackEl.textContent;
+      const hadChildElements = feedbackEl.childElementCount > 0;
+      const originalHtml = feedbackEl.innerHTML;
+      const originalText = feedbackEl.textContent;
+
       feedbackEl.textContent = "✓ Copied!";
       setTimeout(() => {
-        feedbackEl.textContent = orig;
+        if (hadChildElements) {
+          feedbackEl.innerHTML = originalHtml;
+          return;
+        }
+        feedbackEl.textContent = originalText;
       }, 1500);
     }
   } catch (err) {
