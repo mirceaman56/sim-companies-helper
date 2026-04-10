@@ -192,6 +192,7 @@ export default {
   xpTimeToLevel: "レベルアップまでの時間",
   xpOperating: "稼働中",
   xpProspecting: "探査中",
+  xpCacheRefreshHint: "XP cache refreshes every 6 hours. Click refresh to update now.",
   xpIdle: "待機中",
   financePeriodLabel: "Period",
   financePeriodCurrent: "Current",

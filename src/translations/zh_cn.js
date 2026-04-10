@@ -192,6 +192,7 @@ export default {
   xpTimeToLevel: "升级所需时间",
   xpOperating: "运营中",
   xpProspecting: "探矿中",
+  xpCacheRefreshHint: "XP cache refreshes every 6 hours. Click refresh to update now.",
   xpIdle: "空闲",
   financePeriodLabel: "Period",
   financePeriodCurrent: "Current",

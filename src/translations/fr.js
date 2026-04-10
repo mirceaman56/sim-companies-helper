@@ -194,6 +194,7 @@ export default {
   xpTimeToLevel: "Temps avant le niveau",
   xpOperating: "En activité",
   xpProspecting: "Prospection",
+  xpCacheRefreshHint: "XP cache refreshes every 6 hours. Click refresh to update now.",
   xpIdle: "Inactif",
   financePeriodLabel: "Period",
   financePeriodCurrent: "Current",

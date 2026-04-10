@@ -56,14 +56,52 @@ describe("isRecreationBuilding", () => {
 
 describe("isProspectingSlot", () => {
   it.each([
-    { kind: "Q", size: 1, expected: true },
-    { kind: "M", size: 1, expected: true },
-    { kind: "Q", size: 7, expected: false },
-    { kind: "M", size: 5, expected: false },
-    { kind: "G", size: 1, expected: false },
-    { kind: "S", size: 1, expected: false },
-  ])("kind=$kind size=$size → $expected", ({ kind, size, expected }) => {
-    expect(isProspectingSlot(makeBuilding({ kind, size }))).toBe(expected);
+    { kind: "Q", busy: { id: 1, category: "b" }, expected: true },
+    { kind: "M", busy: { id: 1, category: "b" }, expected: true },
+    { kind: "O", busy: { id: 1, category: "b" }, expected: true },
+    { kind: "o", busy: { id: 1, category: "b" }, expected: true },
+    { kind: "Q", busy: { id: 1, category: "s" }, expected: false },
+    { kind: "M", busy: undefined, expected: false },
+    { kind: "G", busy: { id: 1, category: "b" }, expected: false },
+    { kind: "S", busy: { id: 1, category: "b" }, expected: false },
+  ])("kind=$kind busy=$busy → $expected", ({ kind, busy, expected }) => {
+    expect(isProspectingSlot(makeBuilding({ kind, busy }))).toBe(expected);
+  });
+
+  it("returns true for mine under construction", () => {
+    expect(
+      isProspectingSlot(
+        makeBuilding({
+          kind: "M",
+          size: 2,
+          busy: { id: 1, category: "b", duration: 345600000 },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns true for mine upgrade (expanding)", () => {
+    expect(
+      isProspectingSlot(
+        makeBuilding({
+          kind: "M",
+          size: 2,
+          busy: { id: 1, category: "b", expanding: true, duration: 345600000 },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns false for quarry level 1 with no construction busy state", () => {
+    expect(
+      isProspectingSlot(
+        makeBuilding({
+          kind: "Q",
+          size: 1,
+          busy: undefined,
+        }),
+      ),
+    ).toBe(false);
   });
 });
 
@@ -145,7 +183,7 @@ describe("buildingXpPerHour", () => {
     ).toBe(12);
   });
 
-  it("prospecting slot (quarry level 1) → 36.5", () => {
+  it("quarry level 1 with no construction busy state → 12", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
@@ -154,19 +192,46 @@ describe("buildingXpPerHour", () => {
           category: "production",
         }),
       ),
-    ).toBe(36.5);
+    ).toBe(12);
   });
 
-  it("quarry level 7 → 12 (not a prospecting slot)", () => {
+  it("quarry under construction → 36.5", () => {
     expect(
       buildingXpPerHour(
         makeBuilding({
           kind: "Q",
           size: 7,
           category: "production",
+          busy: { id: 1, category: "b", duration: 345600000 },
         }),
       ),
-    ).toBe(12);
+    ).toBe(36.5);
+  });
+
+  it("mine under construction → 36.5", () => {
+    expect(
+      buildingXpPerHour(
+        makeBuilding({
+          kind: "M",
+          size: 2,
+          category: "production",
+          busy: { id: 1, category: "b", duration: 345600000 },
+        }),
+      ),
+    ).toBe(36.5);
+  });
+
+  it("oil well under construction → 36.5", () => {
+    expect(
+      buildingXpPerHour(
+        makeBuilding({
+          kind: "O",
+          size: 1,
+          category: "production",
+          busy: { id: 1, category: "b", duration: 345600000 },
+        }),
+      ),
+    ).toBe(36.5);
   });
 });
 
@@ -185,12 +250,13 @@ describe("calculateTotalXpPerHour", () => {
       // 2 grocery stores → 2 × 12 = 24
       makeBuilding({ id: 1 }),
       makeBuilding({ id: 2 }),
-      // 1 prospecting quarry → 36.5
+      // 1 prospecting quarry under construction → 36.5
       makeBuilding({
         id: 3,
         kind: "Q",
-        size: 1,
+        size: 5,
         category: "production",
+        busy: { id: 1, category: "b" },
       }),
       // 1 recreation park level 3 → 120
       makeBuilding({
@@ -206,6 +272,17 @@ describe("calculateTotalXpPerHour", () => {
     expect(result.breakdown.operatingCount).toBe(2);
     expect(result.breakdown.prospectingCount).toBe(1);
     expect(result.breakdown.recreationXp).toBe(120);
+  });
+
+  it("counts mine under construction as prospecting", () => {
+    const result = calculateTotalXpPerHour([
+      makeBuilding({ id: 1, kind: "M", size: 2, busy: { id: 1, category: "b" } }),
+      makeBuilding({ id: 2 }),
+    ]);
+
+    expect(result.totalXpPerHour).toBe(36.5 + 12);
+    expect(result.breakdown.operatingCount).toBe(1);
+    expect(result.breakdown.prospectingCount).toBe(1);
   });
 });
 

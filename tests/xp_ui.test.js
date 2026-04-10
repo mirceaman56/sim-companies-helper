@@ -20,13 +20,14 @@ global.MutationObserver = vi.fn(() => ({
 }));
 
 import { STATE } from "../src/state.js";
+import { loadBuildings } from "../src/buildings.js";
 import { _testUtils } from "../src/xp_ui.js";
 
-const { updateWidget, CONTAINER_ID } = _testUtils;
+const { updateWidget, refreshBuildingsCache, CONTAINER_ID } = _testUtils;
 
 function setupNavbar() {
   document.body.innerHTML = `
-    <div class="css-82a6rk">
+    <div data-testid="levels-host">
       <a href="/encyclopedia/0/levels/">
         <div><span>Lv. </span><span>20 (82%)</span></div>
       </a>
@@ -38,8 +39,8 @@ function injectContainer() {
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
   container.className = "scx-xp-widget";
-  const parent = document.querySelector(".css-82a6rk");
-  parent.parentElement.insertBefore(container, parent.nextSibling);
+  const host = document.querySelector('[data-testid="levels-host"]');
+  host.appendChild(container);
 }
 
 function setStateLoaded(buildings = [], level = 20, experience = 83599, experienceToNextLevel = 110000) {
@@ -51,6 +52,7 @@ function setStateLoaded(buildings = [], level = 20, experience = 83599, experien
 }
 
 beforeEach(() => {
+  vi.clearAllMocks();
   document.body.innerHTML = "";
   STATE.buildings.loaded = false;
   STATE.buildings.loading = false;
@@ -136,6 +138,21 @@ describe("XP UI Widget", () => {
     updateWidget();
     const toggle = document.querySelector(".scx-xp-toggle");
     expect(toggle).not.toBeNull();
+  });
+
+  it("renders refresh button and cache tooltip", () => {
+    setupNavbar();
+    injectContainer();
+    setStateLoaded([], 20, 83599, 110000);
+    updateWidget();
+    const refreshBtn = document.querySelector(".scx-xp-refresh");
+    expect(refreshBtn).not.toBeNull();
+    expect(refreshBtn.getAttribute("title")).toBe("xpCacheRefreshHint");
+  });
+
+  it("forces buildings refresh when requested", async () => {
+    await refreshBuildingsCache();
+    expect(loadBuildings).toHaveBeenCalledWith({ force: true });
   });
 
   it("does nothing when container is missing", () => {

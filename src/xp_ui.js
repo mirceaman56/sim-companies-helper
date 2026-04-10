@@ -5,12 +5,15 @@ import { t } from "./i18n.js";
 import { escapeHtml } from "./utils.js";
 import { calculateTotalXpPerHour, hoursToNextLevel, formatHours } from "./xp_calc.js";
 import { storage } from "./data/storage.js";
+import { loadBuildings } from "./buildings.js";
+import { readXpNavbarContext } from "./page/xp_page.js";
 
 const CONTAINER_ID = "scx-xp-widget";
 const TOGGLE_KEY = "scx-xp-widget-visible";
 const TOGGLE_DOMAIN = "xp-widget-visible";
 const TOGGLE_VERSION = 1;
 let _isVisible = true;
+let _isRefreshing = false;
 
 /**
  * Initialize the XP widget. The observer ONLY handles injection and removal —
@@ -20,9 +23,9 @@ let _isVisible = true;
 export function initXpWidget() {
   void hydrateVisibilityPreference();
   const observer = new MutationObserver(() => {
-    const levelAnchor = findLevelAnchor();
-    if (levelAnchor) {
-      injectIfNeeded(levelAnchor);
+    const navContext = readXpNavbarContext(document);
+    if (navContext) {
+      injectIfNeeded(navContext);
     } else {
       removeIfPresent();
     }
@@ -30,9 +33,9 @@ export function initXpWidget() {
   observer.observe(document.body, { childList: true, subtree: true });
 
   // Also try immediately
-  const levelAnchor = findLevelAnchor();
-  if (levelAnchor) {
-    injectIfNeeded(levelAnchor);
+  const navContext = readXpNavbarContext(document);
+  if (navContext) {
+    injectIfNeeded(navContext);
   }
 }
 
@@ -75,7 +78,8 @@ export function updateXpWidget() {
  * @returns {Element|null}
  */
 function findLevelAnchor() {
-  return document.querySelector('a[href*="/encyclopedia/"][href*="/levels/"]');
+  const navContext = readXpNavbarContext(document);
+  return navContext?.levelAnchor || null;
 }
 
 function isVisible() {
@@ -94,23 +98,29 @@ function setVisible(val) {
   });
 }
 
-function injectIfNeeded(levelAnchor) {
+function injectIfNeeded(navContext) {
   // Already injected — observer must not touch the DOM here to avoid loops.
   if (document.getElementById(CONTAINER_ID)) return;
+
+  const levelAnchor = navContext?.levelAnchor;
+  const hostEl = navContext?.hostEl;
+  if (!levelAnchor || !hostEl) return;
 
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
   container.className = "scx-xp-widget";
 
-  // Inject inside the level container div so the dropdown sits below it.
-  const levelDiv = levelAnchor.closest("div.css-82a6rk") || levelAnchor.parentElement;
-  if (!levelDiv) return;
-
-  // Make the level container relative so our absolute dropdown is anchored to it.
-  levelDiv.style.position = "relative";
-  levelDiv.appendChild(container);
+  // Inject inside the level host so the dropdown is anchored beneath it.
+  hostEl.classList.add("scx-xp-host");
+  hostEl.appendChild(container);
 
   container.addEventListener("click", (e) => {
+    if (e.target.closest(".scx-xp-refresh")) {
+      e.preventDefault();
+      void refreshBuildingsCache();
+      return;
+    }
+
     if (e.target.closest(".scx-xp-toggle")) {
       const panel = container.querySelector(".scx-xp-details");
       if (panel) {
@@ -129,9 +139,39 @@ function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
 }
 
+function renderControls({ toggleLabel, toggleTitle, loading = false }) {
+  const refreshDisabled = _isRefreshing || STATE.buildings.loading;
+  const refreshClass = _isRefreshing ? " scx-xp-refresh--loading" : "";
+  const tooltip = t("xpCacheRefreshHint");
+  return `
+    <div class="scx-xp-controls" title="${escapeHtml(tooltip)}">
+      <button class="scx-xp-toggle ${loading ? "scx-xp-toggle--loading" : ""}" ${loading ? "disabled" : ""} title="${escapeHtml(toggleTitle)}">${escapeHtml(toggleLabel)}</button>
+      <button class="scx-xp-refresh${refreshClass}" ${refreshDisabled ? "disabled" : ""} title="${escapeHtml(tooltip)}" aria-label="${escapeHtml(t("executiveRefresh"))}">↻</button>
+    </div>
+  `;
+}
+
 function renderPlaceholder(container) {
   // Compact placeholder — no layout impact while data is loading.
-  container.innerHTML = `<button class="scx-xp-toggle scx-xp-toggle--loading" disabled>⏱ …</button>`;
+  container.innerHTML = renderControls({
+    toggleLabel: "⏱ ...",
+    toggleTitle: t("xpCacheRefreshHint"),
+    loading: true,
+  });
+}
+
+async function refreshBuildingsCache() {
+  if (_isRefreshing) return;
+
+  _isRefreshing = true;
+  updateWidget();
+
+  try {
+    await loadBuildings({ force: true });
+  } finally {
+    _isRefreshing = false;
+    updateWidget();
+  }
 }
 
 function updateWidget() {
@@ -143,7 +183,11 @@ function updateWidget() {
 
   // Error state — API call failed
   if (STATE.buildings.error) {
-    container.innerHTML = `<button class="scx-xp-toggle scx-xp-toggle--loading" disabled title="${escapeHtml(STATE.buildings.error)}">⏱ !</button>`;
+    container.innerHTML = renderControls({
+      toggleLabel: "⏱ !",
+      toggleTitle: `${STATE.buildings.error} - ${t("xpCacheRefreshHint")}`,
+      loading: true,
+    });
     return;
   }
 
@@ -159,9 +203,10 @@ function updateWidget() {
   const visible = isVisible();
 
   const xpRemaining = experienceToNextLevel - experience;
+  const toggleTitle = `${t("xpEstimate")} - ${t("xpCacheRefreshHint")}`;
 
   container.innerHTML = `
-    <button class="scx-xp-toggle" title="${escapeHtml(t("xpEstimate"))}">⏱ ${escapeHtml(timeStr)}</button>
+    ${renderControls({ toggleLabel: `⏱ ${timeStr}`, toggleTitle })}
     <div class="scx-xp-details ${visible ? "" : "scx-hidden"}">
       <div class="scx-xp-row">
         <span class="scx-xp-label">${escapeHtml(t("xpPerHour"))}</span>
@@ -191,6 +236,7 @@ export const _testUtils = {
   findLevelAnchor,
   isVisible,
   updateWidget,
+  refreshBuildingsCache,
   CONTAINER_ID,
   TOGGLE_KEY,
 };
