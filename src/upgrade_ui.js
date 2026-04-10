@@ -1,42 +1,48 @@
 import { t } from "./i18n.js";
-import { formatMoney, parseLocaleNumber, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
+import { formatMoney, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
 import { storage } from "./data/storage.js";
+import {
+  areUpgradePricesPopulated,
+  findUpgradeModal,
+  getUpgradeInjectionTarget,
+  parseUpgradeResourceRows,
+} from "./page/upgrade_page.js";
 
 const CONTAINER_ID = "scx-upgrade-buy-msg";
+const MESSAGE_ID = "scx-upgrade-msg-text";
+const DISCOUNT_SELECT_ID = "scx-upgrade-discount-select";
+const MULTIPLIER_SELECT_ID = "scx-upgrade-multiplier-select";
 const STORAGE_KEY = "scx-upgrade-discount";
 const STORAGE_KEY_MULTIPLIER = "scx-upgrade-multiplier";
 const STORAGE_DOMAIN_DISCOUNT = "upgrade-discount";
 const STORAGE_DOMAIN_MULTIPLIER = "upgrade-multiplier";
 const STORAGE_VERSION = 1;
+const MAX_MULTIPLIER = 15;
 
 let discountPct = 0;
 let multiplier = 1;
-
-const RESOURCES_BY_ROW = [
-  [101, 0],
-  [102, 1],
-  [108, 1],
-  [111, 0],
-];
 
 export function initUpgradeBuyMessage() {
   void hydrateSettings();
 
   const observer = new MutationObserver(() => {
-    const modal = getUpgradeModal();
-    if (modal) {
-      if (allPricesPopulated(modal)) {
-        injectIfNeeded();
-      }
-    } else {
+    const modal = findUpgradeModal(document);
+    if (!modal) {
       removeIfPresent();
+      return;
+    }
+
+    if (areUpgradePricesPopulated(modal)) {
+      injectIfNeeded();
     }
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 
-  const modal = getUpgradeModal();
-  if (modal && allPricesPopulated(modal)) injectIfNeeded();
+  const modal = findUpgradeModal(document);
+  if (modal && areUpgradePricesPopulated(modal)) {
+    injectIfNeeded();
+  }
 }
 
 async function hydrateSettings() {
@@ -57,6 +63,7 @@ async function hydrateSettings() {
       };
     },
   });
+
   if (Number.isFinite(savedDiscount) && savedDiscount >= 0 && savedDiscount <= 5) {
     discountPct = savedDiscount;
   }
@@ -78,116 +85,14 @@ async function hydrateSettings() {
       };
     },
   });
-  if (Number.isFinite(savedMultiplier) && savedMultiplier >= 1 && savedMultiplier <= 15) {
+
+  if (Number.isFinite(savedMultiplier) && savedMultiplier >= 1 && savedMultiplier <= MAX_MULTIPLIER) {
     multiplier = savedMultiplier;
   }
 }
 
-function getUpgradeModal() {
-  const modals = document.querySelectorAll(".modal-dialog");
-  for (const modal of modals) {
-    const rows = modal.querySelectorAll("tbody tr");
-    let hasExchangeRows = false;
-    for (const row of rows) {
-      const cells = row.querySelectorAll("td");
-      if (cells.length >= 4) {
-        const lastCell = cells[cells.length - 1];
-        if (lastCell.textContent.includes("@") && lastCell.textContent.includes("$")) {
-          hasExchangeRows = true;
-          break;
-        }
-      }
-    }
-    if (hasExchangeRows) return modal;
-  }
-  return null;
-}
-
-function allPricesPopulated(modal) {
-  let hasSummaryRow = false;
-  const rows = modal.querySelectorAll("tbody tr");
-  for (const row of rows) {
-    const cells = row.querySelectorAll("td");
-    const hasColspan2 = Array.from(cells).some((td) => td.getAttribute("colspan") === "2");
-    if (!hasColspan2) continue;
-    const lastCell = cells[cells.length - 1];
-    const bold = lastCell.querySelector("b");
-    if (bold && bold.textContent.trim().startsWith("$")) {
-      hasSummaryRow = true;
-      break;
-    }
-  }
-  if (!hasSummaryRow) return false;
-
-  let resourceRowCount = 0;
-  for (const row of rows) {
-    const cells = row.querySelectorAll("td");
-    if (cells.length < 4) continue;
-    if (!cells[0].querySelector("img")) continue;
-
-    resourceRowCount++;
-    const exchangeText = cells[cells.length - 1].textContent.trim();
-    if (exchangeText === "") return false;
-    const isNumericOnly = /^[\d,]+$/.test(exchangeText);
-    const isPriced = exchangeText.includes("@") && exchangeText.includes("$");
-    if (!isNumericOnly && !isPriced) return false;
-  }
-
-  return resourceRowCount === RESOURCES_BY_ROW.length;
-}
-
 function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
-}
-
-function parseResourceRows(modal) {
-  const resources = [];
-  const rows = modal.querySelectorAll("tbody tr");
-  let resourceIndex = 0;
-
-  for (const row of rows) {
-    const cells = row.querySelectorAll("td");
-    if (cells.length < 4) continue;
-
-    const img = cells[0].querySelector("img");
-    if (!img) continue;
-
-    const [recipeId, decimals] = RESOURCES_BY_ROW[resourceIndex] || [null, 0];
-    resourceIndex++;
-
-    if (recipeId === null) continue;
-
-    const requiredCell = cells[1];
-    const boldEl = requiredCell.querySelector("b");
-    if (!boldEl) continue;
-    const boldText = boldEl.textContent.trim();
-    const requiredMatch = boldText.match(/x([\d.,]+)/);
-    if (!requiredMatch) continue;
-    const requiredQty = parseLocaleNumber(requiredMatch[1]);
-    if (!Number.isFinite(requiredQty) || requiredQty <= 0) continue;
-
-    const warehouseText = cells[2]?.textContent?.trim() || "0";
-    const warehouse = parseLocaleNumber(warehouseText);
-    if (!Number.isFinite(warehouse)) continue;
-
-    const exchangeCell = cells[cells.length - 1];
-    const exchangeText = exchangeCell.textContent.trim();
-    const match = exchangeText.match(/([\d.,]+)\s*@\s*\$([\d.,]+)/);
-    if (!match) continue;
-
-    const price = parseLocaleNumber(match[2]);
-    if (!Number.isFinite(price) || price <= 0) continue;
-
-    resources.push({
-      recipeId,
-      requiredQty: Math.round(requiredQty),
-      warehouse: Math.round(warehouse),
-      price,
-      decimals,
-    });
-  }
-
-  return resources;
 }
 
 function allItemsNeeded(resources, mult) {
@@ -212,125 +117,96 @@ function buildBuyMessage(resources, mult, discount) {
       const recipeTag = `:re-${recipeId}:`;
       return `${neededToBuy} ${recipeTag} @ ${formatted}`;
     })
-    .filter((p) => p !== null);
+    .filter((part) => part !== null);
 
   return `Buying
 ${parts.join("\n")}`;
 }
 
+function createDiscountOptions() {
+  let options = "";
+  for (let value = 0; value <= 5; value += 0.5) {
+    const label = value === 0 ? "0%" : `-${value}%`;
+    const selected = value === discountPct ? " selected" : "";
+    options += `<option value="${value}"${selected}>${label}</option>`;
+  }
+  return options;
+}
+
+function createMultiplierOptions() {
+  return Array.from({ length: MAX_MULTIPLIER }, (_, i) => {
+    const value = i + 1;
+    const selected = value === multiplier ? " selected" : "";
+    return `<option value="${value}"${selected}>${value}x</option>`;
+  }).join("");
+}
+
 function injectIfNeeded() {
   if (document.getElementById(CONTAINER_ID)) return;
 
-  const modal = getUpgradeModal();
+  const modal = findUpgradeModal(document);
   if (!modal) return;
 
-  const resources = parseResourceRows(modal);
+  const resources = parseUpgradeResourceRows(modal);
   if (resources.length === 0) return;
 
-  const modalBody = modal.querySelector(".modal-body");
-  if (!modalBody) return;
-
-  const container = document.createElement("div");
-  container.id = CONTAINER_ID;
-  container.style.cssText = `
-    margin: 12px 0 8px 0;
-    padding: 10px 12px;
-    background: var(--scx-bg-subtle, #f5f5f5);
-    border: var(--scx-border-light, 1px solid #e0e0e0);
-    border-radius: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 12px;
-  `;
-
-  let discountOptions = "";
-  for (let v = 0; v <= 5; v += 0.5) {
-    const label = v === 0 ? "0%" : `-${v}%`;
-    const selected = v === discountPct ? " selected" : "";
-    discountOptions += `<option value="${v}"${selected}>${label}</option>`;
-  }
+  const injectionTarget = getUpgradeInjectionTarget(modal);
+  if (!injectionTarget?.parentEl) return;
 
   const message = buildBuyMessage(resources, multiplier, discountPct);
   const showMultiplier = allItemsNeeded(resources, multiplier);
 
-  const selectStyle = `
-    background: var(--scx-bg-neutral, #f8f8f8);
-    border: var(--scx-border-medium-light, 1px solid #bebebe);
-    border-radius: 6px;
-    padding: 3px 6px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    color: var(--scx-text-primary, #000);
-  `;
-
-  let leftControls = "";
-
-  if (showMultiplier) {
-    leftControls += `
-      <div style="display:flex; align-items:center; gap:4px;">
-        <label style="font-size:11px; color:var(--scx-text-muted, #999);">Multiplier:</label>
-        <select id="scx-upgrade-multiplier-select" style="${selectStyle}">
-          ${Array.from({ length: 15 }, (_, i) => {
-            const v = i + 1;
-            const selected = v === multiplier ? " selected" : "";
-            return `<option value="${v}"${selected}>${v}x</option>`;
-          }).join("")}
-        </select>
-      </div>`;
-  }
-
-  leftControls += `
-      <div style="display:flex; align-items:center; gap:4px;">
-        <label style="font-size:11px; color:var(--scx-text-muted, #999);">${t("upgradeDiscount")}</label>
-        <select id="scx-upgrade-discount-select" style="${selectStyle}">${discountOptions}</select>
-      </div>`;
+  const container = document.createElement("div");
+  container.id = CONTAINER_ID;
+  container.className = "scx-upgrade-buy-panel";
 
   container.innerHTML = `
-    <div style="display:flex; align-items:stretch; gap:8px;">
-      <div style="display:flex; flex-direction:column; justify-content:center; gap:6px; flex-shrink:0;">
-        ${leftControls}
+    <div class="scx-upgrade-row">
+      <div class="scx-upgrade-controls">
+        ${
+          showMultiplier
+            ? `
+        <div class="scx-upgrade-control-group">
+          <label class="scx-upgrade-control-label">Multiplier:</label>
+          <select id="${MULTIPLIER_SELECT_ID}" class="scx-upgrade-select">
+            ${createMultiplierOptions()}
+          </select>
+        </div>`
+            : ""
+        }
+        <div class="scx-upgrade-control-group">
+          <label class="scx-upgrade-control-label">${t("upgradeDiscount")}</label>
+          <select id="${DISCOUNT_SELECT_ID}" class="scx-upgrade-select">
+            ${createDiscountOptions()}
+          </select>
+        </div>
       </div>
-      <div id="scx-upgrade-msg-text" style="
-        flex: 1;
-        background: var(--scx-bg-primary, #fff);
-        border: var(--scx-border-light, 1px solid #e0e0e0);
-        border-radius: 6px;
-        padding: 8px 10px;
-        font-size: 12px;
-        line-height: 1.5;
-        color: var(--scx-text-primary, #000);
-        word-break: break-word;
-        white-space: pre-wrap;
-        height: 106px;
-        overflow-y: auto;
-      ">${message}</div>
-      <button class="scx-copy-btn" id="scx-upgrade-copy-btn" data-tooltip="${t("upgradeCopyTooltip")}" style="
-        align-self: center;
-        min-width: 28px;
-        min-height: 28px;
-        width: 28px;
-        height: 28px;
-      ">${COPY_BUTTON_SVG}</button>
+      <div id="${MESSAGE_ID}" class="scx-upgrade-message">${message}</div>
+      <button
+        class="scx-copy-btn scx-upgrade-copy-btn"
+        id="scx-upgrade-copy-btn"
+        data-tooltip="${t("upgradeCopyTooltip")}"
+      >${COPY_BUTTON_SVG}</button>
     </div>
   `;
 
-  const textLeftDiv = modalBody.querySelector(".text-left");
-  const anchorTarget = textLeftDiv || modalBody;
-
-  const table = anchorTarget.querySelector("table");
-  if (table && table.nextSibling) {
-    anchorTarget.insertBefore(container, table.nextSibling);
+  const { parentEl, afterNode } = injectionTarget;
+  if (afterNode && afterNode.nextSibling) {
+    parentEl.insertBefore(container, afterNode.nextSibling);
   } else {
-    anchorTarget.appendChild(container);
+    parentEl.appendChild(container);
   }
 
   wireCopyButton(container, () => {
-    const msgEl = document.getElementById("scx-upgrade-msg-text");
+    const msgEl = document.getElementById(MESSAGE_ID);
     return msgEl ? msgEl.textContent : "";
   });
 
-  document.getElementById("scx-upgrade-discount-select").addEventListener("change", (e) => {
-    discountPct = Number(e.target.value);
+  document.getElementById(DISCOUNT_SELECT_ID)?.addEventListener("change", (e) => {
+    const nextValue = Number(e.target && "value" in e.target ? e.target.value : NaN);
+    if (!Number.isFinite(nextValue)) return;
+
+    discountPct = nextValue;
     void storage.set({
       domain: STORAGE_DOMAIN_DISCOUNT,
       version: STORAGE_VERSION,
@@ -342,31 +218,31 @@ function injectIfNeeded() {
     updateBuyMessage();
   });
 
-  const multiplierSelect = document.getElementById("scx-upgrade-multiplier-select");
-  if (multiplierSelect) {
-    multiplierSelect.addEventListener("change", (e) => {
-      multiplier = Number(e.target.value);
-      void storage.set({
-        domain: STORAGE_DOMAIN_MULTIPLIER,
-        version: STORAGE_VERSION,
-        scope: "global",
-        backend: "local",
-        refreshAuth: false,
-        data: multiplier,
-      });
-      updateBuyMessage();
+  document.getElementById(MULTIPLIER_SELECT_ID)?.addEventListener("change", (e) => {
+    const nextValue = Number(e.target && "value" in e.target ? e.target.value : NaN);
+    if (!Number.isFinite(nextValue)) return;
+
+    multiplier = nextValue;
+    void storage.set({
+      domain: STORAGE_DOMAIN_MULTIPLIER,
+      version: STORAGE_VERSION,
+      scope: "global",
+      backend: "local",
+      refreshAuth: false,
+      data: multiplier,
     });
-  }
+    updateBuyMessage();
+  });
 }
 
 function updateBuyMessage() {
-  const modal = getUpgradeModal();
+  const modal = findUpgradeModal(document);
   if (!modal) return;
 
-  const resources = parseResourceRows(modal);
+  const resources = parseUpgradeResourceRows(modal);
   if (resources.length === 0) return;
 
-  const msgEl = document.getElementById("scx-upgrade-msg-text");
+  const msgEl = document.getElementById(MESSAGE_ID);
   if (msgEl) {
     msgEl.textContent = buildBuyMessage(resources, multiplier, discountPct);
   }
