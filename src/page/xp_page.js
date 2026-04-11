@@ -1,3 +1,5 @@
+import { findClosestWithin } from "./page_utils.js";
+
 const PRIMARY_LEVEL_LINK_SELECTOR = 'a[href*="/encyclopedia/"][href*="/levels/"]';
 const FALLBACK_LEVEL_LINK_SELECTOR = 'a[href*="/levels/"]';
 
@@ -17,7 +19,7 @@ export function findXpHostElement(levelAnchor) {
     return directParent;
   }
 
-  return levelAnchor.closest("div") || null;
+  return findClosestWithin(levelAnchor, "div") || null;
 }
 
 export function readXpNavbarContext(root = document) {

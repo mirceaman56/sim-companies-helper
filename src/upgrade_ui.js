@@ -1,6 +1,7 @@
 import { t } from "./i18n.js";
 import { formatMoney, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
 import { storage } from "./data/storage.js";
+import { observeDocumentBody } from "./page/page_utils.js";
 import {
   areUpgradePricesPopulated,
   findUpgradeModal,
@@ -25,7 +26,7 @@ let multiplier = 1;
 export function initUpgradeBuyMessage() {
   void hydrateSettings();
 
-  const observer = new MutationObserver(() => {
+  observeDocumentBody(() => {
     const modal = findUpgradeModal(document);
     if (!modal) {
       removeIfPresent();
@@ -36,8 +37,6 @@ export function initUpgradeBuyMessage() {
       injectIfNeeded();
     }
   });
-
-  observer.observe(document.body, { childList: true, subtree: true });
 
   const modal = findUpgradeModal(document);
   if (modal && areUpgradePricesPopulated(modal)) {

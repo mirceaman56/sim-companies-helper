@@ -1,4 +1,5 @@
 import { parseLocaleNumber } from "../utils.js";
+import { hasAllSelectors } from "./page_utils.js";
 
 const PRICE_INPUT_SELECTOR = 'input[name="price"]';
 const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
@@ -15,7 +16,7 @@ export function findContractAmountInput(root = document) {
 }
 
 export function hasContractPageElements(root = document) {
-  return Boolean(findContractPriceInput(root) && root?.querySelector?.(MARKET_LINK_SELECTOR));
+  return hasAllSelectors(root, [PRICE_INPUT_SELECTOR, MARKET_LINK_SELECTOR]);
 }
 
 export function parseContractPrice(raw) {

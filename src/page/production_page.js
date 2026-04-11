@@ -1,5 +1,6 @@
 import { parseLocaleNumber, extractProductIdFromRow, getInfoColumn } from "../utils.js";
 import { extractDollarValue } from "../production_calc.js";
+import { findAncestorWithin, waitForStructuralValue } from "./page_utils.js";
 
 const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
 const RESOURCE_LINK_SELECTOR = 'a[href*="/encyclopedia/"][href*="/resource/"]';
@@ -37,18 +38,14 @@ export function findProductionRowFromTarget(target) {
   if (!isElement(target)) return null;
 
   const body = target.ownerDocument?.body || document.body;
-  let el = target;
-
-  for (let i = 0; i < MAX_ROW_SEARCH_DEPTH && el; i += 1) {
-    const infoCol = getInfoColumn(el);
-    if (hasProductLink(el) && (hasQuantityInput(el) || hasDollarValue(infoCol))) {
-      return el;
-    }
-    if (el === body) break;
-    el = el.parentElement;
-  }
-
-  return null;
+  return findAncestorWithin(
+    target,
+    (el) => {
+      const infoCol = getInfoColumn(el);
+      return hasProductLink(el) && (hasQuantityInput(el) || hasDollarValue(infoCol));
+    },
+    { maxDepth: MAX_ROW_SEARCH_DEPTH, boundary: body },
+  );
 }
 
 export function findFirstProductionRow(root = document) {
@@ -152,33 +149,11 @@ export function readProductionRow(row) {
 }
 
 export function waitForProductionLaborCost(row, maxWaitMs = 3000) {
-  return new Promise((resolve) => {
-    const currentCost = getProductionLaborCost(row);
-    if (currentCost > 0) {
-      resolve(currentCost);
-      return;
-    }
-
-    let timeoutId;
-    const observer = new MutationObserver(() => {
-      const cost = getProductionLaborCost(row);
-      if (cost > 0) {
-        clearTimeout(timeoutId);
-        observer.disconnect();
-        resolve(cost);
-      }
-    });
-
-    observer.observe(row, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-
-    timeoutId = setTimeout(() => {
-      observer.disconnect();
-      resolve(0);
-    }, maxWaitMs);
+  return waitForStructuralValue({
+    target: row,
+    readValue: () => getProductionLaborCost(row),
+    isReady: (value) => value > 0,
+    timeoutMs: maxWaitMs,
   });
 }
 

@@ -2398,6 +2398,26 @@
                 "id": 135,
                 "quantity": 0.5
             }
-        ]
+        ],
+        "transport": 1
+    },
+    {
+        "id": 155,
+        "name": "Cream egg",
+        "materials": [
+            {
+                "id": 134,
+                "quantity": 0.5
+            },
+            {
+                "id": 135,
+                "quantity": 0.75
+            },
+            {
+                "id": 140,
+                "quantity": 0.1
+            }
+        ],
+        "transport": 1
     }
 ]
