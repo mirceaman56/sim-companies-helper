@@ -7,6 +7,7 @@ import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
+import { observeMutations } from "./page/page_utils.js";
 import {
   extractWarehousePageItems,
   findWarehouseInventoryContainer,
@@ -143,7 +144,7 @@ async function injectMarketButtons() {
 
 export function initWarehouseHelper() {
   let observerActive = false;
-  let observer = null;
+  let stopInventoryObserver = null;
   let urlCheckInterval = null;
   let debounceTimer = null;
 
@@ -159,11 +160,7 @@ export function initWarehouseHelper() {
     observerActive = true;
 
     const inventoryContainer = findWarehouseInventoryContainer(document);
-    observer = new MutationObserver(() => {
-      debouncedInject();
-    });
-
-    observer.observe(inventoryContainer, {
+    stopInventoryObserver = observeMutations(inventoryContainer, debouncedInject, {
       childList: true,
       subtree: true,
       attributes: false,
@@ -178,9 +175,9 @@ export function initWarehouseHelper() {
       clearTimeout(debounceTimer);
       debounceTimer = null;
     }
-    if (observer) {
-      observer.disconnect();
-      observer = null;
+    if (stopInventoryObserver) {
+      stopInventoryObserver();
+      stopInventoryObserver = null;
     }
     observerActive = false;
   }

@@ -9,6 +9,7 @@ import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { formatMoney, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { storage } from "./data/storage.js";
+import { observeDocumentBody } from "./page/page_utils.js";
 import {
   findContractPriceInput,
   getContractAmountValue,
@@ -41,15 +42,13 @@ export function initContractHelper() {
   void hydrateDiscountPreference();
 
   // Observe DOM changes to inject when contract elements are present
-  const observer = new MutationObserver(() => {
+  observeDocumentBody(() => {
     if (hasContractPageElements()) {
       injectIfNeeded();
     } else {
       removeIfPresent();
     }
   });
-
-  observer.observe(document.body, { childList: true, subtree: true });
 
   // Initial check
   if (hasContractPageElements()) injectIfNeeded();

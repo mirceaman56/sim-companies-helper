@@ -7,6 +7,7 @@ import { calculateTotalXpPerHour, hoursToNextLevel, formatHours } from "./xp_cal
 import { storage } from "./data/storage.js";
 import { loadBuildings } from "./buildings.js";
 import { readXpNavbarContext } from "./page/xp_page.js";
+import { observeDocumentBody } from "./page/page_utils.js";
 
 const CONTAINER_ID = "scx-xp-widget";
 const TOGGLE_KEY = "scx-xp-widget-visible";
@@ -22,7 +23,7 @@ let _isRefreshing = false;
  */
 export function initXpWidget() {
   void hydrateVisibilityPreference();
-  const observer = new MutationObserver(() => {
+  observeDocumentBody(() => {
     const navContext = readXpNavbarContext(document);
     if (navContext) {
       injectIfNeeded(navContext);
@@ -30,7 +31,6 @@ export function initXpWidget() {
       removeIfPresent();
     }
   });
-  observer.observe(document.body, { childList: true, subtree: true });
 
   // Also try immediately
   const navContext = readXpNavbarContext(document);

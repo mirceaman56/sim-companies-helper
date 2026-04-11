@@ -1,4 +1,11 @@
 import { extractProductIdFromRow, getInfoColumn } from "../utils.js";
+import {
+  findAncestorWithin,
+  findClosestWithin,
+  hasAllSelectors,
+  hasAnySelector,
+  observeMutations,
+} from "./page_utils.js";
 
 const SELL_INPUT_SELECTOR = 'input[name="price"], input[name="quantity"]';
 const PRICE_INPUT_SELECTOR = 'input[name="price"]';
@@ -12,11 +19,11 @@ function isElement(value) {
 }
 
 function hasRetailInputs(el) {
-  return Boolean(el?.querySelector?.(PRICE_INPUT_SELECTOR) && el?.querySelector?.(QUANTITY_INPUT_SELECTOR));
+  return hasAllSelectors(el, [PRICE_INPUT_SELECTOR, QUANTITY_INPUT_SELECTOR]);
 }
 
 function hasRetailResourceLink(el) {
-  return Boolean(el?.querySelector?.(RESOURCE_LINK_SELECTOR));
+  return hasAnySelector(el, [RESOURCE_LINK_SELECTOR]);
 }
 
 export function detectRetailPage(root = document) {
@@ -30,30 +37,19 @@ export function isRetailSellInput(target) {
 export function findRetailRowFromTarget(target, { maxDepth = MAX_ROW_SEARCH_DEPTH } = {}) {
   if (!isElement(target)) return null;
 
-  const legacyRow = target.closest(LEGACY_ROW_SELECTOR);
+  const boundary = target.ownerDocument?.body || document.body;
+  const legacyRow = findClosestWithin(target, LEGACY_ROW_SELECTOR, { maxDepth, boundary });
   if (legacyRow && hasRetailInputs(legacyRow)) {
     return legacyRow;
   }
 
-  let el = target;
-  for (let i = 0; i < maxDepth && el; i += 1) {
-    if (hasRetailInputs(el) && hasRetailResourceLink(el)) {
-      return el;
-    }
-    if (el === document.body) break;
-    el = el.parentElement;
-  }
+  const strictMatch = findAncestorWithin(target, (el) => hasRetailInputs(el) && hasRetailResourceLink(el), {
+    maxDepth,
+    boundary,
+  });
+  if (strictMatch) return strictMatch;
 
-  el = target;
-  for (let i = 0; i < maxDepth && el; i += 1) {
-    if (hasRetailInputs(el)) {
-      return el;
-    }
-    if (el === document.body) break;
-    el = el.parentElement;
-  }
-
-  return null;
+  return findAncestorWithin(target, (el) => hasRetailInputs(el), { maxDepth, boundary });
 }
 
 export function findFirstRetailRow(root = document) {
@@ -101,14 +97,7 @@ export function readRetailRow(row) {
 
 export function observeRetailPage(root = document, onChange) {
   const target = root?.body || root;
-  if (!target || typeof onChange !== "function") {
-    return () => {};
-  }
-
-  const observer = new MutationObserver(() => onChange());
-  observer.observe(target, { childList: true, subtree: true });
-
-  return () => observer.disconnect();
+  return observeMutations(target, onChange);
 }
 
 export const _testUtils = {
