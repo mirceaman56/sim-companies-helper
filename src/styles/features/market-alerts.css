@@ -1,0 +1,246 @@
+/* ============ Market Alerts Styles ============ */
+.scx-market-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scx-market-alerts-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scx-market-alerts-limit {
+  padding: 8px 10px;
+  background: var(--scx-bg-info);
+  border-radius: var(--scx-border-radius-md);
+  border-left: 3px solid var(--scx-color-info);
+}
+
+.scx-market-alerts-limit-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--scx-color-info);
+}
+
+.scx-market-alerts-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scx-market-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.scx-market-alerts-empty {
+  text-align: center;
+  color: var(--scx-text-muted);
+  font-size: 11px;
+  font-style: italic;
+  padding: 12px;
+}
+
+.scx-ma-card {
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-secondary);
+  overflow: hidden;
+}
+
+.scx-ma-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-ma-product-link {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--scx-color-info);
+  text-decoration: none;
+}
+
+.scx-ma-product-link:hover {
+  text-decoration: underline;
+}
+
+.scx-ma-quality-badge {
+  display: inline-block;
+  background: var(--scx-bg-info);
+  color: var(--scx-color-info);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
+.scx-ma-status-active {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--scx-color-success);
+}
+
+.scx-ma-status-triggered {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--scx-color-warning);
+}
+
+.scx-ma-status-stopped {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--scx-text-muted);
+}
+
+.scx-ma-card-body {
+  padding: 8px 10px;
+}
+
+.scx-ma-rate-limit {
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--scx-color-error);
+  font-style: italic;
+}
+
+.scx-ma-price-hit {
+  color: var(--scx-color-success);
+}
+
+.scx-ma-price-normal {
+  color: var(--scx-text-primary);
+}
+
+.scx-ma-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-top: var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-ma-card-actions .scx-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.scx-ma-btn-start {
+  flex: 1;
+  background: var(--scx-color-success);
+  color: white;
+}
+
+.scx-ma-btn-start:hover {
+  background: #1b5e20;
+}
+
+.scx-ma-btn-stop {
+  flex: 1;
+  background: var(--scx-color-error);
+  color: white;
+}
+
+.scx-ma-btn-stop:hover {
+  background: #b71c1c;
+}
+
+.scx-ma-btn-reset {
+  flex: 1;
+  background: #e67e22;
+  color: white;
+}
+
+.scx-ma-btn-reset:hover {
+  background: #d35400;
+}
+
+.scx-ma-btn-remove {
+  background: none;
+  border: var(--scx-border-light);
+  color: var(--scx-text-muted);
+  min-width: 28px;
+}
+
+.scx-ma-btn-remove:hover {
+  color: var(--scx-color-error);
+  border-color: var(--scx-color-error);
+}
+
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-market-alerts-limit {
+    background: rgba(21, 101, 192, 0.25);
+    border-left-color: #64b5f6;
+  }
+
+  #scx-sidebar .scx-market-alerts-limit-text {
+    color: #90caf9;
+  }
+
+  #scx-sidebar .scx-market-alerts-empty {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-card {
+    background: #383838;
+    border-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-card-header {
+    background: #252525;
+    border-bottom-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-product-link {
+    color: #64b5f6;
+  }
+
+  #scx-sidebar .scx-ma-quality-badge {
+    background: rgba(21, 101, 192, 0.35);
+    color: #90caf9;
+  }
+
+  #scx-sidebar .scx-ma-status-active {
+    color: #81c784;
+  }
+
+  #scx-sidebar .scx-ma-status-triggered {
+    color: #ffb74d;
+  }
+
+  #scx-sidebar .scx-ma-status-stopped {
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-rate-limit {
+    color: #ef9a9a;
+  }
+
+  #scx-sidebar .scx-ma-card-actions {
+    background: #252525;
+    border-top-color: #555;
+  }
+
+  #scx-sidebar .scx-ma-btn-remove {
+    border-color: #555;
+    color: #b0b0b0;
+  }
+
+  #scx-sidebar .scx-ma-btn-remove:hover {
+    color: #ef9a9a;
+    border-color: #ef5350;
+  }
+
+  #scx-sidebar .scx-market-alerts .scx-color-999 {
+    color: #b0b0b0;
+  }
+}

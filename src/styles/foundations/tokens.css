@@ -1,0 +1,177 @@
+/* ============ CSS Variables - Minimalist Design ============ */
+:root {
+  /* Primary Semantic Colors */
+  --scx-color-success: #2e7d32; /* Dark Green */
+  --scx-color-error: #c62828; /* Dark Red */
+  --scx-color-warning: #d68e00; /* Dark Orange */
+  --scx-color-info: #1565c0; /* Dark Blue */
+  --scx-color-purple: #6a1b9a; /* Dark Purple */
+
+  /* Category Colors - Income Types */
+  --scx-category-retail: #2e7d32;
+  --scx-category-contracts: #1565c0;
+  --scx-category-market: #d68e00;
+  --scx-category-other: #666666;
+
+  /* Category Colors - Expense Types */
+  --scx-category-production: #c62828;
+  --scx-category-wages: #d32f2f;
+  --scx-category-market-buy: #c2185b;
+  --scx-category-contract-exp: #6a1b9a;
+  --scx-category-fees: #5d4037;
+  --scx-category-construction: #d68e00;
+  --scx-category-accounting: #455a64;
+
+  /* Legacy color names */
+  --scx-color-blue: #1565c0;
+  --scx-color-green: #2e7d32;
+  --scx-color-red: #c62828;
+  --scx-color-orange: #d68e00;
+  --scx-color-brown: #5d4037;
+  --scx-color-dark-purple: #6a1b9a;
+
+  /* ============ Spacing ============ */
+  --scx-spacing-xs: 4px;
+  --scx-spacing-sm: 8px;
+  --scx-spacing-md: 12px;
+  --scx-spacing-lg: 16px;
+  --scx-spacing-xl: 20px;
+
+  /* ============ Backgrounds - White Minimalist ============ */
+  --scx-bg-primary: #ffffff; /* Main white background */
+  --scx-bg-secondary: #f8f8f8; /* Light gray */
+  --scx-bg-tertiary: #ffffff; /* White */
+  --scx-bg-subtle: #f5f5f5; /* Very light gray */
+
+  /* Status backgrounds */
+  --scx-bg-success: #f0f8f0; /* Very light green */
+  --scx-bg-success-light: #f5fbf5; /* Lighter green */
+  --scx-bg-error: #fdf5f5; /* Very light red */
+  --scx-bg-warning: #fffaf0; /* Very light orange */
+  --scx-bg-info: #f5f9ff; /* Very light blue */
+  --scx-bg-accent: #f8f5fb; /* Very light purple */
+  --scx-bg-neutral: #f8f8f8; /* Light gray */
+  --scx-bg-light: #ffffff; /* White */
+
+  /* ============ Borders - Simple ============ */
+  --scx-border-light: 1px solid #e0e0e0;
+  --scx-border-light-gray: 1px solid #e8e8e8;
+  --scx-border-light-alt: 1px solid #eeeeee;
+  --scx-border-medium: 1px solid #d0d0d0;
+  --scx-border-medium-gray: 1px solid #cccccc;
+  --scx-border-medium-light: 1px solid #bebebe;
+  --scx-border-dark: 1px solid #999999;
+  --scx-border-dark-gray: 1px solid #666666;
+
+  /* ============ Text Colors - Simple & Contrast ============ */
+  --scx-text-primary: #000000;
+  --scx-text-secondary: #555555;
+  --scx-text-muted: #999999;
+
+  --scx-text-success: #2e7d32;
+  --scx-text-success-dark: #1b5e20;
+  --scx-text-error: #c62828;
+  --scx-text-warning: #d68e00;
+  --scx-text-warning-alt: #b85d00;
+  --scx-text-info: #1565c0;
+  --scx-text-info-dark: #0d47a1;
+  --scx-text-secondary-alt: #555555;
+  --scx-text-primary-dark: #000000;
+
+  /* ============ Status Colors - Good/Okay/Bad ============ */
+  --scx-status-good-color: #2e7d32; /* Dark Green */
+  --scx-status-good-bg: #f0f8f0; /* Light Green */
+  --scx-status-okay-color: #d68e00; /* Dark Orange */
+  --scx-status-okay-bg: #fffaf0; /* Light Orange */
+  --scx-status-bad-color: #c62828; /* Dark Red */
+  --scx-status-bad-bg: #fdf5f5; /* Light Red */
+  --scx-input-border: #e0e0e0; /* Light Gray */
+
+  /* ============ Typography ============ */
+  --scx-font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --scx-font-size-xs: 10px;
+  --scx-font-size-sm: 11px;
+  --scx-font-size-base: 12px;
+  --scx-font-size-md: 13px;
+  --scx-font-size-lg: 14px;
+  --scx-font-size-xl: 16px;
+  --scx-font-weight-normal: 500;
+  --scx-font-weight-semibold: 600;
+  --scx-font-weight-bold: 700;
+  --scx-font-weight-heavy: 900;
+
+  /* ============ Borders & Shadows - Simple ============ */
+  --scx-border-radius-sm: 3px;
+  --scx-border-radius-md: 4px;
+  --scx-border-radius-lg: 8px;
+  --scx-border-radius-xl: 12px;
+  --scx-border-radius-full: 999px;
+
+  --scx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --scx-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --scx-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  /* ============ Form Input Styling ============ */
+  --scx-input-bg: #ffffff;
+  --scx-input-text: #000000;
+}
+
+/* ============ Dark Theme CSS Variables ============ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Override text colors for dark theme */
+    --scx-text-primary: #e0e0e0;
+    --scx-text-secondary: #b0b0b0;
+    --scx-text-muted: #808080;
+
+    /* Override background colors for dark theme */
+    --scx-bg-primary: #1e1e1e;
+    --scx-bg-secondary: #2d2d2d;
+    --scx-bg-tertiary: #383838;
+    --scx-bg-subtle: #2d2d2d;
+
+    /* Override border colors for dark theme */
+    --scx-border-light: 1px solid #555;
+    --scx-border-light-gray: 1px solid #555;
+    --scx-border-light-alt: 1px solid #555;
+    --scx-border-medium: 1px solid #555;
+    --scx-border-medium-gray: 1px solid #555;
+    --scx-border-medium-light: 1px solid #666;
+    --scx-border-dark: 1px solid #888;
+    --scx-border-dark-gray: 1px solid #999;
+
+    /* Override form input for dark theme */
+    --scx-input-bg: #383838;
+    --scx-input-text: #e0e0e0;
+    --scx-input-border: #555;
+
+    /* Override status backgrounds for dark theme */
+    --scx-bg-success: #1b5e20;
+    --scx-bg-success-light: #2e7d32;
+    --scx-bg-error: #b71c1c;
+    --scx-bg-warning: #5a3a00;
+    --scx-bg-info: #1565c0;
+    --scx-bg-accent: #6a1b9a;
+    --scx-bg-neutral: #383838;
+
+    /* Fix dark text colors that become invisible on dark status backgrounds */
+    --scx-text-success-dark: #a5d6a7;
+    --scx-text-warning: #ffd79a;
+    --scx-text-warning-alt: #ffe8c4;
+    --scx-status-okay-color: #ffd79a;
+    --scx-status-okay-bg: #5a3a00;
+
+    /* Lighter category colors for dark mode (used on dark-bg status blocks) */
+    --scx-category-retail: #81c784;
+    --scx-category-contracts: #64b5f6;
+    --scx-category-market: #ffb300;
+    --scx-category-other: #9e9e9e;
+    --scx-category-production: #ef9a9a;
+    --scx-category-wages: #ef9a9a;
+    --scx-category-market-buy: #f48fb1;
+    --scx-category-contract-exp: #ce93d8;
+    --scx-category-fees: #bcaaa4;
+    --scx-category-construction: #ffcc80;
+    --scx-category-accounting: #b0bec5;
+  }
+}

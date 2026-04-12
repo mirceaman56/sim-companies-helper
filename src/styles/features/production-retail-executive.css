@@ -1,0 +1,788 @@
+/* Production UI styling */
+.scx-prod-title {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+  font-size: 14px;
+}
+
+.scx-production-panel {
+  font-size: 11px;
+}
+
+.scx-production-empty-panel {
+  text-align: center;
+  padding: 20px 12px;
+}
+
+.scx-production-analysis-panel {
+  padding: 12px;
+}
+
+.scx-production-analysis-error {
+  font-size: 9px;
+  color: var(--scx-color-error);
+  margin-top: 4px;
+}
+
+.scx-production-analysis-hint {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+  margin-top: 8px;
+}
+
+.scx-production-error-note {
+  border-left-color: var(--scx-color-error);
+  color: var(--scx-color-error);
+}
+
+.scx-production-profit-stack {
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.scx-production-tone-positive {
+  color: var(--scx-color-success);
+}
+
+.scx-production-tone-negative {
+  color: var(--scx-color-error);
+}
+
+.scx-production-projected-box {
+  margin-top: 4px;
+}
+
+.scx-production-projected-title {
+  color: var(--scx-color-info);
+}
+
+.scx-production-sell-box-positive {
+  background: var(--scx-bg-success);
+}
+
+.scx-production-sell-box-negative {
+  background: var(--scx-bg-error);
+}
+
+.scx-prod-qty {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+}
+
+.scx-badge-active {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.scx-badge-level {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.scx-box-blue,
+.scx-box-yellow,
+.scx-box-purple,
+.scx-box-green,
+.scx-box-light-gray {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-box-blue {
+  background: #e3f2fd;
+}
+.scx-box-yellow {
+  background: #fff8e1;
+}
+.scx-box-purple {
+  background: #f3e5f5;
+}
+.scx-box-green {
+  background: #e8f5e9;
+}
+.scx-box-light-gray {
+  background: #f0f4f8;
+}
+
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-box-blue {
+    background: #1f3655;
+    border: 1px solid #355d87;
+  }
+
+  #scx-sidebar .scx-box-yellow {
+    background: #4a3608;
+    border: 1px solid #7a5c17;
+  }
+
+  #scx-sidebar .scx-box-purple {
+    background: #3a204d;
+    border: 1px solid #6f43a3;
+  }
+
+  #scx-sidebar .scx-box-green {
+    background: #1f4d2a;
+    border: 1px solid #2f7a45;
+  }
+
+  #scx-sidebar .scx-box-light-gray {
+    background: #2a2d33;
+    border: 1px solid #4a4f59;
+  }
+
+  #scx-sidebar .scx-profit-box-yellow {
+    background: #5a430f;
+    border: 1px solid #8d6e1e;
+  }
+
+  #scx-sidebar .scx-profit-box-purple {
+    background: #4a2a5f;
+    border: 1px solid #7d54a0;
+  }
+
+  #scx-sidebar .scx-sell-box-green {
+    background: #1f4d2a;
+    border: 1px solid #2f7a45;
+  }
+
+  #scx-sidebar .scx-sell-box-orange {
+    background: #5a3a09;
+    border: 1px solid #8a5f1b;
+  }
+
+  #scx-sidebar .scx-sell-box-blue {
+    background: #1f3655;
+    border: 1px solid #355d87;
+  }
+
+  #scx-sidebar .scx-text-blue {
+    color: #9fc9ff;
+  }
+
+  #scx-sidebar .scx-text-orange {
+    color: #ffd08b;
+  }
+
+  #scx-sidebar .scx-text-purple {
+    color: #ddbcff;
+  }
+
+  #scx-sidebar .scx-text-brown {
+    color: #ffe4bf;
+  }
+
+  #scx-sidebar .scx-text-dark-brown {
+    color: #e9d6ff;
+  }
+
+  #scx-sidebar .scx-text-forest {
+    color: #ccf6d8;
+  }
+}
+
+.scx-profit-box-sm {
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.scx-profit-box-yellow {
+  background: #fff8e1;
+}
+
+.scx-profit-box-purple {
+  background: #f3e5f5;
+}
+
+.scx-flex-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+}
+
+.scx-flex-spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.scx-text-blue {
+  color: var(--scx-color-blue);
+}
+.scx-text-green {
+  color: var(--scx-color-green);
+}
+.scx-text-orange {
+  color: var(--scx-color-orange);
+}
+.scx-text-purple {
+  color: var(--scx-color-purple);
+}
+.scx-text-brown {
+  color: var(--scx-color-brown);
+}
+.scx-text-forest {
+  color: #1b5e20;
+}
+.scx-text-dark-brown {
+  color: #6d4c41;
+}
+
+.scx-text-muted {
+  color: var(--scx-text-muted);
+  font-size: 9px;
+}
+
+.scx-text-bold {
+  font-weight: 700;
+}
+
+.scx-text-semibold {
+  font-weight: 600;
+}
+
+.scx-hr-sm {
+  margin: 6px 0;
+}
+
+.scx-margin-bottom-4 {
+  margin-bottom: 4px;
+}
+
+.scx-margin-bottom-6 {
+  margin-bottom: 6px;
+}
+
+.scx-margin-top-1 {
+  margin-top: 1px;
+}
+
+.scx-margin-top-2 {
+  margin-top: 2px;
+}
+
+.scx-margin-top-4 {
+  margin-top: 4px;
+}
+
+.scx-border-top-sm {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.scx-border-top-md {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.scx-padding-top-3 {
+  padding-top: 3px;
+}
+
+.scx-padding-top-4 {
+  padding-top: 4px;
+}
+
+.scx-text-right {
+  text-align: right;
+}
+
+.scx-text-uppercase {
+  text-transform: uppercase;
+}
+
+.scx-font-8 {
+  font-size: 9px;
+}
+
+.scx-font-9 {
+  font-size: 10px;
+}
+
+.scx-font-10 {
+  font-size: 11px;
+}
+
+.scx-retail-empty-state {
+  text-align: center;
+  padding: 12px;
+}
+
+.scx-retail-empty-hint {
+  margin-top: 4px;
+}
+
+.scx-retail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.scx-retail-product-name {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+  font-size: 12px;
+}
+
+.scx-retail-ppm {
+  line-height: 1.1;
+}
+
+.scx-retail-panel-head {
+  margin-bottom: 6px;
+}
+
+.scx-retail-analysis-block {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.scx-retail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.scx-retail-detail-row {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-win-box {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-retail-win-box-retail {
+  background: var(--scx-bg-success);
+}
+
+.scx-retail-win-box-market {
+  background: var(--scx-bg-warning);
+}
+
+.scx-retail-win-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.scx-retail-win-row-summary {
+  font-weight: 600;
+}
+
+.scx-retail-win-row-retail {
+  color: var(--scx-color-success);
+}
+
+.scx-retail-win-row-market {
+  color: var(--scx-text-warning-alt);
+}
+
+.scx-retail-price-note {
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-note-error {
+  border-left-color: var(--scx-color-error);
+}
+
+.scx-retail-note-plain {
+  font-style: normal;
+}
+
+.scx-retail-trend-positive {
+  color: var(--scx-color-success);
+}
+
+.scx-retail-trend-negative {
+  color: var(--scx-color-error);
+}
+
+.scx-retail-trend-neutral {
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-fine-print {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-fine-print-first {
+  margin-top: 2px;
+}
+
+.scx-color-999 {
+  color: var(--scx-text-muted);
+}
+
+.scx-color-333 {
+  color: var(--scx-text-primary);
+}
+
+.scx-material-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-material-name {
+  color: var(--scx-text-primary);
+  font-weight: 500;
+}
+
+.scx-material-qty {
+  color: var(--scx-text-muted);
+  font-size: 10px;
+}
+
+.scx-material-price {
+  text-align: right;
+}
+
+.scx-material-unit-price {
+  color: var(--scx-text-secondary);
+  font-weight: 500;
+}
+
+.scx-material-total-cost {
+  color: var(--scx-text-primary);
+  font-weight: 600;
+}
+
+.scx-sell-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.scx-sell-box {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-sell-box-green {
+  background: #e8f5e9;
+}
+
+.scx-sell-box-orange {
+  background: #fff3e0;
+}
+
+.scx-sell-box-blue {
+  background: #f0f8ff;
+}
+
+.scx-sell-box-content {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scx-sell-box-green .scx-sell-box-content {
+  color: #1b5e20;
+}
+
+.scx-sell-box-orange .scx-sell-box-content {
+  color: var(--scx-color-orange);
+}
+
+.scx-sell-box-blue .scx-sell-box-content {
+  color: #0d47a1;
+}
+
+.scx-sell-profit-center {
+  background: var(--scx-bg-subtle);
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.scx-sell-profit-center-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.scx-hr-blurp-feedback-section {
+  padding: 12px 16px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-hr-blurp-feedback-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.scx-hr-blurp-feedback-text {
+  font-size: 11px;
+  color: var(--scx-text-primary);
+  line-height: 1.4;
+  font-style: italic;
+  background: var(--scx-bg-subtle);
+  padding: 8px;
+  border-radius: 3px;
+  max-height: 60px;
+  overflow-y: auto;
+}
+
+.scx-hr-blurp-skills-section {
+  padding: 16px;
+}
+
+.scx-hr-blurp-skills-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.scx-hr-blurp-skill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 4px;
+  border-left: 3px solid;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper {
+  background-color: var(--scx-status-good-bg);
+  border-left-color: var(--scx-status-good-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works {
+  background-color: var(--scx-status-okay-bg);
+  border-left-color: var(--scx-status-okay-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage {
+  background-color: var(--scx-status-bad-bg);
+  border-left-color: var(--scx-status-bad-color);
+}
+
+.scx-hr-blurp-skill-label {
+  flex: 0 0 100px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--scx-text-primary);
+}
+
+.scx-hr-blurp-skill-value {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper .scx-hr-blurp-skill-value {
+  color: var(--scx-status-good-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works .scx-hr-blurp-skill-value {
+  color: var(--scx-status-okay-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage .scx-hr-blurp-skill-value {
+  color: var(--scx-status-bad-color);
+}
+
+.scx-hr-blurp-skill-assessment {
+  flex: 0 0 80px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper .scx-hr-blurp-skill-assessment {
+  color: var(--scx-status-good-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works .scx-hr-blurp-skill-assessment {
+  color: var(--scx-status-okay-color);
+}
+
+.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage .scx-hr-blurp-skill-assessment {
+  color: var(--scx-status-bad-color);
+}
+
+.scx-hr-blurp-footer {
+  padding: 12px 16px;
+  border-top: 2px solid var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-hr-blurp-footer-label {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+}
+
+.scx-hr-blurp-footer-value {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.scx-hr-blurp-footer.scx-hr-blurp-footer-keeper .scx-hr-blurp-footer-value {
+  color: var(--scx-status-good-color);
+}
+
+.scx-hr-blurp-footer.scx-hr-blurp-footer-works .scx-hr-blurp-footer-value {
+  color: var(--scx-status-okay-color);
+}
+
+.scx-hr-blurp-footer.scx-hr-blurp-footer-garbage .scx-hr-blurp-footer-value {
+  color: var(--scx-status-bad-color);
+}
+
+/* Skills Breakdown Section */
+.scx-skill-breakdown-section {
+  padding: 16px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-skill-breakdown-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.scx-skill-breakdown-description {
+  font-size: 10px;
+  color: var(--scx-text-muted);
+  margin-bottom: 12px;
+}
+
+.scx-skill-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: var(--scx-border-light);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scx-skill-breakdown-row:last-child {
+  border-bottom: none;
+}
+
+.scx-skill-breakdown-row .scx-skill-breakdown-label {
+  flex: 0 0 80px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-values {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.scx-skill-breakdown-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.scx-skill-breakdown-total {
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-organic {
+  color: var(--scx-status-good-color);
+}
+
+.scx-skill-breakdown-training {
+  color: #2196f3;
+}
+
+.scx-skill-breakdown-total-label,
+.scx-skill-breakdown-organic-label,
+.scx-skill-breakdown-training-label {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--scx-text-muted);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.scx-skill-breakdown-total-value,
+.scx-skill-breakdown-organic-value,
+.scx-skill-breakdown-training-value {
+  font-weight: 700;
+  font-size: 14px;
+  display: block;
+}
+
+.scx-skill-breakdown-total-value {
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-organic-value {
+  color: var(--scx-text-success-dark);
+}
+
+.scx-skill-breakdown-training-value {
+  color: #1565c0;
+}
+
+.scx-executive-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scx-executive-refresh-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Executive Helper Empty State */
+.scx-executive-empty-state {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.scx-executive-empty-message {
+  text-align: center;
+  color: var(--scx-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: italic;
+}
