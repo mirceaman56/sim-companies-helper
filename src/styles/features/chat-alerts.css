@@ -1,0 +1,211 @@
+/* ============ Chat Alerts Styles ============ */
+.scx-chat-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-md);
+}
+
+.scx-chat-alerts-form {
+  gap: var(--scx-spacing-sm);
+}
+
+.scx-chat-alerts-limit {
+  padding: 8px 10px;
+  background: var(--scx-bg-info);
+  border-radius: var(--scx-border-radius-md);
+  border-left: 3px solid var(--scx-color-info);
+}
+
+.scx-chat-alerts-limit-text {
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-color-info);
+}
+
+.scx-chat-alerts-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-xs);
+}
+
+.scx-chat-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.scx-chat-alerts-empty {
+  text-align: center;
+  color: var(--scx-text-muted);
+  font-size: var(--scx-font-size-sm);
+  font-style: italic;
+  padding: 12px;
+}
+
+.scx-ca-card {
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-secondary);
+  overflow: hidden;
+}
+
+.scx-ca-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--scx-spacing-sm);
+  padding: 8px 10px;
+  border-bottom: var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-ca-rule-block {
+  min-width: 0;
+}
+
+.scx-ca-keywords {
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+  word-break: break-word;
+}
+
+.scx-ca-company {
+  margin-top: 2px;
+  font-size: var(--scx-font-size-sm);
+  color: var(--scx-text-secondary);
+}
+
+.scx-ca-status-active {
+  font-size: 10px;
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-color-success);
+}
+
+.scx-ca-status-triggered {
+  font-size: 10px;
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-color-warning);
+}
+
+.scx-ca-status-stopped {
+  font-size: 10px;
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-muted);
+}
+
+.scx-ca-card-body {
+  padding: 8px 10px;
+}
+
+.scx-ca-message-preview {
+  max-height: 72px;
+  overflow-y: auto;
+}
+
+.scx-ca-message-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.scx-ca-message-link:hover .scx-chat-message-body {
+  text-decoration: underline;
+}
+
+.scx-ca-highlight {
+  background: var(--scx-bg-warning);
+  color: var(--scx-text-warning-alt);
+  border-radius: var(--scx-border-radius-sm);
+  padding: 0 2px;
+}
+
+.scx-ca-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-top: var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+}
+
+.scx-ca-card-actions .scx-btn {
+  font-size: var(--scx-font-size-sm);
+  padding: 4px 8px;
+}
+
+.scx-ca-btn-start,
+.scx-ca-btn-stop,
+.scx-ca-btn-reset {
+  flex: 1;
+}
+
+.scx-ca-btn-remove {
+  background: none;
+  border: var(--scx-border-light);
+  color: var(--scx-text-muted);
+  min-width: 28px;
+}
+
+.scx-ca-btn-remove:hover {
+  color: var(--scx-color-error);
+  border-color: var(--scx-color-error);
+}
+
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-chat-alerts-limit {
+    background: var(--scx-bg-info-overlay);
+    border-left-color: var(--scx-text-info-soft);
+  }
+
+  #scx-sidebar .scx-chat-alerts-limit-text {
+    color: var(--scx-text-info-soft-strong);
+  }
+
+  #scx-sidebar .scx-chat-alerts-empty {
+    color: var(--scx-text-secondary);
+  }
+
+  #scx-sidebar .scx-ca-card {
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
+  }
+
+  #scx-sidebar .scx-ca-card-header {
+    background: var(--scx-bg-dark-header);
+    border-bottom-color: var(--scx-input-border);
+  }
+
+  #scx-sidebar .scx-ca-status-active {
+    color: var(--scx-text-success-soft);
+  }
+
+  #scx-sidebar .scx-ca-status-triggered {
+    color: var(--scx-text-warning-soft);
+  }
+
+  #scx-sidebar .scx-ca-status-stopped {
+    color: var(--scx-text-secondary);
+  }
+
+  #scx-sidebar .scx-ca-card-actions {
+    background: var(--scx-bg-dark-header);
+    border-top-color: var(--scx-input-border);
+  }
+
+  #scx-sidebar .scx-ca-highlight {
+    background: var(--scx-bg-warning-overlay);
+    color: var(--scx-text-warning-soft);
+  }
+
+  #scx-sidebar .scx-ca-btn-remove {
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-secondary);
+  }
+
+  #scx-sidebar .scx-ca-btn-remove:hover {
+    color: var(--scx-text-error-soft);
+    border-color: var(--scx-border-error-soft-strong);
+  }
+}

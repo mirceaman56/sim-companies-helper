@@ -5,7 +5,10 @@ import {
   buildChatPageUrl,
   buildChatSearchFilters,
   collectChatSearchPage,
+  findLatestRecentChatMatch,
+  messageMatchesChatAlert,
   messageMatchesChatFilters,
+  scanRecentChatWindow,
   searchChatMessages,
 } from "../src/chat_filter.js";
 
@@ -117,6 +120,103 @@ describe("chat_filter logic", () => {
       pagesFetched: 2,
       reachedCutoff: false,
       aborted: false,
+    });
+  });
+
+  it("matches chat alert by keyword root and optional company filter", () => {
+    const message = {
+      body: "Selling :re-7: now",
+      companyName: "Acme Traders",
+    };
+
+    expect(
+      messageMatchesChatAlert(message, {
+        keywords: ["sell"],
+        companyFilter: null,
+      }),
+    ).toBe(true);
+
+    expect(
+      messageMatchesChatAlert(message, {
+        keywords: ["sell"],
+        companyFilter: "acme",
+      }),
+    ).toBe(true);
+
+    expect(
+      messageMatchesChatAlert(message, {
+        keywords: ["buy"],
+        companyFilter: null,
+      }),
+    ).toBe(false);
+  });
+
+  it("scans recent chat window and stops when callback returns true", async () => {
+    const now = Date.parse("2026-04-12T12:00:00Z");
+    const requestMessages = vi.fn().mockResolvedValueOnce([
+      {
+        id: 600,
+        datetime: new Date(now - 60_000).toISOString(),
+        body: "Selling :re-7:",
+      },
+      {
+        id: 590,
+        datetime: new Date(now - 120_000).toISOString(),
+        body: "Selling :re-8:",
+      },
+    ]);
+
+    const seenIds = [];
+    const result = await scanRecentChatWindow({
+      requestMessages,
+      cutoffHours: 1,
+      maxPages: 3,
+      delayMs: 0,
+      now: () => now,
+      onPage: ({ messages }) => {
+        seenIds.push(...messages.map((message) => message.id));
+        return true;
+      },
+    });
+
+    expect(seenIds).toEqual([600, 590]);
+    expect(result).toEqual({
+      pagesFetched: 1,
+      reachedCutoff: false,
+      aborted: false,
+    });
+  });
+
+  it("finds latest recent match for alert criteria", async () => {
+    const now = Date.parse("2026-04-12T12:00:00Z");
+    const requestMessages = vi.fn().mockResolvedValueOnce([
+      {
+        id: 700,
+        datetime: new Date(now - 60_000).toISOString(),
+        body: "Selling :re-7: now",
+        sender: { company: "Acme Corp" },
+      },
+      {
+        id: 690,
+        datetime: new Date(now - 90_000).toISOString(),
+        body: "Buying :re-7:",
+        sender: { company: "Beta" },
+      },
+    ]);
+
+    const match = await findLatestRecentChatMatch({
+      requestMessages,
+      keywords: ["sell"],
+      companyFilter: "acme",
+      cutoffHours: 1,
+      maxPages: 3,
+      now: () => now,
+    });
+
+    expect(match).toMatchObject({
+      id: 700,
+      companyName: "Acme Corp",
+      body: "Selling :re-7: now",
     });
   });
 });
