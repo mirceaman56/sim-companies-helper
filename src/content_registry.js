@@ -8,6 +8,7 @@ import { updatePanel as updateRetailPanel } from "./retail_ui.js";
 import { updateExecutivePanel } from "./executive_ui.js";
 import { updateMarketAlertsPanel } from "./market_ui.js";
 import { initChatFilter } from "./chat_filter_ui.js";
+import { initChatAlerts, updateChatAlertsPanel } from "./chat_alerts_ui.js";
 import { initContractHelper } from "./contract_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
@@ -24,6 +25,7 @@ const SIDEBAR_SECTIONS = [
   { id: "retail-section", titleKey: "retailHelper", icon: "🏪" },
   { id: "cashflow-section", titleKey: "financialsHelper", icon: "💲" },
   { id: "market-alerts-section", titleKey: "marketAlerts", icon: "🔔" },
+  { id: "chat-alerts-section", titleKey: "chatAlerts", icon: "📣" },
   { id: "chat-section", titleKey: "chatFilter", icon: "💬" },
   { id: "executive-section", titleKey: "executiveHelper", icon: "👔" },
 ];
@@ -46,8 +48,10 @@ export function bootstrapFeatureRegistry() {
   setSectionUpdateFn("retail-section", updateRetailPanel);
   setSectionUpdateFn("executive-section", updateExecutivePanel);
   setSectionUpdateFn("market-alerts-section", updateMarketAlertsPanel);
+  setSectionUpdateFn("chat-alerts-section", updateChatAlertsPanel);
 
   // Static one-time feature initializers.
+  initChatAlerts();
   initChatFilter();
   initContractHelper();
   initWarehouseHelper();

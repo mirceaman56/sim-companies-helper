@@ -14,6 +14,7 @@
 @import "./styles/features/retail.css";
 @import "./styles/features/executive.css";
 @import "./styles/features/market-alerts.css";
+@import "./styles/features/chat-alerts.css";
 @import "./styles/features/cashflow.css";
 @import "./styles/features/finance-dashboard.css";
 @import "./styles/features/xp.css";

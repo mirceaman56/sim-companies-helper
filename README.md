@@ -13,6 +13,7 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 - Upgrade helper with discount-aware, copyable buy messages for upgrade dialogs.
 - XP calculator widget with manual refresh (cache refreshes every 6 hours by default).
 - Sales chat filter/search helper.
+- Chat alerts for keyword + optional company matches (latest 1 hour, max 2 alerts per company+realm).
 - What's New notifications with recent release highlights inside the game UI.
 - Financials Helper dashboard with Current/Day/Week views, KPI strip, P&L, cash movement, ratios, drivers, transactions, sales mix, inventory/production, workforce cost, and alerts.
 
