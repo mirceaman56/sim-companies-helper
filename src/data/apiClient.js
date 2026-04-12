@@ -1,6 +1,34 @@
 const inflightByKey = new Map();
 const rateLimitByDomain = new Map();
 
+/**
+ * @typedef {Object} ApiRequestSpec
+ * @property {string} url Absolute or relative URL to request.
+ * @property {string} [method="GET"] HTTP method.
+ * @property {HeadersInit} [headers] Request headers.
+ * @property {BodyInit|null} [body] Optional request body.
+ * @property {RequestCredentials} [credentials="include"] Fetch credentials mode.
+ * @property {AbortSignal} [signal] Optional external abort signal.
+ * @property {"json"|"text"|"blob"|"arrayBuffer"|"response"} [responseType="json"] Response parsing mode.
+ * @property {number} [retries=0] Number of retry attempts after the first request fails.
+ * @property {number} [retryDelayMs=0] Delay between retries.
+ * @property {number[]} [retryStatuses=[408,425,429,500,502,503,504]] HTTP statuses that are eligible for retry.
+ * @property {number} [rateLimitCooldownMs=0] Cooldown window to apply to the domain after a `429` response.
+ * @property {number} [timeoutMs=0] Request timeout in milliseconds. `0` disables the timeout.
+ * @property {boolean} [coalesce=false] Reuse an in-flight request with the same URL and method.
+ * @property {string} [coalesceKey] Override the default coalescing key when several requests share the same logical resource.
+ */
+
+/**
+ * @typedef {Error & {
+ *   code: "RATE_LIMIT_COOLDOWN"|"TIMEOUT"|"ABORTED"|"NETWORK_ERROR"|"HTTP_ERROR",
+ *   domain: string,
+ *   status: number|null,
+ *   remainingMs?: number,
+ *   cause?: unknown
+ * }} ApiClientError
+ */
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -127,6 +155,35 @@ async function doRequest(domain, spec, attempt = 0) {
   }
 }
 
+/**
+ * Execute a fetch request with retry, timeout, cooldown, and optional in-flight request coalescing.
+ *
+ * The returned value depends on `spec.responseType`:
+ * - `json` -> parsed JSON payload
+ * - `text` -> string body
+ * - `blob` -> `Blob`
+ * - `arrayBuffer` -> `ArrayBuffer`
+ * - `response` -> raw `Response`
+ *
+ * Error objects thrown by this function always include a `code` field:
+ * - `RATE_LIMIT_COOLDOWN`: the domain is still inside a cooldown window after a previous `429`
+ * - `TIMEOUT`: the request exceeded `timeoutMs`
+ * - `ABORTED`: the request was aborted by a signal
+ * - `NETWORK_ERROR`: fetch failed before an HTTP response was received
+ * - `HTTP_ERROR`: the response status was not OK and retries were exhausted
+ *
+ * @param {string} domain Logical request bucket used for rate-limit tracking and coalescing.
+ * @param {ApiRequestSpec} spec Request configuration.
+ * @returns {Promise<unknown|Response|string|Blob|ArrayBuffer>} Parsed response payload.
+ * @throws {ApiClientError} When cooldown, timeout, network, abort, or HTTP failures occur.
+ * @example
+ * const payload = await request("github", {
+ *   url: "https://api.github.com/repos/owner/repo/releases/latest",
+ *   responseType: "json",
+ *   timeoutMs: 5000,
+ *   retries: 1,
+ * });
+ */
 export async function request(domain, spec) {
   const d = normalizeDomain(domain);
   const inflightKey = buildInflightKey(d, spec?.coalesceKey, spec?.url, spec?.method || "GET");

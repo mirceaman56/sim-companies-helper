@@ -8,9 +8,12 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 - Production and contract profit calculators.
 - Warehouse market price comparison tools.
 - Market alerts for target prices.
+- Recipe extractor that collects recipe-page data into copyable JSON.
 - Executive helper for chief and apprentice pages.
+- Upgrade helper with discount-aware, copyable buy messages for upgrade dialogs.
 - XP calculator widget with manual refresh (cache refreshes every 6 hours by default).
 - Sales chat filter/search helper.
+- What's New notifications with recent release highlights inside the game UI.
 - Financials Helper dashboard with Current/Day/Week views, KPI strip, P&L, cash movement, ratios, drivers, transactions, sales mix, inventory/production, workforce cost, and alerts.
 
 ## Install (Local / Unpacked)
@@ -38,12 +41,16 @@ Useful commands:
 - `npm run docs:check-instructions` to verify instruction files are in sync.
 - `npm run hooks:install` to enable a local pre-commit warning for instruction-sync drift.
 
+## Project Docs
+
+- Contributing guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Privacy policy: [`docs/privacy.html`](docs/privacy.html)
+
 ## Privacy & Permissions
 
 - Data is processed locally in your browser for gameplay helpers.
 - Uses extension storage for user preferences and saved helper settings.
 - Manifest permissions are limited to extension storage plus required host access.
-- Privacy policy: [`docs/privacy.html`](docs/privacy.html)
 
 ## License
 
