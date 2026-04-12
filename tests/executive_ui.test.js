@@ -70,4 +70,68 @@ describe("executive panel refresh", () => {
     button.click();
     expect(getSectionContentMock.mock.calls.length).toBeGreaterThan(callCountBefore);
   });
+
+  it("renders HR feedback on staff candidate pages", () => {
+    document.body.innerHTML = `
+      <div class="css-1r0yqr6">
+        <table class="css-1vnhof9"><tbody><tr><td>Expected salary</td><td>$1,247</td></tr></tbody></table>
+        <table class="css-1fs1e4u"><tbody></tbody></table>
+        <div><b>HR assessment of the candidate:</b></div>
+        <div class="css-sffzb7"></div>
+        Sandra told me she can smell my aura.
+      </div>
+    `;
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/executives/g1/");
+
+    updateExecutivePanel();
+
+    expect(content.textContent).toContain("Sandra told me she can smell my aura.");
+    expect(content.textContent).not.toContain("navigateToExecutives");
+  });
+
+  it("renders HR feedback on grouped executive pages when feedback exists", () => {
+    document.body.innerHTML = `
+      <div class="css-1r0yqr6">
+        <table class="css-1vnhof9"><tbody><tr><td>Expected salary</td><td>$1,247</td></tr></tbody></table>
+        <table class="css-1fs1e4u"><tbody></tbody></table>
+        <div><b>HR assessment of the candidate:</b></div>
+        <div class="css-sffzb7"></div>
+        Sandra told me she can smell my aura.
+      </div>
+    `;
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/executives/g12/");
+
+    updateExecutivePanel();
+
+    expect(content.textContent).toContain("Sandra told me she can smell my aura.");
+    expect(content.textContent).not.toContain("navigateToExecutives");
+  });
+});
+
+describe("HR blurp matching", () => {
+  it("matches 'Sandra told me she can smell my aura.' to blurp 84", () => {
+    const feedbackText = "Sandra told me she can smell my aura.";
+    const match = _testUtils.findBestMatchingEntry(feedbackText);
+    expect(match).not.toBeNull();
+    expect(match.id).toBe(84);
+  });
+
+  it("returns null when similarity is below threshold", () => {
+    const feedbackText = "completely unrelated feedback about something else entirely";
+    const match = _testUtils.findBestMatchingEntry(feedbackText);
+    expect(match).toBeNull();
+  });
+
+  it("matches with exact original feedback string", () => {
+    const feedbackText = "<Name> told me he/she can smell my aura.";
+    const match = _testUtils.findBestMatchingEntry(feedbackText);
+    expect(match).not.toBeNull();
+    expect(match.id).toBe(84);
+  });
 });

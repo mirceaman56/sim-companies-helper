@@ -35,6 +35,14 @@ describe("warehouse_page adapter", () => {
     expect(items.length).toBe(2);
   });
 
+  it("returns an empty array when no parsable inventory cards exist", () => {
+    document.body.innerHTML = loadFixture("empty.html");
+
+    const items = extractWarehousePageItems(document);
+
+    expect(items).toEqual([]);
+  });
+
   it("wraps cards and creates market button once", () => {
     document.body.innerHTML = loadFixture("cards.html");
     const card = document.querySelector('[data-testid="card-apples"]');
