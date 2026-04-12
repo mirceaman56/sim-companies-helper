@@ -9,6 +9,7 @@ import hrBlurpData from "./resources/hr_blurp.json";
 import { t } from "./i18n.js";
 import { getSectionContent } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
+import { waitForStructuralValue } from "./page/page_utils.js";
 import {
   getExecutivePageKind,
   isExecutivePath,
@@ -27,6 +28,9 @@ const SKILL_LABELS = {
   comm: "Communication",
   tech: "Technology",
 };
+const TRAINING_SYNC_TIMEOUT_MS = 4000;
+
+let pendingTrainingSyncPath = null;
 
 function getSkillLabel(skillKey) {
   const labelMap = {
@@ -238,12 +242,33 @@ function buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, m
   return lines.join("\n");
 }
 
+function scheduleTrainingSync(pathname) {
+  if (pendingTrainingSyncPath === pathname) return;
+  pendingTrainingSyncPath = pathname;
+
+  void waitForStructuralValue({
+    target: document.body,
+    readValue: () => readExecutiveTrainingSkills(document),
+    isReady: (value) => Boolean(value && Object.keys(value).length > 0),
+    timeoutMs: TRAINING_SYNC_TIMEOUT_MS,
+  }).then((resolvedTrainingSkills) => {
+    if (pendingTrainingSyncPath !== pathname) return;
+    pendingTrainingSyncPath = null;
+
+    if (!resolvedTrainingSkills) return;
+    if (window.location.pathname !== pathname) return;
+
+    updateExecutivePanel();
+  });
+}
+
 export function updateExecutivePanel() {
   const content = getSectionContent(SECTION_ID);
   if (!content) return;
 
   const pathname = window.location.pathname;
   if (!isExecutivePath(pathname)) {
+    pendingTrainingSyncPath = null;
     content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
     wireRefreshButton(content);
     wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null));
@@ -254,6 +279,15 @@ export function updateExecutivePanel() {
   const executiveSkills = readExecutiveSkills(document);
   const trainingSkills =
     pageKind === "role" || pageKind === "apprentice" ? readExecutiveTrainingSkills(document) : null;
+  if (pageKind === "role" || pageKind === "apprentice") {
+    if (trainingSkills) {
+      pendingTrainingSyncPath = null;
+    } else {
+      scheduleTrainingSync(pathname);
+    }
+  } else {
+    pendingTrainingSyncPath = null;
+  }
   const feedbackText = readExecutiveHRFeedback(document);
   const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
 

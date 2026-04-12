@@ -2,14 +2,14 @@ const EXEC_ROLE_PATTERN = /\/headquarters\/executives\/(coo|cfo|cto|cmo)(-appren
 const EXEC_CANDIDATE_PATTERN = /\/headquarters\/executives\/g[1-4]\/?$/;
 const EXEC_GROUP_PATTERN = /\/headquarters\/executives\/g\d+\/?$/;
 const SKILL_ORDER = ["mgmt", "acct", "comm", "tech"];
-const PAGE_SKILL_MAPPING = {
-  management: "mgmt",
-  accounting: "acct",
-  communication: "comm",
-  science: "tech",
-  technology: "tech",
+const EXEC_TRAINING_HISTORY_LINE_SELECTOR = ".pull-right.text-right > div";
+const TRAINING_LINE_CAPTURE_REGEX = /^(.+?)(?:\s*[:-])?\s*\(?[+＋]\s*(\d+)\)?\s*$/;
+const SKILL_KEY_ALIASES = {
+  mgmt: ["management"],
+  acct: ["accounting"],
+  comm: ["communication"],
+  tech: ["science", "technology"],
 };
-const TRAINING_REGEX = /\b(Management|Accounting|Communication|Science|Technology)\s*\+(\d+)\b/gi;
 
 export function isExecutivePath(pathname) {
   if (typeof pathname !== "string") return false;
@@ -36,31 +36,10 @@ export function getExecutivePageKind(pathname) {
 }
 
 export function readExecutiveSkills(root = document) {
-  const skills = {};
-  const tbodies = root?.querySelectorAll?.("tbody") || [];
+  const skillRows = readExecutiveSkillRows(root);
+  if (!skillRows) return null;
 
-  for (const tbody of tbodies) {
-    const rows = tbody.querySelectorAll("tr");
-    if (rows.length !== SKILL_ORDER.length) continue;
-
-    let skillIndex = 0;
-    for (const row of rows) {
-      const cells = row.querySelectorAll("td");
-      if (cells.length < 2) break;
-
-      const value = extractSkillValue(cells[1]);
-      if (!Number.isFinite(value)) break;
-
-      skills[SKILL_ORDER[skillIndex]] = value;
-      skillIndex += 1;
-    }
-
-    if (skillIndex === SKILL_ORDER.length) {
-      return skills;
-    }
-  }
-
-  return null;
+  return Object.fromEntries(skillRows.map((row) => [row.key, row.value]));
 }
 
 function extractSkillValue(cell) {
@@ -82,24 +61,162 @@ function extractSkillValue(cell) {
   return Number.isFinite(value) ? value : null;
 }
 
-export function readExecutiveTrainingSkills(root = document) {
-  const training = {};
-  const text = root?.body?.textContent || root?.textContent || "";
+function readExecutiveSkillRows(root = document) {
+  const tbodies = root?.querySelectorAll?.("tbody") || [];
 
-  let match = TRAINING_REGEX.exec(text);
-  while (match) {
-    const skillName = match[1].toLowerCase();
-    const increment = Number.parseInt(match[2], 10);
-    const skillKey = PAGE_SKILL_MAPPING[skillName];
+  for (const tbody of tbodies) {
+    const rows = tbody.querySelectorAll("tr");
+    if (rows.length !== SKILL_ORDER.length) continue;
 
-    if (skillKey && Number.isFinite(increment)) {
-      training[skillKey] = (training[skillKey] || 0) + increment;
+    /** @type {{key: string, label: string, value: number}[]} */
+    const parsedRows = [];
+
+    for (let index = 0; index < rows.length; index += 1) {
+      const row = rows[index];
+      const cells = row.querySelectorAll("td");
+      if (cells.length < 2) break;
+
+      const value = extractSkillValue(cells[1]);
+      if (!Number.isFinite(value)) break;
+
+      const key = SKILL_ORDER[index];
+      const label = (cells[0].textContent || "").trim();
+      parsedRows.push({ key, label, value });
     }
 
-    match = TRAINING_REGEX.exec(text);
+    if (parsedRows.length === SKILL_ORDER.length) {
+      return parsedRows;
+    }
   }
 
-  TRAINING_REGEX.lastIndex = 0;
+  return null;
+}
+
+function normalizeSkillLabel(text) {
+  return String(text || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[\s:()\-_.]+/g, "")
+    .trim();
+}
+
+function buildSkillLabelKeyMap(root = document) {
+  const skillRows = readExecutiveSkillRows(root);
+  const labelMap = new Map();
+  const normalizedLabels = [];
+
+  if (skillRows) {
+    for (const row of skillRows) {
+      const normalized = normalizeSkillLabel(row.label);
+      if (!normalized) continue;
+      labelMap.set(normalized, row.key);
+      normalizedLabels.push(normalized);
+    }
+  }
+
+  for (const [skillKey, aliases] of Object.entries(SKILL_KEY_ALIASES)) {
+    for (const alias of aliases) {
+      const normalized = normalizeSkillLabel(alias);
+      if (!normalized) continue;
+      if (!labelMap.has(normalized)) {
+        labelMap.set(normalized, skillKey);
+      }
+    }
+  }
+
+  return {
+    labelMap,
+    normalizedLabels,
+  };
+}
+
+function resolveSkillKey(rawLabel, labelMap, normalizedLabels) {
+  const normalizedLabel = normalizeSkillLabel(rawLabel);
+  if (!normalizedLabel) return null;
+
+  if (labelMap.has(normalizedLabel)) {
+    return labelMap.get(normalizedLabel);
+  }
+
+  for (const normalizedKnownLabel of normalizedLabels) {
+    if (normalizedLabel.includes(normalizedKnownLabel) || normalizedKnownLabel.includes(normalizedLabel)) {
+      return labelMap.get(normalizedKnownLabel) || null;
+    }
+  }
+
+  return null;
+}
+
+function parseTrainingLine(line, labelMap, normalizedLabels) {
+  const match = String(line || "")
+    .trim()
+    .match(TRAINING_LINE_CAPTURE_REGEX);
+  if (!match) return null;
+
+  const skillKey = resolveSkillKey(match[1], labelMap, normalizedLabels);
+  if (!skillKey) return null;
+
+  const increment = Number.parseInt(match[2], 10);
+  if (!Number.isFinite(increment)) return null;
+
+  return { skillKey, increment };
+}
+
+function collectTrainingFromHistoryLines(lines, labelMap, normalizedLabels) {
+  const training = {};
+
+  for (const line of lines) {
+    const parsed = parseTrainingLine(line, labelMap, normalizedLabels);
+    if (!parsed) continue;
+    training[parsed.skillKey] = (training[parsed.skillKey] || 0) + parsed.increment;
+  }
+
+  return training;
+}
+
+function escapeRegex(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function collectTrainingFromPageText(text, labelMap) {
+  const training = {};
+
+  for (const [normalizedLabel, skillKey] of labelMap.entries()) {
+    if (!normalizedLabel) continue;
+
+    const rawLabelRegex = new RegExp(
+      `${escapeRegex(normalizedLabel)}(?:\\s*[:-])?\\s*\\(?[+＋]\\s*(\\d+)\\)?`,
+      "gi",
+    );
+    const normalizedText = normalizeSkillLabel(text);
+
+    let match = rawLabelRegex.exec(normalizedText);
+    while (match) {
+      const increment = Number.parseInt(match[1], 10);
+      if (Number.isFinite(increment)) {
+        training[skillKey] = (training[skillKey] || 0) + increment;
+      }
+      match = rawLabelRegex.exec(normalizedText);
+    }
+  }
+
+  return training;
+}
+
+export function readExecutiveTrainingSkills(root = document) {
+  const text = root?.body?.textContent || root?.textContent || "";
+  const { labelMap, normalizedLabels } = buildSkillLabelKeyMap(root);
+
+  const historyLines = [...(root?.querySelectorAll?.(EXEC_TRAINING_HISTORY_LINE_SELECTOR) || [])]
+    .map((el) => el.textContent?.trim())
+    .filter((line) => line && /[+＋]\s*\d+/.test(line));
+
+  const training =
+    historyLines.length > 0
+      ? collectTrainingFromHistoryLines(historyLines, labelMap, normalizedLabels)
+      : collectTrainingFromPageText(text, labelMap);
+
   return Object.keys(training).length > 0 ? training : null;
 }
 

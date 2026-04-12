@@ -112,6 +112,30 @@ describe("executive panel refresh", () => {
     expect(content.textContent).toContain("Sandra told me she can smell my aura.");
     expect(content.textContent).not.toContain("navigateToExecutives");
   });
+
+  it("refreshes training breakdown after delayed training rows load", async () => {
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/executives/cfo/");
+
+    updateExecutivePanel();
+    let trainingValues = [...content.querySelectorAll(".scx-skill-breakdown-training-value")].map((el) =>
+      el.textContent.trim(),
+    );
+    expect(trainingValues).toEqual(["0", "0", "0", "0"]);
+
+    const delayedTraining = document.createElement("div");
+    delayedTraining.textContent = "Accounting +1 Science +1";
+    document.body.appendChild(delayedTraining);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    trainingValues = [...content.querySelectorAll(".scx-skill-breakdown-training-value")].map((el) =>
+      el.textContent.trim(),
+    );
+    expect(trainingValues).toEqual(["0", "1", "0", "1"]);
+  });
 });
 
 describe("HR blurp matching", () => {
