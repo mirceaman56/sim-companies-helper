@@ -1,0 +1,55 @@
+/* Copy Button */
+.scx-copy-btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: var(--scx-text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.scx-copy-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--scx-bg-tooltip);
+  color: var(--scx-color-white);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.scx-copy-btn::before {
+  content: "";
+  position: absolute;
+  top: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--scx-bg-tertiary);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.scx-copy-btn:hover::after,
+.scx-copy-btn:hover::before {
+  opacity: 1;
+}

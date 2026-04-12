@@ -255,12 +255,12 @@ function injectIfNeeded() {
         <option value="4"${discountPct === 4 ? " selected" : ""}>-4%</option>
         <option value="5"${discountPct === 5 ? " selected" : ""}>-5%</option>
       </select>
-      <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-contract-apply-btn">
+      <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-btn scx-btn-info scx-contract-apply-btn">
         ${t("contractApplyBtn")}${discountPct}%
       </button>
     </div>
     <div class="scx-contract-profit-panel">
-      <button id="${CALC_BUTTON_ID}" class="scx-contract-calc-btn">
+      <button id="${CALC_BUTTON_ID}" class="scx-btn scx-btn-success scx-contract-calc-btn">
         💰 ${t("contractCalcProfit")}
       </button>
       <div id="${PROFIT_RESULT_ID}" class="scx-contract-profit-result scx-contract-profit-hidden"></div>

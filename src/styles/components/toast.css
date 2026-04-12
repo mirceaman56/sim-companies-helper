@@ -1,0 +1,114 @@
+/* ============ Toast Notifications ============ */
+#scx-toast-container {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.scx-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-medium);
+  border-left: 4px solid var(--scx-color-success);
+  border-radius: 6px;
+  box-shadow: var(--scx-shadow-toast);
+  padding: 12px 14px;
+  min-width: 320px;
+  max-width: 440px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  font-family: var(--scx-font-family);
+}
+
+.scx-toast.scx-toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scx-toast.scx-toast-exit {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.scx-toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.scx-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.scx-toast-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.scx-toast-link {
+  color: var(--scx-color-info);
+  text-decoration: none;
+}
+
+.scx-toast-link:hover {
+  text-decoration: underline;
+}
+
+.scx-toast-message {
+  font-size: 12px;
+  color: var(--scx-text-secondary);
+}
+
+.scx-whats-new-list {
+  margin: 6px 0 6px 18px;
+  padding: 0;
+}
+
+.scx-whats-new-list li {
+  margin: 2px 0;
+}
+
+.scx-whats-new-error {
+  font-size: 11px;
+  color: var(--scx-text-muted);
+  margin-top: 2px;
+}
+
+.scx-whats-new-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.scx-toast-close {
+  background: none;
+  border: none;
+  color: var(--scx-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.scx-toast-close:hover {
+  color: var(--scx-text-primary);
+}
+
+@media (max-width: 1200px) {
+  .scx-sidebar {
+    display: none;
+  }
+}

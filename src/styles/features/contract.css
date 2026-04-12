@@ -1,0 +1,117 @@
+.scx-contract-helper {
+  margin-top: 4px;
+  padding: 10px;
+  gap: 8px;
+  border: var(--scx-border-medium-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-neutral);
+  box-shadow: var(--scx-shadow-sm);
+  font-size: var(--scx-font-size-sm);
+  cursor: default;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.scx-contract-helper:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--scx-shadow-md);
+}
+
+.scx-contract-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-secondary);
+}
+
+.scx-contract-title-icon {
+  font-size: var(--scx-font-size-base);
+}
+
+.scx-contract-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scx-contract-select {
+  background: var(--scx-bg-neutral);
+  border: var(--scx-border-medium-light);
+  border-radius: var(--scx-border-radius-sm);
+  padding: 5px 6px;
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+  cursor: pointer;
+}
+
+.scx-contract-apply-btn,
+.scx-contract-calc-btn {
+  border-radius: var(--scx-border-radius-sm);
+  padding: 6px 10px;
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+.scx-contract-apply-btn {
+  white-space: nowrap;
+}
+
+.scx-contract-calc-btn {
+  width: 100%;
+  padding: 5px 10px;
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-profit-panel {
+  width: 100%;
+  padding-top: 8px;
+  border-top: var(--scx-border-light);
+}
+
+.scx-contract-profit-result {
+  width: 100%;
+  margin-top: 6px;
+  font-size: var(--scx-font-size-sm);
+  line-height: 1.6;
+}
+
+.scx-contract-profit-hidden {
+  display: none;
+}
+
+.scx-contract-profit-empty {
+  text-align: center;
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+}
+
+.scx-contract-profit-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.scx-contract-profit-cost {
+  color: var(--scx-color-warning);
+}
+
+.scx-contract-profit-divider {
+  border: none;
+  border-top: var(--scx-border-light);
+  margin: 4px 0;
+}
+
+.scx-contract-profit-total {
+  font-weight: var(--scx-font-weight-bold);
+}
+
+.scx-contract-profit-positive {
+  color: var(--scx-color-success);
+}
+
+.scx-contract-profit-negative {
+  color: var(--scx-color-error);
+}

@@ -1,0 +1,73 @@
+/* Production UI styling */
+.scx-prod-title {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+  font-size: 14px;
+}
+
+.scx-production-panel {
+  font-size: 11px;
+}
+
+.scx-production-empty-panel {
+  text-align: center;
+  padding: 20px 12px;
+}
+
+.scx-production-analysis-panel {
+  padding: 12px;
+}
+
+.scx-production-analysis-error {
+  font-size: 9px;
+  color: var(--scx-color-error);
+  margin-top: 4px;
+}
+
+.scx-production-analysis-hint {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+  margin-top: 8px;
+}
+
+.scx-production-error-note {
+  border-left-color: var(--scx-color-error);
+  color: var(--scx-color-error);
+}
+
+.scx-production-profit-stack {
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.scx-production-projected-box {
+  margin-top: 4px;
+}
+
+.scx-production-projected-title {
+  color: var(--scx-text-secondary);
+}
+
+.scx-prod-qty {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+}
+
+.scx-badge-active {
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.scx-badge-level {
+  background: var(--scx-tone-neutral-bg);
+  color: var(--scx-tone-neutral-text);
+  border: 1px solid var(--scx-tone-neutral-border);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}

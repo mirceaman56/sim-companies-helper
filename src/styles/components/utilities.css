@@ -1,0 +1,145 @@
+.scx-card {
+  padding: var(--scx-spacing-sm);
+  border-radius: var(--scx-border-radius-md);
+}
+
+.scx-card-sm {
+  padding: var(--scx-spacing-xs);
+  border-radius: var(--scx-border-radius-sm);
+}
+
+.scx-card-center {
+  text-align: center;
+}
+
+.scx-card-value {
+  font-size: var(--scx-font-size-md);
+  font-weight: var(--scx-font-weight-bold);
+}
+
+.scx-card-value-lg {
+  font-size: var(--scx-font-size-xl);
+  font-weight: var(--scx-font-weight-bold);
+}
+
+.scx-flex-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+}
+
+.scx-flex-spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.scx-text-positive {
+  color: var(--scx-tone-success-text);
+}
+
+.scx-text-negative {
+  color: var(--scx-tone-error-text);
+}
+
+.scx-text-info-strong {
+  color: var(--scx-tone-info-text);
+}
+
+.scx-text-warning-strong {
+  color: var(--scx-tone-warning-text);
+}
+
+.scx-text-neutral-strong {
+  color: var(--scx-tone-neutral-text);
+}
+
+.scx-text-muted {
+  color: var(--scx-text-muted);
+  font-size: 9px;
+}
+
+.scx-text-bold {
+  font-weight: 700;
+}
+
+.scx-text-semibold {
+  font-weight: 600;
+}
+
+.scx-hr-sm {
+  margin: 6px 0;
+}
+
+.scx-margin-bottom-4 {
+  margin-bottom: 4px;
+}
+
+.scx-margin-bottom-6 {
+  margin-bottom: 6px;
+}
+
+.scx-margin-top-1 {
+  margin-top: 1px;
+}
+
+.scx-margin-top-2 {
+  margin-top: 2px;
+}
+
+.scx-margin-top-4 {
+  margin-top: 4px;
+}
+
+.scx-border-top-sm {
+  border-top: var(--scx-border-subtle);
+}
+
+.scx-border-top-md {
+  border-top: var(--scx-border-subtle-strong);
+}
+
+.scx-padding-top-3 {
+  padding-top: 3px;
+}
+
+.scx-padding-top-4 {
+  padding-top: 4px;
+}
+
+.scx-text-right {
+  text-align: right;
+}
+
+.scx-text-uppercase {
+  text-transform: uppercase;
+}
+
+.scx-font-8 {
+  font-size: 9px;
+}
+
+.scx-font-9 {
+  font-size: 10px;
+}
+
+.scx-font-10 {
+  font-size: 11px;
+}
+
+.scx-color-999 {
+  color: var(--scx-text-muted);
+}
+
+.scx-color-333 {
+  color: var(--scx-text-primary);
+}
+
+.scx-hidden {
+  display: none !important;
+}

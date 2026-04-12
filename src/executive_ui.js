@@ -71,9 +71,13 @@ function findBestMatchingEntry(feedbackText) {
 }
 
 function getSkillAssessment(skillValue) {
-  if (skillValue >= 1.4) return { class: "scx-hr-blurp-skill-keeper", label: t("keeper") };
-  if (skillValue >= 1.3) return { class: "scx-hr-blurp-skill-works", label: t("works") };
-  return { class: "scx-hr-blurp-skill-garbage", label: t("garbage") };
+  if (skillValue >= 1.4) {
+    return { toneClass: "scx-tone-success", textClass: "scx-text-positive", label: t("keeper") };
+  }
+  if (skillValue >= 1.3) {
+    return { toneClass: "scx-tone-warning", textClass: "scx-text-warning-strong", label: t("works") };
+  }
+  return { toneClass: "scx-tone-error", textClass: "scx-text-negative", label: t("garbage") };
 }
 
 function createPanelHeaderHTML() {
@@ -103,10 +107,10 @@ function createSkillElementHTML(skillKey, skillValue) {
   const assessment = getSkillAssessment(skillValue);
 
   return `
-    <div class="scx-hr-blurp-skill-item ${assessment.class}">
+    <div class="scx-hr-blurp-skill-item scx-tone-surface ${assessment.toneClass}">
       <div class="scx-hr-blurp-skill-label">${escapeHtml(getSkillLabel(skillKey))}</div>
-      <div class="scx-hr-blurp-skill-value">${skillValue.toFixed(2)}</div>
-      <div class="scx-hr-blurp-skill-assessment">${escapeHtml(assessment.label)}</div>
+      <div class="scx-hr-blurp-skill-value ${assessment.textClass}">${skillValue.toFixed(2)}</div>
+      <div class="scx-hr-blurp-skill-assessment ${assessment.textClass}">${escapeHtml(assessment.label)}</div>
     </div>
   `;
 }
@@ -184,12 +188,11 @@ function createFooterHTML(matchedEntry) {
   if (!matchedEntry?.skills?.avgSkill) return "";
 
   const avgAssessment = getSkillAssessment(matchedEntry.skills.avgSkill);
-  const footerClass = `scx-hr-blurp-footer scx-hr-blurp-footer-${avgAssessment.class.replace("scx-hr-blurp-skill-", "")}`;
 
   return `
-    <div class="${footerClass}">
+    <div class="scx-hr-blurp-footer">
       <div class="scx-hr-blurp-footer-label">${t("averageSkill")}</div>
-      <div class="scx-hr-blurp-footer-value">${matchedEntry.skills.avgSkill.toFixed(2)}</div>
+      <div class="scx-hr-blurp-footer-value ${avgAssessment.textClass}">${matchedEntry.skills.avgSkill.toFixed(2)}</div>
     </div>
   `;
 }

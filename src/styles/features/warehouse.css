@@ -1,0 +1,64 @@
+.scx-warehouse-market-wrapper {
+  float: left;
+  display: flex;
+  flex-direction: column;
+  width: var(--scx-warehouse-card-width, fit-content);
+  margin-right: var(--scx-warehouse-card-margin-right, var(--scx-spacing-sm));
+  margin-bottom: var(--scx-warehouse-card-margin-bottom, var(--scx-spacing-sm));
+}
+
+.scx-warehouse-market-card {
+  float: none !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  width: 100% !important;
+}
+
+.scx-warehouse-market-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 0 0 4px 4px;
+  padding: 3px 0;
+  margin-top: 0;
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+  background: var(--scx-text-primary-dark);
+  color: var(--scx-bg-primary);
+}
+
+.scx-warehouse-market-btn:hover:not(:disabled) {
+  background: var(--scx-text-primary);
+}
+
+.scx-warehouse-market-btn[data-state="loading"] {
+  opacity: 0.6;
+}
+
+.scx-warehouse-market-btn[data-state="error"] {
+  color: var(--scx-color-error);
+}
+
+.scx-warehouse-market-btn[data-state="result"][data-delta="good"] {
+  color: var(--scx-color-success);
+}
+
+.scx-warehouse-market-btn[data-state="result"][data-delta="bad"] {
+  color: var(--scx-color-error);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-warehouse-market-btn {
+    background: var(--scx-bg-tertiary);
+    color: var(--scx-text-primary);
+  }
+
+  .scx-warehouse-market-btn:hover:not(:disabled) {
+    background: var(--scx-bg-neutral);
+  }
+}

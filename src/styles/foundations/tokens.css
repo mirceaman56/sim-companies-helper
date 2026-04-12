@@ -1,0 +1,263 @@
+/* ============ CSS Variables - Minimalist Design ============ */
+:root {
+  --scx-color-white: #ffffff;
+
+  /* Primary Semantic Colors */
+  --scx-color-success: #2e7d32; /* Dark Green */
+  --scx-color-error: #c62828; /* Dark Red */
+  --scx-color-warning: #d68e00; /* Dark Orange */
+  --scx-color-info: #1565c0; /* Dark Blue */
+  --scx-color-error-dark: #b71c1c;
+  --scx-color-brand-paypal: #e91e63;
+  --scx-color-brand-kofi: #ff5e5b;
+  --scx-color-orange-dark: #d35400;
+
+  /* Legacy color names */
+  --scx-color-orange: #d68e00;
+
+  /* ============ Spacing ============ */
+  --scx-spacing-xs: 4px;
+  --scx-spacing-sm: 8px;
+  --scx-spacing-md: 12px;
+  --scx-spacing-lg: 16px;
+  --scx-spacing-xl: 20px;
+
+  /* ============ Backgrounds - White Minimalist ============ */
+  --scx-bg-primary: #ffffff; /* Main white background */
+  --scx-bg-secondary: #f8f8f8; /* Light gray */
+  --scx-bg-tertiary: #ffffff; /* White */
+  --scx-bg-subtle: #f5f5f5; /* Very light gray */
+
+  /* Status backgrounds */
+  --scx-bg-success: #f0f8f0; /* Very light green */
+  --scx-bg-success-light: #f5fbf5; /* Lighter green */
+  --scx-bg-error: #fdf5f5; /* Very light red */
+  --scx-bg-warning: #fffaf0; /* Very light orange */
+  --scx-bg-info: #f5f9ff; /* Very light blue */
+  --scx-bg-neutral: #f8f8f8; /* Light gray */
+  --scx-bg-light: #ffffff; /* White */
+  --scx-bg-box-light-gray: #f0f4f8;
+  --scx-bg-dark-header: #252525;
+  --scx-bg-dark-hover: #454545;
+  --scx-bg-info-overlay: rgba(21, 101, 192, 0.25);
+  --scx-bg-info-overlay-strong: rgba(21, 101, 192, 0.35);
+  --scx-bg-quality-dark: rgba(60, 80, 100, 0.6);
+  --scx-bg-success-dark-card: #1f5f2a;
+  --scx-bg-info-dark-card: #1d3f66;
+  --scx-bg-error-dark-card: #7e1f1f;
+  --scx-bg-warning-dark-card: #6a4605;
+  --scx-bg-danger-dark-card: #bf2323;
+  --scx-bg-tooltip: #333333;
+
+  /* ============ Borders - Simple ============ */
+  --scx-border-light: 1px solid #e0e0e0;
+  --scx-border-light-gray: 1px solid #e8e8e8;
+  --scx-border-light-alt: 1px solid #eeeeee;
+  --scx-border-medium: 1px solid #d0d0d0;
+  --scx-border-medium-gray: 1px solid #cccccc;
+  --scx-border-medium-light: 1px solid #bebebe;
+  --scx-border-dark: 1px solid #999999;
+  --scx-border-dark-gray: 1px solid #666666;
+  --scx-border-subtle: 1px solid rgba(0, 0, 0, 0.05);
+  --scx-border-subtle-strong: 1px solid rgba(0, 0, 0, 0.1);
+  --scx-border-subtle-inverse: rgba(255, 255, 255, 0.2);
+  --scx-border-dark-muted: #666666;
+  --scx-border-warning-dark: #7a5510;
+  --scx-border-error-soft: #d74a4a;
+  --scx-border-error-soft-strong: #ef5350;
+  --scx-border-box-blue-dark: #355d87;
+  --scx-border-box-yellow-dark: #7a5c17;
+  --scx-border-box-green-dark: #2f7a45;
+  --scx-border-box-light-gray-dark: #4a4f59;
+  --scx-border-profit-box-yellow-dark: #8d6e1e;
+  --scx-border-sell-box-orange-dark: #8a5f1b;
+
+  /* ============ Text Colors - Simple & Contrast ============ */
+  --scx-text-primary: #000000;
+  --scx-text-secondary: #555555;
+  --scx-text-muted: #999999;
+
+  --scx-text-success: #2e7d32;
+  --scx-text-success-dark: #1b5e20;
+  --scx-text-error: #c62828;
+  --scx-text-warning: #d68e00;
+  --scx-text-warning-alt: #b85d00;
+  --scx-text-info: #1565c0;
+  --scx-text-info-dark: #0d47a1;
+  --scx-text-secondary-alt: #555555;
+  --scx-text-primary-dark: #000000;
+  --scx-text-info-soft: #64b5f6;
+  --scx-text-info-soft-strong: #90caf9;
+  --scx-text-success-soft: #81c784;
+  --scx-text-warning-soft: #ffb74d;
+  --scx-text-error-soft: #ef9a9a;
+  --scx-text-success-contrast: #dbffdf;
+  --scx-text-info-contrast: #e2efff;
+  --scx-text-error-contrast: #ffdada;
+  --scx-text-danger-contrast: #ffe0e0;
+  --scx-text-warning-contrast: #ffe7bf;
+  --scx-text-support: #c0c0c0;
+
+  /* Semantic tone surfaces */
+  --scx-tone-info-bg: var(--scx-bg-info);
+  --scx-tone-info-fg: var(--scx-text-info);
+  --scx-tone-info-border: transparent;
+  --scx-tone-neutral-bg: var(--scx-bg-box-light-gray);
+  --scx-tone-neutral-fg: var(--scx-text-primary);
+  --scx-tone-neutral-border: transparent;
+  --scx-tone-success-bg: var(--scx-bg-success);
+  --scx-tone-success-fg: var(--scx-text-success-dark);
+  --scx-tone-success-border: transparent;
+  --scx-tone-warning-bg: var(--scx-bg-warning);
+  --scx-tone-warning-fg: var(--scx-text-warning);
+  --scx-tone-warning-border: transparent;
+  --scx-tone-error-bg: var(--scx-bg-error);
+  --scx-tone-error-fg: var(--scx-text-error);
+  --scx-tone-error-border: transparent;
+  --scx-tone-info-text: var(--scx-text-info-dark);
+  --scx-tone-neutral-text: var(--scx-text-primary);
+  --scx-tone-success-text: var(--scx-text-success-dark);
+  --scx-tone-warning-text: var(--scx-text-warning-alt);
+  --scx-tone-error-text: var(--scx-text-error);
+
+  /* Sidebar shell theme */
+  --scx-shell-section-bg: var(--scx-bg-tertiary);
+  --scx-shell-section-border: var(--scx-border-medium-gray);
+  --scx-shell-section-shadow: var(--scx-shadow-sm);
+  --scx-shell-section-header-bg: linear-gradient(
+    135deg,
+    var(--scx-bg-neutral) 0%,
+    var(--scx-bg-tertiary) 100%
+  );
+  --scx-shell-section-header-border: var(--scx-border-light-gray);
+  --scx-shell-section-content-bg: transparent;
+
+  /* Chat surfaces */
+  --scx-chat-quality-bg: var(--scx-bg-tertiary);
+  --scx-chat-quality-border: var(--scx-border-light);
+  --scx-chat-link: var(--scx-status-good-color);
+  --scx-chat-link-hover: var(--scx-text-info-dark);
+  --scx-chat-body: var(--scx-text-info);
+
+  /* ============ Status Colors - Good/Okay/Bad ============ */
+  --scx-status-good-color: #2e7d32; /* Dark Green */
+  --scx-status-good-bg: #f0f8f0; /* Light Green */
+  --scx-status-okay-color: #d68e00; /* Dark Orange */
+  --scx-status-okay-bg: #fffaf0; /* Light Orange */
+  --scx-status-bad-color: #c62828; /* Dark Red */
+  --scx-status-bad-bg: #fdf5f5; /* Light Red */
+  --scx-input-border: #e0e0e0; /* Light Gray */
+
+  /* ============ Typography ============ */
+  --scx-font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --scx-font-size-xs: 10px;
+  --scx-font-size-sm: 11px;
+  --scx-font-size-base: 12px;
+  --scx-font-size-md: 13px;
+  --scx-font-size-lg: 14px;
+  --scx-font-size-xl: 16px;
+  --scx-font-weight-normal: 500;
+  --scx-font-weight-semibold: 600;
+  --scx-font-weight-bold: 700;
+  --scx-font-weight-heavy: 900;
+
+  /* ============ Borders & Shadows - Simple ============ */
+  --scx-border-radius-sm: 3px;
+  --scx-border-radius-md: 4px;
+  --scx-border-radius-lg: 8px;
+  --scx-border-radius-xl: 12px;
+  --scx-border-radius-full: 999px;
+
+  --scx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --scx-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --scx-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --scx-shadow-sidebar-dark: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --scx-shadow-toast: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --scx-shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --scx-shadow-popover-dark: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  /* ============ Form Input Styling ============ */
+  --scx-input-bg: #ffffff;
+  --scx-input-text: #000000;
+}
+
+/* ============ Dark Theme CSS Variables ============ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Override text colors for dark theme */
+    --scx-text-primary: #e0e0e0;
+    --scx-text-secondary: #b0b0b0;
+    --scx-text-muted: #808080;
+
+    /* Override background colors for dark theme */
+    --scx-bg-primary: #1e1e1e;
+    --scx-bg-secondary: #2d2d2d;
+    --scx-bg-tertiary: #383838;
+    --scx-bg-subtle: #2d2d2d;
+    --scx-bg-light: #383838;
+
+    /* Override border colors for dark theme */
+    --scx-border-light: 1px solid #555;
+    --scx-border-light-gray: 1px solid #555;
+    --scx-border-light-alt: 1px solid #555;
+    --scx-border-medium: 1px solid #555;
+    --scx-border-medium-gray: 1px solid #555;
+    --scx-border-medium-light: 1px solid #666;
+    --scx-border-dark: 1px solid #888;
+    --scx-border-dark-gray: 1px solid #999;
+
+    /* Override form input for dark theme */
+    --scx-input-bg: #383838;
+    --scx-input-text: #e0e0e0;
+    --scx-input-border: #555;
+
+    /* Override status backgrounds for dark theme */
+    --scx-bg-success: #1b5e20;
+    --scx-bg-success-light: #2e7d32;
+    --scx-bg-error: #b71c1c;
+    --scx-bg-warning: #5a3a00;
+    --scx-bg-info: #1565c0;
+    --scx-bg-neutral: #383838;
+
+    /* Fix dark text colors that become invisible on dark status backgrounds */
+    --scx-text-success-dark: #a5d6a7;
+    --scx-text-warning: #ffd79a;
+    --scx-text-warning-alt: #ffe8c4;
+    --scx-status-okay-color: #ffd79a;
+    --scx-status-okay-bg: #5a3a00;
+
+    --scx-tone-info-bg: var(--scx-bg-info-dark-card);
+    --scx-tone-info-fg: var(--scx-text-info-contrast);
+    --scx-tone-info-border: var(--scx-border-box-blue-dark);
+    --scx-tone-neutral-bg: var(--scx-bg-secondary);
+    --scx-tone-neutral-fg: var(--scx-text-primary);
+    --scx-tone-neutral-border: var(--scx-border-box-light-gray-dark);
+    --scx-tone-success-bg: var(--scx-bg-success-dark-card);
+    --scx-tone-success-fg: var(--scx-text-success-contrast);
+    --scx-tone-success-border: var(--scx-border-box-green-dark);
+    --scx-tone-warning-bg: var(--scx-bg-warning-dark-card);
+    --scx-tone-warning-fg: var(--scx-text-warning-contrast);
+    --scx-tone-warning-border: var(--scx-border-warning-dark);
+    --scx-tone-error-bg: var(--scx-bg-error-dark-card);
+    --scx-tone-error-fg: var(--scx-text-error-contrast);
+    --scx-tone-error-border: var(--scx-border-error-soft);
+    --scx-tone-info-text: var(--scx-text-info-soft-strong);
+    --scx-tone-neutral-text: var(--scx-text-primary);
+    --scx-tone-success-text: var(--scx-text-success-dark);
+    --scx-tone-warning-text: var(--scx-text-warning-alt);
+    --scx-tone-error-text: var(--scx-text-error-soft);
+
+    --scx-shell-section-bg: var(--scx-bg-secondary);
+    --scx-shell-section-border: 1px solid var(--scx-input-border);
+    --scx-shell-section-shadow: var(--scx-shadow-sidebar-dark);
+    --scx-shell-section-header-bg: var(--scx-bg-dark-header);
+    --scx-shell-section-header-border: 1px solid var(--scx-input-border);
+    --scx-shell-section-content-bg: var(--scx-bg-secondary);
+
+    --scx-chat-quality-bg: var(--scx-bg-quality-dark);
+    --scx-chat-quality-border: 1px solid var(--scx-input-border);
+    --scx-chat-link: var(--scx-text-success-soft);
+    --scx-chat-link-hover: var(--scx-text-info-soft-strong);
+    --scx-chat-body: var(--scx-text-info-soft);
+  }
+}

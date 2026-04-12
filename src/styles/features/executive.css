@@ -1,0 +1,217 @@
+.scx-hr-blurp-feedback-section {
+  padding: 12px 16px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-hr-blurp-feedback-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.scx-hr-blurp-feedback-text {
+  font-size: 11px;
+  color: var(--scx-text-primary);
+  line-height: 1.4;
+  font-style: italic;
+  background: var(--scx-bg-subtle);
+  padding: 8px;
+  border-radius: 3px;
+  max-height: 60px;
+  overflow-y: auto;
+}
+
+.scx-hr-blurp-skills-section {
+  padding: 16px;
+}
+
+.scx-hr-blurp-skills-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.scx-hr-blurp-skill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 4px;
+  border-left: 3px solid currentColor;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scx-hr-blurp-skill-label {
+  flex: 0 0 100px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--scx-text-primary);
+}
+
+.scx-hr-blurp-skill-value {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.scx-hr-blurp-skill-assessment {
+  flex: 0 0 80px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.scx-hr-blurp-footer {
+  padding: 12px 16px;
+  border-top: 2px solid var(--scx-border-light);
+  background: var(--scx-bg-subtle);
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scx-hr-blurp-footer-label {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+}
+
+.scx-hr-blurp-footer-value {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Skills Breakdown Section */
+.scx-skill-breakdown-section {
+  padding: 16px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-skill-breakdown-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.scx-skill-breakdown-description {
+  font-size: 10px;
+  color: var(--scx-text-muted);
+  margin-bottom: 12px;
+}
+
+.scx-skill-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: var(--scx-border-light);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scx-skill-breakdown-row:last-child {
+  border-bottom: none;
+}
+
+.scx-skill-breakdown-row .scx-skill-breakdown-label {
+  flex: 0 0 80px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-values {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.scx-skill-breakdown-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.scx-skill-breakdown-total {
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-organic {
+  color: var(--scx-status-good-color);
+}
+
+.scx-skill-breakdown-training {
+  color: var(--scx-text-info);
+}
+
+.scx-skill-breakdown-total-label,
+.scx-skill-breakdown-organic-label,
+.scx-skill-breakdown-training-label {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--scx-text-muted);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.scx-skill-breakdown-total-value,
+.scx-skill-breakdown-organic-value,
+.scx-skill-breakdown-training-value {
+  font-weight: 700;
+  font-size: 14px;
+  display: block;
+}
+
+.scx-skill-breakdown-total-value {
+  color: var(--scx-text-primary);
+}
+
+.scx-skill-breakdown-organic-value {
+  color: var(--scx-text-success-dark);
+}
+
+.scx-skill-breakdown-training-value {
+  color: var(--scx-color-info);
+}
+
+.scx-executive-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scx-executive-refresh-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Executive Helper Empty State */
+.scx-executive-empty-state {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.scx-executive-empty-message {
+  text-align: center;
+  color: var(--scx-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: italic;
+}

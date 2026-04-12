@@ -1,0 +1,62 @@
+/* ============ Cashflow Panel ============ */
+.scx-cf-net {
+  font-size: var(--scx-font-size-xl);
+  font-weight: var(--scx-font-weight-bold);
+  line-height: 1.2;
+}
+
+.scx-cf-block {
+  padding: var(--scx-spacing-sm);
+  border-radius: var(--scx-border-radius-md);
+}
+
+.scx-cf-income {
+  background: var(--scx-bg-success-light);
+}
+
+.scx-cf-expense {
+  background: var(--scx-bg-error);
+}
+
+.scx-cf-block-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: var(--scx-font-weight-bold);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: var(--scx-border-subtle-strong);
+}
+
+.scx-cf-income .scx-cf-block-total {
+  color: var(--scx-text-success-dark);
+}
+
+.scx-cf-expense .scx-cf-block-total {
+  color: var(--scx-color-error);
+}
+
+.scx-cf-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--scx-font-size-sm);
+  margin-top: 2px;
+}
+
+.scx-cf-row .scx-text-muted {
+  color: var(--scx-text-secondary);
+}
+
+.scx-cf-row-value {
+  font-weight: var(--scx-font-weight-normal);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-cf-block-total {
+    border-bottom-color: var(--scx-border-subtle-inverse);
+  }
+
+  .scx-cf-income .scx-cf-block-total,
+  .scx-cf-expense .scx-cf-block-total {
+    color: var(--scx-color-white);
+  }
+}
