@@ -2,6 +2,55 @@ import { resolveScope } from "./scope.js";
 
 const DEFAULT_PREFIX = "scx";
 
+/**
+ * @typedef {"scoped"|"company"|"realm"|"global"} StorageScopeMode
+ */
+
+/**
+ * @typedef {Object} StorageBaseOptions
+ * @property {string} domain Logical feature namespace, for example `market-alerts`.
+ * @property {number} version Version segment used in the generated storage key.
+ * @property {StorageScopeMode} [scope="scoped"] Scope mode resolved through `resolveScope()`.
+ * @property {"local"|"chrome"} [backend="local"] Storage backend.
+ * @property {string} [prefix="scx"] Storage key prefix.
+ * @property {boolean} [refreshAuth=true] Refresh auth-derived scope values before resolving the key.
+ */
+
+/**
+ * @typedef {StorageBaseOptions & {
+ *   ttlMs?: number | null
+ * }} StorageReadOptions
+ */
+
+/**
+ * @typedef {StorageBaseOptions & {
+ *   ttlMs?: number | null,
+ *   data: unknown
+ * }} StorageWriteOptions
+ */
+
+/**
+ * @typedef {Object} LegacyReadContext
+ * @property {typeof getRaw} getRaw Read a legacy raw value.
+ * @property {typeof setRaw} setRaw Write a raw value if the migration needs an intermediate step.
+ * @property {typeof removeRaw} removeRaw Delete a legacy raw value.
+ * @property {typeof listByPrefix} listByPrefix Enumerate legacy keys.
+ * @property {(raw: unknown) => any} parseJson Parse legacy JSON envelopes safely.
+ */
+
+/**
+ * @typedef {Object} LegacyReadResult
+ * @property {unknown} data Migrated data value.
+ * @property {() => Promise<void>} [cleanup] Optional callback that deletes old keys after a successful write.
+ */
+
+/**
+ * @typedef {StorageReadOptions & {
+ *   readLegacy?: ((context: LegacyReadContext) => Promise<LegacyReadResult | { data: null } | null>) | null,
+ *   cleanupLegacy?: boolean
+ * }} StorageMigrateOptions
+ */
+
 function hasLocalStorage() {
   try {
     return typeof localStorage !== "undefined" && localStorage !== null;
@@ -253,6 +302,26 @@ export async function listByPrefix({ backend = "local", prefix = "" } = {}) {
     .map(([key, value]) => ({ key, value }));
 }
 
+/**
+ * Read a versioned, scope-aware storage value.
+ *
+ * Scope examples:
+ * - Use `scope: "global"` for browser-wide preferences shared across companies.
+ * - Use `scope: "scoped"` for company-and-realm-specific data.
+ * - Use `scope: "company"` or `scope: "realm"` when data should follow only one side of the account context.
+ *
+ * Expired envelopes, version mismatches, and scope mismatches are treated as cache misses and cleaned up automatically.
+ *
+ * @param {StorageReadOptions} [options={}]
+ * @returns {Promise<unknown|null>} Stored data or `null` when no valid envelope exists.
+ * @example
+ * const alerts = await get({
+ *   domain: "market-alerts",
+ *   version: 2,
+ *   scope: "scoped",
+ *   backend: "chrome",
+ * });
+ */
 export async function get({
   domain,
   version,
@@ -298,6 +367,22 @@ export async function get({
   return envelope.data ?? null;
 }
 
+/**
+ * Write a versioned, scope-aware storage value.
+ *
+ * The stored envelope records the version, timestamp, optional TTL, and resolved scope metadata so stale or cross-scope data can be rejected later.
+ *
+ * @param {StorageWriteOptions} [options={}]
+ * @returns {Promise<boolean>} `true` when the backend write succeeds.
+ * @example
+ * await set({
+ *   domain: "upgrade-discount",
+ *   version: 1,
+ *   scope: "global",
+ *   backend: "local",
+ *   data: 2.5,
+ * });
+ */
 export async function set({
   domain,
   version,
@@ -329,6 +414,19 @@ export async function set({
   return setRaw(backend, key, toStorageRaw(normalizeBackend(backend), envelope));
 }
 
+/**
+ * Remove a versioned, scope-aware storage value for the currently resolved scope.
+ *
+ * @param {StorageBaseOptions} [options={}]
+ * @returns {Promise<boolean>} `true` when the backend delete succeeds.
+ * @example
+ * await remove({
+ *   domain: "market-alerts",
+ *   version: 2,
+ *   scope: "scoped",
+ *   backend: "chrome",
+ * });
+ */
 export async function remove({
   domain,
   version,
@@ -344,6 +442,32 @@ export async function remove({
   return removeRaw(backend, key);
 }
 
+/**
+ * Dual-read migration helper for moving legacy keys into the versioned storage platform.
+ *
+ * The function first checks the new key. If nothing valid is stored yet, it calls `readLegacy()` so the caller can inspect old keys and return `{ data, cleanup }`.
+ * When legacy data is found, the new envelope is written and the optional cleanup callback is run.
+ *
+ * @param {StorageMigrateOptions} [options={}]
+ * @returns {Promise<{ data: unknown|null, migrated: boolean }>} Migration result plus the resolved data value.
+ * @example
+ * const result = await migrate({
+ *   domain: "whats-new",
+ *   version: 1,
+ *   scope: "global",
+ *   backend: "chrome",
+ *   readLegacy: async ({ getRaw, removeRaw }) => {
+ *     const legacy = await getRaw("chrome", "scx-whats-new");
+ *     if (legacy == null) return { data: null };
+ *     return {
+ *       data: legacy,
+ *       async cleanup() {
+ *         await removeRaw("chrome", "scx-whats-new");
+ *       },
+ *     };
+ *   },
+ * });
+ */
 export async function migrate({
   domain,
   version,
