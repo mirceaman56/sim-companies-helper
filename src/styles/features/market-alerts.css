@@ -134,34 +134,10 @@
   padding: 4px 8px;
 }
 
-.scx-ma-btn-start {
-  flex: 1;
-  background: var(--scx-color-success);
-  color: var(--scx-color-white);
-}
-
-.scx-ma-btn-start:hover {
-  background: var(--scx-text-success-dark);
-}
-
-.scx-ma-btn-stop {
-  flex: 1;
-  background: var(--scx-color-error);
-  color: var(--scx-color-white);
-}
-
-.scx-ma-btn-stop:hover {
-  background: var(--scx-color-error-dark);
-}
-
+.scx-ma-btn-start,
+.scx-ma-btn-stop,
 .scx-ma-btn-reset {
   flex: 1;
-  background: var(--scx-color-orange);
-  color: var(--scx-color-white);
-}
-
-.scx-ma-btn-reset:hover {
-  background: var(--scx-color-orange-dark);
 }
 
 .scx-ma-btn-remove {

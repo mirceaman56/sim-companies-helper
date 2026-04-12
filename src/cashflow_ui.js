@@ -104,9 +104,16 @@ function severityLabel(severity) {
 }
 
 function severityClass(severity) {
-  if (severity === "danger") return "scx-fin-alert-danger";
-  if (severity === "warn") return "scx-fin-alert-warn";
-  return "scx-fin-alert-info";
+  if (severity === "danger") return "scx-tone-surface scx-tone-error";
+  if (severity === "warn") return "scx-tone-surface scx-tone-warning";
+  return "scx-tone-surface scx-tone-info";
+}
+
+function statusToneClass(type) {
+  if (type === "ok") return "scx-tone-surface scx-tone-success";
+  if (type === "warn") return "scx-tone-surface scx-tone-warning";
+  if (type === "error") return "scx-tone-surface scx-tone-error";
+  return "scx-tone-surface scx-tone-info";
 }
 
 function deltaClass(delta) {
@@ -493,7 +500,7 @@ function renderAlerts(alerts, compact = false) {
       ${subset
         .map(
           (a) => `
-            <div class="scx-fin-alert-item ${severityClass(a.severity)}">
+            <div class="scx-fin-alert-item scx-alert-card ${severityClass(a.severity)}">
               <span class="scx-fin-alert-severity">${escapeHtml(severityLabel(a.severity))}</span>
               <span class="scx-fin-alert-message">${escapeHtml(t(`financeAlert${capitalize(a.id)}`))}</span>
             </div>
@@ -935,7 +942,7 @@ function renderHeader(finance) {
           ? `<div class="scx-fin-status-list">${status
               .map(
                 (x) =>
-                  `<div class="scx-fin-status-item scx-fin-status-${x.type}">${escapeHtml(x.text)}</div>`,
+                  `<div class="scx-fin-status-item scx-status-chip ${statusToneClass(x.type)}">${escapeHtml(x.text)}</div>`,
               )
               .join("")}</div>`
           : ""

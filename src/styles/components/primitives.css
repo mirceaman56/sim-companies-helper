@@ -58,18 +58,52 @@
   background: var(--scx-text-muted);
 }
 
-.scx-btn-primary {
+.scx-btn-primary,
+.scx-btn-success {
   background: var(--scx-color-success);
-  color: white;
+  color: var(--scx-color-white);
   border-color: var(--scx-color-success);
 }
 
-.scx-btn-primary:hover:not(:disabled) {
+.scx-btn-primary:hover:not(:disabled),
+.scx-btn-success:hover:not(:disabled) {
   background: var(--scx-text-success-dark);
+  border-color: var(--scx-text-success-dark);
 }
 
+.scx-btn-error,
 .scx-btn.stop {
   background: var(--scx-color-error);
+  color: var(--scx-color-white);
+  border-color: var(--scx-color-error);
+}
+
+.scx-btn-error:hover:not(:disabled),
+.scx-btn.stop:hover:not(:disabled) {
+  background: var(--scx-color-error-dark);
+  border-color: var(--scx-color-error-dark);
+}
+
+.scx-btn-warning {
+  background: var(--scx-color-warning);
+  color: var(--scx-color-white);
+  border-color: var(--scx-color-warning);
+}
+
+.scx-btn-warning:hover:not(:disabled) {
+  background: var(--scx-color-orange-dark);
+  border-color: var(--scx-color-orange-dark);
+}
+
+.scx-btn-info {
+  background: var(--scx-color-info);
+  color: var(--scx-color-white);
+  border-color: var(--scx-color-info);
+}
+
+.scx-btn-info:hover:not(:disabled) {
+  background: var(--scx-text-info-dark);
+  border-color: var(--scx-text-info-dark);
 }
 
 /* Section Panel & Component Styles */

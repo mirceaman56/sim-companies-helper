@@ -57,32 +57,6 @@
   gap: 4px;
 }
 
-.scx-fin-status-item {
-  font-size: var(--scx-font-size-xs);
-  border-radius: var(--scx-border-radius-sm);
-  padding: 4px 6px;
-}
-
-.scx-fin-status-info {
-  background: var(--scx-bg-info);
-  color: var(--scx-text-info);
-}
-
-.scx-fin-status-warn {
-  background: var(--scx-bg-warning);
-  color: var(--scx-text-warning);
-}
-
-.scx-fin-status-ok {
-  background: var(--scx-bg-success);
-  color: var(--scx-text-success);
-}
-
-.scx-fin-status-error {
-  background: var(--scx-bg-error);
-  color: var(--scx-text-error);
-}
-
 .scx-fin-badges {
   gap: 6px;
 }
@@ -333,14 +307,6 @@
   gap: 4px;
 }
 
-.scx-fin-alert-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  border-radius: var(--scx-border-radius-sm);
-  padding: 5px 6px;
-}
-
 .scx-fin-alert-severity {
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-bold);
@@ -349,65 +315,6 @@
 
 .scx-fin-alert-message {
   font-size: var(--scx-font-size-sm);
-}
-
-.scx-fin-alert-danger {
-  background: var(--scx-bg-error);
-  color: var(--scx-text-error);
-}
-
-.scx-fin-alert-warn {
-  background: var(--scx-bg-warning);
-  color: var(--scx-text-warning);
-}
-
-@media (prefers-color-scheme: dark) {
-  #scx-sidebar .scx-fin-status-warn,
-  #scx-sidebar .scx-fin-alert-warn {
-    border: 1px solid var(--scx-border-warning-dark);
-  }
-
-  #scx-sidebar .scx-fin-status-ok {
-    background: var(--scx-bg-success-dark-card);
-    color: var(--scx-text-success-contrast);
-  }
-
-  #scx-sidebar .scx-fin-status-info {
-    background: var(--scx-bg-info-dark-card);
-    color: var(--scx-text-info-contrast);
-  }
-
-  #scx-sidebar .scx-fin-status-error {
-    background: var(--scx-bg-error-dark-card);
-    color: var(--scx-text-error-contrast);
-  }
-
-  #scx-sidebar .scx-fin-alert-danger {
-    background: var(--scx-bg-danger-dark-card);
-    color: var(--scx-text-danger-contrast);
-    border: 1px solid var(--scx-border-error-soft);
-  }
-
-  #scx-sidebar .scx-fin-alert-warn {
-    background: var(--scx-bg-warning-dark-card);
-    color: var(--scx-text-warning-contrast);
-    border: 1px solid var(--scx-border-profit-box-yellow-dark);
-  }
-
-  #scx-sidebar .scx-fin-alert-info {
-    background: var(--scx-bg-info-dark-card);
-    color: var(--scx-text-info-contrast);
-    border: 1px solid var(--scx-border-box-blue-dark);
-  }
-
-  #scx-sidebar .scx-fin-alert-severity {
-    opacity: 1;
-  }
-}
-
-.scx-fin-alert-info {
-  background: var(--scx-bg-info);
-  color: var(--scx-text-info);
 }
 
 .scx-fin-tx-table-wrap {

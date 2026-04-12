@@ -43,19 +43,6 @@
   color: var(--scx-text-muted);
 }
 
-.scx-retail-win-box {
-  padding: 8px;
-  border-radius: 4px;
-}
-
-.scx-retail-win-box-retail {
-  background: var(--scx-bg-success);
-}
-
-.scx-retail-win-box-market {
-  background: var(--scx-bg-warning);
-}
-
 .scx-retail-win-row {
   display: flex;
   justify-content: space-between;
@@ -64,14 +51,6 @@
 
 .scx-retail-win-row-summary {
   font-weight: 600;
-}
-
-.scx-retail-win-row-retail {
-  color: var(--scx-color-success);
-}
-
-.scx-retail-win-row-market {
-  color: var(--scx-text-warning-alt);
 }
 
 .scx-retail-price-note {
@@ -86,18 +65,6 @@
 
 .scx-retail-note-plain {
   font-style: normal;
-}
-
-.scx-retail-trend-positive {
-  color: var(--scx-color-success);
-}
-
-.scx-retail-trend-negative {
-  color: var(--scx-color-error);
-}
-
-.scx-retail-trend-neutral {
-  color: var(--scx-text-muted);
 }
 
 .scx-retail-fine-print {
@@ -147,67 +114,4 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.scx-sell-box {
-  padding: 8px;
-  border-radius: 4px;
-}
-
-.scx-sell-box-green {
-  background: var(--scx-bg-success);
-}
-
-.scx-sell-box-orange {
-  background: var(--scx-bg-warning);
-}
-
-.scx-sell-box-blue {
-  background: var(--scx-bg-info);
-}
-
-.scx-sell-box-content {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.scx-sell-box-green .scx-sell-box-content {
-  color: var(--scx-text-success-dark);
-}
-
-.scx-sell-box-orange .scx-sell-box-content {
-  color: var(--scx-color-orange);
-}
-
-.scx-sell-box-blue .scx-sell-box-content {
-  color: var(--scx-text-info-dark);
-}
-
-.scx-sell-profit-center {
-  background: var(--scx-bg-subtle);
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.scx-sell-profit-center-value {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-@media (prefers-color-scheme: dark) {
-  #scx-sidebar .scx-sell-box-green {
-    background: var(--scx-bg-success-dark-card);
-    border: 1px solid var(--scx-border-box-green-dark);
-  }
-
-  #scx-sidebar .scx-sell-box-orange {
-    background: var(--scx-bg-warning);
-    border: 1px solid var(--scx-border-sell-box-orange-dark);
-  }
-
-  #scx-sidebar .scx-sell-box-blue {
-    background: var(--scx-bg-info-dark-card);
-    border: 1px solid var(--scx-border-box-blue-dark);
-  }
 }

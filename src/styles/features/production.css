@@ -40,28 +40,12 @@
   margin-bottom: 4px;
 }
 
-.scx-production-tone-positive {
-  color: var(--scx-color-success);
-}
-
-.scx-production-tone-negative {
-  color: var(--scx-color-error);
-}
-
 .scx-production-projected-box {
   margin-top: 4px;
 }
 
 .scx-production-projected-title {
-  color: var(--scx-color-info);
-}
-
-.scx-production-sell-box-positive {
-  background: var(--scx-bg-success);
-}
-
-.scx-production-sell-box-negative {
-  background: var(--scx-bg-error);
+  color: var(--scx-text-secondary);
 }
 
 .scx-prod-qty {
@@ -70,8 +54,8 @@
 }
 
 .scx-badge-active {
-  background: var(--scx-bg-info);
-  color: var(--scx-color-info);
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
   padding: 2px 6px;
   border-radius: 3px;
   margin-left: 4px;
@@ -79,8 +63,9 @@
 }
 
 .scx-badge-level {
-  background: var(--scx-bg-accent);
-  color: var(--scx-color-purple);
+  background: var(--scx-tone-neutral-bg);
+  color: var(--scx-tone-neutral-text);
+  border: 1px solid var(--scx-tone-neutral-border);
   padding: 2px 6px;
   border-radius: 3px;
   margin-left: 4px;

@@ -42,24 +42,9 @@
   padding: 8px 12px;
   margin: 4px 0;
   border-radius: 4px;
-  border-left: 3px solid;
+  border-left: 3px solid currentColor;
   width: 100%;
   box-sizing: border-box;
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper {
-  background-color: var(--scx-status-good-bg);
-  border-left-color: var(--scx-status-good-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works {
-  background-color: var(--scx-status-okay-bg);
-  border-left-color: var(--scx-status-okay-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage {
-  background-color: var(--scx-status-bad-bg);
-  border-left-color: var(--scx-status-bad-color);
 }
 
 .scx-hr-blurp-skill-label {
@@ -76,36 +61,12 @@
   font-size: 14px;
 }
 
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper .scx-hr-blurp-skill-value {
-  color: var(--scx-status-good-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works .scx-hr-blurp-skill-value {
-  color: var(--scx-status-okay-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage .scx-hr-blurp-skill-value {
-  color: var(--scx-status-bad-color);
-}
-
 .scx-hr-blurp-skill-assessment {
   flex: 0 0 80px;
   text-align: center;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-keeper .scx-hr-blurp-skill-assessment {
-  color: var(--scx-status-good-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-works .scx-hr-blurp-skill-assessment {
-  color: var(--scx-status-okay-color);
-}
-
-.scx-hr-blurp-skill-item.scx-hr-blurp-skill-garbage .scx-hr-blurp-skill-assessment {
-  color: var(--scx-status-bad-color);
 }
 
 .scx-hr-blurp-footer {
@@ -126,18 +87,6 @@
 .scx-hr-blurp-footer-value {
   font-weight: 700;
   font-size: 16px;
-}
-
-.scx-hr-blurp-footer.scx-hr-blurp-footer-keeper .scx-hr-blurp-footer-value {
-  color: var(--scx-status-good-color);
-}
-
-.scx-hr-blurp-footer.scx-hr-blurp-footer-works .scx-hr-blurp-footer-value {
-  color: var(--scx-status-okay-color);
-}
-
-.scx-hr-blurp-footer.scx-hr-blurp-footer-garbage .scx-hr-blurp-footer-value {
-  color: var(--scx-status-bad-color);
 }
 
 /* Skills Breakdown Section */

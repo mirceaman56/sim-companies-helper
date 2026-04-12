@@ -7,34 +7,13 @@
   --scx-color-error: #c62828; /* Dark Red */
   --scx-color-warning: #d68e00; /* Dark Orange */
   --scx-color-info: #1565c0; /* Dark Blue */
-  --scx-color-purple: #6a1b9a; /* Dark Purple */
   --scx-color-error-dark: #b71c1c;
   --scx-color-brand-paypal: #e91e63;
   --scx-color-brand-kofi: #ff5e5b;
   --scx-color-orange-dark: #d35400;
 
-  /* Category Colors - Income Types */
-  --scx-category-retail: #2e7d32;
-  --scx-category-contracts: #1565c0;
-  --scx-category-market: #d68e00;
-  --scx-category-other: #666666;
-
-  /* Category Colors - Expense Types */
-  --scx-category-production: #c62828;
-  --scx-category-wages: #d32f2f;
-  --scx-category-market-buy: #c2185b;
-  --scx-category-contract-exp: #6a1b9a;
-  --scx-category-fees: #5d4037;
-  --scx-category-construction: #d68e00;
-  --scx-category-accounting: #455a64;
-
   /* Legacy color names */
-  --scx-color-blue: #1565c0;
-  --scx-color-green: #2e7d32;
-  --scx-color-red: #c62828;
   --scx-color-orange: #d68e00;
-  --scx-color-brown: #5d4037;
-  --scx-color-dark-purple: #6a1b9a;
 
   /* ============ Spacing ============ */
   --scx-spacing-xs: 4px;
@@ -55,7 +34,6 @@
   --scx-bg-error: #fdf5f5; /* Very light red */
   --scx-bg-warning: #fffaf0; /* Very light orange */
   --scx-bg-info: #f5f9ff; /* Very light blue */
-  --scx-bg-accent: #f8f5fb; /* Very light purple */
   --scx-bg-neutral: #f8f8f8; /* Light gray */
   --scx-bg-light: #ffffff; /* White */
   --scx-bg-box-light-gray: #f0f4f8;
@@ -89,11 +67,9 @@
   --scx-border-error-soft-strong: #ef5350;
   --scx-border-box-blue-dark: #355d87;
   --scx-border-box-yellow-dark: #7a5c17;
-  --scx-border-box-purple-dark: #6f43a3;
   --scx-border-box-green-dark: #2f7a45;
   --scx-border-box-light-gray-dark: #4a4f59;
   --scx-border-profit-box-yellow-dark: #8d6e1e;
-  --scx-border-profit-box-purple-dark: #7d54a0;
   --scx-border-sell-box-orange-dark: #8a5f1b;
 
   /* ============ Text Colors - Simple & Contrast ============ */
@@ -121,11 +97,47 @@
   --scx-text-danger-contrast: #ffe0e0;
   --scx-text-warning-contrast: #ffe7bf;
   --scx-text-support: #c0c0c0;
-  --scx-text-orange-soft: #ffd08b;
-  --scx-text-purple-soft: #ddbcff;
-  --scx-text-brown-soft: #ffe4bf;
-  --scx-text-dark-brown-soft: #e9d6ff;
-  --scx-text-forest-soft: #ccf6d8;
+
+  /* Semantic tone surfaces */
+  --scx-tone-info-bg: var(--scx-bg-info);
+  --scx-tone-info-fg: var(--scx-text-info);
+  --scx-tone-info-border: transparent;
+  --scx-tone-neutral-bg: var(--scx-bg-box-light-gray);
+  --scx-tone-neutral-fg: var(--scx-text-primary);
+  --scx-tone-neutral-border: transparent;
+  --scx-tone-success-bg: var(--scx-bg-success);
+  --scx-tone-success-fg: var(--scx-text-success-dark);
+  --scx-tone-success-border: transparent;
+  --scx-tone-warning-bg: var(--scx-bg-warning);
+  --scx-tone-warning-fg: var(--scx-text-warning);
+  --scx-tone-warning-border: transparent;
+  --scx-tone-error-bg: var(--scx-bg-error);
+  --scx-tone-error-fg: var(--scx-text-error);
+  --scx-tone-error-border: transparent;
+  --scx-tone-info-text: var(--scx-text-info-dark);
+  --scx-tone-neutral-text: var(--scx-text-primary);
+  --scx-tone-success-text: var(--scx-text-success-dark);
+  --scx-tone-warning-text: var(--scx-text-warning-alt);
+  --scx-tone-error-text: var(--scx-text-error);
+
+  /* Sidebar shell theme */
+  --scx-shell-section-bg: var(--scx-bg-tertiary);
+  --scx-shell-section-border: var(--scx-border-medium-gray);
+  --scx-shell-section-shadow: var(--scx-shadow-sm);
+  --scx-shell-section-header-bg: linear-gradient(
+    135deg,
+    var(--scx-bg-neutral) 0%,
+    var(--scx-bg-tertiary) 100%
+  );
+  --scx-shell-section-header-border: var(--scx-border-light-gray);
+  --scx-shell-section-content-bg: transparent;
+
+  /* Chat surfaces */
+  --scx-chat-quality-bg: var(--scx-bg-tertiary);
+  --scx-chat-quality-border: var(--scx-border-light);
+  --scx-chat-link: var(--scx-status-good-color);
+  --scx-chat-link-hover: var(--scx-text-info-dark);
+  --scx-chat-body: var(--scx-text-info);
 
   /* ============ Status Colors - Good/Okay/Bad ============ */
   --scx-status-good-color: #2e7d32; /* Dark Green */
@@ -182,6 +194,7 @@
     --scx-bg-secondary: #2d2d2d;
     --scx-bg-tertiary: #383838;
     --scx-bg-subtle: #2d2d2d;
+    --scx-bg-light: #383838;
 
     /* Override border colors for dark theme */
     --scx-border-light: 1px solid #555;
@@ -204,7 +217,6 @@
     --scx-bg-error: #b71c1c;
     --scx-bg-warning: #5a3a00;
     --scx-bg-info: #1565c0;
-    --scx-bg-accent: #6a1b9a;
     --scx-bg-neutral: #383838;
 
     /* Fix dark text colors that become invisible on dark status backgrounds */
@@ -214,17 +226,38 @@
     --scx-status-okay-color: #ffd79a;
     --scx-status-okay-bg: #5a3a00;
 
-    /* Lighter category colors for dark mode (used on dark-bg status blocks) */
-    --scx-category-retail: #81c784;
-    --scx-category-contracts: #64b5f6;
-    --scx-category-market: #ffb300;
-    --scx-category-other: #9e9e9e;
-    --scx-category-production: #ef9a9a;
-    --scx-category-wages: #ef9a9a;
-    --scx-category-market-buy: #f48fb1;
-    --scx-category-contract-exp: #ce93d8;
-    --scx-category-fees: #bcaaa4;
-    --scx-category-construction: #ffcc80;
-    --scx-category-accounting: #b0bec5;
+    --scx-tone-info-bg: var(--scx-bg-info-dark-card);
+    --scx-tone-info-fg: var(--scx-text-info-contrast);
+    --scx-tone-info-border: var(--scx-border-box-blue-dark);
+    --scx-tone-neutral-bg: var(--scx-bg-secondary);
+    --scx-tone-neutral-fg: var(--scx-text-primary);
+    --scx-tone-neutral-border: var(--scx-border-box-light-gray-dark);
+    --scx-tone-success-bg: var(--scx-bg-success-dark-card);
+    --scx-tone-success-fg: var(--scx-text-success-contrast);
+    --scx-tone-success-border: var(--scx-border-box-green-dark);
+    --scx-tone-warning-bg: var(--scx-bg-warning-dark-card);
+    --scx-tone-warning-fg: var(--scx-text-warning-contrast);
+    --scx-tone-warning-border: var(--scx-border-warning-dark);
+    --scx-tone-error-bg: var(--scx-bg-error-dark-card);
+    --scx-tone-error-fg: var(--scx-text-error-contrast);
+    --scx-tone-error-border: var(--scx-border-error-soft);
+    --scx-tone-info-text: var(--scx-text-info-soft-strong);
+    --scx-tone-neutral-text: var(--scx-text-primary);
+    --scx-tone-success-text: var(--scx-text-success-dark);
+    --scx-tone-warning-text: var(--scx-text-warning-alt);
+    --scx-tone-error-text: var(--scx-text-error-soft);
+
+    --scx-shell-section-bg: var(--scx-bg-secondary);
+    --scx-shell-section-border: 1px solid var(--scx-input-border);
+    --scx-shell-section-shadow: var(--scx-shadow-sidebar-dark);
+    --scx-shell-section-header-bg: var(--scx-bg-dark-header);
+    --scx-shell-section-header-border: 1px solid var(--scx-input-border);
+    --scx-shell-section-content-bg: var(--scx-bg-secondary);
+
+    --scx-chat-quality-bg: var(--scx-bg-quality-dark);
+    --scx-chat-quality-border: 1px solid var(--scx-input-border);
+    --scx-chat-link: var(--scx-text-success-soft);
+    --scx-chat-link-hover: var(--scx-text-info-soft-strong);
+    --scx-chat-body: var(--scx-text-info-soft);
   }
 }

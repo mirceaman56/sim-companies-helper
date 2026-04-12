@@ -17,8 +17,8 @@ function createPanelMarkup(recipesJson, count) {
     <textarea id="${OUTPUT_ID}" class="scx-recipe-extractor-output" readonly>${escapeHtml(recipesJson)}</textarea>
 
     <div class="scx-recipe-extractor-actions">
-      <button id="${COPY_BUTTON_ID}" class="scx-btn scx-recipe-extractor-copy" type="button">📋 Copy</button>
-      <button id="${CLEAR_BUTTON_ID}" class="scx-btn scx-recipe-extractor-clear" type="button">🗑️ Clear</button>
+      <button id="${COPY_BUTTON_ID}" class="scx-btn scx-btn-info scx-recipe-extractor-copy" type="button">📋 Copy</button>
+      <button id="${CLEAR_BUTTON_ID}" class="scx-btn scx-btn-error scx-recipe-extractor-clear" type="button">🗑️ Clear</button>
     </div>
 
     <div id="${COPY_FEEDBACK_ID}" class="scx-recipe-extractor-feedback">Copied to clipboard!</div>

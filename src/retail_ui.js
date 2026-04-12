@@ -298,9 +298,9 @@ export const RetailHelper = (() => {
 })();
 
 function getTrendClass(colorVar) {
-  if (colorVar === "var(--scx-color-success)") return "scx-retail-trend-positive";
-  if (colorVar === "var(--scx-color-error)") return "scx-retail-trend-negative";
-  return "scx-retail-trend-neutral";
+  if (colorVar === "var(--scx-color-success)") return "scx-text-positive";
+  if (colorVar === "var(--scx-color-error)") return "scx-text-negative";
+  return "scx-text-muted";
 }
 
 /**
@@ -439,7 +439,7 @@ export async function updatePanel() {
                         </div>
                     </div>
                     
-                    <div class="scx-retail-win-box ${isRetailBetter ? "scx-retail-win-box-retail" : "scx-retail-win-box-market"}">
+                    <div class="scx-card scx-tone-surface ${isRetailBetter ? "scx-tone-success" : "scx-tone-warning"}">
                         <div class="scx-retail-win-row">
                             <span class="scx-k">${t("marketNetProfit")}</span>
                             <span class="scx-v">${formatMoney(marketProfit)}</span>
@@ -448,7 +448,7 @@ export async function updatePanel() {
                             <span class="scx-k">${t("retailNetProfit")}</span>
                             <span class="scx-v">${formatMoney(retailNetProfit)}</span>
                         </div>
-                        <div class="scx-retail-win-row scx-retail-win-row-summary ${isRetailBetter ? "scx-retail-win-row-retail" : "scx-retail-win-row-market"}">
+                        <div class="scx-retail-win-row scx-retail-win-row-summary ${isRetailBetter ? "scx-text-positive" : "scx-text-warning-strong"}">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
                             <span>${formatMoney(Math.abs(diff))}</span>
                         </div>

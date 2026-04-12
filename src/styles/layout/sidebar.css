@@ -13,10 +13,10 @@
 }
 
 .scx-section {
-  background: var(--scx-bg-tertiary);
-  border: var(--scx-border-medium-gray);
+  background: var(--scx-shell-section-bg);
+  border: var(--scx-shell-section-border);
   border-radius: 8px;
-  box-shadow: var(--scx-shadow-sm);
+  box-shadow: var(--scx-shell-section-shadow);
   width: 350px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -34,8 +34,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  border-bottom: var(--scx-border-light-gray);
-  background: linear-gradient(135deg, var(--scx-bg-neutral) 0%, var(--scx-bg-tertiary) 100%);
+  border-bottom: var(--scx-shell-section-header-border);
+  background: var(--scx-shell-section-header-bg);
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   cursor: pointer;
@@ -79,6 +79,8 @@
   padding: 12px;
   max-height: 1000px;
   overflow: hidden;
+  background: var(--scx-shell-section-content-bg);
+  color: var(--scx-text-primary);
   transition:
     max-height 0.3s ease,
     padding 0.3s ease,
@@ -108,7 +110,7 @@
 }
 
 #scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) .scx-section-header {
-  border-top: var(--scx-border-medium-gray);
+  border-top: var(--scx-shell-section-header-border);
 }
 
 /* Adjust border-radius for snapped sections */
@@ -125,148 +127,4 @@
 #scx-sidebar > .scx-section:not(.collapsed):last-child {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
-}
-
-/* Sidebar dark theme – align with game UI (dark grey/charcoal) */
-@media (prefers-color-scheme: dark) {
-  #scx-sidebar .scx-section {
-    background: var(--scx-bg-secondary);
-    border-color: var(--scx-input-border);
-    box-shadow: var(--scx-shadow-sidebar-dark);
-  }
-
-  #scx-sidebar .scx-section-header {
-    background: var(--scx-bg-dark-header);
-    border-bottom-color: var(--scx-input-border);
-  }
-
-  #scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) .scx-section-header {
-    border-top-color: var(--scx-input-border);
-  }
-
-  #scx-sidebar .scx-section-title {
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-section-toggle {
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-section-content {
-    background: var(--scx-bg-secondary);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-panel {
-    background: var(--scx-bg-tertiary);
-    border-color: var(--scx-input-border);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-panel-title {
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-label,
-  #scx-sidebar label {
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-note {
-    color: var(--scx-text-secondary);
-    background: var(--scx-bg-tertiary);
-    border-left-color: var(--scx-input-border);
-  }
-
-  #scx-sidebar select,
-  #scx-sidebar input[type="text"],
-  #scx-sidebar input[type="number"] {
-    background: var(--scx-bg-tertiary);
-    border-color: var(--scx-input-border);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-sidebar-footer-contract,
-  #scx-sidebar .scx-sidebar-footer-support,
-  #scx-sidebar .scx-sidebar-footer-bug {
-    background: var(--scx-bg-tertiary);
-    border-color: var(--scx-input-border);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-sidebar-footer-contract:hover,
-  #scx-sidebar .scx-sidebar-footer-bug:hover {
-    background: var(--scx-bg-dark-hover);
-    border-color: var(--scx-border-dark-muted);
-  }
-
-  #scx-sidebar .scx-sidebar-footer-support-btn {
-    color: var(--scx-text-support);
-  }
-
-  #scx-sidebar .scx-sidebar-footer-support-btn:hover {
-    background: var(--scx-bg-dark-hover);
-  }
-
-  #scx-sidebar .scx-chat-message {
-    background: var(--scx-bg-tertiary);
-    border-color: var(--scx-input-border);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-chat-message-header {
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-chat-message-company {
-    color: var(--scx-text-success-soft);
-  }
-
-  #scx-sidebar .scx-chat-message-company:hover {
-    color: var(--scx-text-info-soft-strong);
-  }
-
-  #scx-sidebar .scx-chat-message-body {
-    color: var(--scx-text-info-soft);
-  }
-
-  #scx-sidebar .scx-chat-results {
-    border-top-color: var(--scx-input-border);
-  }
-
-  #scx-sidebar .scx-quality-container {
-    border-color: var(--scx-input-border);
-    background: var(--scx-bg-tertiary);
-  }
-
-  #scx-sidebar .scx-quality-label {
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-status {
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-badge {
-    background: var(--scx-bg-dark-hover);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-chip {
-    background: var(--scx-bg-dark-hover);
-    color: var(--scx-text-primary);
-  }
-
-  #scx-sidebar .scx-chip-na {
-    background: var(--scx-bg-tertiary);
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-copy-btn {
-    color: var(--scx-text-secondary);
-  }
-
-  #scx-sidebar .scx-copy-btn:hover {
-    color: var(--scx-text-primary);
-  }
 }

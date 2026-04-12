@@ -186,10 +186,10 @@ export function renderAlertList(input) {
         <div class="scx-ma-card-actions">
           ${
             alert.triggered
-              ? `<button class="scx-btn scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
+              ? `<button class="scx-btn scx-btn-warning scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
               : alert.active
-                ? `<button class="scx-btn scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
-                : `<button class="scx-btn scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
+                ? `<button class="scx-btn scx-btn-error scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
+                : `<button class="scx-btn scx-btn-success scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
           }
           <button class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
         </div>

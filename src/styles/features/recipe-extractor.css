@@ -64,16 +64,6 @@
   margin-top: var(--scx-spacing-md);
 }
 
-.scx-recipe-extractor-copy {
-  background: var(--scx-color-info);
-  color: var(--scx-bg-primary);
-}
-
-.scx-recipe-extractor-clear {
-  background: var(--scx-color-error);
-  color: var(--scx-bg-primary);
-}
-
 .scx-recipe-extractor-feedback {
   display: none;
   margin-top: var(--scx-spacing-sm);

@@ -50,31 +50,20 @@
 
 .scx-contract-apply-btn,
 .scx-contract-calc-btn {
-  border: none;
   border-radius: var(--scx-border-radius-sm);
   padding: 6px 10px;
   font-size: var(--scx-font-size-base);
   font-weight: var(--scx-font-weight-semibold);
-  color: var(--scx-bg-primary);
-  cursor: pointer;
-  transition: filter 0.2s ease;
 }
 
 .scx-contract-apply-btn {
-  background: var(--scx-color-info);
   white-space: nowrap;
 }
 
 .scx-contract-calc-btn {
   width: 100%;
   padding: 5px 10px;
-  background: var(--scx-color-success);
   font-size: var(--scx-font-size-sm);
-}
-
-.scx-contract-apply-btn:hover,
-.scx-contract-calc-btn:hover {
-  filter: brightness(0.95);
 }
 
 .scx-contract-profit-panel {

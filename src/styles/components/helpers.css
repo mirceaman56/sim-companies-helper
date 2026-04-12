@@ -26,6 +26,54 @@
   color: var(--scx-text-primary);
 }
 
+.scx-tone-surface {
+  border: 1px solid transparent;
+}
+
+.scx-tone-info {
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-fg);
+  border-color: var(--scx-tone-info-border);
+}
+
+.scx-tone-neutral {
+  background: var(--scx-tone-neutral-bg);
+  color: var(--scx-tone-neutral-fg);
+  border-color: var(--scx-tone-neutral-border);
+}
+
+.scx-tone-success {
+  background: var(--scx-tone-success-bg);
+  color: var(--scx-tone-success-fg);
+  border-color: var(--scx-tone-success-border);
+}
+
+.scx-tone-warning {
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-fg);
+  border-color: var(--scx-tone-warning-border);
+}
+
+.scx-tone-error {
+  background: var(--scx-tone-error-bg);
+  color: var(--scx-tone-error-fg);
+  border-color: var(--scx-tone-error-border);
+}
+
+.scx-status-chip {
+  font-size: var(--scx-font-size-xs);
+  border-radius: var(--scx-border-radius-sm);
+  padding: 4px 6px;
+}
+
+.scx-alert-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: var(--scx-border-radius-sm);
+  padding: 5px 6px;
+}
+
 .scx-sell-hr {
   border: none;
   border-top: var(--scx-border-light);
