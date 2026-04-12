@@ -1,0 +1,67 @@
+.scx-upgrade-buy-panel {
+  margin: 12px 0 8px;
+  padding: 10px 12px;
+  background: var(--scx-bg-subtle);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  font-size: var(--scx-font-size-base);
+}
+
+.scx-upgrade-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.scx-upgrade-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.scx-upgrade-control-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.scx-upgrade-control-label {
+  font-size: var(--scx-font-size-sm);
+  color: var(--scx-text-muted);
+}
+
+.scx-upgrade-select {
+  background: var(--scx-bg-neutral);
+  border: var(--scx-border-medium-light);
+  border-radius: var(--scx-border-radius-sm);
+  padding: 3px 6px;
+  font-size: var(--scx-font-size-base);
+  cursor: pointer;
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+}
+
+.scx-upgrade-message {
+  flex: 1;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-sm);
+  padding: 8px 10px;
+  font-size: var(--scx-font-size-base);
+  line-height: 1.5;
+  color: var(--scx-text-primary);
+  word-break: break-word;
+  white-space: pre-wrap;
+  height: 106px;
+  overflow-y: auto;
+}
+
+.scx-upgrade-copy-btn {
+  align-self: center;
+  min-width: 28px;
+  min-height: 28px;
+  width: 28px;
+  height: 28px;
+}

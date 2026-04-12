@@ -1,0 +1,33 @@
+.scx-status {
+  font-size: var(--scx-font-size-sm);
+  color: var(--scx-text-secondary);
+  font-style: italic;
+}
+
+.scx-badge {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #f0f0f0;
+}
+
+.scx-muted {
+  font-size: 12px;
+  opacity: 0.72;
+}
+
+.scx-note-warning {
+  border-left: 3px solid #d68e00;
+  background: #fffaf0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--scx-text-primary);
+}
+
+.scx-sell-hr {
+  border: none;
+  border-top: var(--scx-border-light);
+  margin: 8px 0;
+}

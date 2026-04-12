@@ -1,0 +1,213 @@
+.scx-retail-empty-state {
+  text-align: center;
+  padding: 12px;
+}
+
+.scx-retail-empty-hint {
+  margin-top: 4px;
+}
+
+.scx-retail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.scx-retail-product-name {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+  font-size: 12px;
+}
+
+.scx-retail-ppm {
+  line-height: 1.1;
+}
+
+.scx-retail-panel-head {
+  margin-bottom: 6px;
+}
+
+.scx-retail-analysis-block {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.scx-retail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.scx-retail-detail-row {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-win-box {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-retail-win-box-retail {
+  background: var(--scx-bg-success);
+}
+
+.scx-retail-win-box-market {
+  background: var(--scx-bg-warning);
+}
+
+.scx-retail-win-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.scx-retail-win-row-summary {
+  font-weight: 600;
+}
+
+.scx-retail-win-row-retail {
+  color: var(--scx-color-success);
+}
+
+.scx-retail-win-row-market {
+  color: var(--scx-text-warning-alt);
+}
+
+.scx-retail-price-note {
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-note-error {
+  border-left-color: var(--scx-color-error);
+}
+
+.scx-retail-note-plain {
+  font-style: normal;
+}
+
+.scx-retail-trend-positive {
+  color: var(--scx-color-success);
+}
+
+.scx-retail-trend-negative {
+  color: var(--scx-color-error);
+}
+
+.scx-retail-trend-neutral {
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-fine-print {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+}
+
+.scx-retail-fine-print-first {
+  margin-top: 2px;
+}
+
+.scx-material-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-material-name {
+  color: var(--scx-text-primary);
+  font-weight: 500;
+}
+
+.scx-material-qty {
+  color: var(--scx-text-muted);
+  font-size: 10px;
+}
+
+.scx-material-price {
+  text-align: right;
+}
+
+.scx-material-unit-price {
+  color: var(--scx-text-secondary);
+  font-weight: 500;
+}
+
+.scx-material-total-cost {
+  color: var(--scx-text-primary);
+  font-weight: 600;
+}
+
+.scx-sell-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.scx-sell-box {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.scx-sell-box-green {
+  background: #e8f5e9;
+}
+
+.scx-sell-box-orange {
+  background: #fff3e0;
+}
+
+.scx-sell-box-blue {
+  background: #f0f8ff;
+}
+
+.scx-sell-box-content {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scx-sell-box-green .scx-sell-box-content {
+  color: #1b5e20;
+}
+
+.scx-sell-box-orange .scx-sell-box-content {
+  color: var(--scx-color-orange);
+}
+
+.scx-sell-box-blue .scx-sell-box-content {
+  color: #0d47a1;
+}
+
+.scx-sell-profit-center {
+  background: var(--scx-bg-subtle);
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.scx-sell-profit-center-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  #scx-sidebar .scx-sell-box-green {
+    background: #1f4d2a;
+    border: 1px solid #2f7a45;
+  }
+
+  #scx-sidebar .scx-sell-box-orange {
+    background: #5a3a09;
+    border: 1px solid #8a5f1b;
+  }
+
+  #scx-sidebar .scx-sell-box-blue {
+    background: #1f3655;
+    border: 1px solid #355d87;
+  }
+}

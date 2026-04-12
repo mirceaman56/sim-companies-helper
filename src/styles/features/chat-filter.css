@@ -1,0 +1,102 @@
+/* ============ Chat Filter Styles ============ */
+.scx-chat-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-md);
+}
+
+.scx-chat-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+}
+
+.scx-chat-row {
+  display: flex;
+  gap: var(--scx-spacing-sm);
+}
+
+.scx-quality-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--scx-spacing-md);
+  padding: var(--scx-spacing-md);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-tertiary);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-quality-container {
+    border: 1px solid #555;
+    background: rgba(60, 80, 100, 0.6);
+  }
+}
+
+.scx-quality-label {
+  display: flex;
+  align-items: center;
+  gap: var(--scx-spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--scx-font-size-base);
+  color: var(--scx-text-primary);
+}
+
+.scx-quality-label input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--scx-status-good-color);
+  width: 16px;
+  height: 16px;
+}
+
+.scx-chat-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+  max-height: 400px;
+  overflow-y: auto;
+  border-top: 1px solid var(--scx-input-border);
+  padding-top: var(--scx-spacing-sm);
+}
+
+.scx-chat-message {
+  padding: var(--scx-spacing-sm);
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  font-size: var(--scx-font-size-sm);
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-primary);
+}
+
+.scx-chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--scx-spacing-xs);
+  color: var(--scx-text-primary);
+}
+
+.scx-chat-message-company {
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-status-good-color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.scx-chat-message-company:hover {
+  text-decoration: underline;
+  color: var(--scx-color-blue);
+}
+
+.scx-chat-message-body {
+  white-space: pre-wrap;
+  color: var(--scx-color-blue);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scx-chat-message-body {
+    color: #64b5f6;
+  }
+}

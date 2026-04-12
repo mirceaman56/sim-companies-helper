@@ -1,0 +1,81 @@
+.scx-sidebar-footer-contract,
+.scx-sidebar-footer-support,
+.scx-sidebar-footer-bug {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  margin-top: 8px;
+  border: var(--scx-border-light);
+  border-radius: 4px;
+  background: var(--scx-bg-primary);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.scx-sidebar-footer-contract:hover,
+.scx-sidebar-footer-bug:hover {
+  background: var(--scx-bg-secondary);
+  border-color: var(--scx-border-medium);
+}
+
+.scx-sidebar-footer-support-btn {
+  flex: 1;
+  width: 100%;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-family: var(--scx-font-family);
+  font-weight: 600;
+  color: var(--scx-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.scx-sidebar-footer-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  color: var(--scx-text-secondary);
+  gap: 2px;
+}
+
+.scx-sidebar-footer-title {
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.scx-sidebar-footer-bug-icon {
+  color: #ef6c00;
+  font-size: 12px;
+}
+
+.scx-sidebar-footer-support-btn:hover {
+  background: var(--scx-bg-secondary);
+}
+
+.scx-sidebar-footer-support-paypal span {
+  color: #e91e63;
+}
+
+.scx-sidebar-footer-support-kofi span {
+  color: #ff5e5b;
+}
+
+.scx-kofi-badge {
+  height: 28px;
+  width: auto;
+  display: block;
+  border: 0;
+}

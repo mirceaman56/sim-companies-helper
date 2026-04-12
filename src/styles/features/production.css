@@ -1,0 +1,88 @@
+/* Production UI styling */
+.scx-prod-title {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+  font-size: 14px;
+}
+
+.scx-production-panel {
+  font-size: 11px;
+}
+
+.scx-production-empty-panel {
+  text-align: center;
+  padding: 20px 12px;
+}
+
+.scx-production-analysis-panel {
+  padding: 12px;
+}
+
+.scx-production-analysis-error {
+  font-size: 9px;
+  color: var(--scx-color-error);
+  margin-top: 4px;
+}
+
+.scx-production-analysis-hint {
+  font-size: 9px;
+  color: var(--scx-text-muted);
+  margin-top: 8px;
+}
+
+.scx-production-error-note {
+  border-left-color: var(--scx-color-error);
+  color: var(--scx-color-error);
+}
+
+.scx-production-profit-stack {
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.scx-production-tone-positive {
+  color: var(--scx-color-success);
+}
+
+.scx-production-tone-negative {
+  color: var(--scx-color-error);
+}
+
+.scx-production-projected-box {
+  margin-top: 4px;
+}
+
+.scx-production-projected-title {
+  color: var(--scx-color-info);
+}
+
+.scx-production-sell-box-positive {
+  background: var(--scx-bg-success);
+}
+
+.scx-production-sell-box-negative {
+  background: var(--scx-bg-error);
+}
+
+.scx-prod-qty {
+  font-weight: 600;
+  color: var(--scx-text-primary);
+}
+
+.scx-badge-active {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.scx-badge-level {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-size: 10px;
+}

@@ -1,0 +1,87 @@
+.scx-recipe-extractor-panel {
+  position: fixed;
+  right: var(--scx-spacing-xl);
+  bottom: var(--scx-spacing-xl);
+  width: 350px;
+  z-index: 10000;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-medium);
+  border-radius: var(--scx-border-radius-lg);
+  box-shadow: var(--scx-shadow-lg);
+  padding: var(--scx-spacing-lg);
+  box-sizing: border-box;
+  font-family: var(--scx-font-family);
+}
+
+.scx-recipe-extractor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--scx-spacing-md);
+}
+
+.scx-recipe-extractor-title {
+  color: var(--scx-text-info);
+  font-size: var(--scx-font-size-lg);
+}
+
+.scx-recipe-extractor-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--scx-text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.scx-recipe-extractor-close:hover {
+  color: var(--scx-text-primary);
+}
+
+.scx-recipe-extractor-output {
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: var(--scx-spacing-sm);
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: var(--scx-font-size-sm);
+  line-height: 1.4;
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-primary);
+}
+
+.scx-recipe-extractor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--scx-spacing-sm);
+  margin-top: var(--scx-spacing-md);
+}
+
+.scx-recipe-extractor-copy {
+  background: var(--scx-color-info);
+  color: var(--scx-bg-primary);
+}
+
+.scx-recipe-extractor-clear {
+  background: var(--scx-color-error);
+  color: var(--scx-bg-primary);
+}
+
+.scx-recipe-extractor-feedback {
+  display: none;
+  margin-top: var(--scx-spacing-sm);
+  text-align: center;
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-success);
+  background: var(--scx-bg-success);
+  border-radius: var(--scx-border-radius-md);
+  padding: var(--scx-spacing-sm);
+}
