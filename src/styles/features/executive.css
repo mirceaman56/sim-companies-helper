@@ -204,7 +204,7 @@
 }
 
 .scx-skill-breakdown-training {
-  color: #2196f3;
+  color: var(--scx-text-info);
 }
 
 .scx-skill-breakdown-total-label,
@@ -235,7 +235,7 @@
 }
 
 .scx-skill-breakdown-training-value {
-  color: #1565c0;
+  color: var(--scx-color-info);
 }
 
 .scx-executive-actions {

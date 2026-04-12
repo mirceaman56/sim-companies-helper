@@ -137,31 +137,31 @@
 .scx-ma-btn-start {
   flex: 1;
   background: var(--scx-color-success);
-  color: white;
+  color: var(--scx-color-white);
 }
 
 .scx-ma-btn-start:hover {
-  background: #1b5e20;
+  background: var(--scx-text-success-dark);
 }
 
 .scx-ma-btn-stop {
   flex: 1;
   background: var(--scx-color-error);
-  color: white;
+  color: var(--scx-color-white);
 }
 
 .scx-ma-btn-stop:hover {
-  background: #b71c1c;
+  background: var(--scx-color-error-dark);
 }
 
 .scx-ma-btn-reset {
   flex: 1;
-  background: #e67e22;
-  color: white;
+  background: var(--scx-color-orange);
+  color: var(--scx-color-white);
 }
 
 .scx-ma-btn-reset:hover {
-  background: #d35400;
+  background: var(--scx-color-orange-dark);
 }
 
 .scx-ma-btn-remove {
@@ -178,69 +178,69 @@
 
 @media (prefers-color-scheme: dark) {
   #scx-sidebar .scx-market-alerts-limit {
-    background: rgba(21, 101, 192, 0.25);
-    border-left-color: #64b5f6;
+    background: var(--scx-bg-info-overlay);
+    border-left-color: var(--scx-text-info-soft);
   }
 
   #scx-sidebar .scx-market-alerts-limit-text {
-    color: #90caf9;
+    color: var(--scx-text-info-soft-strong);
   }
 
   #scx-sidebar .scx-market-alerts-empty {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-ma-card {
-    background: #383838;
-    border-color: #555;
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
   }
 
   #scx-sidebar .scx-ma-card-header {
-    background: #252525;
-    border-bottom-color: #555;
+    background: var(--scx-bg-dark-header);
+    border-bottom-color: var(--scx-input-border);
   }
 
   #scx-sidebar .scx-ma-product-link {
-    color: #64b5f6;
+    color: var(--scx-text-info-soft);
   }
 
   #scx-sidebar .scx-ma-quality-badge {
-    background: rgba(21, 101, 192, 0.35);
-    color: #90caf9;
+    background: var(--scx-bg-info-overlay-strong);
+    color: var(--scx-text-info-soft-strong);
   }
 
   #scx-sidebar .scx-ma-status-active {
-    color: #81c784;
+    color: var(--scx-text-success-soft);
   }
 
   #scx-sidebar .scx-ma-status-triggered {
-    color: #ffb74d;
+    color: var(--scx-text-warning-soft);
   }
 
   #scx-sidebar .scx-ma-status-stopped {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-ma-rate-limit {
-    color: #ef9a9a;
+    color: var(--scx-text-error-soft);
   }
 
   #scx-sidebar .scx-ma-card-actions {
-    background: #252525;
-    border-top-color: #555;
+    background: var(--scx-bg-dark-header);
+    border-top-color: var(--scx-input-border);
   }
 
   #scx-sidebar .scx-ma-btn-remove {
-    border-color: #555;
-    color: #b0b0b0;
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-ma-btn-remove:hover {
-    color: #ef9a9a;
-    border-color: #ef5350;
+    color: var(--scx-text-error-soft);
+    border-color: var(--scx-border-error-soft-strong);
   }
 
   #scx-sidebar .scx-market-alerts .scx-color-999 {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 }

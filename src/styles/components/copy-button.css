@@ -22,8 +22,8 @@
   top: 125%;
   left: 50%;
   transform: translateX(-50%);
-  background: #333;
-  color: white;
+  background: var(--scx-bg-tooltip);
+  color: var(--scx-color-white);
   padding: 6px 10px;
   border-radius: 4px;
   font-size: 11px;

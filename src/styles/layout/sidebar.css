@@ -130,140 +130,140 @@
 /* Sidebar dark theme – align with game UI (dark grey/charcoal) */
 @media (prefers-color-scheme: dark) {
   #scx-sidebar .scx-section {
-    background: #2d2d2d;
-    border-color: #555;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    background: var(--scx-bg-secondary);
+    border-color: var(--scx-input-border);
+    box-shadow: var(--scx-shadow-sidebar-dark);
   }
 
   #scx-sidebar .scx-section-header {
-    background: #252525;
-    border-bottom-color: #555;
+    background: var(--scx-bg-dark-header);
+    border-bottom-color: var(--scx-input-border);
   }
 
   #scx-sidebar > .scx-section:not(.collapsed) + .scx-section:not(.collapsed) .scx-section-header {
-    border-top-color: #555;
+    border-top-color: var(--scx-input-border);
   }
 
   #scx-sidebar .scx-section-title {
-    color: #e0e0e0;
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-section-toggle {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-section-content {
-    background: #2d2d2d;
-    color: #e0e0e0;
+    background: var(--scx-bg-secondary);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-panel {
-    background: #383838;
-    border-color: #555;
-    color: #e0e0e0;
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-panel-title {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-label,
   #scx-sidebar label {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-note {
-    color: #b0b0b0;
-    background: #383838;
-    border-left-color: #555;
+    color: var(--scx-text-secondary);
+    background: var(--scx-bg-tertiary);
+    border-left-color: var(--scx-input-border);
   }
 
   #scx-sidebar select,
   #scx-sidebar input[type="text"],
   #scx-sidebar input[type="number"] {
-    background: #383838;
-    border-color: #555;
-    color: #e0e0e0;
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-sidebar-footer-contract,
   #scx-sidebar .scx-sidebar-footer-support,
   #scx-sidebar .scx-sidebar-footer-bug {
-    background: #383838;
-    border-color: #555;
-    color: #e0e0e0;
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-sidebar-footer-contract:hover,
   #scx-sidebar .scx-sidebar-footer-bug:hover {
-    background: #454545;
-    border-color: #666;
+    background: var(--scx-bg-dark-hover);
+    border-color: var(--scx-border-dark-muted);
   }
 
   #scx-sidebar .scx-sidebar-footer-support-btn {
-    color: #c0c0c0;
+    color: var(--scx-text-support);
   }
 
   #scx-sidebar .scx-sidebar-footer-support-btn:hover {
-    background: #454545;
+    background: var(--scx-bg-dark-hover);
   }
 
   #scx-sidebar .scx-chat-message {
-    background: #383838;
-    border-color: #555;
-    color: #e0e0e0;
+    background: var(--scx-bg-tertiary);
+    border-color: var(--scx-input-border);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-chat-message-header {
-    color: #e0e0e0;
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-chat-message-company {
-    color: #81c784;
+    color: var(--scx-text-success-soft);
   }
 
   #scx-sidebar .scx-chat-message-company:hover {
-    color: #90caf9;
+    color: var(--scx-text-info-soft-strong);
   }
 
   #scx-sidebar .scx-chat-message-body {
-    color: #64b5f6;
+    color: var(--scx-text-info-soft);
   }
 
   #scx-sidebar .scx-chat-results {
-    border-top-color: #555;
+    border-top-color: var(--scx-input-border);
   }
 
   #scx-sidebar .scx-quality-container {
-    border-color: #555;
-    background: #383838;
+    border-color: var(--scx-input-border);
+    background: var(--scx-bg-tertiary);
   }
 
   #scx-sidebar .scx-quality-label {
-    color: #e0e0e0;
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-status {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-badge {
-    background: #454545;
-    color: #e0e0e0;
+    background: var(--scx-bg-dark-hover);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-chip {
-    background: #454545;
-    color: #e0e0e0;
+    background: var(--scx-bg-dark-hover);
+    color: var(--scx-text-primary);
   }
 
   #scx-sidebar .scx-chip-na {
-    background: #383838;
-    color: #b0b0b0;
+    background: var(--scx-bg-tertiary);
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-copy-btn {
-    color: #b0b0b0;
+    color: var(--scx-text-secondary);
   }
 
   #scx-sidebar .scx-copy-btn:hover {

@@ -55,7 +55,7 @@
 .scx-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: #999999;
+  background: var(--scx-text-muted);
 }
 
 .scx-btn-primary {
@@ -65,7 +65,7 @@
 }
 
 .scx-btn-primary:hover:not(:disabled) {
-  background: #1b5e20;
+  background: var(--scx-text-success-dark);
 }
 
 .scx-btn.stop {
@@ -106,7 +106,7 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 900;
-  background: #f0f0f0;
+  background: var(--scx-bg-neutral);
   white-space: nowrap;
 }
 

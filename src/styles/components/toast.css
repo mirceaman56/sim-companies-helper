@@ -15,11 +15,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #ffffff;
-  border: 1px solid #d0d0d0;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-medium);
   border-left: 4px solid var(--scx-color-success);
   border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--scx-shadow-toast);
   padding: 12px 14px;
   min-width: 320px;
   max-width: 440px;

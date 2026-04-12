@@ -364,40 +364,40 @@
 @media (prefers-color-scheme: dark) {
   #scx-sidebar .scx-fin-status-warn,
   #scx-sidebar .scx-fin-alert-warn {
-    border: 1px solid #7a5510;
+    border: 1px solid var(--scx-border-warning-dark);
   }
 
   #scx-sidebar .scx-fin-status-ok {
-    background: #1f5f2a;
-    color: #dbffdf;
+    background: var(--scx-bg-success-dark-card);
+    color: var(--scx-text-success-contrast);
   }
 
   #scx-sidebar .scx-fin-status-info {
-    background: #1d3f66;
-    color: #e2efff;
+    background: var(--scx-bg-info-dark-card);
+    color: var(--scx-text-info-contrast);
   }
 
   #scx-sidebar .scx-fin-status-error {
-    background: #7e1f1f;
-    color: #ffdada;
+    background: var(--scx-bg-error-dark-card);
+    color: var(--scx-text-error-contrast);
   }
 
   #scx-sidebar .scx-fin-alert-danger {
-    background: #bf2323;
-    color: #ffe0e0;
-    border: 1px solid #d74a4a;
+    background: var(--scx-bg-danger-dark-card);
+    color: var(--scx-text-danger-contrast);
+    border: 1px solid var(--scx-border-error-soft);
   }
 
   #scx-sidebar .scx-fin-alert-warn {
-    background: #6a4605;
-    color: #ffe7bf;
-    border: 1px solid #8b6418;
+    background: var(--scx-bg-warning-dark-card);
+    color: var(--scx-text-warning-contrast);
+    border: 1px solid var(--scx-border-profit-box-yellow-dark);
   }
 
   #scx-sidebar .scx-fin-alert-info {
-    background: #1d3f66;
-    color: #e2efff;
-    border: 1px solid #41679a;
+    background: var(--scx-bg-info-dark-card);
+    color: var(--scx-text-info-contrast);
+    border: 1px solid var(--scx-border-box-blue-dark);
   }
 
   #scx-sidebar .scx-fin-alert-severity {

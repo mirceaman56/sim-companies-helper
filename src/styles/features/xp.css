@@ -85,7 +85,7 @@
   padding: var(--scx-spacing-sm);
   margin-top: 2px;
   min-width: 180px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--scx-shadow-popover);
 }
 
 .scx-xp-row {
@@ -116,6 +116,6 @@
 
 @media (prefers-color-scheme: dark) {
   .scx-xp-details {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--scx-shadow-popover-dark);
   }
 }

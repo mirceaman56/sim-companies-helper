@@ -30,8 +30,8 @@
 
 @media (prefers-color-scheme: dark) {
   .scx-quality-container {
-    border: 1px solid #555;
-    background: rgba(60, 80, 100, 0.6);
+    border: 1px solid var(--scx-input-border);
+    background: var(--scx-bg-quality-dark);
   }
 }
 
@@ -97,6 +97,6 @@
 
 @media (prefers-color-scheme: dark) {
   .scx-chat-message-body {
-    color: #64b5f6;
+    color: var(--scx-text-info-soft);
   }
 }

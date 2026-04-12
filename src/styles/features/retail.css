@@ -155,15 +155,15 @@
 }
 
 .scx-sell-box-green {
-  background: #e8f5e9;
+  background: var(--scx-bg-success);
 }
 
 .scx-sell-box-orange {
-  background: #fff3e0;
+  background: var(--scx-bg-warning);
 }
 
 .scx-sell-box-blue {
-  background: #f0f8ff;
+  background: var(--scx-bg-info);
 }
 
 .scx-sell-box-content {
@@ -172,7 +172,7 @@
 }
 
 .scx-sell-box-green .scx-sell-box-content {
-  color: #1b5e20;
+  color: var(--scx-text-success-dark);
 }
 
 .scx-sell-box-orange .scx-sell-box-content {
@@ -180,7 +180,7 @@
 }
 
 .scx-sell-box-blue .scx-sell-box-content {
-  color: #0d47a1;
+  color: var(--scx-text-info-dark);
 }
 
 .scx-sell-profit-center {
@@ -197,17 +197,17 @@
 
 @media (prefers-color-scheme: dark) {
   #scx-sidebar .scx-sell-box-green {
-    background: #1f4d2a;
-    border: 1px solid #2f7a45;
+    background: var(--scx-bg-success-dark-card);
+    border: 1px solid var(--scx-border-box-green-dark);
   }
 
   #scx-sidebar .scx-sell-box-orange {
-    background: #5a3a09;
-    border: 1px solid #8a5f1b;
+    background: var(--scx-bg-warning);
+    border: 1px solid var(--scx-border-sell-box-orange-dark);
   }
 
   #scx-sidebar .scx-sell-box-blue {
-    background: #1f3655;
-    border: 1px solid #355d87;
+    background: var(--scx-bg-info-dark-card);
+    border: 1px solid var(--scx-border-box-blue-dark);
   }
 }

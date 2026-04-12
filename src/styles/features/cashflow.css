@@ -24,7 +24,7 @@
   font-weight: var(--scx-font-weight-bold);
   margin-bottom: 4px;
   padding-bottom: 4px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: var(--scx-border-subtle-strong);
 }
 
 .scx-cf-income .scx-cf-block-total {
@@ -52,11 +52,11 @@
 
 @media (prefers-color-scheme: dark) {
   .scx-cf-block-total {
-    border-bottom-color: rgba(255, 255, 255, 0.2);
+    border-bottom-color: var(--scx-border-subtle-inverse);
   }
 
   .scx-cf-income .scx-cf-block-total,
   .scx-cf-expense .scx-cf-block-total {
-    color: #ffffff;
+    color: var(--scx-color-white);
   }
 }

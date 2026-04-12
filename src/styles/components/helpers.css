@@ -9,7 +9,7 @@
   font-weight: 900;
   padding: 3px 9px;
   border-radius: 999px;
-  background: #f0f0f0;
+  background: var(--scx-bg-neutral);
 }
 
 .scx-muted {
@@ -18,8 +18,8 @@
 }
 
 .scx-note-warning {
-  border-left: 3px solid #d68e00;
-  background: #fffaf0;
+  border-left: 3px solid var(--scx-color-warning);
+  background: var(--scx-bg-warning);
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 11px;

@@ -70,8 +70,8 @@
 }
 
 .scx-badge-active {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: var(--scx-bg-info);
+  color: var(--scx-color-info);
   padding: 2px 6px;
   border-radius: 3px;
   margin-left: 4px;
@@ -79,8 +79,8 @@
 }
 
 .scx-badge-level {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: var(--scx-bg-accent);
+  color: var(--scx-color-purple);
   padding: 2px 6px;
   border-radius: 3px;
   margin-left: 4px;

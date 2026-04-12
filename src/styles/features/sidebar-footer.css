@@ -57,7 +57,7 @@
 }
 
 .scx-sidebar-footer-bug-icon {
-  color: #ef6c00;
+  color: var(--scx-color-orange);
   font-size: 12px;
 }
 
@@ -66,11 +66,11 @@
 }
 
 .scx-sidebar-footer-support-paypal span {
-  color: #e91e63;
+  color: var(--scx-color-brand-paypal);
 }
 
 .scx-sidebar-footer-support-kofi span {
-  color: #ff5e5b;
+  color: var(--scx-color-brand-kofi);
 }
 
 .scx-kofi-badge {

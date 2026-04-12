@@ -1,11 +1,17 @@
 /* ============ CSS Variables - Minimalist Design ============ */
 :root {
+  --scx-color-white: #ffffff;
+
   /* Primary Semantic Colors */
   --scx-color-success: #2e7d32; /* Dark Green */
   --scx-color-error: #c62828; /* Dark Red */
   --scx-color-warning: #d68e00; /* Dark Orange */
   --scx-color-info: #1565c0; /* Dark Blue */
   --scx-color-purple: #6a1b9a; /* Dark Purple */
+  --scx-color-error-dark: #b71c1c;
+  --scx-color-brand-paypal: #e91e63;
+  --scx-color-brand-kofi: #ff5e5b;
+  --scx-color-orange-dark: #d35400;
 
   /* Category Colors - Income Types */
   --scx-category-retail: #2e7d32;
@@ -52,6 +58,18 @@
   --scx-bg-accent: #f8f5fb; /* Very light purple */
   --scx-bg-neutral: #f8f8f8; /* Light gray */
   --scx-bg-light: #ffffff; /* White */
+  --scx-bg-box-light-gray: #f0f4f8;
+  --scx-bg-dark-header: #252525;
+  --scx-bg-dark-hover: #454545;
+  --scx-bg-info-overlay: rgba(21, 101, 192, 0.25);
+  --scx-bg-info-overlay-strong: rgba(21, 101, 192, 0.35);
+  --scx-bg-quality-dark: rgba(60, 80, 100, 0.6);
+  --scx-bg-success-dark-card: #1f5f2a;
+  --scx-bg-info-dark-card: #1d3f66;
+  --scx-bg-error-dark-card: #7e1f1f;
+  --scx-bg-warning-dark-card: #6a4605;
+  --scx-bg-danger-dark-card: #bf2323;
+  --scx-bg-tooltip: #333333;
 
   /* ============ Borders - Simple ============ */
   --scx-border-light: 1px solid #e0e0e0;
@@ -62,6 +80,21 @@
   --scx-border-medium-light: 1px solid #bebebe;
   --scx-border-dark: 1px solid #999999;
   --scx-border-dark-gray: 1px solid #666666;
+  --scx-border-subtle: 1px solid rgba(0, 0, 0, 0.05);
+  --scx-border-subtle-strong: 1px solid rgba(0, 0, 0, 0.1);
+  --scx-border-subtle-inverse: rgba(255, 255, 255, 0.2);
+  --scx-border-dark-muted: #666666;
+  --scx-border-warning-dark: #7a5510;
+  --scx-border-error-soft: #d74a4a;
+  --scx-border-error-soft-strong: #ef5350;
+  --scx-border-box-blue-dark: #355d87;
+  --scx-border-box-yellow-dark: #7a5c17;
+  --scx-border-box-purple-dark: #6f43a3;
+  --scx-border-box-green-dark: #2f7a45;
+  --scx-border-box-light-gray-dark: #4a4f59;
+  --scx-border-profit-box-yellow-dark: #8d6e1e;
+  --scx-border-profit-box-purple-dark: #7d54a0;
+  --scx-border-sell-box-orange-dark: #8a5f1b;
 
   /* ============ Text Colors - Simple & Contrast ============ */
   --scx-text-primary: #000000;
@@ -77,6 +110,22 @@
   --scx-text-info-dark: #0d47a1;
   --scx-text-secondary-alt: #555555;
   --scx-text-primary-dark: #000000;
+  --scx-text-info-soft: #64b5f6;
+  --scx-text-info-soft-strong: #90caf9;
+  --scx-text-success-soft: #81c784;
+  --scx-text-warning-soft: #ffb74d;
+  --scx-text-error-soft: #ef9a9a;
+  --scx-text-success-contrast: #dbffdf;
+  --scx-text-info-contrast: #e2efff;
+  --scx-text-error-contrast: #ffdada;
+  --scx-text-danger-contrast: #ffe0e0;
+  --scx-text-warning-contrast: #ffe7bf;
+  --scx-text-support: #c0c0c0;
+  --scx-text-orange-soft: #ffd08b;
+  --scx-text-purple-soft: #ddbcff;
+  --scx-text-brown-soft: #ffe4bf;
+  --scx-text-dark-brown-soft: #e9d6ff;
+  --scx-text-forest-soft: #ccf6d8;
 
   /* ============ Status Colors - Good/Okay/Bad ============ */
   --scx-status-good-color: #2e7d32; /* Dark Green */
@@ -110,6 +159,10 @@
   --scx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --scx-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
   --scx-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --scx-shadow-sidebar-dark: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --scx-shadow-toast: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --scx-shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --scx-shadow-popover-dark: 0 2px 8px rgba(0, 0, 0, 0.4);
 
   /* ============ Form Input Styling ============ */
   --scx-input-bg: #ffffff;
