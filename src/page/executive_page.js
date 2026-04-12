@@ -1,4 +1,5 @@
 const EXEC_ROLE_PATTERN = /\/headquarters\/executives\/(coo|cfo|cto|cmo)(-apprentice)?\/?$/;
+const EXEC_CANDIDATE_PATTERN = /\/headquarters\/executives\/g[1-4]\/?$/;
 const EXEC_GROUP_PATTERN = /\/headquarters\/executives\/g\d+\/?$/;
 const SKILL_ORDER = ["mgmt", "acct", "comm", "tech"];
 const PAGE_SKILL_MAPPING = {
@@ -21,6 +22,10 @@ export function getExecutivePageKind(pathname) {
   const roleMatch = pathname.match(EXEC_ROLE_PATTERN);
   if (roleMatch) {
     return roleMatch[2] ? "apprentice" : "role";
+  }
+
+  if (EXEC_CANDIDATE_PATTERN.test(pathname)) {
+    return "candidate";
   }
 
   if (EXEC_GROUP_PATTERN.test(pathname)) {

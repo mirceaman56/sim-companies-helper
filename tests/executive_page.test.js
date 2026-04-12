@@ -28,6 +28,7 @@ describe("executive_page readers", () => {
 
     expect(getExecutivePageKind("/headquarters/executives/coo/")).toBe("role");
     expect(getExecutivePageKind("/headquarters/executives/cmo-apprentice/")).toBe("apprentice");
+    expect(getExecutivePageKind("/headquarters/executives/g1/")).toBe("candidate");
     expect(getExecutivePageKind("/headquarters/executives/g12/")).toBe("group");
     expect(getExecutivePageKind("/headquarters/overview/")).toBe("none");
   });

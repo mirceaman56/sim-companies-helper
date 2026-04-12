@@ -254,7 +254,7 @@ export function updateExecutivePanel() {
   const executiveSkills = readExecutiveSkills(document);
   const trainingSkills =
     pageKind === "role" || pageKind === "apprentice" ? readExecutiveTrainingSkills(document) : null;
-  const feedbackText = pageKind === "group" ? null : readExecutiveHRFeedback(document);
+  const feedbackText = readExecutiveHRFeedback(document);
   const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
 
   if (!executiveSkills && !feedbackText) {
@@ -295,4 +295,6 @@ export const _testUtils = {
   readExecutiveSkills,
   readExecutiveTrainingSkills,
   readExecutiveHRFeedback,
+  findBestMatchingEntry,
+  calculateSimilarity,
 };
