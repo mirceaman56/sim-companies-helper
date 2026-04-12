@@ -34,11 +34,7 @@ import {
   formatChatAlertsAsText,
   showChatAlertNotification,
 } from "./chat_alerts_render.js";
-import {
-  loadChatAlertsSnapshot,
-  saveChatAlertsSnapshot,
-  storageKeyForRealm,
-} from "./chat_alerts_storage.js";
+import { loadChatAlertsSnapshot, saveChatAlertsSnapshot, storageKeyForRealm } from "./chat_alerts_storage.js";
 import { createAlertTimers } from "./market_alerts_timers.js";
 import { createRenderScheduler, flashInputError } from "./market_alerts_render.js";
 import { findLatestRecentChatMatch } from "./chat_filter.js";

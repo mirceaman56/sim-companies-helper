@@ -3,11 +3,7 @@
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { storage } from "./data/storage.js";
-import {
-  hydrateChatAlerts,
-  resolveNextChatAlertId,
-  serializeChatAlerts,
-} from "./chat_alerts_state.js";
+import { hydrateChatAlerts, resolveNextChatAlertId, serializeChatAlerts } from "./chat_alerts_state.js";
 
 export const CHAT_ALERTS_STORAGE_KEY_PREFIX = "scx-chat-alerts";
 export const CHAT_ALERTS_STORAGE_DOMAIN = "chat-alerts";
@@ -36,13 +32,7 @@ async function ensureAuth(state, ensureAuthFn) {
  * @param {{alerts: object[], nextAlertId: number, state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} input
  */
 export async function saveChatAlertsSnapshot(input) {
-  const {
-    alerts,
-    nextAlertId,
-    state = STATE,
-    storageApi = storage,
-    ensureAuthFn = loadAuthDataOnce,
-  } = input;
+  const { alerts, nextAlertId, state = STATE, storageApi = storage, ensureAuthFn = loadAuthDataOnce } = input;
 
   await ensureAuth(state, ensureAuthFn);
 

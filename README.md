@@ -41,6 +41,7 @@ Useful commands:
 - `npm run docs:sync-instructions` to sync `.github/copilot-instructions.md` from `AGENTS.md`.
 - `npm run docs:check-instructions` to verify instruction files are in sync.
 - `npm run hooks:install` to enable a local pre-commit warning for instruction-sync drift.
+- `npm run translate:sync` to auto-translate missing or English-fallback keys from `src/translations/en.js` into all locale files.
 
 ## Project Docs
 

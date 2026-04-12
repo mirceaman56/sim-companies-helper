@@ -105,6 +105,16 @@
   overflow-y: auto;
 }
 
+.scx-ca-message-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.scx-ca-message-link:hover .scx-chat-message-body {
+  text-decoration: underline;
+}
+
 .scx-ca-highlight {
   background: var(--scx-bg-warning);
   color: var(--scx-text-warning-alt);

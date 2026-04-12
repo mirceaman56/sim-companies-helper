@@ -213,7 +213,15 @@ export function messageMatchesChatAlert(message, alertInput) {
  * @returns {Promise<{id:number|null, datetime:string|null, companyName:string, body:string} | null>}
  */
 export async function findLatestRecentChatMatch(input) {
-  const { requestMessages, keywords, companyFilter = null, signal, cutoffHours = 1, maxPages = 30, now } = input;
+  const {
+    requestMessages,
+    keywords,
+    companyFilter = null,
+    signal,
+    cutoffHours = 1,
+    maxPages = 30,
+    now,
+  } = input;
 
   let latestMatch = null;
   await scanRecentChatWindow({

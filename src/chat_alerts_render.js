@@ -9,6 +9,7 @@ const COMPANY_INPUT_ID = "scx-ca-company";
 const ADD_BUTTON_ID = "scx-ca-add";
 const LIMIT_TEXT_SELECTOR = ".scx-chat-alerts-limit-text";
 const LIST_ID = "scx-ca-list";
+const SALES_CHATROOM_URL = "https://www.simcompanies.com/messages/chatroom_Sales";
 
 function escapeRegex(raw) {
   return String(raw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -183,13 +184,22 @@ export function renderChatAlertList(input) {
           : "scx-ca-status-active"
         : "scx-ca-status-stopped";
 
-      const statusText = alert.active ? (alert.triggered ? t("caTriggered") : t("caMonitoring")) : t("caStopped");
+      const statusText = alert.active
+        ? alert.triggered
+          ? t("caTriggered")
+          : t("caMonitoring")
+        : t("caStopped");
 
       const keywords = (alert.keywords || []).map((keyword) => escapeHtml(keyword)).join(", ");
-      const companyDisplay = alert.companyFilter ? highlightCompany(alert.lastMatchCompany || alert.companyFilter, alert.companyFilter) : "";
+      const companyDisplay = alert.companyFilter
+        ? highlightCompany(alert.lastMatchCompany || alert.companyFilter, alert.companyFilter)
+        : "";
       const messageBodyHtml = alert.lastMatchBody
         ? highlightKeywords(formatChatMessageBody(alert.lastMatchBody), alert.keywords || [])
         : `<span class="scx-text-muted">${t("caNoMatchYet")}</span>`;
+      const messagePreviewHtml = alert.lastMatchBody
+        ? `<a href="${SALES_CHATROOM_URL}" target="_blank" rel="noreferrer noopener" class="scx-ca-message-link"><div class="scx-chat-message-body">${messageBodyHtml}</div></a>`
+        : `<div class="scx-chat-message-body">${messageBodyHtml}</div>`;
       const lastMatchMs = alert.lastMatchAt ? new Date(alert.lastMatchAt).getTime() : null;
 
       const companyUrl = buildCompanyUrl(alert.lastMatchCompany || alert.companyFilter || "", realmId);
@@ -221,7 +231,7 @@ export function renderChatAlertList(input) {
               : ""
           }
           <div class="scx-chat-message scx-ca-message-preview scx-margin-top-4">
-            <div class="scx-chat-message-body">${messageBodyHtml}</div>
+            ${messagePreviewHtml}
           </div>
         </div>
 
@@ -322,7 +332,9 @@ export function showChatAlertNotification(input) {
     <div class="scx-toast-body">
       <div class="scx-toast-title">${escapeHtml(t("chatAlerts"))}</div>
       <div class="scx-toast-message">${escapeHtml(company)} · ${escapeHtml(keywords)}</div>
-      <div class="scx-toast-message">${escapeHtml(body).slice(0, 140)}</div>
+      <div class="scx-toast-message">
+        <a href="${SALES_CHATROOM_URL}" target="_blank" rel="noreferrer noopener" class="scx-toast-link scx-ca-toast-link">${escapeHtml(body).slice(0, 140)}</a>
+      </div>
     </div>
     <button class="scx-toast-close">✕</button>
   `;
@@ -350,5 +362,6 @@ export const _testUtils = {
   COMPANY_INPUT_ID,
   ADD_BUTTON_ID,
   LIST_ID,
+  SALES_CHATROOM_URL,
   timeAgoDetailed,
 };

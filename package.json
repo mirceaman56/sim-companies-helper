@@ -17,6 +17,7 @@
     "docs:warn-instructions": "node scripts/precommit-warning.mjs",
     "hooks:install": "git config core.hooksPath .githooks",
     "check:data-platform": "node scripts/check-data-platform-boundaries.mjs",
+    "translate:sync": "node scripts/translate-translations.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

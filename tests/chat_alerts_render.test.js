@@ -14,7 +14,9 @@ import {
   highlightKeywords,
   readChatAlertFormInput,
   renderChatAlertList,
+  showChatAlertNotification,
   timeAgoDetailed,
+  _testUtils,
 } from "../src/chat_alerts_render.js";
 
 describe("chat_alerts_render", () => {
@@ -76,6 +78,9 @@ describe("chat_alerts_render", () => {
 
     const startBtn = container.querySelector('[data-action="start"]');
     expect(startBtn).not.toBeNull();
+    const messageLink = container.querySelector(".scx-ca-message-link");
+    expect(messageLink).not.toBeNull();
+    expect(messageLink?.getAttribute("href")).toBe(_testUtils.SALES_CHATROOM_URL);
     startBtn?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     expect(onAction).toHaveBeenCalledWith("start", 1);
   });
@@ -119,5 +124,25 @@ describe("chat_alerts_render", () => {
     expect(timeAgoDetailed(Date.now() - 120_000, t)).toBe("2m ago");
 
     vi.useRealTimers();
+  });
+
+  it("renders toast message link to sales chatroom", () => {
+    showChatAlertNotification({
+      alert: {
+        keywords: ["sell"],
+        lastMatchCompany: "Acme",
+        companyFilter: "Acme",
+        lastMatchBody: "Selling now",
+      },
+      t: (key) => key,
+      toastDismissMs: 2000,
+      requestAnimationFrameFn: (cb) => cb(),
+      setTimeoutFn: () => 1,
+      clearTimeoutFn: vi.fn(),
+    });
+
+    const link = document.querySelector(".scx-ca-toast-link");
+    expect(link).not.toBeNull();
+    expect(link?.getAttribute("href")).toBe(_testUtils.SALES_CHATROOM_URL);
   });
 });
