@@ -65,12 +65,51 @@ describe("executive_page readers", () => {
     });
   });
 
+  it("reads training bonuses from modern training history list blocks", () => {
+    document.body.innerHTML = loadFixture("modern-training-history-page.html");
+
+    expect(readExecutiveTrainingSkills(document)).toEqual({
+      acct: 4,
+      tech: 2,
+    });
+  });
+
   it("aggregates science + technology training bonuses into tech", () => {
     document.body.innerHTML = loadFixture("fallback-page.html");
 
     expect(readExecutiveTrainingSkills(document)).toEqual({
       mgmt: 1,
       tech: 4,
+    });
+  });
+
+  it("reads training bonuses with spaced and wrapped +value formats", () => {
+    document.body.innerHTML = loadFixture("training-format-page.html");
+
+    expect(readExecutiveTrainingSkills(document)).toEqual({
+      mgmt: 1,
+      acct: 2,
+      comm: 3,
+      tech: 5,
+    });
+  });
+
+  it("parses training history lines when page text is fully concatenated", () => {
+    document.body.innerHTML =
+      '<div class="pull-right text-right"><div>Accounting +1</div><div>Science +1</div><div>Accounting +2</div></div>';
+
+    expect(readExecutiveTrainingSkills(document)).toEqual({
+      acct: 3,
+      tech: 1,
+    });
+  });
+
+  it("parses localized training history lines using current page skill labels", () => {
+    document.body.innerHTML = loadFixture("localized-training-history-page.html");
+
+    expect(readExecutiveTrainingSkills(document)).toEqual({
+      acct: 3,
+      tech: 1,
     });
   });
 
