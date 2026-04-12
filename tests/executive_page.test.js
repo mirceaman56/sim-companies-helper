@@ -43,6 +43,17 @@ describe("executive_page readers", () => {
     });
   });
 
+  it("falls back to numeric text parsing for skills when spans are absent", () => {
+    document.body.innerHTML = loadFixture("fallback-page.html");
+
+    expect(readExecutiveSkills(document)).toEqual({
+      mgmt: 5,
+      acct: 3,
+      comm: 4,
+      tech: 2,
+    });
+  });
+
   it("reads training bonuses from page text", () => {
     document.body.innerHTML = loadFixture("role-page.html");
 
@@ -53,11 +64,28 @@ describe("executive_page readers", () => {
     });
   });
 
+  it("aggregates science + technology training bonuses into tech", () => {
+    document.body.innerHTML = loadFixture("fallback-page.html");
+
+    expect(readExecutiveTrainingSkills(document)).toEqual({
+      mgmt: 1,
+      tech: 4,
+    });
+  });
+
   it("extracts HR feedback from structural container pattern", () => {
     document.body.innerHTML = loadFixture("role-page.html");
 
     const feedback = readExecutiveHRFeedback(document);
     expect(feedback).toContain("initiative");
+    expect(feedback.length).toBeGreaterThan(20);
+  });
+
+  it("extracts HR feedback from fallback fixture shape", () => {
+    document.body.innerHTML = loadFixture("fallback-page.html");
+
+    const feedback = readExecutiveHRFeedback(document);
+    expect(feedback).toContain("delegation");
     expect(feedback.length).toBeGreaterThan(20);
   });
 });
