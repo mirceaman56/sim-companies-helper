@@ -278,11 +278,9 @@ export function updateExecutivePanel() {
     return;
   }
 
-  const pageKind = getExecutivePageKind(pathname);
   const executiveSkills = readExecutiveSkills(document);
-  const trainingSkills =
-    pageKind === "role" || pageKind === "apprentice" ? readExecutiveTrainingSkills(document) : null;
-  if (pageKind === "role" || pageKind === "apprentice") {
+  const trainingSkills = readExecutiveTrainingSkills(document);
+  if (getExecutivePageKind(pathname) !== "none") {
     if (trainingSkills) {
       pendingTrainingSyncPath = null;
     } else {
