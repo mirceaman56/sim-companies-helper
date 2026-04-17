@@ -136,6 +136,59 @@ describe("executive panel refresh", () => {
     );
     expect(trainingValues).toEqual(["0", "1", "0", "1"]);
   });
+
+  it.each(["/headquarters/executives/g1/", "/headquarters/executives/g12/"])(
+    "renders training breakdown on executive group paths: %s",
+    (path) => {
+      document.body.innerHTML = `
+        <table><tbody>
+          <tr><td>Management</td><td><span>0</span></td></tr>
+          <tr><td>Accounting</td><td><span>1</span></td></tr>
+          <tr><td>Communication</td><td><span>1</span></td></tr>
+          <tr><td>Science</td><td><span>4</span></td></tr>
+        </tbody></table>
+        <div class="pull-right text-right">
+          <div>Science +1</div>
+        </div>
+      `;
+
+      const content = document.createElement("div");
+      getSectionContentMock.mockReturnValue(content);
+      window.history.pushState({}, "", path);
+
+      updateExecutivePanel();
+
+      const trainingValues = [...content.querySelectorAll(".scx-skill-breakdown-training-value")].map((el) =>
+        el.textContent.trim(),
+      );
+      expect(trainingValues).toEqual(["0", "0", "0", "1"]);
+    },
+  );
+
+  it("refreshes training breakdown after delayed training rows load on candidate paths", async () => {
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/executives/g1/");
+
+    updateExecutivePanel();
+    let trainingValues = [...content.querySelectorAll(".scx-skill-breakdown-training-value")].map((el) =>
+      el.textContent.trim(),
+    );
+    expect(trainingValues).toEqual(["0", "0", "0", "0"]);
+
+    const delayedTraining = document.createElement("div");
+    delayedTraining.className = "pull-right text-right";
+    delayedTraining.innerHTML = "<div>Science +1</div>";
+    document.body.appendChild(delayedTraining);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    trainingValues = [...content.querySelectorAll(".scx-skill-breakdown-training-value")].map((el) =>
+      el.textContent.trim(),
+    );
+    expect(trainingValues).toEqual(["0", "0", "0", "1"]);
+  });
 });
 
 describe("HR blurp matching", () => {
