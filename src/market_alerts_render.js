@@ -70,6 +70,7 @@ export function createAlertsContent(input) {
         ${t("maAddAlert")}
       </button>
     </div>
+    <div class="scx-market-alerts-state" aria-live="polite"></div>
     <div id="scx-ma-list" class="scx-market-alerts-list"></div>
   `;
 

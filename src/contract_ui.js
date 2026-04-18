@@ -8,6 +8,7 @@ import { SIDEBAR_ID } from "./state.js";
 import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
 import { formatMoney, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import { renderStateBlock } from "./ui_state.js";
 import { storage } from "./data/storage.js";
 import { observeDocumentBody } from "./page/page_utils.js";
 import {
@@ -105,15 +106,22 @@ function setInputValue(input, value) {
  * Apply the discount: read lowest price, calculate discounted price, fill input.
  */
 function applyDiscount() {
+  const resultDiv = document.getElementById(PROFIT_RESULT_ID);
   const lowestPrice = getLowestSellerPrice(document);
   if (lowestPrice === null) {
     console.debug("[SimHelper] Could not find lowest seller price on the page.");
+    if (resultDiv) {
+      renderResult(resultDiv, renderStateBlock({ type: "error", message: t("contractSetValues") }));
+    }
     return;
   }
 
   const priceInput = findContractPriceInput(document);
   if (!priceInput) {
     console.debug("[SimHelper] Could not find price input on the page.");
+    if (resultDiv) {
+      renderResult(resultDiv, renderStateBlock({ type: "error", message: t("genericError") }));
+    }
     return;
   }
 
@@ -131,6 +139,16 @@ function applyDiscount() {
     setTimeout(() => {
       btn.textContent = orig;
     }, 1500);
+  }
+
+  if (resultDiv) {
+    renderResult(
+      resultDiv,
+      renderStateBlock({
+        type: "success",
+        message: `${t("contractApplyBtn")}${discountPct}%`,
+      }),
+    );
   }
 }
 
@@ -185,6 +203,7 @@ async function calculateAndDisplayProfit() {
 
   // Fetch transport market price
   let totalTransport = 0;
+  let transportError = null;
   if (transportCount) {
     try {
       const realmId = getRealmId();
@@ -194,6 +213,7 @@ async function calculateAndDisplayProfit() {
       }
     } catch (e) {
       console.debug("[SimHelper] Failed to fetch transport price:", e);
+      transportError = t("genericError");
     }
   }
 
@@ -220,6 +240,7 @@ async function calculateAndDisplayProfit() {
       <span>${t("profit")}</span>
       <span>${formatMoney(profit)}</span>
     </div>
+    ${transportError ? renderStateBlock({ type: "error", message: transportError }) : ""}
   `,
   );
 

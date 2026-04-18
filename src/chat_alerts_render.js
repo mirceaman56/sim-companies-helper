@@ -135,6 +135,7 @@ export function createChatAlertsContent(input) {
       </button>
     </div>
 
+    <div class="scx-chat-alerts-state" aria-live="polite"></div>
     <div id="${LIST_ID}" class="scx-chat-alerts-list"></div>
   `;
 

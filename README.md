@@ -16,6 +16,7 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 - Chat alerts for keyword + optional company matches (latest 1 hour, max 2 alerts per company+realm).
 - What's New notifications with recent release highlights inside the game UI.
 - Financials Helper dashboard with Current/Day/Week views, KPI strip, P&L, cash movement, ratios, drivers, transactions, sales mix, inventory/production, workforce cost, and alerts.
+- Unified loading/error/success state styling across helper widgets, including spinner-based loading indicators and visible error feedback.
 
 ## Install (Local / Unpacked)
 

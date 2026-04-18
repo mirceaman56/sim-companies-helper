@@ -34,12 +34,14 @@ import {
   renderAlertList,
   showNotification,
 } from "./market_alerts_render.js";
+import { renderStateBlock } from "./ui_state.js";
 
 const SECTION_ID = "market-alerts-section";
 
 let alerts = [];
 let nextAlertId = 1;
 let alertsContainer = null;
+let panelState = null;
 
 const timers = createAlertTimers({
   checkIntervalMs: ALERT_CHECK_INTERVAL_MS,
@@ -69,12 +71,27 @@ async function loadAlerts() {
  * Initialize the market alerts panel.
  */
 export async function initMarketAlerts() {
+  panelState = null;
   const content = getSectionContent(SECTION_ID);
   if (content && !content.querySelector(".scx-market-alerts")) {
-    content.innerHTML = `<p class="scx-note">${t("loading")}…</p>`;
+    content.innerHTML = renderStateBlock({
+      type: "loading",
+      message: t("loading"),
+      showSpinner: true,
+    });
   }
 
-  await loadAlerts();
+  try {
+    await loadAlerts();
+  } catch (error) {
+    const message = error instanceof Error && error.message ? error.message : t("genericError");
+    panelState = {
+      type: "error",
+      message: `${t("genericError")}: ${message}`,
+    };
+    alerts = [];
+    nextAlertId = 1;
+  }
 
   if (content) {
     content.innerHTML = "";
@@ -272,7 +289,14 @@ async function checkPrice(container, alert) {
     } else if (result === "cleared") {
       void saveAlerts();
     }
+
+    panelState = null;
   } catch (e) {
+    const message = e instanceof Error && e.message ? e.message : String(e || t("marketError"));
+    panelState = {
+      type: "error",
+      message: `${t("marketError")}: ${message}`,
+    };
     console.warn(`[SimHelper] Market alert check failed for ${alert.productName}:`, e);
   }
 
@@ -286,6 +310,11 @@ async function checkPrice(container, alert) {
  */
 function renderAlertListUI(container) {
   if (!container) return;
+
+  const stateEl = container.querySelector(".scx-market-alerts-state");
+  if (stateEl) {
+    stateEl.innerHTML = panelState ? renderStateBlock(panelState) : "";
+  }
 
   renderAlertList({
     container,

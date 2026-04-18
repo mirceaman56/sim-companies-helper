@@ -4,6 +4,7 @@ import { STATE } from "./state.js";
 import { formatMoney, escapeHtml, COPY_BUTTON_SVG } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
+import { renderStateBlock } from "./ui_state.js";
 
 const SECTION_ID = "cashflow-section";
 
@@ -1046,21 +1047,28 @@ export function updateCashflowPanel() {
   const finance = cf?.finance;
 
   if (!finance) {
-    contentEl.innerHTML = `<div class="scx-muted">${t("loadingCashflow")}</div>`;
+    contentEl.innerHTML = renderStateBlock({
+      type: "loading",
+      message: t("loadingCashflow"),
+      showSpinner: true,
+    });
     return;
   }
 
   if ((finance.meta?.loading || cf.loading) && (!finance.derived || !finance.derived.kpis)) {
-    contentEl.innerHTML = `<div class="scx-muted">${t("loadingCashflow")}</div>`;
+    contentEl.innerHTML = renderStateBlock({
+      type: "loading",
+      message: t("loadingCashflow"),
+      showSpinner: true,
+    });
     return;
   }
 
   if (finance.meta?.error && (!finance.derived || !finance.derived.kpis)) {
-    contentEl.innerHTML = `
-      <div class="scx-note scx-fin-error-note">
-        ${escapeHtml(finance.meta.error)}
-      </div>
-    `;
+    contentEl.innerHTML = renderStateBlock({
+      type: "error",
+      message: finance.meta.error,
+    });
     return;
   }
 
