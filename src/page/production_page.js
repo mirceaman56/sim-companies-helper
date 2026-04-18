@@ -121,10 +121,27 @@ export function getProductionLaborCost(row) {
   if (!infoCol) return 0;
 
   const spans = infoCol.querySelectorAll(":scope > span");
-  if (spans.length < 2) return 0;
+  if (spans.length >= 2) {
+    const value = extractDollarValue(spans[1].textContent);
+    if (value !== null) return value;
+  }
 
-  const value = extractDollarValue(spans[1].textContent);
-  return value !== null ? value : 0;
+  // Real pages can place wages in a later span or plain text node.
+  for (const span of spans) {
+    const text = span.textContent || "";
+    if (!/\bwages\b/i.test(text)) continue;
+    const value = extractDollarValue(text);
+    if (value !== null) return value;
+  }
+
+  const infoText = infoCol.textContent || "";
+  const wagesChunk = infoText.match(/wages[^$]*([$][\d.,]+)/i);
+  if (wagesChunk) {
+    const value = extractDollarValue(wagesChunk[0]);
+    if (value !== null) return value;
+  }
+
+  return 0;
 }
 
 export function readProductionRow(row) {

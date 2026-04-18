@@ -81,4 +81,20 @@ describe("retail_page adapter", () => {
     expect(isRetailSellInput(input)).toBe(true);
     expect(isRetailSellInput(document.querySelector("h3"))).toBe(false);
   });
+
+  it("parses the first real retail page row from DOM export", () => {
+    document.documentElement.innerHTML = loadFixture("real-page.html");
+
+    const row = findFirstRetailRow(document);
+    const retailRow = readRetailRow(row);
+
+    expect(detectRetailPage(document)).toBe(true);
+    expect(row).not.toBeNull();
+    expect(retailRow).toMatchObject({
+      productId: 3,
+      productName: "Apples",
+    });
+    expect(retailRow?.priceInput).toBeTruthy();
+    expect(retailRow?.quantityInput).toBeTruthy();
+  });
 });

@@ -1,0 +1,2430 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=AW-701654320&amp;cx=c&amp;gtm=4e64f1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-L9BF2VH0YN&amp;cx=c&amp;gtm=4e64f1"></script><script src="https://connect.facebook.net/en_US/bundle/sdk.js/" async="" crossorigin="anonymous"></script><script id="facebook-jssdk" src="https://connect.facebook.net/en_US/sdk.js"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-NBD5DQ"></script><script>
+      const isAndroid12 = navigator.userAgent.includes("Android 12");
+      const isAndroidApp = navigator.userAgent.includes("AndroidApp");
+
+      if (isAndroid12 && isAndroidApp) {
+        document.getElementById('viewport').setAttribute('content', 'width=' + screen.width);
+      }
+    </script>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    
+    <style type="text/css">:root, :host {
+  --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Solid";
+  --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Regular";
+  --fa-font-light: normal 300 1em/1 "Font Awesome 6 Light";
+  --fa-font-thin: normal 100 1em/1 "Font Awesome 6 Thin";
+  --fa-font-duotone: normal 900 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-sharp-solid: normal 900 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-regular: normal 400 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-light: normal 300 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-thin: normal 100 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+}
+
+svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
+  overflow: visible;
+  box-sizing: content-box;
+}
+
+.svg-inline--fa {
+  display: var(--fa-display, inline-block);
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+.svg-inline--fa.fa-2xs {
+  vertical-align: 0.1em;
+}
+.svg-inline--fa.fa-xs {
+  vertical-align: 0em;
+}
+.svg-inline--fa.fa-sm {
+  vertical-align: -0.0714285705em;
+}
+.svg-inline--fa.fa-lg {
+  vertical-align: -0.2em;
+}
+.svg-inline--fa.fa-xl {
+  vertical-align: -0.25em;
+}
+.svg-inline--fa.fa-2xl {
+  vertical-align: -0.3125em;
+}
+.svg-inline--fa.fa-pull-left {
+  margin-right: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-pull-right {
+  margin-left: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-li {
+  width: var(--fa-li-width, 2em);
+  top: 0.25em;
+}
+.svg-inline--fa.fa-fw {
+  width: var(--fa-fw-width, 1.25em);
+}
+
+.fa-layers svg.svg-inline--fa {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.fa-layers-counter, .fa-layers-text {
+  display: inline-block;
+  position: absolute;
+  text-align: center;
+}
+
+.fa-layers {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  text-align: center;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+.fa-layers svg.svg-inline--fa {
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+}
+
+.fa-layers-text {
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+}
+
+.fa-layers-counter {
+  background-color: var(--fa-counter-background-color, #ff253a);
+  border-radius: var(--fa-counter-border-radius, 1em);
+  box-sizing: border-box;
+  color: var(--fa-inverse, #fff);
+  line-height: var(--fa-counter-line-height, 1);
+  max-width: var(--fa-counter-max-width, 5em);
+  min-width: var(--fa-counter-min-width, 1.5em);
+  overflow: hidden;
+  padding: var(--fa-counter-padding, 0.25em 0.5em);
+  right: var(--fa-right, 0);
+  text-overflow: ellipsis;
+  top: var(--fa-top, 0);
+  -webkit-transform: scale(var(--fa-counter-scale, 0.25));
+          transform: scale(var(--fa-counter-scale, 0.25));
+  -webkit-transform-origin: top right;
+          transform-origin: top right;
+}
+
+.fa-layers-bottom-right {
+  bottom: var(--fa-bottom, 0);
+  right: var(--fa-right, 0);
+  top: auto;
+  -webkit-transform: scale(var(--fa-layers-scale, 0.25));
+          transform: scale(var(--fa-layers-scale, 0.25));
+  -webkit-transform-origin: bottom right;
+          transform-origin: bottom right;
+}
+
+.fa-layers-bottom-left {
+  bottom: var(--fa-bottom, 0);
+  left: var(--fa-left, 0);
+  right: auto;
+  top: auto;
+  -webkit-transform: scale(var(--fa-layers-scale, 0.25));
+          transform: scale(var(--fa-layers-scale, 0.25));
+  -webkit-transform-origin: bottom left;
+          transform-origin: bottom left;
+}
+
+.fa-layers-top-right {
+  top: var(--fa-top, 0);
+  right: var(--fa-right, 0);
+  -webkit-transform: scale(var(--fa-layers-scale, 0.25));
+          transform: scale(var(--fa-layers-scale, 0.25));
+  -webkit-transform-origin: top right;
+          transform-origin: top right;
+}
+
+.fa-layers-top-left {
+  left: var(--fa-left, 0);
+  right: auto;
+  top: var(--fa-top, 0);
+  -webkit-transform: scale(var(--fa-layers-scale, 0.25));
+          transform: scale(var(--fa-layers-scale, 0.25));
+  -webkit-transform-origin: top left;
+          transform-origin: top left;
+}
+
+.fa-1x {
+  font-size: 1em;
+}
+
+.fa-2x {
+  font-size: 2em;
+}
+
+.fa-3x {
+  font-size: 3em;
+}
+
+.fa-4x {
+  font-size: 4em;
+}
+
+.fa-5x {
+  font-size: 5em;
+}
+
+.fa-6x {
+  font-size: 6em;
+}
+
+.fa-7x {
+  font-size: 7em;
+}
+
+.fa-8x {
+  font-size: 8em;
+}
+
+.fa-9x {
+  font-size: 9em;
+}
+
+.fa-10x {
+  font-size: 10em;
+}
+
+.fa-2xs {
+  font-size: 0.625em;
+  line-height: 0.1em;
+  vertical-align: 0.225em;
+}
+
+.fa-xs {
+  font-size: 0.75em;
+  line-height: 0.0833333337em;
+  vertical-align: 0.125em;
+}
+
+.fa-sm {
+  font-size: 0.875em;
+  line-height: 0.0714285718em;
+  vertical-align: 0.0535714295em;
+}
+
+.fa-lg {
+  font-size: 1.25em;
+  line-height: 0.05em;
+  vertical-align: -0.075em;
+}
+
+.fa-xl {
+  font-size: 1.5em;
+  line-height: 0.0416666682em;
+  vertical-align: -0.125em;
+}
+
+.fa-2xl {
+  font-size: 2em;
+  line-height: 0.03125em;
+  vertical-align: -0.1875em;
+}
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.fa-ul {
+  list-style-type: none;
+  margin-left: var(--fa-li-margin, 2.5em);
+  padding-left: 0;
+}
+.fa-ul > li {
+  position: relative;
+}
+
+.fa-li {
+  left: calc(var(--fa-li-width, 2em) * -1);
+  position: absolute;
+  text-align: center;
+  width: var(--fa-li-width, 2em);
+  line-height: inherit;
+}
+
+.fa-border {
+  border-color: var(--fa-border-color, #eee);
+  border-radius: var(--fa-border-radius, 0.1em);
+  border-style: var(--fa-border-style, solid);
+  border-width: var(--fa-border-width, 0.08em);
+  padding: var(--fa-border-padding, 0.2em 0.25em 0.15em);
+}
+
+.fa-pull-left {
+  float: left;
+  margin-right: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-pull-right {
+  float: right;
+  margin-left: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-beat {
+  -webkit-animation-name: fa-beat;
+          animation-name: fa-beat;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, ease-in-out);
+          animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-bounce {
+  -webkit-animation-name: fa-bounce;
+          animation-name: fa-bounce;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+          animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+}
+
+.fa-fade {
+  -webkit-animation-name: fa-fade;
+          animation-name: fa-fade;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+          animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-beat-fade {
+  -webkit-animation-name: fa-beat-fade;
+          animation-name: fa-beat-fade;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+          animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-flip {
+  -webkit-animation-name: fa-flip;
+          animation-name: fa-flip;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, ease-in-out);
+          animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-shake {
+  -webkit-animation-name: fa-shake;
+          animation-name: fa-shake;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, linear);
+          animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin {
+  -webkit-animation-name: fa-spin;
+          animation-name: fa-spin;
+  -webkit-animation-delay: var(--fa-animation-delay, 0s);
+          animation-delay: var(--fa-animation-delay, 0s);
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 2s);
+          animation-duration: var(--fa-animation-duration, 2s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, linear);
+          animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin-reverse {
+  --fa-animation-direction: reverse;
+}
+
+.fa-pulse,
+.fa-spin-pulse {
+  -webkit-animation-name: fa-spin;
+          animation-name: fa-spin;
+  -webkit-animation-direction: var(--fa-animation-direction, normal);
+          animation-direction: var(--fa-animation-direction, normal);
+  -webkit-animation-duration: var(--fa-animation-duration, 1s);
+          animation-duration: var(--fa-animation-duration, 1s);
+  -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+          animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  -webkit-animation-timing-function: var(--fa-animation-timing, steps(8));
+          animation-timing-function: var(--fa-animation-timing, steps(8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fa-beat,
+.fa-bounce,
+.fa-fade,
+.fa-beat-fade,
+.fa-flip,
+.fa-pulse,
+.fa-shake,
+.fa-spin,
+.fa-spin-pulse {
+    -webkit-animation-delay: -1ms;
+            animation-delay: -1ms;
+    -webkit-animation-duration: 1ms;
+            animation-duration: 1ms;
+    -webkit-animation-iteration-count: 1;
+            animation-iteration-count: 1;
+    -webkit-transition-delay: 0s;
+            transition-delay: 0s;
+    -webkit-transition-duration: 0s;
+            transition-duration: 0s;
+  }
+}
+@-webkit-keyframes fa-beat {
+  0%, 90% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  45% {
+    -webkit-transform: scale(var(--fa-beat-scale, 1.25));
+            transform: scale(var(--fa-beat-scale, 1.25));
+  }
+}
+@keyframes fa-beat {
+  0%, 90% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  45% {
+    -webkit-transform: scale(var(--fa-beat-scale, 1.25));
+            transform: scale(var(--fa-beat-scale, 1.25));
+  }
+}
+@-webkit-keyframes fa-bounce {
+  0% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    -webkit-transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+            transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+  }
+  30% {
+    -webkit-transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+            transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+  }
+  50% {
+    -webkit-transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+            transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+  }
+  57% {
+    -webkit-transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+            transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+  }
+  64% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+}
+@keyframes fa-bounce {
+  0% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    -webkit-transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+            transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+  }
+  30% {
+    -webkit-transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+            transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+  }
+  50% {
+    -webkit-transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+            transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+  }
+  57% {
+    -webkit-transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+            transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+  }
+  64% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    -webkit-transform: scale(1, 1) translateY(0);
+            transform: scale(1, 1) translateY(0);
+  }
+}
+@-webkit-keyframes fa-fade {
+  50% {
+    opacity: var(--fa-fade-opacity, 0.4);
+  }
+}
+@keyframes fa-fade {
+  50% {
+    opacity: var(--fa-fade-opacity, 0.4);
+  }
+}
+@-webkit-keyframes fa-beat-fade {
+  0%, 100% {
+    opacity: var(--fa-beat-fade-opacity, 0.4);
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(var(--fa-beat-fade-scale, 1.125));
+            transform: scale(var(--fa-beat-fade-scale, 1.125));
+  }
+}
+@keyframes fa-beat-fade {
+  0%, 100% {
+    opacity: var(--fa-beat-fade-opacity, 0.4);
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(var(--fa-beat-fade-scale, 1.125));
+            transform: scale(var(--fa-beat-fade-scale, 1.125));
+  }
+}
+@-webkit-keyframes fa-flip {
+  50% {
+    -webkit-transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+            transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+  }
+}
+@keyframes fa-flip {
+  50% {
+    -webkit-transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+            transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+  }
+}
+@-webkit-keyframes fa-shake {
+  0% {
+    -webkit-transform: rotate(-15deg);
+            transform: rotate(-15deg);
+  }
+  4% {
+    -webkit-transform: rotate(15deg);
+            transform: rotate(15deg);
+  }
+  8%, 24% {
+    -webkit-transform: rotate(-18deg);
+            transform: rotate(-18deg);
+  }
+  12%, 28% {
+    -webkit-transform: rotate(18deg);
+            transform: rotate(18deg);
+  }
+  16% {
+    -webkit-transform: rotate(-22deg);
+            transform: rotate(-22deg);
+  }
+  20% {
+    -webkit-transform: rotate(22deg);
+            transform: rotate(22deg);
+  }
+  32% {
+    -webkit-transform: rotate(-12deg);
+            transform: rotate(-12deg);
+  }
+  36% {
+    -webkit-transform: rotate(12deg);
+            transform: rotate(12deg);
+  }
+  40%, 100% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+}
+@keyframes fa-shake {
+  0% {
+    -webkit-transform: rotate(-15deg);
+            transform: rotate(-15deg);
+  }
+  4% {
+    -webkit-transform: rotate(15deg);
+            transform: rotate(15deg);
+  }
+  8%, 24% {
+    -webkit-transform: rotate(-18deg);
+            transform: rotate(-18deg);
+  }
+  12%, 28% {
+    -webkit-transform: rotate(18deg);
+            transform: rotate(18deg);
+  }
+  16% {
+    -webkit-transform: rotate(-22deg);
+            transform: rotate(-22deg);
+  }
+  20% {
+    -webkit-transform: rotate(22deg);
+            transform: rotate(22deg);
+  }
+  32% {
+    -webkit-transform: rotate(-12deg);
+            transform: rotate(-12deg);
+  }
+  36% {
+    -webkit-transform: rotate(12deg);
+            transform: rotate(12deg);
+  }
+  40%, 100% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+.fa-rotate-90 {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+
+.fa-rotate-180 {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.fa-rotate-270 {
+  -webkit-transform: rotate(270deg);
+          transform: rotate(270deg);
+}
+
+.fa-flip-horizontal {
+  -webkit-transform: scale(-1, 1);
+          transform: scale(-1, 1);
+}
+
+.fa-flip-vertical {
+  -webkit-transform: scale(1, -1);
+          transform: scale(1, -1);
+}
+
+.fa-flip-both,
+.fa-flip-horizontal.fa-flip-vertical {
+  -webkit-transform: scale(-1, -1);
+          transform: scale(-1, -1);
+}
+
+.fa-rotate-by {
+  -webkit-transform: rotate(var(--fa-rotate-angle, none));
+          transform: rotate(var(--fa-rotate-angle, none));
+}
+
+.fa-stack {
+  display: inline-block;
+  vertical-align: middle;
+  height: 2em;
+  position: relative;
+  width: 2.5em;
+}
+
+.fa-stack-1x,
+.fa-stack-2x {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: var(--fa-stack-z-index, auto);
+}
+
+.svg-inline--fa.fa-stack-1x {
+  height: 1em;
+  width: 1.25em;
+}
+.svg-inline--fa.fa-stack-2x {
+  height: 2em;
+  width: 2.5em;
+}
+
+.fa-inverse {
+  color: var(--fa-inverse, #fff);
+}
+
+.sr-only,
+.fa-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:not(:focus),
+.fa-sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.svg-inline--fa .fa-primary {
+  fill: var(--fa-primary-color, currentColor);
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa .fa-secondary {
+  fill: var(--fa-secondary-color, currentColor);
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-primary {
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-secondary {
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa mask .fa-primary,
+.svg-inline--fa mask .fa-secondary {
+  fill: black;
+}
+
+.fad.fa-inverse,
+.fa-duotone.fa-inverse {
+  color: var(--fa-inverse, #fff);
+}</style><link rel="alternate" hreflang="en" href="https://www.simcompanies.com/landscape/">
+<link rel="alternate" hreflang="de" href="https://www.simcompanies.com/de/landscape/">
+<link rel="alternate" hreflang="fr" href="https://www.simcompanies.com/fr/landscape/">
+<link rel="alternate" hreflang="pt" href="https://www.simcompanies.com/pt/landscape/">
+<link rel="alternate" hreflang="tr" href="https://www.simcompanies.com/tr/landscape/">
+<link rel="alternate" hreflang="it" href="https://www.simcompanies.com/it/landscape/">
+<link rel="alternate" hreflang="es" href="https://www.simcompanies.com/es/landscape/">
+<link rel="alternate" hreflang="cs" href="https://www.simcompanies.com/cs/landscape/">
+<link rel="alternate" hreflang="zh-cn" href="https://www.simcompanies.com/zh-cn/landscape/">
+<link rel="alternate" hreflang="zh-tw" href="https://www.simcompanies.com/zh-tw/landscape/">
+<link rel="alternate" hreflang="pl" href="https://www.simcompanies.com/pl/landscape/">
+<link rel="alternate" hreflang="ja" href="https://www.simcompanies.com/ja/landscape/">
+    
+
+    
+
+    
+    <meta name="description" content="Sim Companies is slow paced multiplayer economy simulation game. You can build your business from ground up and trade with others.">
+    <meta name="author" content="Patrik Beck">
+    
+
+    <meta name="keywords" content="sim companies,online game,strategy game,play for free,free game,economy simulation game,business simulation game">
+    <meta name="referrer" content="origin">
+
+    <meta property="og:url" content="https://www.simcompanies.com/landscape/">
+    <meta property="fb:app_id" content="173671979718626">
+
+    
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Business simulation game - Sim Companies">
+    <meta property="og:description" content="Sim Companies is slow paced multiplayer economy simulation game. You can build your business from ground up and trade with others.">
+    
+    <meta property="og:image" content="https://www.simcompanies.com/static/images/social/en/facebook-og.788048fba071.png">
+    
+    <meta property="og:author" content="https://www.facebook.com/SimCompanies">
+
+    
+
+    <meta name="twitter:url" content="https://www.simcompanies.com/landscape/">
+
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@SimCompanies">
+    <meta name="twitter:creator" content="@SimCompanies">
+    <meta name="twitter:title" content="Business simulation game - Sim Companies">
+    <meta name="twitter:description" content="Sim Companies is slow paced multiplayer economy simulation game. You can build your business from ground up and trade with others.">
+    
+    <meta name="twitter:image:src" content="https://www.simcompanies.com/static/images/social/en/twitter-card.6161a8dcf4c6.png">
+    
+
+    
+
+    <meta property="fb:admins" content="721894314">
+
+    
+    
+
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/100.0171562c2f71.png" sizes="100x100">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/512.484f439072c0.png" sizes="512x512">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/87.0512baa10f3e.png" sizes="87x87">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/20.61609f3fa4ee.png" sizes="20x20">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/144.3c47c104d775.png" sizes="144x144">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/32.15e7e8d654dc.png" sizes="32x32">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/76.24024bbe0b5b.png" sizes="76x76">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/72.3c3b74d2c814.png" sizes="72x72">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/128.cd685363029f.png" sizes="128x128">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/120.ed098d4e215f.png" sizes="120x120">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/57.38fa5b1fbe87.png" sizes="57x57">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/192.1fb7f60c4582.png" sizes="192x192">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/16.7ea77f9f267b.png" sizes="16x16">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/60.093b81d04bdf.png" sizes="60x60">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/64.b69cc4c9809a.png" sizes="64x64">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/114.e1413b612238.png" sizes="114x114">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/58.d2171491e567.png" sizes="58x58">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/152.5aad874be951.png" sizes="152x152">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/40.6730821b344e.png" sizes="40x40">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/1024.6c736ee60835.png" sizes="1024x1024">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/80.972bbf181326.png" sizes="80x80">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/180.d511e3f1191f.png" sizes="180x180">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/167.f00f408a7f50.png" sizes="167x167">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/50.03e5f24baa64.png" sizes="50x50">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/29.c531a9b94f48.png" sizes="29x29">
+    
+      <link type="image/png" rel="apple-touch-icon" href="/static/images/favico/ios/256.e1bfb7e62279.png" sizes="256x256">
+    
+
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-72-72.3c3b74d2c814.png" sizes="72x72">
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-512-512.c40b79505e6b.png" sizes="512x512">
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-48-48.8129935fd8fb.png" sizes="48x48">
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-144-144.3c47c104d775.png" sizes="144x144">
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-192-192.1fb7f60c4582.png" sizes="192x192">
+    
+      <link type="image/png" rel="icon" href="/static/images/favico/android/android-launchericon-96-96.8d7e1140e8f8.png" sizes="96x96">
+    
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/static/images/favico/safari-pinned-tab.e3d1799f069c.svg" color="#5bbad5" onerror="onErrorFallbackHandler(this)">
+    <link rel="shortcut icon" href="/static/images/favico/favicon.e6cec2f1f142.ico" onerror="onErrorFallbackHandler(this)">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- place this in a head section -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+      <link href="/static/images/splash/apple_splash_1242x2208.78abc1f2108e.png" sizes="1242x2208" rel="apple-touch-startup-image">
+    
+      <link href="/static/images/splash/apple_splash_640x1136.5d41356dde39.png" sizes="640x1136" rel="apple-touch-startup-image">
+    
+      <link href="/static/images/splash/apple_splash_750x1334.fcdf49486cd8.png" sizes="750x1334" rel="apple-touch-startup-image">
+    
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Sim Companies">
+
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#1c1c1c">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-title" content="Sim Companies">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <title>Quarry - Sim Companies</title>
+
+    <link rel="stylesheet" href="/static/CACHE5/css/output.c06872ee8f91.css" type="text/css">
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto Condensed", "Arial Narrow", sans-serif-condensed, sans-serif;
+        font-size: 14px;
+      }
+
+      html, body {
+        height: 100%;
+
+        /* Attempt to stop mobile browsers from scaling fonts */
+        text-size-adjust: none;
+        -webkit-text-size-adjust: none;
+        -moz-text-size-adjust: none;
+        -ms-text-size-adjust: none;
+      }
+
+      .wrapper {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        margin: 0 auto -50px; /* the bottom margin is the negative value of the footer's height */
+        overflow: hidden;
+      }
+
+      @media(min-height:401px) {
+        .wrapper > .container {
+          padding-bottom: 30px;
+        }
+      }
+
+      .footer-wrapper, .push {
+        height: 50px; /* .push must be the same height as .footer */
+        background: none !important;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center;
+      }
+
+      .push {
+        z-index: -10;
+      }
+
+      .betteruptime-announcement__placeholder {
+        display: none !important;
+      }
+
+      .betteruptime-announcement {
+        background-color: #c15e01 !important;
+      }
+    </style>
+
+    
+<style>
+    div.splash-div {
+        background-color: #212121;
+        color: #b8b8b8;
+        position: relative;
+    }
+
+    div.splash-center {
+        position: absolute;
+        text-align: center;
+        width: 100%;
+
+        top: 50%;
+
+        margin-top: -130px;
+
+        font-size: 20px;
+    }
+
+    div.splash-bottom {
+        position: absolute;
+        color: #b8b8b8;
+
+        bottom: 100px;
+        left: 0px;
+        right: 0px;
+
+        text-align: center;
+    }
+
+    div.splash-bottom a {
+        color: #fff;
+    }
+
+    img.splash-logo {
+        display: block;
+        margin: 0 auto;
+
+        width: 200px;
+        height: 200px;
+    }
+
+    .blink-me {
+        animation: blinker 1.5s linear infinite;
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0.5;
+        }
+    }
+</style>
+
+
+    
+
+    <script type="text/javascript">
+      window.serviceWorkerUrl = '';
+      if ('serviceWorker' in navigator) {
+        window.serviceWorkerUrl = '/' + "/static/service-worker.60c7e3113664.js".match(/[^\/]*$/);
+      }
+    </script>
+
+    <script>
+      function onErrorFallbackHandler(el) {
+        el.onerror = null;
+        if (el.tagName === 'LINK') {
+          // Simply changing the href forces the browser to re-download the file
+          el.href = el.href.replace("https://www.simcompanies.com", "")
+        } else if (el.tagName === 'SCRIPT') {
+          // Changing the src or cloning the element doesn't work as the browser already marked the script element as executed
+          const fallbackScript = document.createElement('script')
+          fallbackScript.type="module"
+          fallbackScript.src = el.src.replace("https://www.simcompanies.com", "")
+          el.after(fallbackScript)
+        }
+      }
+
+      function onErrorFontFallbackHandler(el) {
+          el.onerror = null;
+
+          // 1) Try fonts.googleapis.com - sometimes fails for few players, is blocked in China
+          // 2) Try fonts.bunny.net - privacy focused mirror, available in China, can serve as fallback on random network failure in other countries
+          if (el.href.includes("fonts.googleapis.com")) {
+              el.href = el.href.replace("fonts.googleapis.com", "fonts.bunny.net")
+          }
+      }
+    </script>
+
+    <!-- Google Fonts with display=swap for better fallback behavior -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700&amp;display=swap" onerror="onErrorFontFallbackHandler(this)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&amp;display=swap" onerror="onErrorFontFallbackHandler(this)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&amp;display=swap" onerror="onErrorFontFallbackHandler(this)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Anton&amp;display=swap" onerror="onErrorFontFallbackHandler(this)" rel="stylesheet">
+
+    <!-- Google Tag Manager -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      window.gtag = gtag;
+
+      //has to run before GTM initializes
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        personalization_storage: 'denied',
+        functionality_storage: 'denied',
+        security_storage: 'denied',
+      });
+    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NBD5DQ');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta name="facebook-domain-verification" content="8kref5dwurrwdanfpp9qopvh16gkuj">
+
+    
+
+
+    <script type="module" crossorigin="" src="https://www.simcompanies.com/static/bundle/assets/index-CS2xZAii.js" onerror="onErrorFallbackHandler(this)"></script>
+
+
+
+    
+        <link href="https://www.simcompanies.com/static/bundle/assets/index-BsDbFrGK.css" rel="stylesheet" onerror="onErrorFallbackHandler(this)">
+    
+
+    <script type="module">import.meta.url;import("_").catch(()=>1);async function* g(){};if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script>
+    <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
+
+
+
+
+  <base href="/"><link type="text/css" rel="stylesheet" href="https://uptime.betterstack.com/css/announcement.css"><style type="text/css"></style><style data-emotion="css-global" data-s=""></style><style data-emotion="css" data-s=""></style><script src="https://js.stripe.com/basil/stripe.js"></script><style type="text/css" data-fbcssmodules="css:fb.css.base css:fb.css.dialog css:fb.css.iframewidget">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_reposition{overflow:hidden;position:relative}.fb_invisible{display:none}.fb_reset{background:none;border:0px;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:lucida grande,tahoma,verdana,arial,sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:400;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}@keyframes fb_transform{0%{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.fb_animate{animation:fb_transform .3s forwards}
+
+.fb_dialog{background:#525252b3;position:absolute;top:-10000px;z-index:10001}.fb_dialog_advanced{border-radius:8px;padding:10px}.fb_dialog_content{background:#fff;color:#373737}.fb_dialog_close_icon{background:url(https://connect.facebook.net/rsrc.php/v4/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{left:5px;right:auto;top:5px}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(https://connect.facebook.net/rsrc.php/v4/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent}.fb_dialog_close_icon:active{background:url(https://connect.facebook.net/rsrc.php/v4/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #365899;color:#fff;font-size:14px;font-weight:700;margin:0}.fb_dialog_content .dialog_title>span{background:url(https://connect.facebook.net/rsrc.php/v4/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{height:100%;left:0;margin:0;overflow:visible;position:absolute;top:-10000px;transform:none;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(https://connect.facebook.net/rsrc.php/v4/ya/r/3rhSv5V8j3o.gif) #fff no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{background:none;height:auto;min-height:initial;min-width:initial;width:auto}.fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner{width:100%}.fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content{background:none}.loading.centered #fb_dialog_loader_close{clear:both;color:#fff;display:block;font-size:18px;padding-top:20px}#fb-root #fb_dialog_ipad_overlay{background:#0006;inset:0;min-height:100%;position:absolute;width:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_mobile .fb_dialog_iframe{position:sticky;top:0}.fb_dialog_content .dialog_header{background:linear-gradient(from(#738aba),to(#2c4987));border-bottom:1px solid;border-color:#043b87;box-shadow:#fff 0 1px 1px -1px inset;color:#fff;font:700 14px Helvetica,sans-serif;text-overflow:ellipsis;text-shadow:rgba(0,30,84,.296875) 0px -1px 0px;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:linear-gradient(from(#4267B2),to(#2a4887));background-clip:padding-box;border:1px solid #29487d;border-radius:3px;display:inline-block;line-height:18px;margin-top:3px;max-width:85px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{background:none;border:none;color:#fff;font:700 12px Helvetica,sans-serif;margin:2px -12px;padding:2px 6px 3px;text-shadow:rgba(0,30,84,.296875) 0px -1px 0px}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:700;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(https://connect.facebook.net/rsrc.php/v4/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #4A4A4A;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f5f6f7;border:1px solid #4A4A4A;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}#fb_dialog_loader_spinner{animation:rotateSpinner 1.2s linear infinite;background-color:transparent;background-image:url(https://connect.facebook.net/rsrc.php/v4/y2/r/onuUJj0tCqE.png);background-position:50% 50%;background-repeat:no-repeat;height:24px;width:24px}@keyframes rotateSpinner{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_fluid_desktop,.fb_iframe_widget_fluid_desktop span,.fb_iframe_widget_fluid_desktop iframe{max-width:100%}.fb_iframe_widget_fluid_desktop iframe{min-width:220px;position:relative}.fb_iframe_widget_lift{z-index:1}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}
+</style></head>
+
+  
+
+  <body resize="">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBD5DQ"
+                    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <script>
+    window.fbAsyncInit = function() {
+      try {
+        FB.init({
+          appId: '173671979718626',
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: 'v10.0'
+        });
+      } catch {}
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+
+    
+    
+
+    
+
+<div id="root" style="height: 100%"><div class="css-8lz559"><div class="css-1muzv4r"><nav class="css-jtsprm navbar navbar-inverse navbar-fixed-top"><div class="container"><div class="container navbar-container css-17it81x"><li class="css-18inrq6 dropdown"><a id="main-menu-dropdown" role="button" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false" href="#"><div role="button" aria-label="Top menu" aria-expanded="false" aria-controls="game-menu" class="css-1ljhlhi"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" class="svg-inline--fa fa-bars fa-2xl css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" color="#b8b8b8"><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"></path></svg></div></a><ul role="menu" class="dropdown-menu" aria-labelledby="main-menu-dropdown"></ul></li><div class="css-inxa61 e12p0wd33"><div class="css-qi44eb e1kr4hqh1" style="float: left; background-color: unset;"><div><div style="position: relative;"><img alt="Entrepreneurs realm logo" src="/static/images/realms/Entrepeneurs_140.e30b0ff29939.png" width="40" height="40"></div></div></div><div class="css-qi44eb e1kr4hqh1"><a class="css-z036x4" href="/game-notifications/"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="bell" class="svg-inline--fa fa-bell css-5qpd07" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M208 16c0-8.8 7.2-16 16-16s16 7.2 16 16V32.8c80.9 8 144 76.2 144 159.2v29.1c0 43.7 17.4 85.6 48.3 116.6l2.8 2.8c8.3 8.3 13 19.6 13 31.3c0 24.5-19.8 44.3-44.3 44.3H44.3C19.8 416 0 396.2 0 371.7c0-11.7 4.7-23 13-31.3l2.8-2.8C46.6 306.7 64 264.8 64 221.1V192c0-83 63.1-151.2 144-159.2V16zm16 48C153.3 64 96 121.3 96 192v29.1c0 52.2-20.7 102.3-57.7 139.2L35.6 363c-2.3 2.3-3.6 5.4-3.6 8.7c0 6.8 5.5 12.3 12.3 12.3H403.7c6.8 0 12.3-5.5 12.3-12.3c0-3.3-1.3-6.4-3.6-8.7l-2.8-2.8c-36.9-36.9-57.7-87-57.7-139.2V192c0-70.7-57.3-128-128-128zM193.8 458.7c4.4 12.4 16.3 21.3 30.2 21.3s25.8-8.9 30.2-21.3c2.9-8.3 12.1-12.7 20.4-9.8s12.7 12.1 9.8 20.4C275.6 494.2 251.9 512 224 512s-51.6-17.8-60.4-42.7c-2.9-8.3 1.4-17.5 9.8-20.4s17.5 1.4 20.4 9.8z"></path></svg><br>0</a></div><div class="css-qi44eb e1kr4hqh1"><a href="/contest/213/" style="color: white; width: 100%;"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="trophy" class="svg-inline--fa fa-trophy css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"></path></svg><div class="css-r9bic9 e1kr4hqh0">Mud Wrestling Mania</div></a></div></div><div class="css-budg0k"><div class="css-13khxzm"><a id="js-animation-money" class="css-1y2w5hr" href="/headquarters/overview/"><div class="css-qv66zs"><div class="css-133m677"></div><div class="css-1tkqeqv">$2,234,857</div></div></a></div><div class="css-18yerei"><div class="css-xvjcgs"><a id="js-animation-simboosts" class="css-s50znf" href="/checkout/"><div class="css-1dzy2er"><div class="css-1mj9t3f"></div><div class="css-1tkqeqv"><img alt="Sim Boosts" src="/static/images/sim-boosts2.f70e5ceb61aa.png" height="20">134</div></div></a></div><div class="css-82a6rk scx-xp-host"><a class="css-1y2w5hr" href="/encyclopedia/1/levels/"><div class="css-1qswext"><div class="css-12rvu73"></div><div class="css-1tkqeqv"><span class="css-r9bic9">Lv. </span><span>21 (59%)</span></div></div></a><div id="scx-xp-widget" class="scx-xp-widget">
+    
+    <div class="scx-xp-controls" title="XP cache refreshes every 6 hours. Click refresh to update now.">
+      <button class="scx-xp-toggle " title="XP Estimate - XP cache refreshes every 6 hours. Click refresh to update now.">⏱ 17d 4h</button>
+      <button class="scx-xp-refresh" title="XP cache refreshes every 6 hours. Click refresh to update now." aria-label="Refresh">↻</button>
+    </div>
+  
+    <div class="scx-xp-details scx-hidden">
+      <div class="scx-xp-row">
+        <span class="scx-xp-label">XP/hour</span>
+        <span class="scx-xp-value">168</span>
+      </div>
+      <div class="scx-xp-row">
+        <span class="scx-xp-label">XP remaining</span>
+        <span class="scx-xp-value">69173</span>
+      </div>
+      <div class="scx-xp-row">
+        <span class="scx-xp-label">Time to level</span>
+        <span class="scx-xp-value">17d 4h</span>
+      </div>
+      <div class="scx-xp-row scx-xp-breakdown">
+        <span class="scx-xp-label">Operating</span>
+        <span class="scx-xp-value">14</span>
+      </div>
+      <div class="scx-xp-row scx-xp-breakdown">
+        <span class="scx-xp-label">Prospecting</span>
+        <span class="scx-xp-value">0</span>
+      </div>
+    </div>
+  </div></div></div></div><a id="topmenu-profile" aria-label="Profile" class="css-10n043j e1p6160y1" href="/company/1/Hesusia-Corp/"><img class="css-pu36p5 e1p6160y0" alt="" width="44" height="44" src="https://d1fxy698ilbz6u.cloudfront.net/logo/1a975b10a0da202511022422ba3c03c1643e4bae.png"></a></div></div></nav></div><div class="css-1ui26ma"><div class="css-vni2kh"><div class="container css-q9fi5t ef8ljhx0"></div></div><div class="css-1p9fl1c"></div><div class="css-16kg4ih" id="page"><div class="css-1qslszb"><div class="container css-q9fi5t ef8ljhx0"><div class="row"><div class="col-md-3 col-sm-4"><div class="css-1un61d8"><div class="css-0 exewzot15"><div class="css-1f2knqe exewzot18"><div class="css-aa1jtg exewzot1"><button type="button" role="button" class="css-uyxdsm btn btn-secondary"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis" class="svg-inline--fa fa-ellipsis css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"></path></svg></button><button type="button" role="button" class="css-uyxdsm btn btn-secondary"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="turn-up" class="svg-inline--fa fa-turn-up css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M350 177.5c3.8-8.8 2-19-4.6-26l-136-144C204.9 2.7 198.6 0 192 0s-12.9 2.7-17.4 7.5l-136 144c-6.6 7-8.4 17.2-4.6 26s12.5 14.5 22 14.5h88l0 192c0 17.7-14.3 32-32 32H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32l80 0c70.7 0 128-57.3 128-128l0-192h88c9.6 0 18.2-5.7 22-14.5z"></path></svg></button><button type="button" role="button" class="css-uyxdsm btn btn-secondary"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="turn-down" class="svg-inline--fa fa-turn-down css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M350 334.5c3.8 8.8 2 19-4.6 26l-136 144c-4.5 4.8-10.8 7.5-17.4 7.5s-12.9-2.7-17.4-7.5l-136-144c-6.6-7-8.4-17.2-4.6-26s12.5-14.5 22-14.5h88l0-192c0-17.7-14.3-32-32-32H32C14.3 96 0 81.7 0 64V32C0 14.3 14.3 0 32 0l80 0c70.7 0 128 57.3 128 128l0 192h88c9.6 0 18.2 5.7 22 14.5z"></path></svg></button><button type="button" role="button" class="css-sccqbr btn btn-danger"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="dumpster" class="svg-inline--fa fa-dumpster css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M49.7 32c-10.5 0-19.8 6.9-22.9 16.9L.9 133c-.6 2-.9 4.1-.9 6.1C0 150.7 9.3 160 20.9 160h94L140.5 32H49.7zM272 160V32H173.1L147.5 160H272zm32 0H428.5L402.9 32H304V160zm157.1 0h94c11.5 0 20.9-9.3 20.9-20.9c0-2.1-.3-4.1-.9-6.1L549.2 48.9C546.1 38.9 536.8 32 526.3 32H435.5l25.6 128zM32 192l4 32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H44L64 448c0 17.7 14.3 32 32 32s32-14.3 32-32H448c0 17.7 14.3 32 32 32s32-14.3 32-32l20-160h12c17.7 0 32-14.3 32-32s-14.3-32-32-32h-4l4-32H32z"></path></svg></button></div><div class="css-mvhj34"><div class="css-hu21or"><div class="css-18hqhv2"><div class="css-t1es8n"></div></div></div><div class="css-rxn7fh"><a href="/encyclopedia/1/building/Q/"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-question" class="svg-inline--fa fa-circle-question css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg> Encyclopedia</a></div><div class="css-kwg8yc"><h3 class="css-utkne8">QUARRY</h3><div class="css-2pg1ps">LEVEL 10</div></div></div></div><div class="css-1paehof exewzot14"><div><span class="css-1wp727p exewzot13">Wages: <span>$4,210/h</span></span><span class="css-1wp727p exewzot13">Workers: 1,000</span><span class="css-1wp727p exewzot13">Management and admin: <span>553</span></span></div><div class="hidden-xs"><div><div class="css-sretta exewzot17"><button type="button" role="button" class="css-11wdecd btn btn-secondary"> <img src="/static/images/resources/robots.468692deb9ce.png" alt="Install robots">Install robots</button></div><div class="css-sretta exewzot17"><button type="button" role="button" class="css-1p4fnb7 btn btn-secondary"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="pen-to-square" class="svg-inline--fa fa-pen-to-square css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"></path></svg> Rename</button></div><div class="css-sretta exewzot17"><button type="button" role="button" class="css-1p4fnb7 btn btn-secondary"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="turn-up" class="svg-inline--fa fa-turn-up css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M350 177.5c3.8-8.8 2-19-4.6-26l-136-144C204.9 2.7 198.6 0 192 0s-12.9 2.7-17.4 7.5l-136 144c-6.6 7-8.4 17.2-4.6 26s12.5 14.5 22 14.5h88l0 192c0 17.7-14.3 32-32 32H32c-17.7 0-32 14.3-32 32v32c0 17.7 14.3 32 32 32l80 0c70.7 0 128-57.3 128-128l0-192h88c9.6 0 18.2-5.7 22-14.5z"></path></svg> Upgrade</button></div><div class="css-sretta exewzot17"><button type="button" role="button" class="css-1p4fnb7 btn btn-secondary"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="turn-down" class="svg-inline--fa fa-turn-down css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M350 334.5c3.8 8.8 2 19-4.6 26l-136 144c-4.5 4.8-10.8 7.5-17.4 7.5s-12.9-2.7-17.4-7.5l-136-144c-6.6-7-8.4-17.2-4.6-26s12.5-14.5 22-14.5h88l0-192c0-17.7-14.3-32-32-32H32C14.3 96 0 81.7 0 64V32C0 14.3 14.3 0 32 0l80 0c70.7 0 128 57.3 128 128l0 192h88c9.6 0 18.2 5.7 22 14.5z"></path></svg> Downgrade</button></div><div class="css-sretta exewzot17"><button type="button" role="button" class="css-1p4fnb7 btn btn-secondary"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="up-down-left-right" class="svg-inline--fa fa-up-down-left-right css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8h32v96H128V192c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V288h96v96H192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8H288V288h96v32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6v32H288V128h32c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-64-64z"></path></svg> Reposition</button></div><a href="/landscape/buildings/51419578/auction"><div class="css-sretta exewzot17"><button type="button" role="button" class="css-1p4fnb7 btn btn-secondary"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="gavel" class="svg-inline--fa fa-gavel css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4L325.4 293.4l-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3l-16-16zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4L272 285.3 226.7 240 168 298.7l-1.4-1.4z"></path></svg> Send to auction</button></div></a><div class="css-sretta exewzot17"><button type="button" role="button" class="css-6k5hsp btn btn-danger"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="dumpster" class="svg-inline--fa fa-dumpster css-e3n4ao" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M49.7 32c-10.5 0-19.8 6.9-22.9 16.9L.9 133c-.6 2-.9 4.1-.9 6.1C0 150.7 9.3 160 20.9 160h94L140.5 32H49.7zM272 160V32H173.1L147.5 160H272zm32 0H428.5L402.9 32H304V160zm157.1 0h94c11.5 0 20.9-9.3 20.9-20.9c0-2.1-.3-4.1-.9-6.1L549.2 48.9C546.1 38.9 536.8 32 526.3 32H435.5l25.6 128zM32 192l4 32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H44L64 448c0 17.7 14.3 32 32 32s32-14.3 32-32H448c0 17.7 14.3 32 32 32s32-14.3 32-32l20-160h12c17.7 0 32-14.3 32-32s-14.3-32-32-32h-4l4-32H32z"></path></svg> Scrap</button></div></div></div><div class="mt10"><div class="hover-effect css-70ryxq"><div class="css-1tmrqgq"><img src="/static/images/resources/sand.7473e8c617b0.png" alt="" class="css-ypnlzr"><span class="css-7yysm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></span></div><div class="css-1mtf1pd"><time datetime="2026-04-18T07:54:43.978Z" title="2026-04-18T07:54:43.978085+00:00">about 4 hours ago</time></div><div class="css-1omzrep"><b>359,899</b> Sand</div></div><div class="hover-effect css-70ryxq"><div class="css-1tmrqgq"><img src="/static/images/resources/sand.7473e8c617b0.png" alt="" class="css-ypnlzr"><span class="css-7yysm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></span></div><div class="css-1mtf1pd"><time datetime="2026-04-17T18:03:41.828Z" title="2026-04-17T18:03:41.828768+00:00">about 18 hours ago</time></div><div class="css-1omzrep"><b>179,097</b> Sand</div></div><div class="hover-effect css-70ryxq"><div class="css-1tmrqgq"><img src="/static/images/resources/sand.7473e8c617b0.png" alt="" class="css-ypnlzr"><span class="css-7yysm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></span></div><div class="css-1mtf1pd"><time datetime="2026-04-16T19:26:30.142Z" title="2026-04-16T19:26:30.142589+00:00">2 days ago</time></div><div class="css-1omzrep"><b>338,511</b> Sand</div></div></div></div></div></div></div><div class="col-md-9 col-sm-8"><div class="css-1c7up23"><div class="css-1tk8yx0 exewzot12"><div class="row css-1jgxqiq e1bf4c274" style="margin-bottom: 50px;"><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border"><div class="css-13as2tt"><img src="/static/images/resources/sand.7473e8c617b0.png" class="css-w1atjl"></div><div class="css-skom4j"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></div></div><div class="col-xs-6 right-border"><h3 class="css-bi2xxi e1bf4c273">Sand Q2</h3><div><div>Producing right now: 306,065</div><div>Sourcing value: $237,430</div><div>Quality: 2</div><div>Cost per unit: $0.78</div><div>Abundance: 95.17%</div></div></div></div></div><div class="col-md-6 text-center"><p class="mt20">Finishes at 04/19/26 9:54 AM</p><p class="css-1r0yqr6"><button type="button" role="button" class="css-uyxdsm btn btn-secondary"> Cancel Production</button></p></div></div><div class="css-13mm6hr exewzot11">Building is currently busy and cannot produce other items until the current order is finished.</div><div class="css-mv4qyq" style="overflow: visible;"><div class="row css-1jgxqiq e1bf4c274"><span class="css-kp417t"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-pin" class="svg-inline--fa fa-map-pin css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M16 144a144 144 0 1 1 288 0A144 144 0 1 1 16 144zM160 80c8.8 0 16-7.2 16-16s-7.2-16-16-16c-53 0-96 43-96 96c0 8.8 7.2 16 16 16s16-7.2 16-16c0-35.3 28.7-64 64-64zM128 480V317.1c10.4 1.9 21.1 2.9 32 2.9s21.6-1 32-2.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32z"></path></svg></span><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border"><a href="/encyclopedia/1/resource/44/"><div class="css-13as2tt"><img src="/static/images/resources/sand.7473e8c617b0.png" alt="Sand" class="css-w1atjl"></div><div class="css-1rhrzx8"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></div></a></div><div class="col-xs-6 right-border"><h3 class="css-bi2xxi e1bf4c273">Sand Q2</h3><span class="css-1xdhyk6 e1bf4c272">Abundance: 95.17% Excellent<br></span><span class="css-1xdhyk6 e1bf4c272">Production: 14,995.8/h</span><br><span class="css-1xdhyk6 e1bf4c272">Wages: $4210/h</span><br>Current stock: 291,955<br></div></div></div><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border text-center"><h3 class="css-bi2xxi e1bf4c273">Requirements</h3><p class="css-1r5gb7q"><span class="css-z5so7g">2x</span>&nbsp;<img src="/static/images/resources/power.5fa385695a5a.png" class="css-1l7913 e17ggp100"></p></div><div class="col-xs-6 css-0 ewayztq2"><h3 class="css-bi2xxi e1bf4c273">Quantity <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-question" class="svg-inline--fa fa-circle-question css-jdctjv" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg></h3><form><p class=" css-1o3uvw7 e1bf4c271"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" class="svg-inline--fa fa-chevron-down css-11emkdk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg><input name="amount" placeholder="Quantity" autocomplete="off" data-testid="input" type="text" class="css-6bdmpg form-control" value=""><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-up" class="svg-inline--fa fa-chevron-up css-1ory6hy" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path></svg></p><div class="text-center css-5bno9i ewayztq0"><button type="button" role="button" class="css-1glklma btn btn-secondary"> 24h</button><button type="button" role="button" class="css-1ig2eky btn btn-secondary"> Max</button></div></form></div></div></div></div></div><div class="css-mv4qyq" style="overflow: visible;"><div class="row css-1jgxqiq e1bf4c274"><span class="css-kp417t"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-pin" class="svg-inline--fa fa-map-pin css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M16 144a144 144 0 1 1 288 0A144 144 0 1 1 16 144zM160 80c8.8 0 16-7.2 16-16s-7.2-16-16-16c-53 0-96 43-96 96c0 8.8 7.2 16 16 16s16-7.2 16-16c0-35.3 28.7-64 64-64zM128 480V317.1c10.4 1.9 21.1 2.9 32 2.9s21.6-1 32-2.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32z"></path></svg></span><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border"><a href="/encyclopedia/1/resource/104/"><div class="css-13as2tt"><img src="/static/images/resources/clay.4251bbab2383.png" alt="Clay" class="css-w1atjl"></div><div class="css-1rhrzx8"></div></a></div><div class="col-xs-6 right-border"><h3 class="css-bi2xxi e1bf4c273">Clay</h3><span class="css-1n8ekbf e1bf4c272">Abundance: 57.63% Poor<br></span><span class="css-1xdhyk6 e1bf4c272">Production: 6,901.12/h</span><br><span class="css-1xdhyk6 e1bf4c272">Wages: $4210/h</span><br>Current stock: 0<br></div></div></div><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border text-center"><h3 class="css-bi2xxi e1bf4c273">Requirements</h3><p class="css-1r5gb7q"><span class="css-z5so7g">1x</span>&nbsp;<img src="/static/images/resources/power.5fa385695a5a.png" class="css-1l7913 e17ggp100"></p></div><div class="col-xs-6 css-0 ewayztq2"><h3 class="css-bi2xxi e1bf4c273">Quantity <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-question" class="svg-inline--fa fa-circle-question css-jdctjv" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg></h3><form><p class=" css-1o3uvw7 e1bf4c271"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" class="svg-inline--fa fa-chevron-down css-11emkdk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg><input name="amount" placeholder="Quantity" autocomplete="off" data-testid="input" type="text" class="css-6bdmpg form-control" value=""><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-up" class="svg-inline--fa fa-chevron-up css-1ory6hy" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path></svg></p><div class="text-center css-5bno9i ewayztq0"><button type="button" role="button" class="css-1glklma btn btn-secondary"> 24h</button><button type="button" role="button" class="css-1ig2eky btn btn-secondary"> Max</button></div></form></div></div></div></div></div><div class="css-mv4qyq" style="overflow: visible;"><div class="row css-1jgxqiq e1bf4c274"><span class="css-kp417t"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-pin" class="svg-inline--fa fa-map-pin css-0" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M16 144a144 144 0 1 1 288 0A144 144 0 1 1 16 144zM160 80c8.8 0 16-7.2 16-16s-7.2-16-16-16c-53 0-96 43-96 96c0 8.8 7.2 16 16 16s16-7.2 16-16c0-35.3 28.7-64 64-64zM128 480V317.1c10.4 1.9 21.1 2.9 32 2.9s21.6-1 32-2.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32z"></path></svg></span><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border"><a href="/encyclopedia/1/resource/105/"><div class="css-13as2tt"><img src="/static/images/resources/limestone.bb8818817a3a.png" alt="Limestone" class="css-w1atjl"></div><div class="css-1rhrzx8"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" class="svg-inline--fa fa-star css-18zzq5j" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path></svg></div></a></div><div class="col-xs-6 right-border"><h3 class="css-bi2xxi e1bf4c273">Limestone Q1</h3><span class="css-1n8ekbf e1bf4c272">Abundance: 54.61% Poor<br></span><span class="css-1xdhyk6 e1bf4c272">Production: 4,818.77/h</span><br><span class="css-1xdhyk6 e1bf4c272">Wages: $4210/h</span><br>Current stock: 0<br></div></div></div><div class="col-md-6"><div class="row css-1jgxqiq e1bf4c274"><div class="col-xs-6 right-border text-center"><h3 class="css-bi2xxi e1bf4c273">Requirements</h3><p class="css-1r5gb7q"><span class="css-z5so7g">2x</span>&nbsp;<img src="/static/images/resources/power.5fa385695a5a.png" class="css-1l7913 e17ggp100"></p></div><div class="col-xs-6 css-0 ewayztq2"><h3 class="css-bi2xxi e1bf4c273">Quantity <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-question" class="svg-inline--fa fa-circle-question css-jdctjv" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg></h3><form><p class=" css-1o3uvw7 e1bf4c271"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" class="svg-inline--fa fa-chevron-down css-11emkdk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg><input name="amount" placeholder="Quantity" autocomplete="off" data-testid="input" type="text" class="css-6bdmpg form-control" value=""><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-up" class="svg-inline--fa fa-chevron-up css-1ory6hy" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path></svg></p><div class="text-center css-5bno9i ewayztq0"><button type="button" role="button" class="css-1glklma btn btn-secondary"> 24h</button><button type="button" role="button" class="css-1ig2eky btn btn-secondary"> Max</button></div></form></div></div></div></div></div></div></div></div></div></div></div></div></div><div class="css-16kb41"><div class="css-vokoc5 epbwr672"> <div class=" css-1pkuhf3 epbwr671"><div class="container"><div class="chat-notifications css-vri6hn"></div></div><div class="css-15rmbqw"><div class="css-1vu1uz"><a id="menu-map" aria-label="Map" class="css-1p3lr3g" href="/landscape/"><div class="css-bjn8wh"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="map" class="svg-inline--fa fa-map css-98s45a" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M170.1 33.1c3.3-1.3 6.9-1.5 10.3-.5L399.1 95.1l144-57.6c15.8-6.3 32.9 5.3 32.9 22.3V394.6c0 9.8-6 18.6-15.1 22.3l-155 62c-3.3 1.3-6.9 1.5-10.3 .5L176.9 416.9l-144 57.6C17.1 480.8 0 469.2 0 452.2V117.4c0-9.8 6-18.6 15.1-22.3l155-62zM32 122.8V440.4l128-51.2V71.6L32 122.8zm352 320V124.1L192 69.2V387.9l192 54.9zm32-2.4l128-51.2V71.6L416 122.8V440.4z"></path></svg></div><span class="css-10t5hi">Map</span></a><a id="js-animation-warehouse-bottom-menu" aria-label="Warehouse" class="css-1p3lr3g" href="/headquarters/warehouse/"><div class="css-bjn8wh"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="boxes-stacked" class="svg-inline--fa fa-boxes-stacked css-98s45a" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M384 32c17.7 0 32 14.3 32 32V192h32V64c0-35.3-28.7-64-64-64H320 256 192c-35.3 0-64 28.7-64 64V192h32V64c0-17.7 14.3-32 32-32h32V88c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V32h32zM256 32h64V88c0 4.4-3.6 8-8 8H264c-4.4 0-8-3.6-8-8V32zm71.6 480H512c35.3 0 64-28.7 64-64V288c0-35.3-28.7-64-64-64H448 384 327.6c8.3 9.2 14.8 20.1 19 32H352v31.9 .1 24c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V256h32c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H346.5c-4.2 11.9-10.7 22.8-19 32zM384 256h64v56c0 4.4-3.6 8-8 8H392c-4.4 0-8-3.6-8-8V256zm-128 0c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32V288c0-17.7 14.3-32 32-32H96v56c0 22.1 17.9 40 40 40h48c22.1 0 40-17.9 40-40V256h32zM128 312V256h64v56c0 4.4-3.6 8-8 8H136c-4.4 0-8-3.6-8-8zm128-88H224 192 128 96 64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V288c0-35.3-28.7-64-64-64z"></path></svg></div><span class="css-10t5hi">Warehouse</span></a><a aria-label="Search" class="css-1p3lr3g" href="/search/"><div class="css-bjn8wh"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="magnifying-glass" class="svg-inline--fa fa-magnifying-glass css-98s45a" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M384 208A176 176 0 1 0 32 208a176 176 0 1 0 352 0zM343.3 366C307 397.2 259.7 416 208 416C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208c0 51.7-18.8 99-50 135.3L507.3 484.7c6.2 6.2 6.2 16.4 0 22.6s-16.4 6.2-22.6 0L343.3 366z"></path></svg></div><span class="css-10t5hi">Search</span></a><a id="menu-chat" aria-label="Chat" class="css-1p3lr3g" href="/messages/"><div class="css-bjn8wh"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="messages" class="svg-inline--fa fa-messages css-98s45a" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M202.7 288H352c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32H64C46.3 32 32 46.3 32 64V256c0 17.7 14.3 32 32 32H96c17.7 0 32 14.3 32 32v16l55.5-41.6c5.5-4.2 12.3-6.4 19.2-6.4zM352 320H202.7l-81.1 60.8c-4.8 3.6-11.3 4.2-16.8 1.5s-8.8-8.2-8.8-14.3V352 320H64c-35.3 0-64-28.7-64-64V64C0 28.7 28.7 0 64 0H352c35.3 0 64 28.7 64 64V256c0 35.3-28.7 64-64 64zM320 448c-35.3 0-64-28.7-64-64V352h32v32c0 17.7 14.3 32 32 32H437.3c6.9 0 13.7 2.2 19.2 6.4L512 464V448c0-17.7 14.3-32 32-32h32c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32H448V128H576c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H544v32 16c0 6.1-3.4 11.6-8.8 14.3s-11.9 2.1-16.8-1.5L437.3 448H320z"></path></svg></div><span class="css-10t5hi">Chat</span></a><a id="menu-exchange" aria-label="Exchange" class="css-1p3lr3g" href="/market/resource/34/"><div class="css-bjn8wh"><svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="right-left" class="svg-inline--fa fa-right-left css-98s45a" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M352 222.7c0 18.4 14.9 33.3 33.3 33.3c8.4 0 16.4-3.1 22.6-8.8l99-91.4c3.3-3 5.1-7.3 5.1-11.8s-1.9-8.7-5.1-11.8l-99-91.4c-6.1-5.7-14.2-8.8-22.6-8.8C366.9 32 352 46.9 352 65.3V128H16c-8.8 0-16 7.2-16 16s7.2 16 16 16H352v62.7zm33.3 1.3c-.7 0-1.3-.6-1.3-1.3V65.3c0-.7 .6-1.3 1.3-1.3c.3 0 .6 .1 .9 .3L472.4 144l-86.3 79.7c-.2 .2-.5 .3-.9 .3zM126.7 480c18.4 0 33.3-14.9 33.3-33.3V384H496c8.8 0 16-7.2 16-16s-7.2-16-16-16H160V289.3c0-18.4-14.9-33.3-33.3-33.3c-8.4 0-16.4 3.1-22.6 8.8l-99 91.4C1.9 359.3 0 363.5 0 368s1.9 8.7 5.1 11.8l99 91.4c6.1 5.7 14.2 8.8 22.6 8.8zm1.3-33.3c0 .7-.6 1.3-1.3 1.3c-.3 0-.6-.1-.9-.3L39.6 368l86.3-79.7c.2-.2 .5-.3 .9-.3c.7 0 1.3 .6 1.3 1.3V446.7z"></path></svg></div><span class="css-10t5hi">Exchange</span></a></div></div></div></div></div></div></div>
+
+
+
+    
+    
+
+    <script>
+      window.reactjs = {
+        props: {
+          staticUrl: '/static/',
+          largeFilesStaticUrl: 'https://landia-audio-assets.s3.us-west-2.amazonaws.com/',
+          recaptchaSiteKey: '6LczCbIZAAAAAL3Mvhh3j6jxGzPkl6o83CZW9PhJ',
+          contractHistoryMax: 500,
+          executivesTimeToSettleInS: 60*60*3,
+          executivesTimeToTrainS: 60*60*27,
+          facebookAppId: '173671979718626',
+          facebookPixelId: '563584970408685',
+          displayCaseSlotCost: 50,
+          langDirectory: 'lang6',
+          supportEmail: 'support@simcompanies.com',
+          isTest: false,
+          amplitude: 'a5727e4f9af6d8d768c9cfcbf0f98594',
+          appleClientId: 'com.simcompanies.webview',
+          environment: 'production',
+          rollbarToken: '5e35bde6ea6d428cace5ab01d4217492',
+          googleTagManager: 'GTM-NBD5DQ',
+          stripePublishableKey: 'pk_live_51Q24JaCmqWhiFws0cpqU3h2C0mvb7z8ZU4MEeFOgIYAvBg2eulJYeHYsIrH8hZN98vRekC5OyEhGa2e1mTwdSejo00akBvQjTH',
+        },
+      };
+    </script>
+
+  <script>
+     failedToLoadMessage = "Failed to load app. Please contact support at support@simcompanies.com.";
+     es6ErrorMessage = "Your browser or webview (Android/iOS) is outdated — please update your browser or device to the latest version to continue.";
+
+     "object"!=typeof globalThis&&(Object.prototype.__defineGetter__("__magic__",function(){return this}),__magic__.globalThis=__magic__,delete Object.prototype.__magic__);var errorLogs=[];function getSplashBottomElement(){return document.getElementById("splash-bottom")}function getSplashErrorElement(){return document.getElementById("splash-error")}function getLoaderElement(){return document.getElementById("loader")}function isES6(){try{if(Function("() => {};"),new Function("class X {}"),new Function("let x = 1; const y = 2;"),window.Promise&&window.Symbol&&window.Map&&window.Set)return!0;throw new Error("ES6 core APIs missing")}catch(e){return!1}}window.onerror=function(e){e&&errorLogs.push(e.toString())},window.addEventListener("load",function(){var e=getLoaderElement(),e=(e&&(e.innerText=""),getSplashBottomElement());e&&(e.style.opacity="1"),window.simCompaniesReactJSFileFetched||(e=getSplashErrorElement())&&(isES6()?e.innerText+=window.failedToLoadMessage:e.innerText=window.es6ErrorMessage,0<errorLogs.length)&&(e.innerText+="\n\n"+errorLogs.join("\n"))},!1);
+  </script>
+
+
+    
+    
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- TODO script src="../../assets/js/ie10-viewport-bug-workaround.js"></script -->
+
+    <script src="https://uptime.betterstack.com/widgets/announcement.js" data-id="125135" async="async" type="text/javascript"></script>
+
+    
+
+
+<script nomodule="">!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+
+
+
+
+
+
+  
+
+
+<div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; width: 0px; height: 0px;"><div></div></div></div><iframe name="__privateStripeMetricsController1310" frameborder="0" allowtransparency="true" scrolling="no" role="presentation" allow="payment *" src="https://js.stripe.com/v3/m-outer-3437aaddcdf6922d623e172c2d6f9278.html#url=https%3A%2F%2Fwww.simcompanies.com&amp;title=Map%20-%20Sim%20Companies&amp;referrer=https%3A%2F%2Fwww.simcompanies.com%2F&amp;muid=ff61b7f9-78da-46c0-a32f-6601081370b48e0521&amp;sid=1ad30868-2cea-4466-9caf-25f3b628ec46878212&amp;version=6&amp;preview=false&amp;metaReferrerPolicy=origin&amp;__shared_params__[version]=basil" aria-hidden="true" tabindex="-1" style="border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: initial !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;"></iframe></body><div id="scx-sidebar" class="scx-sidebar-container">
+    <!-- Sidebar sections will be added here dynamically -->
+  <div class="scx-section collapsed" data-section-id="production-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">⚙️</span>
+        <span>Production Helper</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content">
+    <div class="scx-panel scx-production-panel">
+      <div class="scx-flex-spaced scx-margin-bottom-6">
+        <div class="scx-prod-title">Silicon</div>
+        <button class="scx-copy-btn" data-copy-action="production" data-tooltip="Copy text">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="scx-color-999 scx-font-10 scx-margin-bottom-4">
+        Qty: <span class="scx-prod-qty">1</span>
+        <span class="scx-badge-active">Active</span>
+        <span class="scx-badge-level">Lvl 4</span>
+      </div>
+
+      <hr class="scx-hr-sm">
+
+      <div class="scx-panel-head scx-margin-bottom-4">
+        <div class="scx-panel-title scx-font-9">Production Costs</div>
+      </div>
+      <div class="scx-card scx-tone-surface scx-tone-neutral scx-margin-bottom-4">
+          <div class="scx-flex-row">
+            <span class="scx-k scx-color-333">Cost per Unit (UI)</span>
+            <span class="scx-v">$5.89</span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-2">
+            <span class="scx-k scx-color-333">Total Production Cost</span>
+            <span class="scx-v scx-text-bold scx-text-info-strong">$5.89</span>
+          </div>
+      </div>
+
+      <div class="scx-flex-spaced scx-margin-bottom-4">
+         <div class="scx-panel-title scx-font-9">Profit Analysis</div>
+         <div class="scx-font-8 scx-color-999">@ $8.00</div>
+      </div>
+      
+      <div class="scx-flex-column scx-production-profit-stack">
+        
+        <!-- Market Profit -->
+        <div class="scx-card scx-tone-surface scx-tone-warning">
+          <div class="scx-flex-spaced scx-font-9">
+             <span class="scx-text-semibold">Market Sell</span>
+             <div class="scx-muted scx-font-8">Full transport + Fee</div>
+          </div>
+          
+          <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-font-9">Profit</span>
+             <span class="scx-text-bold scx-font-9 scx-text-positive">
+               $1.42
+             </span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+             <span class="scx-k">Margin</span>
+             <span class="scx-text-positive">
+               22.68%
+             </span>
+          </div>
+          <div class="scx-text-muted scx-margin-top-2 scx-text-right">
+             Break Even &gt; $6.52
+          </div>
+        </div>
+
+        <!-- Contract Profit -->
+        <div class="scx-card scx-tone-surface scx-tone-neutral">
+          <div class="scx-flex-spaced scx-font-9">
+             <span class="scx-text-semibold">Contract Sell</span>
+             <div class="scx-muted scx-font-8">50% transport</div>
+          </div>
+          
+           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-font-9">Profit</span>
+             <span class="scx-text-bold scx-font-9 scx-text-positive">
+               $1.93
+             </span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+             <span class="scx-k">Margin</span>
+             <span class="scx-text-positive">
+               31.69%
+             </span>
+          </div>
+           <div class="scx-text-muted scx-margin-top-2 scx-text-right">
+             Break Even &gt; $6.07
+          </div>
+        </div>
+      </div>
+
+      
+      <hr class="scx-hr-sm">
+
+      <div class="scx-panel-head scx-margin-bottom-4">
+        <div class="scx-panel-title scx-font-9">Building Upgrade Projection</div>
+      </div>
+      <div class="scx-card scx-tone-surface scx-tone-success scx-margin-bottom-4">
+          <div class="scx-flex-row">
+            <span class="scx-k">Current Level</span>
+            <span class="scx-v scx-text-semibold">4</span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-2">
+            <span class="scx-k">After Upgrade (Lvl 5)</span>
+            <span class="scx-v scx-text-semibold">1.25</span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-2 scx-padding-top-3 scx-border-top-md">
+            <span class="scx-k scx-text-semibold">Production Increase</span>
+            <span class="scx-v scx-text-bold scx-text-positive">+0.25 (25.0%)</span>
+          </div>
+      </div>
+
+      <!-- Projected Profit Section -->
+      
+      <div class="scx-card scx-tone-surface scx-tone-neutral scx-production-projected-box">
+        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase scx-production-projected-title">Projected Profits @ Lvl Lvl 5</div>
+        
+        <!-- Projected Market Profit -->
+        <div class="scx-card scx-card-sm scx-tone-surface scx-tone-warning scx-margin-bottom-4">
+          <div class="scx-flex-spaced scx-font-8">
+             <span>Market Sell</span>
+             <span class="scx-text-bold scx-text-positive">
+               $1.77
+             </span>
+          </div>
+          
+          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+             <span>Delta:</span>
+             <span class="scx-text-positive">
+               $0.35
+             </span>
+          </div>
+          
+        </div>
+
+        <!-- Projected Contract Profit -->
+        <div class="scx-card scx-card-sm scx-tone-surface scx-tone-neutral">
+          <div class="scx-flex-spaced scx-font-8">
+             <span>Contract Sell</span>
+             <span class="scx-text-bold scx-text-positive">
+               $2.41
+             </span>
+          </div>
+          
+          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+             <span>Delta:</span>
+             <span class="scx-text-positive">
+               $0.48
+             </span>
+          </div>
+          
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+  </div><div class="scx-section collapsed" data-section-id="retail-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">🏪</span>
+        <span>Retail Helper</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content">
+      <div class="scx-retail-empty-state">
+        <div class="scx-muted">No item selected</div>
+        <div class="scx-muted scx-retail-empty-hint">Click Quantity or Price to show stats.</div>
+      </div>
+    </div>
+  </div><div class="scx-section collapsed" data-section-id="cashflow-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">💲</span>
+        <span>Financials Helper</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content">
+    <div class="scx-fin-dashboard scx-fin-dashboard-expanded">
+      
+    <div class="scx-fin-header">
+      <div class="scx-fin-header-row">
+        <div class="scx-panel-title">Financials Helper</div>
+        <div class="scx-fin-inline-actions">
+          <button class="scx-copy-btn" data-fin-action="copy" data-tooltip="Copy visible dashboard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="scx-fin-header-row">
+        <label class="scx-label scx-label-inline">Period</label>
+        <select class="scx-select scx-fin-period-select" data-fin-action="period">
+          <option value="current" selected="">Current</option><option value="day">Day</option><option value="week">Week</option>
+        </select>
+        <button class="scx-btn scx-fin-refresh-btn" data-fin-action="refresh">Refresh</button>
+        <button class="scx-btn scx-fin-mode-btn" data-fin-action="toggleMode">
+          Compact
+        </button>
+      </div>
+
+      <div class="scx-fin-header-row scx-fin-badges"><span class="scx-chip">Latest: 0s ago</span></div>
+      <div class="scx-fin-status-list"><div class="scx-fin-status-item scx-status-chip scx-tone-surface scx-tone-success">History coverage complete for current period comparison.</div></div>
+    </div>
+  
+      
+    <div class="scx-fin-kpi-strip">
+      
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:revenue" title="Sales-like inflows for selected period.">
+              <div class="scx-fin-kpi-title">Revenue</div>
+              <div class="scx-fin-kpi-value">$1,147,390.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-neg">-$1,244,153.00 (-52.0%)</div>
+              <div class="scx-fin-kpi-tag">Derived</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:grossProfit" title="Revenue minus direct costs (production, market buys, inbound contracts).">
+              <div class="scx-fin-kpi-title">Gross Profit</div>
+              <div class="scx-fin-kpi-value">$639,055.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-pos">+$844,836.00 (+410.6%)</div>
+              <div class="scx-fin-kpi-tag">Derived</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:operatingProfit" title="Gross profit minus operating overhead.">
+              <div class="scx-fin-kpi-title">Operating Profit</div>
+              <div class="scx-fin-kpi-value">$616,086.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-pos">+$851,867.00 (+361.3%)</div>
+              <div class="scx-fin-kpi-tag">Derived</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:netProfit" title="Net cash movement from all transactions.">
+              <div class="scx-fin-kpi-title">Net Profit</div>
+              <div class="scx-fin-kpi-value">$501,511.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-pos">+$287,292.00 (+134.1%)</div>
+              <div class="scx-fin-kpi-tag">Exact</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:cashChange" title="Exact net movement of cash in selected period.">
+              <div class="scx-fin-kpi-title">Cash Change</div>
+              <div class="scx-fin-kpi-value">$501,511.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-pos">+$287,292.00 (+134.1%)</div>
+              <div class="scx-fin-kpi-tag">Exact</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:cashBalance" title="Current cash balance from latest cashflow response.">
+              <div class="scx-fin-kpi-title">Cash Balance</div>
+              <div class="scx-fin-kpi-value">$2,234,857.00</div>
+              <div class="scx-fin-kpi-delta ">No comparison</div>
+              <div class="scx-fin-kpi-tag">Exact</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:accountsReceivable" title="Estimated receivables proxy from balance snapshot minus cash.">
+              <div class="scx-fin-kpi-title">A/R (Est.)</div>
+              <div class="scx-fin-kpi-value">$0.00</div>
+              <div class="scx-fin-kpi-delta ">No comparison</div>
+              <div class="scx-fin-kpi-tag">Est.</div>
+            </button>
+          
+            <button class="scx-fin-kpi-card" data-fin-drill="kpi:inventory" title="Latest inventory value from past-finances snapshot.">
+              <div class="scx-fin-kpi-title">Inventory</div>
+              <div class="scx-fin-kpi-value">$3,016,542.00</div>
+              <div class="scx-fin-kpi-delta scx-fin-neg">-$73,286.00 (-2.4%)</div>
+              <div class="scx-fin-kpi-tag">Exact</div>
+            </button>
+          
+    </div>
+  
+      <div class="scx-panel scx-fin-section-card">
+        <div class="scx-panel-head">
+          <div class="scx-panel-title">Alerts</div>
+        </div>
+        <div class="scx-fin-empty">No active warnings</div>
+      </div>
+      
+    <div class="scx-fin-expanded">
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">P&amp;L Summary</div>
+      </div>
+      <div class="scx-fin-waterfall">
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Revenue</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$1,147,390.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$1,244,153.00 (-52.0%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Direct Costs</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">-$508,335.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$2,088,989.00 (-80.4%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Gross Profit</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$639,055.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-pos">+$844,836.00 (+410.6%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Operating Overhead</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">-$22,969.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$7,031.00 (-23.4%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Operating Profit</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$616,086.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-pos">+$851,867.00 (+361.3%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Non-operating</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">-$114,575.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$564,575.00 (-125.5%)</span>
+      </div>
+    </div>
+  
+        
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Net Profit</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$501,511.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-pos">+$287,292.00 (+134.1%)</span>
+      </div>
+    </div>
+  
+      </div>
+      <div class="scx-fin-pnl-breakdown">
+        <div>
+          <div class="scx-fin-subhead">Sales channels</div>
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Retail</span>
+      <span class="scx-fin-mini-value">$0.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Contracts</span>
+      <span class="scx-fin-mini-value">$1,147,390.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Market</span>
+      <span class="scx-fin-mini-value">$0.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Other</span>
+      <span class="scx-fin-mini-value">$0.00</span>
+    </div>
+  
+        </div>
+        <div>
+          <div class="scx-fin-subhead">Cost buckets</div>
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Production</span>
+      <span class="scx-fin-mini-value">$341,481.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Market Buy</span>
+      <span class="scx-fin-mini-value">$165,048.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Inbound contracts</span>
+      <span class="scx-fin-mini-value">$1,806.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Wages</span>
+      <span class="scx-fin-mini-value">$6,287.00</span>
+    </div>
+  
+          
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Fees</span>
+      <span class="scx-fin-mini-value">$6,682.00</span>
+    </div>
+  
+        </div>
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Cash Movement</div>
+      </div>
+      <div class="scx-fin-cash-layout">
+        <div class="scx-fin-waterfall">
+          
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Inflows</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$1,326,265.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$1,515,278.00 (-53.3%)</span>
+      </div>
+    </div>
+  
+          
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Outflows</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">-$824,754.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-neg">-$1,802,570.00 (-68.6%)</span>
+      </div>
+    </div>
+  
+          
+    <div class="scx-fin-waterfall-row">
+      <span class="scx-fin-waterfall-label">Cash Change</span>
+      <div class="scx-fin-waterfall-metrics">
+        <span class="scx-fin-waterfall-value">$501,511.00</span>
+        <span class="scx-fin-waterfall-delta scx-fin-pos">+$287,292.00 (+134.1%)</span>
+      </div>
+    </div>
+  
+        </div>
+        <div class="scx-fin-cash-balances">
+          <div class="scx-fin-mini-row">
+            <span class="scx-text-muted">Opening cash</span>
+            <span class="scx-fin-mini-value">$1,733,346.00</span>
+          </div>
+          <div class="scx-fin-mini-row">
+            <span class="scx-text-muted">Closing cash</span>
+            <span class="scx-fin-mini-value">$2,234,857.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Balance Sheet Snapshot</div>
+        <span class="scx-chip">2026-04-18</span>
+      </div>
+      <div class="scx-fin-grid-2">
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Total assets</span>
+      <span class="scx-fin-mini-value">$10,510,068.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Total net worth</span>
+      <span class="scx-fin-mini-value">$9,820,068.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Current assets</span>
+      <span class="scx-fin-mini-value">$4,746,438.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Non-current assets</span>
+      <span class="scx-fin-mini-value">$5,763,630.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Cash + receivables</span>
+      <span class="scx-fin-mini-value">$1,729,896.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Inventory</span>
+      <span class="scx-fin-mini-value">$3,016,542.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Liabilities</span>
+      <span class="scx-fin-mini-value">$690,000.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Buildings</span>
+      <span class="scx-fin-mini-value">$3,294,750.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Patents</span>
+      <span class="scx-fin-mini-value">$2,468,880.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Rank</span>
+      <span class="scx-fin-mini-value">4,151</span>
+    </div>
+  
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Financial Health Ratios</div>
+      </div>
+      <div class="scx-fin-grid-2">
+        
+              <div class="scx-fin-ratio" title="Gross profit divided by revenue.">
+                <div class="scx-fin-ratio-label">Gross margin</div>
+                <div class="scx-fin-ratio-value">+55.7%</div>
+              </div>
+            
+              <div class="scx-fin-ratio" title="Operating profit divided by revenue.">
+                <div class="scx-fin-ratio-label">Operating margin</div>
+                <div class="scx-fin-ratio-value">+53.7%</div>
+              </div>
+            
+              <div class="scx-fin-ratio" title="Net profit divided by revenue.">
+                <div class="scx-fin-ratio-label">Net margin</div>
+                <div class="scx-fin-ratio-value">+43.7%</div>
+              </div>
+            
+              <div class="scx-fin-ratio" title="Current assets divided by liabilities.">
+                <div class="scx-fin-ratio-label">Current ratio</div>
+                <div class="scx-fin-ratio-value">6.88</div>
+              </div>
+            
+              <div class="scx-fin-ratio" title="Cash and receivables divided by inventory value.">
+                <div class="scx-fin-ratio-label">Cash/Inventory</div>
+                <div class="scx-fin-ratio-value">0.57</div>
+              </div>
+            
+              <div class="scx-fin-ratio" title="Liabilities divided by total assets.">
+                <div class="scx-fin-ratio-label">Debt/Assets</div>
+                <div class="scx-fin-ratio-value">0.07</div>
+              </div>
+            
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Top Drivers</div>
+      </div>
+      <div class="scx-fin-drivers-stack">
+        <div class="scx-fin-driver-group">
+          <div class="scx-fin-subhead">Top income drivers</div>
+          
+    <button class="scx-fin-driver-row" data-fin-drill="driver:cs-44-sing chong supplies group">
+      <span class="scx-fin-driver-label">Sand contract signed by Sing Chong Supplies Group</span>
+      <span class="scx-fin-driver-value">$531,000.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:cs-44-technotech">
+      <span class="scx-fin-driver-label">Sand contract signed by Technotech</span>
+      <span class="scx-fin-driver-value">$472,000.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:marketfilled-14">
+      <span class="scx-fin-driver-label">Minerals market order filled</span>
+      <span class="scx-fin-driver-value">$132,725.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:cs-44-afrikanercorp2">
+      <span class="scx-fin-driver-label">Sand contract signed by AfrikanerCorp2</span>
+      <span class="scx-fin-driver-value">$96,390.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:cs-44-jae enterprises.">
+      <span class="scx-fin-driver-label">Sand contract signed by JAE ENTERPRISES.</span>
+      <span class="scx-fin-driver-value">$48,000.00</span>
+    </button>
+  
+        </div>
+        <div class="scx-fin-driver-group">
+          <div class="scx-fin-subhead">Top expense drivers</div>
+          
+    <button class="scx-fin-driver-row" data-fin-drill="driver:1-bondcall">
+      <span class="scx-fin-driver-label">Bond call</span>
+      <span class="scx-fin-driver-value">$290,000.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:production-44">
+      <span class="scx-fin-driver-label">Production of Sand</span>
+      <span class="scx-fin-driver-value">$215,188.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:marketbuy-1">
+      <span class="scx-fin-driver-label">Bought Power on market</span>
+      <span class="scx-fin-driver-value">$159,423.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:production-16">
+      <span class="scx-fin-driver-label">Production of Silicon</span>
+      <span class="scx-fin-driver-value">$75,775.00</span>
+    </button>
+  
+    <button class="scx-fin-driver-row" data-fin-drill="driver:production-14">
+      <span class="scx-fin-driver-label">Production of Minerals</span>
+      <span class="scx-fin-driver-value">$50,518.00</span>
+    </button>
+  
+        </div>
+      </div>
+      <div class="scx-fin-subhead scx-margin-top-4">Largest changes vs previous</div>
+      <div class="scx-fin-change-list">
+        
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">cs-44-zijin mining</span>
+                <span class="scx-fin-change-value scx-fin-neg">-$595,000.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">cs-44-roy kent</span>
+                <span class="scx-fin-change-value scx-fin-neg">-$585,000.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">production-1</span>
+                <span class="scx-fin-change-value scx-fin-pos">$575,904.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">cr-1-paipai tdlp ldt</span>
+                <span class="scx-fin-change-value scx-fin-pos">$508,000.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">achiev-scientist</span>
+                <span class="scx-fin-change-value scx-fin-neg">-$450,000.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">marketbuy-34</span>
+                <span class="scx-fin-change-value scx-fin-pos">$448,745.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">Bond call</span>
+                <span class="scx-fin-change-value scx-fin-neg">-$290,000.00</span>
+              </div>
+            
+              <div class="scx-fin-change-row">
+                <span class="scx-fin-change-label">Production of Sand</span>
+                <span class="scx-fin-change-value scx-fin-pos">$272,158.00</span>
+              </div>
+            
+      </div>
+    </div>
+  
+      
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Recent Transactions</div>
+        <div class="scx-fin-inline-actions">
+          <select class="scx-select scx-fin-tx-filter" data-fin-action="txFilter">
+            <option value="all" selected="">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+      </div>
+      
+    <div class="scx-fin-tx-table-wrap ">
+      <table class="scx-fin-tx-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th class="scx-text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+                <tr>
+                  <td>18/04/2026, 13:06:42</td>
+                  <td>p</td>
+                  <td>Production of Sand</td>
+                  <td class="scx-text-right scx-fin-neg">-$23,220.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 13:06:37</td>
+                  <td>m</td>
+                  <td>Bought Power on market</td>
+                  <td class="scx-text-right scx-fin-neg">-$43,762.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 11:04:32</td>
+                  <td>t</td>
+                  <td>Sand contract signed by Sing Chong Supplies Group</td>
+                  <td class="scx-text-right scx-fin-pos">$531,000.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:44</td>
+                  <td>p</td>
+                  <td>Production of Sand</td>
+                  <td class="scx-text-right scx-fin-neg">-$101,036.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:42</td>
+                  <td>m</td>
+                  <td>Bought Power on market</td>
+                  <td class="scx-text-right scx-fin-neg">-$115,661.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:37</td>
+                  <td>p</td>
+                  <td>Production of Sand</td>
+                  <td class="scx-text-right scx-fin-neg">-$90,932.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:27</td>
+                  <td>p</td>
+                  <td>Production of Silicon</td>
+                  <td class="scx-text-right scx-fin-neg">-$75,775.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:16</td>
+                  <td>t</td>
+                  <td>Power contract from Zitr0rtiZ</td>
+                  <td class="scx-text-right scx-fin-neg">-$1,806.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:09</td>
+                  <td>p</td>
+                  <td>Production of Minerals</td>
+                  <td class="scx-text-right scx-fin-neg">-$50,518.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 09:54:08</td>
+                  <td>m</td>
+                  <td>Bought Water on market</td>
+                  <td class="scx-text-right scx-fin-neg">-$5,625.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 07:39:00</td>
+                  <td>f</td>
+                  <td>Market fees selling Glass</td>
+                  <td class="scx-text-right scx-fin-neg">-$1,372.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 07:39:00</td>
+                  <td>m</td>
+                  <td>Glass market order filled</td>
+                  <td class="scx-text-right scx-fin-pos">$34,279.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 07:02:40</td>
+                  <td>f</td>
+                  <td>Market fees selling Minerals</td>
+                  <td class="scx-text-right scx-fin-neg">-$2,331.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 07:02:40</td>
+                  <td>m</td>
+                  <td>Minerals market order filled</td>
+                  <td class="scx-text-right scx-fin-pos">$58,267.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:50:23</td>
+                  <td>f</td>
+                  <td>Market fees selling Minerals</td>
+                  <td class="scx-text-right scx-fin-neg">-$2,934.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:50:23</td>
+                  <td>m</td>
+                  <td>Minerals market order filled</td>
+                  <td class="scx-text-right scx-fin-pos">$73,348.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:46:57</td>
+                  <td>n</td>
+                  <td>Bond call</td>
+                  <td class="scx-text-right scx-fin-neg">-$290,000.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:36:11</td>
+                  <td>f</td>
+                  <td>Market fees selling Minerals</td>
+                  <td class="scx-text-right scx-fin-neg">-$45.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:36:11</td>
+                  <td>m</td>
+                  <td>Minerals market order filled</td>
+                  <td class="scx-text-right scx-fin-pos">$1,110.00</td>
+                </tr>
+              
+                <tr>
+                  <td>18/04/2026, 06:29:34</td>
+                  <td>h</td>
+                  <td>Executive training: Science conference</td>
+                  <td class="scx-text-right scx-fin-neg">-$10,000.00</td>
+                </tr>
+              
+        </tbody>
+      </table>
+    </div>
+  
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Sales Mix</div>
+      </div>
+      <div class="scx-fin-mix-list">
+        
+              <div class="scx-fin-mix-row">
+                <span class="scx-fin-mix-name">Sand</span>
+                <span class="scx-fin-mix-share">+100.0%</span>
+                <span class="scx-fin-mix-value">$1,147,390.00</span>
+              </div>
+            
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Inventory &amp; Production</div>
+      </div>
+      <div class="scx-fin-grid-2">
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Inventory</span>
+      <span class="scx-fin-mini-value">$3,016,542.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Production spend</span>
+      <span class="scx-fin-mini-value">$341,481.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Production volume</span>
+      <span class="scx-fin-mini-value">817,158</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Production runs</span>
+      <span class="scx-fin-mini-value">5</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Outgoing contracts</span>
+      <span class="scx-fin-mini-value">0</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Outgoing contract value</span>
+      <span class="scx-fin-mini-value">$0.00</span>
+    </div>
+  
+      </div>
+    </div>
+  
+      
+    <div class="scx-panel scx-fin-section-card">
+      <div class="scx-panel-head">
+        <div class="scx-panel-title">Workforce &amp; Leadership</div>
+      </div>
+      <div class="scx-fin-grid-2">
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Wages</span>
+      <span class="scx-fin-mini-value">$6,287.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Training</span>
+      <span class="scx-fin-mini-value">$10,000.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Accounting</span>
+      <span class="scx-fin-mini-value">$0.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Leadership cost</span>
+      <span class="scx-fin-mini-value">$16,287.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Total workforce cost</span>
+      <span class="scx-fin-mini-value">$16,287.00</span>
+    </div>
+  
+        
+    <div class="scx-fin-mini-row">
+      <span class="scx-text-muted">Delta</span>
+      <span class="scx-fin-mini-value">-$13,713.00</span>
+    </div>
+  
+      </div>
+    </div>
+  
+      <div class="scx-panel scx-fin-section-card">
+        <div class="scx-panel-head">
+          <div class="scx-panel-title">Alerts</div>
+        </div>
+        <div class="scx-fin-empty">No active warnings</div>
+      </div>
+    </div>
+  
+    </div>
+  </div>
+  </div><div class="scx-section collapsed" data-section-id="market-alerts-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">🔔</span>
+        <span>Market Alerts</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content"><div class="scx-market-alerts">
+    <div class="scx-market-alerts-form">
+      <div class="scx-market-alerts-limit">
+        <span class="scx-market-alerts-limit-text">Max 2 alerts (0/2)</span>
+      </div>
+      <div class="scx-market-alerts-row">
+        <label class="scx-label">Product</label>
+        <select id="scx-ma-product" class="scx-select scx-width-full">
+          <option value="100">Aerospace research</option><option value="18">Aluminium</option><option value="125">Apple cider</option><option value="154">Apple icecream</option><option value="123">Apple pie</option><option value="3">Apples</option><option value="82">Attitude control</option><option value="58">Automotive research</option><option value="50">Basic interior</option><option value="22">Batteries</option><option value="15">Bauxite</option><option value="94">BFR</option><option value="121">Bread</option><option value="33">Breeding research</option><option value="102">Bricks</option><option value="112">Bulldozer</option><option value="134">Butter</option><option value="51">Car body</option><option value="76">Carbon composite</option><option value="75">Carbon fibers</option><option value="103">Cement</option><option value="122">Cheese</option><option value="17">Chemicals</option><option value="34">Chemistry research</option><option value="140">Chocolate</option><option value="153">Chocolate icecream</option><option value="104">Clay</option><option value="81">Cockpit</option><option value="132">Cocktails</option><option value="136">Cocoa</option><option value="118">Coffee beans</option><option value="119">Coffee powder</option><option value="52">Combustion engine</option><option value="111">Construction units</option><option value="40">Cotton</option><option value="115">Cows</option><option value="155">Cream egg</option><option value="10">Crude oil</option><option value="12">Diesel</option><option value="23">Displays</option><option value="137">Dough</option><option value="62">Dress</option><option value="151">Easter Bunny</option><option value="55">Economy car</option><option value="53">Economy e-car</option><option value="9">Eggs</option><option value="48">Electric motor</option><option value="21">Electronic components</option><option value="32">Electronics research</option><option value="30">Energy research</option><option value="73">Ethanol</option><option value="41">Fabric</option><option value="59">Fashion research</option><option value="80">Flight computer</option><option value="133">Flour</option><option value="139">Fodder</option><option value="127">Frozen pizza</option><option value="77">Fuselage</option><option value="126">Ginger beer</option><option value="45">Glass</option><option value="61">Gloves</option><option value="68">Gold ore</option><option value="69">Golden bars</option><option value="6">Grain</option><option value="5">Grapes</option><option value="129">Hamburger</option><option value="64">Handbags</option><option value="87">Heat shield</option><option value="79">High grade e-comps</option><option value="88">Ion drive</option><option value="42">Iron ore</option><option value="147">Jack o'lantern</option><option value="89">Jet engine</option><option value="95">Jumbo jet</option><option value="26">Laptops</option><option value="130">Lasagna</option><option value="46">Leather</option><option value="105">Limestone</option><option value="56">Luxury car</option><option value="49">Luxury car interior</option><option value="54">Luxury e-car</option><option value="96">Luxury jet</option><option value="70">Luxury watch</option><option value="113">Materials research</option><option value="131">Meat balls</option><option value="74">Methane</option><option value="117">Milk</option><option value="14">Minerals</option><option value="31">Mining research</option><option value="27">Monitors</option><option value="71">Necklace</option><option value="47">On-board computer</option><option value="124">Orange juice</option><option value="4">Oranges</option><option value="92">Orbital booster</option><option value="128">Pasta</option><option value="11">Petrol</option><option value="116">Pigs</option><option value="108">Planks</option><option value="29">Plant research</option><option value="19">Plastic</option><option value="1">Power</option><option value="20">Processors</option><option value="84">Propellant tank</option><option value="146">Pumpkin</option><option value="149">Pumpkin soup</option><option value="98">Quadcopter</option><option value="152">Ramadan sweets</option><option value="145">Recipes</option><option value="101">Reinforced concrete</option><option value="114">Robots</option><option value="86">Rocket engine</option><option value="83">Rocket fuel</option><option value="142">Salad</option><option value="143">Samosa</option><option value="44">Sand</option><option value="99">Satellite</option><option value="138">Sauce</option><option value="8">Sausages</option><option value="66">Seeds</option><option value="16">Silicon</option><option value="97">Single engine plane</option><option value="24">Smart phones</option><option value="65">Sneakers</option><option value="35">Software</option><option value="85">Solid fuel booster</option><option value="93">Starship</option><option value="7">Steak</option><option value="43">Steel</option><option value="107">Steel beams</option><option value="63">Stiletto Heel</option><option value="90">Sub-orbital 2nd stage</option><option value="91">Sub-orbital rocket</option><option value="135">Sugar</option><option value="72">Sugarcane</option><option value="25">Tablets</option><option value="28">Televisions</option><option value="110">Tools</option><option value="13">Transport</option><option value="150">Tree</option><option value="57">Truck</option><option value="60">Underwear</option><option value="141">Vegetable oil</option><option value="120">Vegetables</option><option value="2">Water</option><option value="109">Windows</option><option value="78">Wing</option><option value="148">Witch costume</option><option value="106">Wood</option><option value="67">Xmas crackers</option><option value="144">Xmas ornament</option>
+        </select>
+      </div>
+      <div class="scx-market-alerts-row">
+        <label class="scx-label">Quality</label>
+        <select id="scx-ma-quality" class="scx-select scx-width-full">
+          <option value="all">All</option>
+          <option value="1">Q1</option><option value="2">Q2</option><option value="3">Q3</option><option value="4">Q4</option><option value="5">Q5</option><option value="6">Q6</option><option value="7">Q7</option><option value="8">Q8</option><option value="9">Q9</option><option value="10">Q10</option><option value="11">Q11</option><option value="12">Q12</option>
+        </select>
+      </div>
+      <div class="scx-market-alerts-row">
+        <label class="scx-label">Target Price</label>
+        <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="e.g. 5.00" class="scx-select scx-width-full">
+      </div>
+      <button id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full">
+        Add Alert
+      </button>
+    </div>
+    <div class="scx-market-alerts-state" aria-live="polite"></div>
+    <div id="scx-ma-list" class="scx-market-alerts-list"><div class="scx-market-alerts-empty">No alerts set. Add one above.</div></div>
+  </div></div>
+  </div><div class="scx-section collapsed" data-section-id="chat-alerts-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">📣</span>
+        <span>Chat Alerts</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content"><div class="scx-chat-alerts">
+    <div class="scx-chat-alerts-form scx-panel">
+      <div class="scx-flex-spaced">
+        <div class="scx-text-muted scx-font-9">Monitors only latest 1 hour of chat history.</div>
+        <button class="scx-copy-btn" data-copy-action="chat-alerts" data-tooltip="Copy text" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+        </button>
+      </div>
+
+      <div class="scx-chat-alerts-limit">
+        <span class="scx-chat-alerts-limit-text">Max 2 chat alerts (2/2)</span>
+      </div>
+
+      <div class="scx-chat-alerts-row">
+        <label class="scx-label" for="scx-ca-keywords">Keywords</label>
+        <input id="scx-ca-keywords" class="scx-select scx-width-full" type="text" placeholder="e.g. sell, buying">
+      </div>
+
+      <div class="scx-chat-alerts-row">
+        <label class="scx-label" for="scx-ca-company">Company (optional)</label>
+        <input id="scx-ca-company" class="scx-select scx-width-full" type="text" placeholder="Filter by company name">
+      </div>
+
+      <button id="scx-ca-add" class="scx-btn scx-btn-primary scx-width-full" disabled="">
+        Add Chat Alert
+      </button>
+    </div>
+
+    <div class="scx-chat-alerts-state" aria-live="polite"></div>
+    <div id="scx-ca-list" class="scx-chat-alerts-list">
+      <div class="scx-ca-card" data-alert-id="1">
+        <div class="scx-ca-card-header">
+          <div class="scx-ca-rule-block">
+            <div class="scx-ca-keywords">potato</div>
+            
+          </div>
+          <span class="scx-ca-status-stopped">○ Stopped</span>
+        </div>
+
+        <div class="scx-ca-card-body">
+          <div class="scx-flex-row scx-font-9">
+            <span class="scx-k">Last Checked</span>
+            <span class="scx-color-999">never</span>
+          </div>
+          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
+            <span class="scx-k">Last Match</span>
+            <span class="scx-color-999">never</span>
+          </div>
+
+          
+          <div class="scx-chat-message scx-ca-message-preview scx-margin-top-4">
+            <div class="scx-chat-message-body"><span class="scx-text-muted">No match yet</span></div>
+          </div>
+        </div>
+
+        <div class="scx-ca-card-actions">
+          <button class="scx-btn scx-btn-success scx-ca-btn-start" data-action="start">Start</button>
+          <button class="scx-btn scx-ca-btn-remove" data-action="remove">✕</button>
+        </div>
+      </div>
+      
+      <div class="scx-ca-card" data-alert-id="2">
+        <div class="scx-ca-card-header">
+          <div class="scx-ca-rule-block">
+            <div class="scx-ca-keywords">tomato</div>
+            
+          </div>
+          <span class="scx-ca-status-stopped">○ Stopped</span>
+        </div>
+
+        <div class="scx-ca-card-body">
+          <div class="scx-flex-row scx-font-9">
+            <span class="scx-k">Last Checked</span>
+            <span class="scx-color-999">never</span>
+          </div>
+          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
+            <span class="scx-k">Last Match</span>
+            <span class="scx-color-999">never</span>
+          </div>
+
+          
+          <div class="scx-chat-message scx-ca-message-preview scx-margin-top-4">
+            <div class="scx-chat-message-body"><span class="scx-text-muted">No match yet</span></div>
+          </div>
+        </div>
+
+        <div class="scx-ca-card-actions">
+          <button class="scx-btn scx-btn-success scx-ca-btn-start" data-action="start">Start</button>
+          <button class="scx-btn scx-ca-btn-remove" data-action="remove">✕</button>
+        </div>
+      </div>
+      </div>
+  </div></div>
+  </div><div class="scx-section collapsed" data-section-id="chat-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">💬</span>
+        <span>Chat Filter</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content"><div class="scx-chat-filter">
+    <div class="scx-chat-controls">
+      <div class="scx-chat-row">
+        <select id="scx-filter-type" class="scx-select scx-flex-1">
+          <option value="buy">Buying</option>
+          <option value="sell">Selling</option>
+        </select>
+      </div>
+      <div class="scx-chat-row">
+        <select id="scx-filter-product" class="scx-select scx-flex-1"><option value="100">Aerospace research</option><option value="18">Aluminium</option><option value="125">Apple cider</option><option value="154">Apple icecream</option><option value="123">Apple pie</option><option value="3">Apples</option><option value="82">Attitude control</option><option value="58">Automotive research</option><option value="50">Basic interior</option><option value="22">Batteries</option><option value="15">Bauxite</option><option value="94">BFR</option><option value="121">Bread</option><option value="33">Breeding research</option><option value="102">Bricks</option><option value="112">Bulldozer</option><option value="134">Butter</option><option value="51">Car body</option><option value="76">Carbon composite</option><option value="75">Carbon fibers</option><option value="103">Cement</option><option value="122">Cheese</option><option value="17">Chemicals</option><option value="34">Chemistry research</option><option value="140">Chocolate</option><option value="153">Chocolate icecream</option><option value="104">Clay</option><option value="81">Cockpit</option><option value="132">Cocktails</option><option value="136">Cocoa</option><option value="118">Coffee beans</option><option value="119">Coffee powder</option><option value="52">Combustion engine</option><option value="111">Construction units</option><option value="40">Cotton</option><option value="115">Cows</option><option value="155">Cream egg</option><option value="10">Crude oil</option><option value="12">Diesel</option><option value="23">Displays</option><option value="137">Dough</option><option value="62">Dress</option><option value="151">Easter Bunny</option><option value="55">Economy car</option><option value="53">Economy e-car</option><option value="9">Eggs</option><option value="48">Electric motor</option><option value="21">Electronic components</option><option value="32">Electronics research</option><option value="30">Energy research</option><option value="73">Ethanol</option><option value="41">Fabric</option><option value="59">Fashion research</option><option value="80">Flight computer</option><option value="133">Flour</option><option value="139">Fodder</option><option value="127">Frozen pizza</option><option value="77">Fuselage</option><option value="126">Ginger beer</option><option value="45">Glass</option><option value="61">Gloves</option><option value="68">Gold ore</option><option value="69">Golden bars</option><option value="6">Grain</option><option value="5">Grapes</option><option value="129">Hamburger</option><option value="64">Handbags</option><option value="87">Heat shield</option><option value="79">High grade e-comps</option><option value="88">Ion drive</option><option value="42">Iron ore</option><option value="147">Jack o'lantern</option><option value="89">Jet engine</option><option value="95">Jumbo jet</option><option value="26">Laptops</option><option value="130">Lasagna</option><option value="46">Leather</option><option value="105">Limestone</option><option value="56">Luxury car</option><option value="49">Luxury car interior</option><option value="54">Luxury e-car</option><option value="96">Luxury jet</option><option value="70">Luxury watch</option><option value="113">Materials research</option><option value="131">Meat balls</option><option value="74">Methane</option><option value="117">Milk</option><option value="14">Minerals</option><option value="31">Mining research</option><option value="27">Monitors</option><option value="71">Necklace</option><option value="47">On-board computer</option><option value="124">Orange juice</option><option value="4">Oranges</option><option value="92">Orbital booster</option><option value="128">Pasta</option><option value="11">Petrol</option><option value="116">Pigs</option><option value="108">Planks</option><option value="29">Plant research</option><option value="19">Plastic</option><option value="1">Power</option><option value="20">Processors</option><option value="84">Propellant tank</option><option value="146">Pumpkin</option><option value="149">Pumpkin soup</option><option value="98">Quadcopter</option><option value="152">Ramadan sweets</option><option value="145">Recipes</option><option value="101">Reinforced concrete</option><option value="114">Robots</option><option value="86">Rocket engine</option><option value="83">Rocket fuel</option><option value="142">Salad</option><option value="143">Samosa</option><option value="44">Sand</option><option value="99">Satellite</option><option value="138">Sauce</option><option value="8">Sausages</option><option value="66">Seeds</option><option value="16">Silicon</option><option value="97">Single engine plane</option><option value="24">Smart phones</option><option value="65">Sneakers</option><option value="35">Software</option><option value="85">Solid fuel booster</option><option value="93">Starship</option><option value="7">Steak</option><option value="43">Steel</option><option value="107">Steel beams</option><option value="63">Stiletto Heel</option><option value="90">Sub-orbital 2nd stage</option><option value="91">Sub-orbital rocket</option><option value="135">Sugar</option><option value="72">Sugarcane</option><option value="25">Tablets</option><option value="28">Televisions</option><option value="110">Tools</option><option value="13">Transport</option><option value="150">Tree</option><option value="57">Truck</option><option value="60">Underwear</option><option value="141">Vegetable oil</option><option value="120">Vegetables</option><option value="2">Water</option><option value="109">Windows</option><option value="78">Wing</option><option value="148">Witch costume</option><option value="106">Wood</option><option value="67">Xmas crackers</option><option value="144">Xmas ornament</option></select>
+      </div>
+      <div class="scx-chat-row">
+        <label class="scx-label scx-label-inline">Quality (Optional):</label>
+      </div>
+      <div class="scx-quality-container" id="scx-filter-quality"><label class="scx-quality-label"><input type="checkbox" value="Q1" id="scx-quality-1"> Q1</label><label class="scx-quality-label"><input type="checkbox" value="Q2" id="scx-quality-2"> Q2</label><label class="scx-quality-label"><input type="checkbox" value="Q3" id="scx-quality-3"> Q3</label><label class="scx-quality-label"><input type="checkbox" value="Q4" id="scx-quality-4"> Q4</label><label class="scx-quality-label"><input type="checkbox" value="Q5" id="scx-quality-5"> Q5</label><label class="scx-quality-label"><input type="checkbox" value="Q6" id="scx-quality-6"> Q6</label><label class="scx-quality-label"><input type="checkbox" value="Q7" id="scx-quality-7"> Q7</label><label class="scx-quality-label"><input type="checkbox" value="Q8" id="scx-quality-8"> Q8</label><label class="scx-quality-label"><input type="checkbox" value="Q9" id="scx-quality-9"> Q9</label><label class="scx-quality-label"><input type="checkbox" value="Q10" id="scx-quality-10"> Q10</label><label class="scx-quality-label"><input type="checkbox" value="Q11" id="scx-quality-11"> Q11</label><label class="scx-quality-label"><input type="checkbox" value="Q12" id="scx-quality-12"> Q12</label></div>
+      <button id="scx-filter-action" class="scx-btn scx-btn-primary scx-width-full">Start Search</button>
+    </div>
+    <div id="scx-filter-status" class="scx-status"></div>
+    <div id="scx-filter-results" class="scx-chat-results"></div>
+  </div></div>
+  </div><div class="scx-section collapsed" data-section-id="executive-section">
+    <div class="scx-section-header">
+      <div class="scx-section-title">
+        <span class="scx-section-icon">👔</span>
+        <span>Executive Helper</span>
+      </div>
+      <div class="scx-section-toggle">▼</div>
+    </div>
+    <div class="scx-section-content"></div>
+  </div><div class="scx-sidebar-footer-support">
+    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-paypal">
+      <span>❤</span> Support via PayPal
+    </button>
+    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-kofi">
+      <span>☕</span> Support via Ko-fi
+    </button>
+  </div><div class="scx-sidebar-footer-bug">
+    <a href="https://github.com/mirceaman56/sim-companies-helper/issues/new?title=%5BBug%5D%20Short%20summary&amp;body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20..." target="_blank" rel="noreferrer" class="scx-sidebar-footer-link">
+      
+      <div class="scx-sidebar-footer-title">
+         <span class="scx-sidebar-footer-bug-icon">🐛</span> Report a Bug
+      </div>
+    
+    </a>
+  </div></div></html>

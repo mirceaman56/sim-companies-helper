@@ -119,4 +119,19 @@ describe("production_page adapter", () => {
     await expect(waitPromise).resolves.toBe(8.25);
     vi.useRealTimers();
   });
+
+  it("parses first production row from real page export with wages fallback", () => {
+    document.documentElement.innerHTML = loadFixture("real-page.html");
+
+    const row = findFirstProductionRow(document);
+    const productionRow = readProductionRow(row);
+
+    expect(row).not.toBeNull();
+    expect(productionRow).toMatchObject({
+      productId: 44,
+      productName: "Sand Q2",
+      laborCost: 4210,
+      isActive: false,
+    });
+  });
 });
