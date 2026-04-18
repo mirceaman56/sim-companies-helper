@@ -6,6 +6,7 @@ import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.j
 import { getRealmId } from "./auth.js";
 import { t } from "./i18n.js";
 import { calculateUpgradeMultiplier, formatProductionAsText } from "./production_calc.js";
+import { renderStateBlock } from "./ui_state.js";
 import {
   findProductionRowFromTarget,
   readProductionRow,
@@ -131,7 +132,10 @@ export async function updateProductionPanel() {
   const recipe = recipes.find((r) => r.id === currentProductId);
 
   if (!recipe) {
-    contentEl.innerHTML = `<div class="scx-muted">${t("recipeNotFound")}</div>`;
+    contentEl.innerHTML = renderStateBlock({
+      type: "error",
+      message: t("recipeNotFound"),
+    });
     return;
   }
 
@@ -147,20 +151,29 @@ async function renderProductAnalysis(contentEl, recipe) {
   if (!pricesCache) {
     const realmId = getRealmId();
     if (realmId === null || realmId === undefined) {
-      contentEl.innerHTML = `<div class="scx-muted">${t("authRequired")}</div>`;
+      contentEl.innerHTML = renderStateBlock({
+        type: "error",
+        message: t("authRequired"),
+      });
       return;
     }
 
-    contentEl.innerHTML = `<div class="scx-muted">${t("loadingPrices")}</div>`;
+    contentEl.innerHTML = renderStateBlock({
+      type: "loading",
+      message: t("loadingPrices"),
+      showSpinner: true,
+    });
 
     try {
       // Just fetch product and container
       const productIds = [currentProductId, TRANSPORT_RESOURCE_ID];
       pricesCache = await fetchMarketPrices(realmId, productIds);
     } catch (e) {
-      contentEl.innerHTML = `<div class="scx-note scx-production-error-note">
-        ${t("errorLoadingPrices")}: ${escapeHtml(e.message)}
-      </div>`;
+      const message = e instanceof Error && e.message ? e.message : t("genericError");
+      contentEl.innerHTML = renderStateBlock({
+        type: "error",
+        message: `${t("errorLoadingPrices")}: ${message}`,
+      });
       return;
     }
   }
@@ -176,10 +189,10 @@ async function renderProductAnalysis(contentEl, recipe) {
   );
 
   if (!analysis || analysis.error) {
+    const message = analysis?.error || t("genericError");
     contentEl.innerHTML = `
       <div class="scx-panel scx-production-analysis-panel">
-        <div class="scx-muted">Unable to analyze</div>
-        ${analysis?.error ? `<div class="scx-production-analysis-error">${escapeHtml(analysis.error)}</div>` : ""}
+        ${renderStateBlock({ type: "error", message })}
         <div class="scx-production-analysis-hint">${t("ensureProductionQuantity")}</div>
       </div>
     `;

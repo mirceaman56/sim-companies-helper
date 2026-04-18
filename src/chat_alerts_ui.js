@@ -38,12 +38,14 @@ import { loadChatAlertsSnapshot, saveChatAlertsSnapshot, storageKeyForRealm } fr
 import { createAlertTimers } from "./market_alerts_timers.js";
 import { createRenderScheduler, flashInputError } from "./market_alerts_render.js";
 import { findLatestRecentChatMatch } from "./chat_filter.js";
+import { renderStateBlock } from "./ui_state.js";
 
 const SECTION_ID = "chat-alerts-section";
 
 let alerts = [];
 let nextAlertId = 1;
 let alertsContainer = null;
+let panelState = null;
 
 const timers = createAlertTimers({
   checkIntervalMs: CHAT_ALERT_CHECK_INTERVAL_MS,
@@ -73,12 +75,27 @@ async function loadAlerts() {
  * Initialize the chat alerts panel.
  */
 export async function initChatAlerts() {
+  panelState = null;
   const content = getSectionContent(SECTION_ID);
   if (content && !content.querySelector(".scx-chat-alerts")) {
-    content.innerHTML = `<p class="scx-note">${t("loading")}…</p>`;
+    content.innerHTML = renderStateBlock({
+      type: "loading",
+      message: t("loading"),
+      showSpinner: true,
+    });
   }
 
-  await loadAlerts();
+  try {
+    await loadAlerts();
+  } catch (error) {
+    const message = error instanceof Error && error.message ? error.message : t("genericError");
+    panelState = {
+      type: "error",
+      message: `${t("genericError")}: ${message}`,
+    };
+    alerts = [];
+    nextAlertId = 1;
+  }
 
   if (content) {
     content.innerHTML = "";
@@ -251,8 +268,18 @@ async function checkAlert(container, alert) {
     } else if (result === "cleared") {
       void saveAlerts();
     }
+
+    panelState = null;
   } catch (error) {
     alert.lastCheck = Date.now();
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : `${t("genericError")}: ${String(error || "")}`;
+    panelState = {
+      type: "error",
+      message,
+    };
     console.warn("[SimHelper] Chat alert check failed:", error);
   }
 
@@ -265,6 +292,11 @@ async function checkAlert(container, alert) {
  */
 function renderChatAlertsList(container) {
   if (!container) return;
+
+  const stateEl = container.querySelector(".scx-chat-alerts-state");
+  if (stateEl) {
+    stateEl.innerHTML = panelState ? renderStateBlock(panelState) : "";
+  }
 
   renderChatAlertList({
     container,

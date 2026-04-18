@@ -36,6 +36,10 @@
   overflow-y: auto;
 }
 
+.scx-chat-alerts-state:empty {
+  display: none;
+}
+
 .scx-chat-alerts-empty {
   text-align: center;
   color: var(--scx-text-muted);
