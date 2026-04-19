@@ -907,7 +907,7 @@ function renderHeader(finance) {
 
   const badges = [
     `<span class="scx-chip">${t("latest")}: ${formatRefreshTime(finance?.meta?.lastRefreshAt)}</span>`,
-    isPartial ? `<span class="scx-chip scx-chip-bad">${t("financePartialCoverage")}</span>` : "",
+    isPartial ? `<span class="scx-chip scx-chip-meh">${t("financePartialCoverage")}</span>` : "",
     rateLimited ? `<span class="scx-chip scx-chip-meh">${t("financeRateLimited")}</span>` : "",
   ]
     .filter(Boolean)

@@ -29,21 +29,21 @@
 }
 
 .scx-state-loading {
-  background: var(--scx-bg-info);
-  border-left-color: var(--scx-color-info);
-  color: var(--scx-color-info);
+  background: var(--scx-tone-info-bg);
+  border-left-color: currentColor;
+  color: var(--scx-tone-info-fg);
 }
 
 .scx-state-error {
-  background: var(--scx-bg-error);
-  border-left-color: var(--scx-color-error);
-  color: var(--scx-text-error);
+  background: var(--scx-tone-error-bg);
+  border-left-color: currentColor;
+  color: var(--scx-tone-error-fg);
 }
 
 .scx-state-success {
-  background: var(--scx-bg-success);
-  border-left-color: var(--scx-color-success);
-  color: var(--scx-text-success);
+  background: var(--scx-tone-success-bg);
+  border-left-color: currentColor;
+  color: var(--scx-tone-success-fg);
 }
 
 .scx-loading-spinner {

@@ -149,20 +149,20 @@
   color: var(--scx-text-muted);
 }
 .scx-chip-bad {
-  background: var(--scx-bg-error);
-  color: var(--scx-color-error);
+  background: var(--scx-tone-error-bg);
+  color: var(--scx-tone-error-fg);
 }
 .scx-chip-excellent {
-  background: var(--scx-bg-success);
-  color: var(--scx-text-success-dark);
+  background: var(--scx-tone-success-bg);
+  color: var(--scx-tone-success-fg);
 }
 .scx-chip-good {
-  background: var(--scx-bg-info);
-  color: var(--scx-color-info);
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-fg);
 }
 .scx-chip-meh {
-  background: var(--scx-bg-warning);
-  color: var(--scx-text-warning-alt);
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-fg);
 }
 
 .scx-big {

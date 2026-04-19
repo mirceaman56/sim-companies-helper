@@ -361,11 +361,11 @@
 }
 
 .scx-fin-pos {
-  color: var(--scx-text-success);
+  color: var(--scx-tone-success-text);
 }
 
 .scx-fin-neg {
-  color: var(--scx-text-error);
+  color: var(--scx-tone-error-text);
 }
 
 .scx-fin-copy-buffer {
