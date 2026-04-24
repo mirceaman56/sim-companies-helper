@@ -277,6 +277,10 @@ export async function updateExecutivePanel({ force = false } = {}) {
     const roleMatch = pathname.match(/\/headquarters\/executives\/(coo|cfo|cto|cmo)/);
     const positionCode = roleMatch ? ROLE_POSITION_MAP[roleMatch[1]] : null;
     executive = positionCode ? findExecutiveByPosition(positionCode) : null;
+  } else if (pageKind === "candidate" || pageKind === "group") {
+    const groupMatch = pathname.match(/\/headquarters\/executives\/g(\d+)/);
+    const positionCode = groupMatch ? groupMatch[1] : null;
+    executive = positionCode ? findExecutiveByPosition(positionCode) : null;
   }
 
   const executiveSkills = executive ? apiSkillsToInternal(executive.skills) : null;
