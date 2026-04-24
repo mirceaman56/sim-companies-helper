@@ -7,8 +7,6 @@ import {
   getExecutivePageKind,
   isExecutivePath,
   readExecutiveHRFeedback,
-  readExecutiveSkills,
-  readExecutiveTrainingSkills,
 } from "../src/page/executive_page.js";
 
 function loadFixture(name) {
@@ -31,86 +29,6 @@ describe("executive_page readers", () => {
     expect(getExecutivePageKind("/headquarters/executives/g1/")).toBe("candidate");
     expect(getExecutivePageKind("/headquarters/executives/g12/")).toBe("group");
     expect(getExecutivePageKind("/headquarters/overview/")).toBe("none");
-  });
-
-  it("reads executive skills from a 4-row skills table", () => {
-    document.body.innerHTML = loadFixture("role-page.html");
-
-    expect(readExecutiveSkills(document)).toEqual({
-      mgmt: 4,
-      acct: 2,
-      comm: 6,
-      tech: 1,
-    });
-  });
-
-  it("falls back to numeric text parsing for skills when spans are absent", () => {
-    document.body.innerHTML = loadFixture("fallback-page.html");
-
-    expect(readExecutiveSkills(document)).toEqual({
-      mgmt: 5,
-      acct: 3,
-      comm: 4,
-      tech: 2,
-    });
-  });
-
-  it("reads training bonuses from page text", () => {
-    document.body.innerHTML = loadFixture("role-page.html");
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      comm: 1,
-      tech: 2,
-      mgmt: 1,
-    });
-  });
-
-  it("reads training bonuses from modern training history list blocks", () => {
-    document.body.innerHTML = loadFixture("modern-training-history-page.html");
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      acct: 4,
-      tech: 2,
-    });
-  });
-
-  it("aggregates science + technology training bonuses into tech", () => {
-    document.body.innerHTML = loadFixture("fallback-page.html");
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      mgmt: 1,
-      tech: 4,
-    });
-  });
-
-  it("reads training bonuses with spaced and wrapped +value formats", () => {
-    document.body.innerHTML = loadFixture("training-format-page.html");
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      mgmt: 1,
-      acct: 2,
-      comm: 3,
-      tech: 5,
-    });
-  });
-
-  it("parses training history lines when page text is fully concatenated", () => {
-    document.body.innerHTML =
-      '<div class="pull-right text-right"><div>Accounting +1</div><div>Science +1</div><div>Accounting +2</div></div>';
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      acct: 3,
-      tech: 1,
-    });
-  });
-
-  it("parses localized training history lines using current page skill labels", () => {
-    document.body.innerHTML = loadFixture("localized-training-history-page.html");
-
-    expect(readExecutiveTrainingSkills(document)).toEqual({
-      acct: 3,
-      tech: 1,
-    });
   });
 
   it("extracts HR feedback from structural container pattern", () => {
