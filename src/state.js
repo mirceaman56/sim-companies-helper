@@ -110,6 +110,16 @@ export const STATE = {
     },
   },
 
+  // executives (shared across executive widget and retail helper)
+  executives: {
+    loaded: false,
+    loading: false,
+    error: null,
+    items: [],
+    lastRefreshAt: 0,
+    details: {}, // { [executiveId]: { loaded, loading, error, data, lastRefreshAt } }
+  },
+
   // buildings (XP calculator)
   buildings: {
     loaded: false,

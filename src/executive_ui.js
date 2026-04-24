@@ -1,22 +1,20 @@
-/**
- * Executive Helper UI Component
- * Displays executive skills breakdown (organic vs training)
- * and HR feedback assessment matching against hr_blurp.json data.
- */
-
 import { stringSimilarity } from "string-similarity-js";
 import hrBlurpData from "./resources/hr_blurp.json";
 import { t } from "./i18n.js";
 import { getSectionContent } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
-import { waitForStructuralValue } from "./page/page_utils.js";
+import { getExecutivePageKind, isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
 import {
-  getExecutivePageKind,
-  isExecutivePath,
-  readExecutiveHRFeedback,
-  readExecutiveSkills,
-  readExecutiveTrainingSkills,
-} from "./page/executive_page.js";
+  loadExecutivesOnce,
+  loadExecutiveDetail,
+  getExecutiveDetail,
+  computeTrainingBreakdown,
+  findExecutiveByPosition,
+  apiSkillsToInternal,
+  getTrainingSkillKey,
+  ROLE_POSITION_MAP,
+} from "./executives.js";
+import { loadAuthDataOnce } from "./auth.js";
 
 const SECTION_ID = "executive-section";
 const REFRESH_BUTTON_ID = "scx-executive-refresh-btn";
@@ -28,9 +26,6 @@ const SKILL_LABELS = {
   comm: "Communication",
   tech: "Technology",
 };
-const TRAINING_SYNC_TIMEOUT_MS = 4000;
-
-let pendingTrainingSyncPath = null;
 
 function getSkillLabel(skillKey) {
   const labelMap = {
@@ -115,9 +110,8 @@ function createSkillElementHTML(skillKey, skillValue) {
   `;
 }
 
-function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
-  const organicValue = Math.max(0, totalValue - (trainingValue || 0));
-
+function createSkillBreakdownRowHTML(skillKey, totalValue, organicValue, trainingValue) {
+  const hasBreakdown = organicValue !== null && trainingValue !== null;
   return `
     <div class="scx-skill-breakdown-row">
       <div class="scx-skill-breakdown-label">${escapeHtml(getSkillLabel(skillKey))}</div>
@@ -126,30 +120,43 @@ function createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue) {
           <div class="scx-skill-breakdown-total-label">${t("total")}</div>
           <div class="scx-skill-breakdown-total-value">${totalValue}</div>
         </div>
-        <div class="scx-skill-breakdown-value scx-skill-breakdown-organic">
+        ${
+          hasBreakdown
+            ? `<div class="scx-skill-breakdown-value scx-skill-breakdown-organic">
           <div class="scx-skill-breakdown-organic-label">${t("organic")}</div>
           <div class="scx-skill-breakdown-organic-value">${organicValue}</div>
         </div>
         <div class="scx-skill-breakdown-value scx-skill-breakdown-training">
           <div class="scx-skill-breakdown-training-label">${t("training")}</div>
-          <div class="scx-skill-breakdown-training-value">${trainingValue || 0}</div>
-        </div>
+          <div class="scx-skill-breakdown-training-value">${trainingValue}</div>
+        </div>`
+            : ""
+        }
       </div>
     </div>
   `;
 }
 
-function createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills) {
+function createSkillsBreakdownSectionHTML(
+  executiveSkills,
+  currentTrainingSkillKey,
+  organicSkills,
+  trainingSkills,
+) {
   let html = `
     <div class="scx-skill-breakdown-section">
       <div class="scx-skill-breakdown-section-label">${t("skillsBreakdown")}</div>
-      <div class="scx-skill-breakdown-description">${t("skillsBreakdownDescription")}</div>
   `;
 
   for (const skillKey of SKILL_KEYS) {
     const totalValue = executiveSkills[skillKey] || 0;
-    const trainingValue = trainingSkills ? trainingSkills[skillKey] || 0 : 0;
-    html += createSkillBreakdownRowHTML(skillKey, totalValue, trainingValue);
+    const organicValue = organicSkills ? (organicSkills[skillKey] ?? null) : null;
+    const trainingValue = trainingSkills ? (trainingSkills[skillKey] ?? null) : null;
+    html += createSkillBreakdownRowHTML(skillKey, totalValue, organicValue, trainingValue);
+  }
+
+  if (currentTrainingSkillKey) {
+    html += `<div class="scx-skill-breakdown-training-indicator">${t("currentlyTraining")}: ${escapeHtml(getSkillLabel(currentTrainingSkillKey))}</div>`;
   }
 
   html += "</div>";
@@ -211,22 +218,32 @@ function wireRefreshButton(content) {
 
   button.addEventListener("click", (event) => {
     event.preventDefault();
-    updateExecutivePanel();
+    void updateExecutivePanel({ force: true });
   });
 }
 
-function buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, matchedEntry) {
+function buildExecutiveCopyText(
+  executiveSkills,
+  currentTrainingSkillKey,
+  feedbackText,
+  matchedEntry,
+  organicSkills,
+  trainingSkills,
+) {
   const lines = [t("executiveHelper")];
 
   if (executiveSkills) {
     lines.push(`${t("skillsBreakdown")}:`);
     for (const skillKey of SKILL_KEYS) {
       const total = executiveSkills[skillKey] || 0;
-      const training = trainingSkills ? trainingSkills[skillKey] || 0 : 0;
-      const organic = Math.max(0, total - training);
-      lines.push(
-        `${getSkillLabel(skillKey)} ${t("total")}: ${total} | ${t("organic")}: ${organic} | ${t("training")}: ${training}`,
-      );
+      let line = `${getSkillLabel(skillKey)} ${t("total")}: ${total}`;
+      if (organicSkills && trainingSkills) {
+        line += ` (${t("organic")}: ${organicSkills[skillKey] ?? 0}, ${t("training")}: ${trainingSkills[skillKey] ?? 0})`;
+      }
+      lines.push(line);
+    }
+    if (currentTrainingSkillKey) {
+      lines.push(`${t("currentlyTraining")}: ${getSkillLabel(currentTrainingSkillKey)}`);
     }
   }
 
@@ -245,63 +262,62 @@ function buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, m
   return lines.join("\n");
 }
 
-function scheduleTrainingSync(pathname) {
-  if (pendingTrainingSyncPath === pathname) return;
-  pendingTrainingSyncPath = pathname;
-
-  void waitForStructuralValue({
-    target: document.body,
-    readValue: () => readExecutiveTrainingSkills(document),
-    isReady: (value) => Boolean(value && Object.keys(value).length > 0),
-    timeoutMs: TRAINING_SYNC_TIMEOUT_MS,
-  }).then((resolvedTrainingSkills) => {
-    if (pendingTrainingSyncPath !== pathname) return;
-    pendingTrainingSyncPath = null;
-
-    if (!resolvedTrainingSkills) return;
-    if (window.location.pathname !== pathname) return;
-
-    updateExecutivePanel();
-  });
-}
-
-export function updateExecutivePanel() {
+export async function updateExecutivePanel({ force = false } = {}) {
   const content = getSectionContent(SECTION_ID);
   if (!content) return;
 
   const pathname = window.location.pathname;
-  if (!isExecutivePath(pathname)) {
-    pendingTrainingSyncPath = null;
-    content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
-    wireRefreshButton(content);
-    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null));
-    return;
+  const pageKind = getExecutivePageKind(pathname);
+
+  await loadAuthDataOnce();
+  await loadExecutivesOnce({ force });
+
+  let executive = null;
+  if (pageKind === "role" || pageKind === "apprentice") {
+    const roleMatch = pathname.match(/\/headquarters\/executives\/(coo|cfo|cto|cmo)/);
+    const positionCode = roleMatch ? ROLE_POSITION_MAP[roleMatch[1]] : null;
+    executive = positionCode ? findExecutiveByPosition(positionCode) : null;
   }
 
-  const executiveSkills = readExecutiveSkills(document);
-  const trainingSkills = readExecutiveTrainingSkills(document);
-  if (getExecutivePageKind(pathname) !== "none") {
-    if (trainingSkills) {
-      pendingTrainingSyncPath = null;
-    } else {
-      scheduleTrainingSync(pathname);
-    }
-  } else {
-    pendingTrainingSyncPath = null;
+  const executiveSkills = executive ? apiSkillsToInternal(executive.skills) : null;
+  const currentTrainingSkillKey = executive?.currentTraining
+    ? getTrainingSkillKey(executive.currentTraining.training)
+    : null;
+
+  if (executive) {
+    await loadExecutiveDetail(executive.id, { force });
   }
-  const feedbackText = readExecutiveHRFeedback(document);
+  const detail = executive ? getExecutiveDetail(executive.id) : null;
+  const trainingGained = detail ? computeTrainingBreakdown(detail.trainings) : null;
+  const trainingSkills = trainingGained ? apiSkillsToInternal(trainingGained) : null;
+  const organicSkills =
+    trainingSkills && executiveSkills
+      ? {
+          mgmt: Math.max(0, executiveSkills.mgmt - trainingSkills.mgmt),
+          acct: Math.max(0, executiveSkills.acct - trainingSkills.acct),
+          comm: Math.max(0, executiveSkills.comm - trainingSkills.comm),
+          tech: Math.max(0, executiveSkills.tech - trainingSkills.tech),
+        }
+      : null;
+
+  const feedbackText = isExecutivePath(pathname) ? readExecutiveHRFeedback(document) : null;
   const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
 
   if (!executiveSkills && !feedbackText) {
     content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
     wireRefreshButton(content);
-    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null));
+    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null, null, null));
     return;
   }
 
   let html = createPanelHeaderHTML();
   if (executiveSkills) {
-    html += createSkillsBreakdownSectionHTML(executiveSkills, trainingSkills);
+    html += createSkillsBreakdownSectionHTML(
+      executiveSkills,
+      currentTrainingSkillKey,
+      organicSkills,
+      trainingSkills,
+    );
   }
 
   if (feedbackText) {
@@ -316,7 +332,14 @@ export function updateExecutivePanel() {
   content.innerHTML = html;
   wireRefreshButton(content);
   wireCopyButton(content, () =>
-    buildExecutiveCopyText(executiveSkills, trainingSkills, feedbackText, matchedEntry),
+    buildExecutiveCopyText(
+      executiveSkills,
+      currentTrainingSkillKey,
+      feedbackText,
+      matchedEntry,
+      organicSkills,
+      trainingSkills,
+    ),
   );
 }
 
@@ -327,8 +350,6 @@ export function initExecutiveHelper() {
 export const _testUtils = {
   isExecutivePath,
   getExecutivePageKind,
-  readExecutiveSkills,
-  readExecutiveTrainingSkills,
   readExecutiveHRFeedback,
   findBestMatchingEntry,
   calculateSimilarity,

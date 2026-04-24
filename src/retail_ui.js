@@ -31,6 +31,11 @@ import {
   isRetailSellInput,
   readRetailRow,
 } from "./page/retail_page.js";
+import {
+  loadExecutivesOnce,
+  getExecutivesTrainingForCOO,
+  getExecutivesTrainingForCMO,
+} from "./executives.js";
 
 const SECTION_ID = "retail-section";
 
@@ -363,6 +368,13 @@ export async function updatePanel() {
     }
   }
 
+  // Executives — kick off async fetch, re-render on completion to show COO training warning
+  if (!STATE.executives.loaded && !STATE.executives.loading) {
+    loadExecutivesOnce()
+      .then(() => updatePanel())
+      .catch(() => {});
+  }
+
   // --- Market Comparison Calculations ---
   let marketAnalysisHTML = "";
   let marketAnalysisData = null; // Store for copy functionality
@@ -542,6 +554,24 @@ export async function updatePanel() {
     }
   }
 
+  // --- Executive Training Warnings (COO + apprentice COO, CMO + apprentice CMO) ---
+  const RETAIL_ROLE_LABEL_KEYS = {
+    coo: "roleCOO",
+    apprenticeCoo: "roleApprenticeCOO",
+    cmo: "roleCMO",
+    apprenticeCmo: "roleApprenticeCMO",
+  };
+  let executiveWarningsHTML = "";
+  if (STATE.executives.loaded) {
+    const trainingExecs = [...getExecutivesTrainingForCOO(), ...getExecutivesTrainingForCMO()];
+    executiveWarningsHTML = trainingExecs
+      .map(({ executive, roleKey }) => {
+        const roleLabel = t(RETAIL_ROLE_LABEL_KEYS[roleKey]);
+        return `<div class="scx-note scx-retail-note-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsRetail")}</div>`;
+      })
+      .join("");
+  }
+
   // --- HTML Render ---
 
   let finePrint = "";
@@ -574,6 +604,7 @@ export async function updatePanel() {
       
       ${finePrint}
 
+      ${executiveWarningsHTML}
       ${marketPulseHTML}
       ${marketAnalysisHTML}
     </div>

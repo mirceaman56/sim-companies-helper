@@ -13,6 +13,8 @@ import {
   waitForProductionLaborCost,
   extractProductionBuildingLevel,
 } from "./page/production_page.js";
+import { STATE } from "./state.js";
+import { loadExecutivesOnce, getExecutivesTrainingForCOO } from "./executives.js";
 
 const SECTION_ID = "production-section";
 
@@ -118,6 +120,13 @@ export async function updateProductionPanel() {
     return;
   }
 
+  // Kick off executive fetch for training warning (no-op if cached)
+  if (!STATE.executives.loaded && !STATE.executives.loading) {
+    loadExecutivesOnce()
+      .then(() => updateProductionPanel())
+      .catch(() => {});
+  }
+
   // If no product selected, show empty state
   if (currentProductId === null) {
     contentEl.innerHTML = `
@@ -209,6 +218,17 @@ async function renderProductAnalysis(contentEl, recipe) {
 function renderAnalysisUI(contentEl, recipe, analysis) {
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice } = analysis;
 
+  const PROD_ROLE_LABEL_KEYS = { coo: "roleCOO", apprenticeCoo: "roleApprenticeCOO" };
+  let execWarningHTML = "";
+  if (STATE.executives.loaded) {
+    execWarningHTML = getExecutivesTrainingForCOO()
+      .map(({ executive, roleKey }) => {
+        const roleLabel = t(PROD_ROLE_LABEL_KEYS[roleKey]);
+        return `<div class="scx-note scx-note-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsProduction")}</div>`;
+      })
+      .join("");
+  }
+
   // Extract building level from the page
   const buildingLevel = extractProductionBuildingLevel(document);
   const upgradeMultiplier = buildingLevel ? calculateUpgradeMultiplier(buildingLevel) : null;
@@ -243,6 +263,8 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         <span class="scx-badge-active">${t("active")}</span>
         ${buildingLevel ? `<span class="scx-badge-level">${t("lvl")} ${buildingLevel}</span>` : ""}
       </div>
+
+      ${execWarningHTML}
 
       <hr class="scx-hr-sm">
 
