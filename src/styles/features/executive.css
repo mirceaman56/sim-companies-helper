@@ -71,7 +71,7 @@
 
 .scx-hr-blurp-footer {
   padding: 12px 16px;
-  border-top: 2px solid var(--scx-border-light);
+  border-top: var(--scx-border-light);
   background: var(--scx-bg-subtle);
   border-radius: 0 0 8px 8px;
   display: flex;

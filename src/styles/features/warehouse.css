@@ -28,12 +28,12 @@
     background 0.2s ease,
     color 0.2s ease,
     opacity 0.2s ease;
-  background: var(--scx-text-primary-dark);
-  color: var(--scx-bg-primary);
+  background: var(--scx-bg-dark-header);
+  color: var(--scx-color-white);
 }
 
 .scx-warehouse-market-btn:hover:not(:disabled) {
-  background: var(--scx-text-primary);
+  background: var(--scx-bg-dark-hover);
 }
 
 .scx-warehouse-market-btn[data-state="loading"] {
