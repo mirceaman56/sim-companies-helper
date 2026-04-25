@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getSectionContentMock } = vi.hoisted(() => ({
+const { getSectionContentMock, requestMock } = vi.hoisted(() => ({
   getSectionContentMock: vi.fn(() => null),
+  requestMock: vi.fn(),
 }));
 
 vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
@@ -12,54 +13,44 @@ vi.mock("../src/sidebar.js", () => ({
 vi.mock("../src/auth.js", () => ({
   loadAuthDataOnce: vi.fn(() => Promise.resolve()),
 }));
-
-const mockExecutivesState = vi.hoisted(() => ({
-  items: [],
-  loaded: true,
-  loading: false,
-  error: null,
-  lastRefreshAt: Date.now(),
+vi.mock("../src/data/apiClient.js", () => ({
+  request: requestMock,
 }));
+vi.mock("../src/state.js", () => {
+  const STATE = {
+    auth: { companyId: 12345, realmId: 0, loaded: true, loading: false, error: null },
+    executives: {
+      loaded: false,
+      loading: false,
+      error: null,
+      items: [],
+      lastRefreshAt: 0,
+      details: {},
+    },
+  };
+  return { STATE };
+});
 
-const mockDetailData = vi.hoisted(() => ({ value: null }));
-
-vi.mock("../src/executives.js", () => ({
-  loadExecutivesOnce: vi.fn(() => Promise.resolve()),
-  loadExecutiveDetail: vi.fn(() => Promise.resolve()),
-  getExecutiveDetail: vi.fn(() => mockDetailData.value),
-  computeTrainingBreakdown: vi.fn((trainings) => {
-    if (!Array.isArray(trainings) || trainings.length === 0) return { coo: 0, cfo: 0, cmo: 0, cto: 0 };
-    return trainings.reduce(
-      (acc, tr) => {
-        const s = tr.skills || {};
-        return { coo: acc.coo + (s.coo || 0), cfo: acc.cfo + (s.cfo || 0), cmo: acc.cmo + (s.cmo || 0), cto: acc.cto + (s.cto || 0) };
-      },
-      { coo: 0, cfo: 0, cmo: 0, cto: 0 },
-    );
-  }),
-  findExecutiveByPosition: vi.fn((positionCode) =>
-    mockExecutivesState.items.find((ex) => ex.currentWorkHistory?.position === positionCode) ?? null,
-  ),
-  apiSkillsToInternal: vi.fn((apiSkills) => ({
-    mgmt: apiSkills?.coo ?? 0,
-    acct: apiSkills?.cfo ?? 0,
-    comm: apiSkills?.cmo ?? 0,
-    tech: apiSkills?.cto ?? 0,
-  })),
-  getTrainingSkillKey: vi.fn((code) => ({ o: "mgmt", f: "acct", m: "comm", t: "tech" }[code] ?? null)),
-  ROLE_POSITION_MAP: { coo: "o", cfo: "f", cmo: "m", cto: "t" },
-}));
-
+import { STATE } from "../src/state.js";
 import { _testUtils, updateExecutivePanel } from "../src/executive_ui.js";
 
-function makeExecutive(position, skills, currentTraining = null) {
+function makeExecutive({ id, name, position, skills, currentTraining = null }) {
   return {
-    id: 1,
-    name: "Test Executive",
+    id,
+    name,
     skills,
     currentWorkHistory: { position },
     currentTraining,
   };
+}
+
+function setFreshExecutives(items, details = {}) {
+  STATE.executives.items = items;
+  STATE.executives.details = details;
+  STATE.executives.loaded = true;
+  STATE.executives.loading = false;
+  STATE.executives.error = null;
+  STATE.executives.lastRefreshAt = Date.now();
 }
 
 describe("executive route matching", () => {
@@ -95,15 +86,27 @@ describe("executive route matching", () => {
 describe("executive panel refresh", () => {
   beforeEach(() => {
     getSectionContentMock.mockReset();
-    mockExecutivesState.items = [];
-    mockDetailData.value = null;
+    requestMock.mockReset();
+    STATE.executives.loaded = false;
+    STATE.executives.loading = false;
+    STATE.executives.error = null;
+    STATE.executives.items = [];
+    STATE.executives.lastRefreshAt = 0;
+    STATE.executives.details = {};
     document.body.innerHTML = "";
   });
 
   it("renders refresh button and re-runs panel update on click", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 4, cfo: 2, cmo: 6, cto: 1 }),
-    ];
+    setFreshExecutives([
+      makeExecutive({
+        id: 1,
+        name: "Main COO",
+        position: "o",
+        skills: { coo: 4, cfo: 2, cmo: 6, cto: 1 },
+      }),
+    ]);
+    document.body.innerHTML = `<div id="page"><h1>Main COO</h1><div>COO</div></div>`;
+
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
     window.history.pushState({}, "", "/headquarters/executives/coo/");
@@ -120,26 +123,47 @@ describe("executive panel refresh", () => {
     expect(getSectionContentMock.mock.calls.length).toBeGreaterThan(callCountBefore);
   });
 
-  it("renders skills from API data", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 27, cfo: 2, cmo: 4, cto: 7 }),
-    ];
+  it("renders apprentice skills from the matched DOM executive, not the main COO", async () => {
+    setFreshExecutives([
+      makeExecutive({
+        id: 1,
+        name: "Main COO",
+        position: "o",
+        skills: { coo: 27, cfo: 2, cmo: 4, cto: 7 },
+      }),
+      makeExecutive({
+        id: 2,
+        name: "Daniel Phillips",
+        position: "v",
+        skills: { coo: 14, cfo: 4, cmo: 5, cto: 4 },
+      }),
+    ]);
+    document.body.innerHTML = `<div id="page"><h1>Daniel Phillips</h1><div>COO APPRENTICE</div></div>`;
+
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
-    window.history.pushState({}, "", "/headquarters/executives/coo/");
+    window.history.pushState({}, "", "/headquarters/executives/coo-apprentice/");
 
     await updateExecutivePanel();
 
     const totalValues = [...content.querySelectorAll(".scx-skill-breakdown-total-value")].map((el) =>
       el.textContent.trim(),
     );
-    expect(totalValues).toEqual(["27", "2", "4", "7"]);
+    expect(totalValues).toEqual(["14", "4", "5", "4"]);
   });
 
   it("renders 'currently training' indicator when executive has active training", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 5, cfo: 2, cmo: 3, cto: 4 }, { training: "t" }),
-    ];
+    setFreshExecutives([
+      makeExecutive({
+        id: 1,
+        name: "Main COO",
+        position: "o",
+        skills: { coo: 5, cfo: 2, cmo: 3, cto: 4 },
+        currentTraining: { training: "t" },
+      }),
+    ]);
+    document.body.innerHTML = `<div id="page"><h1>Main COO</h1><div>COO</div></div>`;
+
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
     window.history.pushState({}, "", "/headquarters/executives/coo/");
@@ -152,9 +176,16 @@ describe("executive panel refresh", () => {
   });
 
   it("does not render training indicator when no active training", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 5, cfo: 2, cmo: 3, cto: 4 }, null),
-    ];
+    setFreshExecutives([
+      makeExecutive({
+        id: 1,
+        name: "Main COO",
+        position: "o",
+        skills: { coo: 5, cfo: 2, cmo: 3, cto: 4 },
+      }),
+    ]);
+    document.body.innerHTML = `<div id="page"><h1>Main COO</h1><div>COO</div></div>`;
+
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
     window.history.pushState({}, "", "/headquarters/executives/coo/");
@@ -166,23 +197,38 @@ describe("executive panel refresh", () => {
   });
 
   it("renders organic and training columns when detail data is available", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 10, cfo: 3, cmo: 5, cto: 2 }),
-    ];
-    mockDetailData.value = {
-      trainings: [
-        { skills: { coo: 3, cfo: 1, cmo: 2, cto: 0 } },
-        { skills: { coo: 2, cfo: 0, cmo: 1, cto: 1 } },
+    setFreshExecutives(
+      [
+        makeExecutive({
+          id: 1,
+          name: "Main COO",
+          position: "o",
+          skills: { coo: 10, cfo: 3, cmo: 5, cto: 2 },
+        }),
       ],
-    };
+      {
+        1: {
+          loaded: true,
+          loading: false,
+          error: null,
+          data: {
+            trainings: [
+              { skills: { coo: 3, cfo: 1, cmo: 2, cto: 0 } },
+              { skills: { coo: 2, cfo: 0, cmo: 1, cto: 1 } },
+            ],
+          },
+          lastRefreshAt: Date.now(),
+        },
+      },
+    );
+    document.body.innerHTML = `<div id="page"><h1>Main COO</h1><div>COO</div></div>`;
+
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
     window.history.pushState({}, "", "/headquarters/executives/coo/");
 
     await updateExecutivePanel();
 
-    // Training sum: coo=5, cfo=1, cmo=3, cto=1
-    // Organic: coo=10-5=5, cfo=3-1=2, cmo=5-3=2, cto=2-1=1
     const organicValues = [...content.querySelectorAll(".scx-skill-breakdown-organic-value")].map((el) =>
       el.textContent.trim(),
     );
@@ -193,43 +239,61 @@ describe("executive panel refresh", () => {
     expect(trainingValues).toEqual(["5", "1", "3", "1"]);
   });
 
-  it("does not render organic/training columns when no detail data", async () => {
-    mockExecutivesState.items = [
-      makeExecutive("o", { coo: 5, cfo: 2, cmo: 3, cto: 4 }, null),
-    ];
-    mockDetailData.value = null;
-    const content = document.createElement("div");
-    getSectionContentMock.mockReturnValue(content);
-    window.history.pushState({}, "", "/headquarters/executives/coo/");
-
-    await updateExecutivePanel();
-
-    expect(content.querySelector(".scx-skill-breakdown-organic-value")).toBeNull();
-    expect(content.querySelector(".scx-skill-breakdown-training-value")).toBeNull();
-  });
-
-  it("renders HR feedback on staff candidate pages", async () => {
-    document.body.innerHTML = `
-      <div class="css-1r0yqr6">
-        <table class="css-1vnhof9"><tbody><tr><td>Expected salary</td><td>$1,247</td></tr></tbody></table>
-        <table class="css-1fs1e4u"><tbody></tbody></table>
-        <div><b>HR assessment of the candidate:</b></div>
-        <div class="css-sffzb7"></div>
-        Sandra told me she can smell my aura.
-      </div>
-    `;
+  it("does not render wrong skills on staff pages when no safe match exists", async () => {
+    setFreshExecutives([
+      makeExecutive({
+        id: 12,
+        name: "Staff Exec",
+        position: "t",
+        skills: { coo: 4, cfo: 3, cmo: 2, cto: 11 },
+      }),
+    ]);
+    document.body.innerHTML = `<div id="page"><div>STAFF EXECUTIVE</div></div>`;
 
     const content = document.createElement("div");
     getSectionContentMock.mockReturnValue(content);
-    window.history.pushState({}, "", "/headquarters/executives/g1/");
+    window.history.pushState({}, "", "/headquarters/executives/g12/");
 
     await updateExecutivePanel();
 
-    expect(content.textContent).toContain("Sandra told me she can smell my aura.");
-    expect(content.textContent).not.toContain("navigateToExecutives");
+    expect(content.querySelector(".scx-skill-breakdown-total-value")).toBeNull();
   });
 
-  it("renders HR feedback on grouped executive pages when feedback exists", async () => {
+  it("loads detail for the matched staff executive id", async () => {
+    requestMock.mockImplementation(async (key, options) => {
+      if (key === "executives") {
+        return {
+          executives: [
+            makeExecutive({
+              id: 12,
+              name: "Staff Exec",
+              position: "t",
+              skills: { coo: 4, cfo: 3, cmo: 2, cto: 11 },
+            }),
+          ],
+        };
+      }
+      if (key === "executive-detail-12") {
+        return { trainings: [{ skills: { coo: 0, cfo: 0, cmo: 0, cto: 2 } }] };
+      }
+      throw new Error(`unexpected request ${key} ${options?.url || ""}`);
+    });
+    document.body.innerHTML = `<div id="page"><h1>Staff Exec</h1><div>STAFF EXECUTIVE</div></div>`;
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/executives/g12/");
+
+    await updateExecutivePanel();
+
+    expect(requestMock.mock.calls.map(([key]) => key)).toEqual(["executives", "executive-detail-12"]);
+    const totalValues = [...content.querySelectorAll(".scx-skill-breakdown-total-value")].map((el) =>
+      el.textContent.trim(),
+    );
+    expect(totalValues).toEqual(["4", "3", "2", "11"]);
+  });
+
+  it("renders HR feedback on staff pages when feedback exists", async () => {
     document.body.innerHTML = `
       <div class="css-1r0yqr6">
         <table class="css-1vnhof9"><tbody><tr><td>Expected salary</td><td>$1,247</td></tr></tbody></table>

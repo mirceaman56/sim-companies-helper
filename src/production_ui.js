@@ -218,7 +218,7 @@ async function renderProductAnalysis(contentEl, recipe) {
 function renderAnalysisUI(contentEl, recipe, analysis) {
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice } = analysis;
 
-  const PROD_ROLE_LABEL_KEYS = { coo: "roleCOO", apprenticeCoo: "roleApprenticeCOO" };
+  const PROD_ROLE_LABEL_KEYS = { coo: "roleCOO" };
   let execWarningHTML = "";
   if (STATE.executives.loaded) {
     execWarningHTML = getExecutivesTrainingForCOO()
