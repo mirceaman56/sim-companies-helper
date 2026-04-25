@@ -110,7 +110,7 @@ export function createChatAlertsContent(input) {
   container.innerHTML = `
     <div class="scx-chat-alerts-form scx-panel">
       <div class="scx-flex-spaced">
-        <div class="scx-text-muted scx-font-9">${t("caMonitoringWindow")}</div>
+        <div class="scx-text-muted scx-text-xs">${t("caMonitoringWindow")}</div>
         <button class="scx-copy-btn" data-copy-action="chat-alerts" data-tooltip="${t("copyText")}" type="button">
           ${COPY_BUTTON_SVG}
         </button>
@@ -217,13 +217,13 @@ export function renderChatAlertList(input) {
         </div>
 
         <div class="scx-ca-card-body">
-          <div class="scx-flex-row scx-font-9">
+          <div class="scx-flex-row scx-text-xs">
             <span class="scx-k">${t("caLastChecked")}</span>
-            <span class="scx-color-999">${timeAgoDetailed(alert.lastCheck, t)}</span>
+            <span class="scx-text-muted">${timeAgoDetailed(alert.lastCheck, t)}</span>
           </div>
-          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
+          <div class="scx-flex-row scx-text-xs scx-margin-top-2">
             <span class="scx-k">${t("caLastMatch")}</span>
-            <span class="scx-color-999">${Number.isFinite(lastMatchMs) ? timeAgoDetailed(lastMatchMs, t) : t("never")}</span>
+            <span class="scx-text-muted">${Number.isFinite(lastMatchMs) ? timeAgoDetailed(lastMatchMs, t) : t("never")}</span>
           </div>
 
           ${

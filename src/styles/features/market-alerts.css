@@ -112,7 +112,7 @@
 
 .scx-ma-rate-limit {
   margin-top: 4px;
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-color-error);
   font-style: italic;
 }
@@ -220,7 +220,7 @@
     border-color: var(--scx-border-error-soft-strong);
   }
 
-  #scx-sidebar .scx-market-alerts .scx-color-999 {
+  #scx-sidebar .scx-market-alerts .scx-text-muted {
     color: var(--scx-text-secondary);
   }
 }

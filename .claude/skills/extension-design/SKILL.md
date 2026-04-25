@@ -41,9 +41,10 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 ### Typography
 - **UI text:** `IBM Plex Sans` (400 / 500 / 600 / 700)
 - **Numbers / prices / percentages:** `IBM Plex Mono` with `font-variant-numeric: tabular-nums`
-- Use the utility class `.scx-mono` on any currency or numeric `<span>`
-- Base size is **12px**; minimum is **10px** for readable text; 9px is acceptable only for dense metadata labels (column headers, skill sub-labels)
+- Wrap every monetary or percentage value in `<span class="scx-mono">`. Components that always show numbers (e.g., `.scx-fin-*-value`, `.scx-v`, `.scx-big`) declare the mono font themselves so callers don't need the wrapper.
+- Base size is **12px**. **Minimum is 10px — no exceptions.** Use `var(--scx-font-size-xs)` for the floor.
 - Font size tokens: `--scx-font-size-xs` (10px) → `--scx-font-size-sm` (11px) → `--scx-font-size-base` (12px) → `--scx-font-size-md` (13px) → `--scx-font-size-lg` (14px) → `--scx-font-size-xl` (16px)
+- Font weight tokens: `--scx-font-weight-normal` (400), `-medium` (500), `-semibold` (600), `-bold` (700). 700 is the maximum supported by IBM Plex Sans/Mono — anything higher renders as browser-synthesized faux-bold.
 
 ### Colors
 - All tokens use **oklch** — do not introduce hex or hsl colors anywhere
@@ -57,6 +58,7 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 - Variants: `.scx-btn-primary` (brand green), `.scx-btn-success` (alias for primary), `.scx-btn-secondary` (muted), `.scx-btn-ghost` (outlined brand), `.scx-btn-error`, `.scx-btn-warning`, `.scx-btn-info`
 - Sizes: `.scx-btn-sm` (11px / 4px 10px), `.scx-btn-lg` (13px / 10px 20px), `.scx-btn-full` (width 100%)
 - Never style buttons inline
+- Focus rings use `var(--scx-focus-ring-brand)` / `-brand-strong` / `-error` / `-error-strong`. Don't write hand-rolled `oklch(...)` ring shadows.
 
 ### Alerts
 - Use `.scx-alert` + `.scx-alert-{success|error|warning|info}` for status messages
@@ -129,10 +131,11 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 
 - Check `src/styles/foundations/tokens.css` for existing tokens before inventing new values.
 - When adding a new feature UI, create `src/styles/features/[feature].css` and add an `@import` to `src/content.css`.
-- Wrap all monetary and percentage values in `<span class="scx-mono">`.
-- Test dark mode: every new component must look correct under `@media (prefers-color-scheme: dark)`.
+- Wrap all monetary and percentage values in `<span class="scx-mono">` — unless the wrapping container's CSS already declares the mono font.
+- Trust the token system for dark mode. Feature CSS should **not** need its own `@media (prefers-color-scheme: dark)` block; if you reach for one, you're probably hardcoding a color or referencing a light-mode-only token instead of an adaptive one.
 - Keep sidebar panels narrow (max `350px`) — they overlay the game UI.
 - Use `var(--scx-border-light)` etc. as the **full border shorthand** (`border:` or `border-top:`) — never as a color inside another shorthand like `2px solid var(--scx-border-light)`.
+- Prefer semantic utility classes (`.scx-text-muted`, `.scx-text-xs`, `.scx-text-sm`) over numeric/legacy ones. The legacy `.scx-font-8/9/10` and `.scx-color-999/333` classes have been retired.
 
 ## What to never do
 

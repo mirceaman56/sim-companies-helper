@@ -225,20 +225,20 @@ async function calculateAndDisplayProfit() {
     `
     <div class="scx-contract-profit-row">
       <span>${t("contractRevenue")}</span>
-      <span>${formatMoney(revenue)}</span>
+      <span class="scx-mono">${formatMoney(revenue)}</span>
     </div>
     <div class="scx-contract-profit-row scx-contract-profit-cost">
       <span>${t("contractSourcing")}</span>
-      <span>-${formatMoney(totalSourcing)}</span>
+      <span class="scx-mono">-${formatMoney(totalSourcing)}</span>
     </div>
     <div class="scx-contract-profit-row scx-contract-profit-cost">
       <span>${t("contractTransportCost")}</span>
-      <span>-${formatMoney(totalTransport)}</span>
+      <span class="scx-mono">-${formatMoney(totalTransport)}</span>
     </div>
     <hr class="scx-contract-profit-divider">
     <div class="scx-contract-profit-row scx-contract-profit-total ${profitToneClass}">
       <span>${t("profit")}</span>
-      <span>${formatMoney(profit)}</span>
+      <span class="scx-mono">${formatMoney(profit)}</span>
     </div>
     ${transportError ? renderStateBlock({ type: "error", message: transportError }) : ""}
   `,

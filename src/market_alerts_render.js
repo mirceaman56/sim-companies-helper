@@ -167,19 +167,19 @@ export function renderAlertList(input) {
         </div>
 
         <div class="scx-ma-card-body">
-          <div class="scx-flex-row scx-font-9">
+          <div class="scx-flex-row scx-text-xs">
             <span class="scx-k">${t("maTargetPrice")}</span>
             <span class="scx-v">${formatMoney(alert.targetPrice, { decimals: 3 })}</span>
           </div>
-          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
+          <div class="scx-flex-row scx-text-xs scx-margin-top-2">
             <span class="scx-k">${t("maCurrentPrice")}</span>
             <span class="scx-v ${priceClass}">
               ${alert.lastPrice !== null ? formatMoney(alert.lastPrice, { decimals: 3 }) : "—"}
             </span>
           </div>
-          <div class="scx-flex-row scx-font-9 scx-margin-top-2">
+          <div class="scx-flex-row scx-text-xs scx-margin-top-2">
             <span class="scx-k">${t("maLastChecked")}</span>
-            <span class="scx-color-999">${timeAgo(alert.lastCheck, t)}</span>
+            <span class="scx-text-muted">${timeAgo(alert.lastCheck, t)}</span>
           </div>
           ${rateLimitWarning}
         </div>

@@ -447,7 +447,7 @@ export async function updatePanel() {
                             <span class="scx-v">${formatMoney(cogs)}</span>
                         </div>
                          <div class="scx-retail-row scx-retail-detail-row">
-                            <span>${t("unitCostLabel")}: ${formatMoney(avgCost)}</span>
+                            <span>${t("unitCostLabel")}: <span class="scx-mono">${formatMoney(avgCost)}</span></span>
                         </div>
                     </div>
                     
@@ -462,10 +462,10 @@ export async function updatePanel() {
                         </div>
                         <div class="scx-retail-win-row scx-retail-win-row-summary ${isRetailBetter ? "scx-text-positive" : "scx-text-warning-strong"}">
                             <span>${isRetailBetter ? t("retailWinsBy") : t("marketWinsBy")}</span>
-                            <span>${formatMoney(Math.abs(diff))}</span>
+                            <span class="scx-mono">${formatMoney(Math.abs(diff))}</span>
                         </div>
                         <div class="scx-retail-price-note">
-                            ${t("basedOnCheapPrice")}: ${formatMoney(cheapest.price)}
+                            ${t("basedOnCheapPrice")}: <span class="scx-mono">${formatMoney(cheapest.price)}</span>
                         </div>
                     </div>
                   `;
@@ -549,7 +549,7 @@ export async function updatePanel() {
         <div class="scx-panel-head scx-retail-panel-head">
           <div class="scx-panel-title">${t("marketPulse")}</div>
         </div>
-        <div class="scx-text-muted scx-font-9">${t("loadingMarketData")}</div>
+        <div class="scx-text-muted scx-text-xs">${t("loadingMarketData")}</div>
       `;
     }
   }

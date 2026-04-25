@@ -25,7 +25,7 @@
 .scx-flex-row {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
 }
 
 .scx-flex-spaced {
@@ -61,15 +61,15 @@
 
 .scx-text-muted {
   color: var(--scx-text-muted);
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
 }
 
 .scx-text-bold {
-  font-weight: 700;
+  font-weight: var(--scx-font-weight-bold);
 }
 
 .scx-text-semibold {
-  font-weight: 600;
+  font-weight: var(--scx-font-weight-semibold);
 }
 
 .scx-hr-sm {
@@ -120,24 +120,12 @@
   text-transform: uppercase;
 }
 
-.scx-font-8 {
-  font-size: 9px;
+.scx-text-xs {
+  font-size: var(--scx-font-size-xs);
 }
 
-.scx-font-9 {
-  font-size: 10px;
-}
-
-.scx-font-10 {
-  font-size: 11px;
-}
-
-.scx-color-999 {
-  color: var(--scx-text-muted);
-}
-
-.scx-color-333 {
-  color: var(--scx-text-primary);
+.scx-text-sm {
+  font-size: var(--scx-font-size-sm);
 }
 
 .scx-hidden {

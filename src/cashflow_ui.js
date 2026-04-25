@@ -501,7 +501,7 @@ function renderAlerts(alerts, compact = false) {
       ${subset
         .map(
           (a) => `
-            <div class="scx-fin-alert-item scx-alert-card ${severityClass(a.severity)}">
+            <div class="scx-alert-card ${severityClass(a.severity)}">
               <span class="scx-fin-alert-severity">${escapeHtml(severityLabel(a.severity))}</span>
               <span class="scx-fin-alert-message">${escapeHtml(t(`financeAlert${capitalize(a.id)}`))}</span>
             </div>
@@ -861,7 +861,7 @@ function renderTransactionTable(rows, compact) {
                   <td>${escapeHtml(timeStr)}</td>
                   <td>${escapeHtml(String(tx?.category || ""))}</td>
                   <td>${escapeHtml(String(tx?.description || tx?.descriptionKey || ""))}</td>
-                  <td class="scx-text-right ${cls}">${formatMoney(money)}</td>
+                  <td class="scx-text-right scx-mono ${cls}">${formatMoney(money)}</td>
                 </tr>
               `;
             })

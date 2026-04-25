@@ -68,6 +68,7 @@
   --scx-bg-quality-dark: oklch(28% 0.012 240 / 0.6);
   --scx-bg-info-overlay: oklch(52% 0.18 240 / 0.25);
   --scx-bg-info-overlay-strong: oklch(52% 0.18 240 / 0.35);
+  --scx-bg-warning-overlay: oklch(62% 0.17 70 / 0.25);
 
   /* Text */
   --scx-text-primary: oklch(15% 0.005 240);
@@ -98,10 +99,8 @@
 
   /* Borders */
   --scx-border-light: 1px solid oklch(88% 0.005 240);
-  --scx-border-light-gray: 1px solid oklch(88% 0.005 240);
   --scx-border-light-alt: 1px solid oklch(90% 0.005 240);
   --scx-border-medium: 1px solid oklch(80% 0.008 240);
-  --scx-border-medium-gray: 1px solid oklch(80% 0.008 240);
   --scx-border-medium-light: 1px solid oklch(75% 0.008 240);
   --scx-border-dark: 1px solid oklch(70% 0.01 240);
   --scx-border-dark-gray: 1px solid oklch(60% 0.01 240);
@@ -134,6 +133,12 @@
   --scx-shadow-toast: 0 4px 16px oklch(0% 0 0 / 0.15);
   --scx-shadow-popover: 0 2px 8px oklch(0% 0 0 / 0.12);
   --scx-shadow-popover-dark: 0 2px 8px oklch(0% 0 0 / 0.4);
+
+  /* Focus rings */
+  --scx-focus-ring-brand: 0 0 0 3px oklch(56% 0.17 145 / 0.18);
+  --scx-focus-ring-brand-strong: 0 0 0 3px oklch(56% 0.17 145 / 0.2);
+  --scx-focus-ring-error: 0 0 0 3px oklch(50% 0.2 25 / 0.15);
+  --scx-focus-ring-error-strong: 0 0 0 3px oklch(50% 0.2 25 / 0.2);
 
   /* Spacing */
   --scx-spacing-xs: 4px;
@@ -171,7 +176,7 @@
 
   /* Sidebar shell */
   --scx-shell-section-bg: var(--scx-bg-tertiary);
-  --scx-shell-section-border: var(--scx-border-medium-gray);
+  --scx-shell-section-border: var(--scx-border-medium);
   --scx-shell-section-shadow: var(--scx-shadow-sm);
   --scx-shell-section-header-bg: oklch(16% 0.008 240);
   --scx-shell-section-header-border: 1px solid oklch(24% 0.008 240);
@@ -222,6 +227,7 @@
     --scx-bg-box-light-gray: oklch(26% 0.008 240);
 
     --scx-bg-success: oklch(22% 0.07 145);
+    --scx-bg-success-light: oklch(18% 0.06 145);
     --scx-bg-error: oklch(20% 0.08 25);
     --scx-bg-warning: oklch(22% 0.07 70);
     --scx-bg-info: oklch(20% 0.08 240);
@@ -238,10 +244,8 @@
     --scx-text-info-dark: oklch(78% 0.12 240);
 
     --scx-border-light: 1px solid oklch(30% 0.008 240);
-    --scx-border-light-gray: 1px solid oklch(30% 0.008 240);
     --scx-border-light-alt: 1px solid oklch(30% 0.008 240);
     --scx-border-medium: 1px solid oklch(36% 0.01 240);
-    --scx-border-medium-gray: 1px solid oklch(36% 0.01 240);
     --scx-border-medium-light: 1px solid oklch(42% 0.01 240);
     --scx-border-dark: 1px solid oklch(55% 0.01 240);
     --scx-border-dark-gray: 1px solid oklch(60% 0.01 240);
@@ -286,5 +290,10 @@
     --scx-shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.25);
     --scx-shadow-md: 0 3px 10px oklch(0% 0 0 / 0.3);
     --scx-shadow-lg: 0 6px 24px oklch(0% 0 0 / 0.35);
+
+    --scx-focus-ring-brand: 0 0 0 3px oklch(62% 0.18 145 / 0.3);
+    --scx-focus-ring-brand-strong: 0 0 0 3px oklch(62% 0.18 145 / 0.35);
+    --scx-focus-ring-error: 0 0 0 3px oklch(62% 0.2 25 / 0.3);
+    --scx-focus-ring-error-strong: 0 0 0 3px oklch(62% 0.2 25 / 0.35);
   }
 }

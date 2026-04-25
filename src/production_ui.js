@@ -258,7 +258,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         </button>
       </div>
       
-      <div class="scx-color-999 scx-font-10 scx-margin-bottom-4">
+      <div class="scx-text-muted scx-text-sm scx-margin-bottom-4">
         ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
         <span class="scx-badge-active">${t("active")}</span>
         ${buildingLevel ? `<span class="scx-badge-level">${t("lvl")} ${buildingLevel}</span>` : ""}
@@ -269,40 +269,40 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <hr class="scx-hr-sm">
 
       <div class="scx-panel-head scx-margin-bottom-4">
-        <div class="scx-panel-title scx-font-9">${t("productionCosts")}</div>
+        <div class="scx-panel-title scx-text-xs">${t("productionCosts")}</div>
       </div>
       <div class="scx-card scx-tone-surface scx-tone-neutral scx-margin-bottom-4">
           <div class="scx-flex-row">
-            <span class="scx-k scx-color-333">${t("costPerUnitUI")}</span>
+            <span class="scx-k">${t("costPerUnitUI")}</span>
             <span class="scx-v">${formatMoney(currentUnitCost)}</span>
           </div>
           <div class="scx-flex-row scx-margin-top-2">
-            <span class="scx-k scx-color-333">${t("totalProductionCost")}</span>
+            <span class="scx-k">${t("totalProductionCost")}</span>
             <span class="scx-v scx-text-bold scx-text-info-strong">${formatMoney(productionCost)}</span>
           </div>
       </div>
 
       <div class="scx-flex-spaced scx-margin-bottom-4">
-         <div class="scx-panel-title scx-font-9">${t("profitAnalysis")}</div>
-         <div class="scx-font-8 scx-color-999">@ ${formatMoney(marketPrice)}</div>
+         <div class="scx-panel-title scx-text-xs">${t("profitAnalysis")}</div>
+         <div class="scx-text-xs scx-text-muted">@ <span class="scx-mono">${formatMoney(marketPrice)}</span></div>
       </div>
       
       <div class="scx-flex-column scx-production-profit-stack">
         
         <!-- Market Profit -->
         <div class="scx-card scx-tone-surface scx-tone-warning">
-          <div class="scx-flex-spaced scx-font-9">
+          <div class="scx-flex-spaced scx-text-xs">
              <span class="scx-text-semibold">${t("marketSell")}</span>
-             <div class="scx-muted scx-font-8">${t("fullTransportFee")}</div>
+             <div class="scx-muted scx-text-xs">${t("fullTransportFee")}</div>
           </div>
           
           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
-             <span class="scx-k scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9 ${getValueToneClass(profitAnalysis.market.profit)}">
+             <span class="scx-k scx-text-xs">${t("profit")}</span>
+             <span class="scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.market.profit)}">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
-          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
              <span class="scx-k">${t("margin")}</span>
              <span class="${getValueToneClass(profitAnalysis.market.margin)}">
                ${profitAnalysis.market.margin.toFixed(2)}%
@@ -315,18 +315,18 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
 
         <!-- Contract Profit -->
         <div class="scx-card scx-tone-surface scx-tone-neutral">
-          <div class="scx-flex-spaced scx-font-9">
+          <div class="scx-flex-spaced scx-text-xs">
              <span class="scx-text-semibold">${t("contractSell")}</span>
-             <div class="scx-muted scx-font-8">${t("halfTransport")}</div>
+             <div class="scx-muted scx-text-xs">${t("halfTransport")}</div>
           </div>
           
            <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
-             <span class="scx-k scx-font-9">${t("profit")}</span>
-             <span class="scx-text-bold scx-font-9 ${getValueToneClass(profitAnalysis.contract.profit)}">
+             <span class="scx-k scx-text-xs">${t("profit")}</span>
+             <span class="scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.contract.profit)}">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
-          <div class="scx-flex-row scx-margin-top-1 scx-font-9">
+          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
              <span class="scx-k">${t("margin")}</span>
              <span class="${getValueToneClass(profitAnalysis.contract.margin)}">
                ${profitAnalysis.contract.margin.toFixed(2)}%
@@ -344,7 +344,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <hr class="scx-hr-sm">
 
       <div class="scx-panel-head scx-margin-bottom-4">
-        <div class="scx-panel-title scx-font-9">${t("buildingUpgradeProjection")}</div>
+        <div class="scx-panel-title scx-text-xs">${t("buildingUpgradeProjection")}</div>
       </div>
       <div class="scx-card scx-tone-surface scx-tone-success scx-margin-bottom-4">
           <div class="scx-flex-row">
@@ -366,11 +366,11 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         projectedMarketProfit !== null && projectedContractProfit !== null
           ? `
       <div class="scx-card scx-tone-surface scx-tone-neutral scx-production-projected-box">
-        <div class="scx-text-semibold scx-font-8 scx-margin-bottom-4 scx-text-uppercase scx-production-projected-title">${t("projectedProfitsAtLevel")} ${t("lvl")} ${buildingLevel + 1}</div>
+        <div class="scx-text-semibold scx-text-xs scx-margin-bottom-4 scx-text-uppercase scx-production-projected-title">${t("projectedProfitsAtLevel")} ${t("lvl")} ${buildingLevel + 1}</div>
         
         <!-- Projected Market Profit -->
         <div class="scx-card scx-card-sm scx-tone-surface scx-tone-warning scx-margin-bottom-4">
-          <div class="scx-flex-spaced scx-font-8">
+          <div class="scx-flex-spaced scx-text-xs">
              <span>${t("marketSell")}</span>
              <span class="scx-text-bold ${getValueToneClass(projectedMarketProfit)}">
                ${formatMoney(projectedMarketProfit)}
@@ -379,7 +379,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           ${
             marketProfitDelta !== null
               ? `
-          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+          <div class="scx-flex-spaced scx-text-xs scx-text-muted scx-margin-top-1">
              <span>${t("delta")}:</span>
              <span class="${getValueToneClass(marketProfitDelta)}">
                ${formatMoney(marketProfitDelta)}
@@ -392,7 +392,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
 
         <!-- Projected Contract Profit -->
         <div class="scx-card scx-card-sm scx-tone-surface scx-tone-neutral">
-          <div class="scx-flex-spaced scx-font-8">
+          <div class="scx-flex-spaced scx-text-xs">
              <span>${t("contractSell")}</span>
              <span class="scx-text-bold ${getValueToneClass(projectedContractProfit)}">
                ${formatMoney(projectedContractProfit)}
@@ -401,7 +401,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           ${
             contractProfitDelta !== null
               ? `
-          <div class="scx-flex-spaced scx-font-8 scx-color-999 scx-margin-top-1">
+          <div class="scx-flex-spaced scx-text-xs scx-text-muted scx-margin-top-1">
              <span>${t("delta")}:</span>
              <span class="${getValueToneClass(contractProfitDelta)}">
                ${formatMoney(contractProfitDelta)}
