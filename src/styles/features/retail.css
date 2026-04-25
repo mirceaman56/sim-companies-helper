@@ -72,7 +72,7 @@
 }
 
 .scx-retail-fine-print {
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-text-muted);
 }
 

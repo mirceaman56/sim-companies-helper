@@ -143,3 +143,8 @@
 .scx-hidden {
   display: none !important;
 }
+
+.scx-mono {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
+}

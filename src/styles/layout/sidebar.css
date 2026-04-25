@@ -8,7 +8,7 @@
   gap: 8px;
   align-items: flex-end;
   z-index: 10000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--scx-font-family);
   font-size: 12px;
 }
 
@@ -34,8 +34,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  border-bottom: var(--scx-shell-section-header-border);
   background: var(--scx-shell-section-header-bg);
+  border-bottom: var(--scx-shell-section-header-border);
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   cursor: pointer;
@@ -48,8 +48,12 @@
 }
 
 .scx-section-title {
-  font-weight: 600;
-  color: var(--scx-text-primary);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-bold);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--scx-shell-section-title);
   display: flex;
   align-items: center;
   gap: 8px;

@@ -576,10 +576,10 @@ export async function updatePanel() {
 
   let finePrint = "";
   if (metrics.hours > 1) {
-    finePrint += `<div class="scx-retail-fine-print scx-retail-fine-print-first">${formatMoney(metrics.profitPerHr)} ${t("perHour")}</div>`;
+    finePrint += `<div class="scx-retail-fine-print scx-retail-fine-print-first"><span class="scx-mono">${formatMoney(metrics.profitPerHr)}</span> ${t("perHour")}</div>`;
   }
   if (metrics.hours > 24) {
-    finePrint += `<div class="scx-retail-fine-print">${formatMoney(metrics.profitPerDay)} ${t("perDay")}</div>`;
+    finePrint += `<div class="scx-retail-fine-print"><span class="scx-mono">${formatMoney(metrics.profitPerDay)}</span> ${t("perDay")}</div>`;
   }
 
   contentEl.innerHTML = `
