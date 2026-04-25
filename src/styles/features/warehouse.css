@@ -18,7 +18,7 @@
   display: block;
   width: 100%;
   border: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0;
   padding: 3px 0;
   margin-top: 0;
   font-size: var(--scx-font-size-sm);
@@ -50,4 +50,170 @@
 
 .scx-warehouse-market-btn[data-state="result"][data-delta="bad"] {
   color: var(--scx-color-error);
+}
+
+.scx-warehouse-sales-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--scx-spacing-xs);
+  padding: 3px 0;
+  border-top: 1px solid var(--scx-border-dark);
+  border-radius: 0 0 var(--scx-border-radius-sm) var(--scx-border-radius-sm);
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-secondary);
+  cursor: pointer;
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+.scx-warehouse-sales-toggle input {
+  margin: 0;
+}
+
+.scx-warehouse-sales-toggle:has(input:checked) {
+  background: var(--scx-bg-success);
+  color: var(--scx-text-success);
+}
+
+.scx-warehouse-sales-builder {
+  box-sizing: border-box;
+  clear: both;
+  width: min(760px, calc(100% - var(--scx-spacing-sm)));
+  max-width: calc(100% - var(--scx-spacing-sm));
+  min-height: 0;
+  max-height: 340px;
+  margin-bottom: var(--scx-spacing-md);
+  padding: var(--scx-spacing-sm);
+  border: 1px solid var(--scx-border-light);
+  border-radius: var(--scx-border-radius-md);
+  background: var(--scx-bg-primary);
+  color: var(--scx-text-primary);
+  overflow: visible;
+}
+
+.scx-warehouse-sales-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--scx-spacing-sm);
+  margin-bottom: var(--scx-spacing-xs);
+}
+
+.scx-warehouse-sales-margin {
+  width: 70px;
+}
+
+.scx-warehouse-sales-table-scroll {
+  max-height: 230px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.scx-warehouse-sales-table {
+  display: grid;
+  gap: 2px;
+}
+
+.scx-warehouse-sales-table-head,
+.scx-warehouse-sales-row {
+  display: grid;
+  grid-template-columns: 20px 170px 72px 56px 86px 62px 118px;
+  align-items: center;
+  gap: var(--scx-spacing-xs);
+}
+
+.scx-warehouse-sales-table-head {
+  color: var(--scx-text-muted);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.scx-warehouse-sales-row {
+  padding: 3px var(--scx-spacing-xs);
+  border: 1px solid var(--scx-border-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-secondary);
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-warehouse-sales-check {
+  margin: 0;
+}
+
+.scx-warehouse-sales-product {
+  overflow: hidden;
+  font-weight: var(--scx-font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scx-warehouse-sales-price {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 1px solid var(--scx-border-medium);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-primary);
+  color: var(--scx-text-primary);
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-warehouse-sales-preview {
+  display: none;
+}
+
+.scx-warehouse-sales-footer {
+  display: flex;
+  align-items: stretch;
+  gap: var(--scx-spacing-xs);
+  margin-top: var(--scx-spacing-sm);
+  border-top: 1px solid var(--scx-border-light);
+  padding-top: var(--scx-spacing-xs);
+}
+
+.scx-warehouse-sales-output {
+  flex: 1;
+  min-height: 28px;
+  max-height: 92px;
+  margin: 0;
+  padding: var(--scx-spacing-xs);
+  border: 1px solid var(--scx-border-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-subtle);
+  color: var(--scx-text-secondary);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.scx-warehouse-sales-copy-btn {
+  align-self: flex-start;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--scx-border-light);
+  background: var(--scx-bg-secondary);
+}
+
+.scx-warehouse-sales-empty {
+  color: var(--scx-text-muted);
+  font-size: var(--scx-font-size-sm);
+}
+
+@media (max-width: 760px) {
+  .scx-warehouse-sales-table-head {
+    display: none;
+  }
+
+  .scx-warehouse-sales-row {
+    grid-template-columns: 24px 1fr 70px;
+  }
+
+  .scx-warehouse-sales-row span:nth-of-type(3),
+  .scx-warehouse-sales-row span:nth-of-type(4),
+  .scx-warehouse-sales-row span:nth-of-type(5) {
+    display: none;
+  }
 }
