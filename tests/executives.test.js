@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { requestMock } = vi.hoisted(() => ({
@@ -28,6 +29,7 @@ import {
   apiSkillsToInternal,
   computeTrainingBreakdown,
   findExecutiveByPosition,
+  findExecutiveByName,
   getExecutiveDetail,
   getExecutivesTrainingForCMO,
   getExecutivesTrainingForCOO,
@@ -35,6 +37,8 @@ import {
   isCOOInTraining,
   loadExecutiveDetail,
   loadExecutivesOnce,
+  normalizeExecutiveName,
+  resolveCurrentExecutivePageContext,
 } from "../src/executives.js";
 
 const SAMPLE_EXECUTIVES = [
@@ -138,6 +142,26 @@ describe("findExecutiveByPosition", () => {
   });
 });
 
+describe("findExecutiveByName", () => {
+  beforeEach(() => {
+    STATE.executives.items = SAMPLE_EXECUTIVES;
+  });
+
+  it("matches executives by normalized name", () => {
+    expect(findExecutiveByName("  zhi   maruyama ")).toEqual(SAMPLE_EXECUTIVES[0]);
+  });
+
+  it("returns null when no name matches", () => {
+    expect(findExecutiveByName("No Match")).toBeNull();
+  });
+});
+
+describe("normalizeExecutiveName", () => {
+  it("normalizes case and spacing", () => {
+    expect(normalizeExecutiveName("  Daniel   Phillips ")).toBe("daniel phillips");
+  });
+});
+
 describe("getExecutivesTrainingForCOO", () => {
   beforeEach(() => {
     STATE.executives.items = [];
@@ -149,9 +173,7 @@ describe("getExecutivesTrainingForCOO", () => {
   });
 
   it("includes COO (position 'o') in any active training", () => {
-    STATE.executives.items = [
-      { ...SAMPLE_EXECUTIVES[0], currentTraining: { training: "f" } },
-    ];
+    STATE.executives.items = [{ ...SAMPLE_EXECUTIVES[0], currentTraining: { training: "f" } }];
     const result = getExecutivesTrainingForCOO();
     expect(result).toHaveLength(1);
     expect(result[0].roleKey).toBe("coo");
@@ -160,17 +182,27 @@ describe("getExecutivesTrainingForCOO", () => {
 
   it("includes non-COO exec training COO skill as apprenticeCoo", () => {
     STATE.executives.items = [
-      { id: 99, name: "Daniel Phillips", currentWorkHistory: { position: "v" }, currentTraining: { training: "o" } },
+      {
+        id: 99,
+        name: "Daniel Phillips",
+        currentWorkHistory: { position: "v" },
+        currentTraining: { training: "o" },
+      },
     ];
     const result = getExecutivesTrainingForCOO();
     expect(result).toHaveLength(1);
-    expect(result[0].roleKey).toBe("apprenticeCoo");
+    expect(result[0].roleKey).toBe("coo");
     expect(result[0].executive.name).toBe("Daniel Phillips");
   });
 
   it("does not include non-COO exec training a different skill", () => {
     STATE.executives.items = [
-      { id: 3, name: "Brianna Myers", currentWorkHistory: { position: "t" }, currentTraining: { training: "t" } },
+      {
+        id: 3,
+        name: "Brianna Myers",
+        currentWorkHistory: { position: "t" },
+        currentTraining: { training: "t" },
+      },
     ];
     expect(getExecutivesTrainingForCOO()).toEqual([]);
   });
@@ -183,7 +215,12 @@ describe("getExecutivesTrainingForCMO", () => {
 
   it("includes CMO (position 'm') in any active training", () => {
     STATE.executives.items = [
-      { id: 4, name: "Zuri Jones", currentWorkHistory: { position: "m" }, currentTraining: { training: "m" } },
+      {
+        id: 4,
+        name: "Zuri Jones",
+        currentWorkHistory: { position: "m" },
+        currentTraining: { training: "m" },
+      },
     ];
     const result = getExecutivesTrainingForCMO();
     expect(result).toHaveLength(1);
@@ -196,7 +233,7 @@ describe("getExecutivesTrainingForCMO", () => {
     ];
     const result = getExecutivesTrainingForCMO();
     expect(result).toHaveLength(1);
-    expect(result[0].roleKey).toBe("apprenticeCmo");
+    expect(result[0].roleKey).toBe("cmo");
   });
 
   it("returns empty when no training affects CMO", () => {
@@ -220,15 +257,18 @@ describe("isCOOInTraining", () => {
   });
 
   it("returns true when COO has active training", () => {
-    STATE.executives.items = [
-      { ...SAMPLE_EXECUTIVES[0], currentTraining: { training: "o" } },
-    ];
+    STATE.executives.items = [{ ...SAMPLE_EXECUTIVES[0], currentTraining: { training: "o" } }];
     expect(isCOOInTraining()).toBe(true);
   });
 
   it("returns true when an apprentice COO is in training", () => {
     STATE.executives.items = [
-      { id: 99, name: "Apprentice", currentWorkHistory: { position: "v" }, currentTraining: { training: "o" } },
+      {
+        id: 99,
+        name: "Apprentice",
+        currentWorkHistory: { position: "v" },
+        currentTraining: { training: "o" },
+      },
     ];
     expect(isCOOInTraining()).toBe(true);
   });
@@ -377,13 +417,136 @@ describe("getExecutiveDetail", () => {
   });
 
   it("returns null when slot has no data", () => {
-    STATE.executives.details[999] = { loaded: false, loading: false, error: null, data: null, lastRefreshAt: 0 };
+    STATE.executives.details[999] = {
+      loaded: false,
+      loading: false,
+      error: null,
+      data: null,
+      lastRefreshAt: 0,
+    };
     expect(getExecutiveDetail(999)).toBeNull();
   });
 
   it("returns data when slot is populated", () => {
     const data = { id: 1, name: "Test" };
-    STATE.executives.details[1] = { loaded: true, loading: false, error: null, data, lastRefreshAt: Date.now() };
+    STATE.executives.details[1] = {
+      loaded: true,
+      loading: false,
+      error: null,
+      data,
+      lastRefreshAt: Date.now(),
+    };
     expect(getExecutiveDetail(1)).toEqual(data);
+  });
+});
+
+describe("resolveCurrentExecutivePageContext", () => {
+  beforeEach(() => {
+    STATE.executives.items = [
+      {
+        id: 1,
+        name: "Main COO",
+        skills: { coo: 28, cfo: 2, cmo: 4, cto: 7 },
+        currentWorkHistory: { position: "o" },
+        currentTraining: null,
+      },
+      {
+        id: 2,
+        name: "Daniel Phillips",
+        skills: { coo: 18, cfo: 0, cmo: 3, cto: 1 },
+        currentWorkHistory: { position: "v" },
+        currentTraining: { training: "o" },
+      },
+      {
+        id: 12,
+        name: "Staff Exec",
+        skills: { coo: 4, cfo: 3, cmo: 2, cto: 11 },
+        currentWorkHistory: { position: "t" },
+        currentTraining: null,
+      },
+    ];
+    STATE.executives.loaded = true;
+    STATE.executives.lastRefreshAt = Date.now();
+    STATE.executives.details = {
+      1: { loaded: true, loading: false, error: null, data: { trainings: [] }, lastRefreshAt: Date.now() },
+      2: {
+        loaded: true,
+        loading: false,
+        error: null,
+        data: { trainings: [{ skills: { coo: 5, cfo: 0, cmo: 0, cto: 0 } }] },
+        lastRefreshAt: Date.now(),
+      },
+      12: {
+        loaded: true,
+        loading: false,
+        error: null,
+        data: { trainings: [{ skills: { coo: 0, cfo: 0, cmo: 0, cto: 2 } }] },
+        lastRefreshAt: Date.now(),
+      },
+    };
+    requestMock.mockReset();
+  });
+
+  it("matches apprentice pages by DOM name instead of role fallback", async () => {
+    document.body.innerHTML = `
+      <div id="page">
+        <h1>Daniel Phillips</h1>
+        <div>COO APPRENTICE</div>
+      </div>
+    `;
+
+    const context = await resolveCurrentExecutivePageContext({
+      pathname: "/headquarters/executives/coo-apprentice/",
+      root: document,
+    });
+
+    expect(context.pageKind).toBe("apprentice");
+    expect(context.executive?.id).toBe(2);
+    expect(context.executiveSkills).toEqual({ mgmt: 18, acct: 0, comm: 3, tech: 1 });
+    expect(context.trainingSkills).toEqual({ mgmt: 5, acct: 0, comm: 0, tech: 0 });
+    expect(context.organicSkills).toEqual({ mgmt: 13, acct: 0, comm: 3, tech: 1 });
+  });
+
+  it("uses role fallback only on main executive pages when DOM name is missing", async () => {
+    document.body.innerHTML = `<div id="page"><div>COO</div></div>`;
+
+    const context = await resolveCurrentExecutivePageContext({
+      pathname: "/headquarters/executives/coo/",
+      root: document,
+    });
+
+    expect(context.pageKind).toBe("role");
+    expect(context.executive?.id).toBe(1);
+  });
+
+  it("does not use numeric route fallback on staff pages", async () => {
+    document.body.innerHTML = `<div id="page"><div>STAFF</div></div>`;
+
+    const context = await resolveCurrentExecutivePageContext({
+      pathname: "/headquarters/executives/g12/",
+      root: document,
+    });
+
+    expect(context.pageKind).toBe("staff");
+    expect(context.executive).toBeNull();
+    expect(context.executiveSkills).toBeNull();
+  });
+
+  it("matches staff pages by DOM name and loads the correct detail slot", async () => {
+    document.body.innerHTML = `
+      <div id="page">
+        <h1>Staff Exec</h1>
+        <div>STAFF EXECUTIVE</div>
+      </div>
+    `;
+
+    const context = await resolveCurrentExecutivePageContext({
+      pathname: "/headquarters/executives/g12/",
+      root: document,
+    });
+
+    expect(context.executive?.id).toBe(12);
+    expect(context.trainingSkills).toEqual({ mgmt: 0, acct: 0, comm: 0, tech: 2 });
+    expect(context.currentTrainingSkillKey).toBeNull();
   });
 });

@@ -1,9 +1,11 @@
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
+import { readExecutivePageIdentity } from "./page/executive_page.js";
 
 const EXECUTIVES_TTL_MS = 5 * 60 * 1000;
 
 export const ROLE_POSITION_MAP = { coo: "o", cfo: "f", cmo: "m", cto: "t" };
+const POSITION_ROLE_MAP = { o: "coo", f: "cfo", m: "cmo", t: "cto" };
 
 const TRAINING_CODE_TO_SKILL_KEY = { o: "mgmt", f: "acct", m: "comm", t: "tech" };
 
@@ -98,6 +100,30 @@ export function findExecutiveByPosition(positionCode) {
   return STATE.executives.items.find((ex) => ex.currentWorkHistory?.position === positionCode) ?? null;
 }
 
+export function normalizeExecutiveName(name) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z\s'-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function findExecutiveByName(name, { roleKey = null } = {}) {
+  const normalizedName = normalizeExecutiveName(name);
+  if (!normalizedName) return null;
+
+  const matches = STATE.executives.items.filter(
+    (executive) => normalizeExecutiveName(executive?.name) === normalizedName,
+  );
+  if (matches.length === 0) return null;
+  if (matches.length === 1 || !roleKey) return matches[0];
+
+  const positionCode = ROLE_POSITION_MAP[roleKey];
+  return matches.find((executive) => executive.currentWorkHistory?.position === positionCode) ?? matches[0];
+}
+
 export function apiSkillsToInternal(apiSkills) {
   return {
     mgmt: apiSkills?.coo ?? 0,
@@ -107,38 +133,80 @@ export function apiSkillsToInternal(apiSkills) {
   };
 }
 
-// Returns [{executive, roleKey}] for any exec whose training affects COO effectiveness.
-// roleKey: "coo" (position "o" in any training) | "apprenticeCoo" (non-COO training "o" skill)
-export function getExecutivesTrainingForCOO() {
+function buildExecutiveContext(executive, detail, pageKind) {
+  const executiveSkills = executive ? apiSkillsToInternal(executive.skills) : null;
+  const trainingGained = detail ? computeTrainingBreakdown(detail.trainings) : null;
+  const trainingSkills = trainingGained ? apiSkillsToInternal(trainingGained) : null;
+  const organicSkills =
+    executiveSkills && trainingSkills
+      ? {
+          mgmt: Math.max(0, executiveSkills.mgmt - trainingSkills.mgmt),
+          acct: Math.max(0, executiveSkills.acct - trainingSkills.acct),
+          comm: Math.max(0, executiveSkills.comm - trainingSkills.comm),
+          tech: Math.max(0, executiveSkills.tech - trainingSkills.tech),
+        }
+      : null;
+
+  return {
+    executive,
+    detail,
+    pageKind,
+    executiveSkills,
+    trainingSkills,
+    organicSkills,
+    currentTrainingSkillKey: executive?.currentTraining
+      ? getTrainingSkillKey(executive.currentTraining.training)
+      : null,
+  };
+}
+
+export async function resolveCurrentExecutivePageContext({
+  pathname = window.location.pathname,
+  root = document,
+  force = false,
+} = {}) {
+  const page = readExecutivePageIdentity(root, pathname);
+
+  if (page.pageKind === "none") {
+    return buildExecutiveContext(null, null, "none");
+  }
+
+  await loadExecutivesOnce({ force });
+
+  let executive = findExecutiveByName(page.name, { roleKey: page.roleKey });
+  if (!executive && page.pageKind === "role" && page.roleKey) {
+    executive = findExecutiveByPosition(ROLE_POSITION_MAP[page.roleKey]);
+  }
+
+  if (!executive) {
+    return buildExecutiveContext(null, null, page.pageKind);
+  }
+
+  await loadExecutiveDetail(executive.id, { force });
+  const detail = getExecutiveDetail(executive.id);
+
+  return buildExecutiveContext(executive, detail, page.pageKind);
+}
+
+function getExecutivesTrainingForRole(positionCode) {
   const result = [];
   for (const exec of STATE.executives.items) {
     if (!exec.currentTraining) continue;
     const position = exec.currentWorkHistory?.position;
     const trainingCode = exec.currentTraining.training;
-    if (position === "o") {
-      result.push({ executive: exec, roleKey: "coo" });
-    } else if (trainingCode === "o") {
-      result.push({ executive: exec, roleKey: "apprenticeCoo" });
+    if (position === positionCode || trainingCode === positionCode) {
+      result.push({ executive: exec, roleKey: POSITION_ROLE_MAP[positionCode] });
     }
   }
   return result;
 }
 
-// Returns [{executive, roleKey}] for any exec whose training affects CMO effectiveness.
-// roleKey: "cmo" (position "m" in any training) | "apprenticeCmo" (non-CMO training "m" skill)
+export function getExecutivesTrainingForCOO() {
+  return getExecutivesTrainingForRole("o");
+}
+
 export function getExecutivesTrainingForCMO() {
-  const result = [];
-  for (const exec of STATE.executives.items) {
-    if (!exec.currentTraining) continue;
-    const position = exec.currentWorkHistory?.position;
-    const trainingCode = exec.currentTraining.training;
-    if (position === "m") {
-      result.push({ executive: exec, roleKey: "cmo" });
-    } else if (trainingCode === "m") {
-      result.push({ executive: exec, roleKey: "apprenticeCmo" });
-    }
-  }
-  return result;
+  return getExecutivesTrainingForRole("m");
 }
 
 export function isCOOInTraining() {

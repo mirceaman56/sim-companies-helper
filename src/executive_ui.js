@@ -3,17 +3,8 @@ import hrBlurpData from "./resources/hr_blurp.json";
 import { t } from "./i18n.js";
 import { getSectionContent } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
-import { getExecutivePageKind, isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
-import {
-  loadExecutivesOnce,
-  loadExecutiveDetail,
-  getExecutiveDetail,
-  computeTrainingBreakdown,
-  findExecutiveByPosition,
-  apiSkillsToInternal,
-  getTrainingSkillKey,
-  ROLE_POSITION_MAP,
-} from "./executives.js";
+import { isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
+import { resolveCurrentExecutivePageContext } from "./executives.js";
 import { loadAuthDataOnce } from "./auth.js";
 
 const SECTION_ID = "executive-section";
@@ -267,42 +258,14 @@ export async function updateExecutivePanel({ force = false } = {}) {
   if (!content) return;
 
   const pathname = window.location.pathname;
-  const pageKind = getExecutivePageKind(pathname);
 
   await loadAuthDataOnce();
-  await loadExecutivesOnce({ force });
-
-  let executive = null;
-  if (pageKind === "role" || pageKind === "apprentice") {
-    const roleMatch = pathname.match(/\/headquarters\/executives\/(coo|cfo|cto|cmo)/);
-    const positionCode = roleMatch ? ROLE_POSITION_MAP[roleMatch[1]] : null;
-    executive = positionCode ? findExecutiveByPosition(positionCode) : null;
-  } else if (pageKind === "candidate" || pageKind === "group") {
-    const groupMatch = pathname.match(/\/headquarters\/executives\/g(\d+)/);
-    const positionCode = groupMatch ? groupMatch[1] : null;
-    executive = positionCode ? findExecutiveByPosition(positionCode) : null;
-  }
-
-  const executiveSkills = executive ? apiSkillsToInternal(executive.skills) : null;
-  const currentTrainingSkillKey = executive?.currentTraining
-    ? getTrainingSkillKey(executive.currentTraining.training)
-    : null;
-
-  if (executive) {
-    await loadExecutiveDetail(executive.id, { force });
-  }
-  const detail = executive ? getExecutiveDetail(executive.id) : null;
-  const trainingGained = detail ? computeTrainingBreakdown(detail.trainings) : null;
-  const trainingSkills = trainingGained ? apiSkillsToInternal(trainingGained) : null;
-  const organicSkills =
-    trainingSkills && executiveSkills
-      ? {
-          mgmt: Math.max(0, executiveSkills.mgmt - trainingSkills.mgmt),
-          acct: Math.max(0, executiveSkills.acct - trainingSkills.acct),
-          comm: Math.max(0, executiveSkills.comm - trainingSkills.comm),
-          tech: Math.max(0, executiveSkills.tech - trainingSkills.tech),
-        }
-      : null;
+  const { executiveSkills, currentTrainingSkillKey, organicSkills, trainingSkills } =
+    await resolveCurrentExecutivePageContext({
+      pathname,
+      root: document,
+      force,
+    });
 
   const feedbackText = isExecutivePath(pathname) ? readExecutiveHRFeedback(document) : null;
   const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
@@ -353,7 +316,6 @@ export function initExecutiveHelper() {
 
 export const _testUtils = {
   isExecutivePath,
-  getExecutivePageKind,
   readExecutiveHRFeedback,
   findBestMatchingEntry,
   calculateSimilarity,

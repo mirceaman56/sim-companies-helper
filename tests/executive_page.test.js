@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   getExecutivePageKind,
   isExecutivePath,
+  readExecutivePageIdentity,
   readExecutiveHRFeedback,
 } from "../src/page/executive_page.js";
 
@@ -26,9 +27,19 @@ describe("executive_page readers", () => {
 
     expect(getExecutivePageKind("/headquarters/executives/coo/")).toBe("role");
     expect(getExecutivePageKind("/headquarters/executives/cmo-apprentice/")).toBe("apprentice");
-    expect(getExecutivePageKind("/headquarters/executives/g1/")).toBe("candidate");
-    expect(getExecutivePageKind("/headquarters/executives/g12/")).toBe("group");
+    expect(getExecutivePageKind("/headquarters/executives/g1/")).toBe("staff");
+    expect(getExecutivePageKind("/headquarters/executives/g12/")).toBe("staff");
     expect(getExecutivePageKind("/headquarters/overview/")).toBe("none");
+  });
+
+  it("extracts executive page identity from DOM", () => {
+    document.body.innerHTML = loadFixture("role-page.html");
+
+    const identity = readExecutivePageIdentity(document, "/headquarters/executives/coo-apprentice/");
+    expect(identity.pageKind).toBe("apprentice");
+    expect(identity.roleKey).toBe("coo");
+    expect(identity.name).toBe("Daniel Phillips");
+    expect(identity.roleLabel).toContain("COO");
   });
 
   it("extracts HR feedback from structural container pattern", () => {

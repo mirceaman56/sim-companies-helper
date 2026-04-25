@@ -557,9 +557,7 @@ export async function updatePanel() {
   // --- Executive Training Warnings (COO + apprentice COO, CMO + apprentice CMO) ---
   const RETAIL_ROLE_LABEL_KEYS = {
     coo: "roleCOO",
-    apprenticeCoo: "roleApprenticeCOO",
     cmo: "roleCMO",
-    apprenticeCmo: "roleApprenticeCMO",
   };
   let executiveWarningsHTML = "";
   if (STATE.executives.loaded) {
