@@ -57,6 +57,6 @@
 
   .scx-cf-income .scx-cf-block-total,
   .scx-cf-expense .scx-cf-block-total {
-    color: var(--scx-color-white);
+    color: var(--scx-text-primary);
   }
 }

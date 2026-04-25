@@ -176,12 +176,16 @@
 }
 
 .scx-fin-waterfall-value {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--scx-font-weight-semibold);
   color: var(--scx-text-primary);
   white-space: nowrap;
 }
 
 .scx-fin-waterfall-delta {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--scx-font-size-xs);
   white-space: nowrap;
   text-align: right;
@@ -196,6 +200,8 @@
 }
 
 .scx-fin-mini-value {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--scx-font-size-sm);
   color: var(--scx-text-primary);
   font-weight: var(--scx-font-weight-semibold);
@@ -238,6 +244,8 @@
 }
 
 .scx-fin-ratio-value {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--scx-font-size-sm);
   color: var(--scx-text-primary);
   font-weight: var(--scx-font-weight-bold);
@@ -289,6 +297,8 @@
 .scx-fin-driver-value,
 .scx-fin-change-value,
 .scx-fin-mix-value {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   color: var(--scx-text-primary);
   font-size: var(--scx-font-size-sm);
   font-weight: var(--scx-font-weight-semibold);
@@ -297,6 +307,8 @@
 }
 
 .scx-fin-mix-share {
+  font-family: var(--scx-font-family-mono);
+  font-variant-numeric: tabular-nums;
   color: var(--scx-text-muted);
   font-size: var(--scx-font-size-xs);
 }

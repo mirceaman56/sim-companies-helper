@@ -39,7 +39,7 @@
 }
 
 .scx-retail-detail-row {
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-text-muted);
 }
 
@@ -55,7 +55,7 @@
 
 .scx-retail-price-note {
   margin-top: 4px;
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-text-muted);
 }
 

@@ -159,8 +159,8 @@
 .scx-skill-breakdown-total-label,
 .scx-skill-breakdown-organic-label,
 .scx-skill-breakdown-training-label {
-  font-size: 9px;
-  font-weight: 500;
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-medium);
   text-transform: uppercase;
   color: var(--scx-text-muted);
   display: block;

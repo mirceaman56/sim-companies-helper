@@ -19,13 +19,13 @@
 }
 
 .scx-production-analysis-error {
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-color-error);
   margin-top: 4px;
 }
 
 .scx-production-analysis-hint {
-  font-size: 9px;
+  font-size: var(--scx-font-size-xs);
   color: var(--scx-text-muted);
   margin-top: 8px;
 }
@@ -65,9 +65,9 @@
 .scx-badge-level {
   background: var(--scx-tone-neutral-bg);
   color: var(--scx-tone-neutral-text);
-  border: 1px solid var(--scx-tone-neutral-border);
+  border: var(--scx-border-light);
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--scx-border-radius-sm);
   margin-left: 4px;
-  font-size: 10px;
+  font-size: var(--scx-font-size-xs);
 }

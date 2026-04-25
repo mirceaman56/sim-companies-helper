@@ -51,14 +51,3 @@
 .scx-warehouse-market-btn[data-state="result"][data-delta="bad"] {
   color: var(--scx-color-error);
 }
-
-@media (prefers-color-scheme: dark) {
-  .scx-warehouse-market-btn {
-    background: var(--scx-bg-tertiary);
-    color: var(--scx-text-primary);
-  }
-
-  .scx-warehouse-market-btn:hover:not(:disabled) {
-    background: var(--scx-bg-neutral);
-  }
-}

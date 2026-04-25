@@ -12,7 +12,7 @@
 .scx-select:focus {
   outline: none;
   border-color: var(--scx-brand);
-  box-shadow: 0 0 0 3px oklch(56% 0.17 145 / 0.18);
+  box-shadow: var(--scx-focus-ring-brand);
 }
 
 .scx-label {
@@ -37,7 +37,7 @@
 
 .scx-input-error {
   border-color: var(--scx-color-error) !important;
-  box-shadow: 0 0 0 3px oklch(50% 0.2 25 / 0.15) !important;
+  box-shadow: var(--scx-focus-ring-error) !important;
 }
 
 /* ============ Buttons ============ */
@@ -97,7 +97,7 @@
 .scx-btn-success:hover:not(:disabled) {
   background: var(--scx-brand-hover);
   border-color: var(--scx-brand-hover);
-  box-shadow: 0 0 0 3px oklch(56% 0.17 145 / 0.2);
+  box-shadow: var(--scx-focus-ring-brand-strong);
 }
 
 /* Secondary */
@@ -135,7 +135,7 @@
 .scx-btn.stop:hover:not(:disabled) {
   background: var(--scx-color-error-dark);
   border-color: var(--scx-color-error-dark);
-  box-shadow: 0 0 0 3px oklch(50% 0.2 25 / 0.2);
+  box-shadow: var(--scx-focus-ring-error-strong);
 }
 
 /* Warning */
@@ -166,7 +166,7 @@
 .scx-input:focus {
   outline: none;
   border-color: var(--scx-brand);
-  box-shadow: 0 0 0 3px oklch(56% 0.17 145 / 0.18);
+  box-shadow: var(--scx-focus-ring-brand);
 }
 
 /* Section Panel & Component Styles */

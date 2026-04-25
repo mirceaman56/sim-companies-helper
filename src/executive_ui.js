@@ -91,7 +91,7 @@ function createPanelHeaderHTML() {
 function createRefreshRowHTML() {
   return `
     <div class="scx-executive-refresh-row">
-      <button id="${REFRESH_BUTTON_ID}" class="scx-btn scx-btn-primary scx-font-8" type="button">
+      <button id="${REFRESH_BUTTON_ID}" class="scx-btn scx-btn-primary scx-text-xs" type="button">
         ${t("executiveRefresh")}
       </button>
     </div>
