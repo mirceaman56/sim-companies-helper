@@ -49,22 +49,22 @@ export function createAlertsContent(input) {
         <span class="scx-market-alerts-limit-text">${t("maAlertLimit")} (${alertsCount}/${maxCount})</span>
       </div>
       <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maProduct")}</label>
-        <select id="scx-ma-product" class="scx-select scx-width-full">
+        <label class="scx-label" for="scx-ma-product">${t("maProduct")}</label>
+        <select id="scx-ma-product" name="scx-ma-product" class="scx-select scx-width-full">
           ${sortedRecipes.map((r) => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("")}
         </select>
       </div>
       <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maQuality")}</label>
-        <select id="scx-ma-quality" class="scx-select scx-width-full">
+        <label class="scx-label" for="scx-ma-quality">${t("maQuality")}</label>
+        <select id="scx-ma-quality" name="scx-ma-quality" class="scx-select scx-width-full">
           <option value="all">${t("maAll")}</option>
           ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">Q${i + 1}</option>`).join("")}
         </select>
       </div>
       <div class="scx-market-alerts-row">
-        <label class="scx-label">${t("maTargetPrice")}</label>
+        <label class="scx-label" for="scx-ma-price">${t("maTargetPrice")}</label>
         <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="${t("maTargetPricePlaceholder")}"
-               class="scx-select scx-width-full" />
+               name="scx-ma-price" class="scx-select scx-width-full" />
       </div>
       <button id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full" ${alertsCount >= maxCount ? "disabled" : ""}>
         ${t("maAddAlert")}

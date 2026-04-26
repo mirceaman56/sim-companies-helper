@@ -219,9 +219,12 @@ describe("warehouse sales message builder", () => {
     const checkbox = panel.querySelector('[data-sales-action="select"]');
     const priceInput = panel.querySelector('[data-sales-action="manual-price"]');
     const copyButton = panel.querySelector(".scx-copy-btn");
+    const marginInput = panel.querySelector('[data-sales-action="margin"]');
 
     expect(panel).not.toBeNull();
     expect(copyButton.disabled).toBe(true);
+    expect(marginInput.id).toBe("scx-warehouse-sales-margin");
+    expect(marginInput.name).toBe("scx-warehouse-sales-margin");
 
     checkbox.checked = true;
     checkbox.dispatchEvent(new Event("change", { bubbles: true }));
@@ -229,10 +232,52 @@ describe("warehouse sales message builder", () => {
     expect(panel.querySelector("[data-sales-output]").textContent).toBe("sell 2M :re-44: Q2 @ $0.82");
 
     expect(priceInput.type).toBe("text");
+    expect(priceInput.id).toBe("scx-warehouse-sales-price-44-2");
+    expect(priceInput.name).toBe("scx-warehouse-sales-price-44-2");
+    expect(checkbox.id).toBe("scx-warehouse-sales-select-44-2");
+    expect(checkbox.name).toBe("scx-warehouse-sales-select-44-2");
 
     priceInput.value = "0.9";
     priceInput.dispatchEvent(new Event("input", { bubbles: true }));
     expect(panel.querySelector("[data-sales-output]").textContent).toBe("sell 2M :re-44: Q2 @ $0.90");
+  });
+
+  it("shows reset for manual price and clears override when clicked", async () => {
+    document.body.innerHTML = `<div><div role="list"></div></div>`;
+    _testUtils.setSalesBuilderSettingsForTest({
+      marginPct: 5,
+      productIds: [44],
+      selectedKeys: ["44:2"],
+      manualPrices: {},
+    });
+
+    await _testUtils.renderSalesBuilder([
+      { key: "44:2", kind: 44, name: "Sand", quality: 2, amount: 2_000_000, unitCost: 0.78 },
+    ]);
+
+    let panel = document.getElementById("scx-warehouse-sales-builder");
+    const priceInput = panel.querySelector('[data-sales-action="manual-price"]');
+
+    expect(panel.querySelector('[data-sales-action="reset-price"]')).toBeNull();
+
+    priceInput.value = "0.9";
+    priceInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+    await _testUtils.renderSalesBuilder();
+
+    panel = document.getElementById("scx-warehouse-sales-builder");
+    const resetButton = panel.querySelector('[data-sales-action="reset-price"]');
+    expect(resetButton).not.toBeNull();
+    expect(panel.querySelector("[data-sales-output]").textContent).toBe("sell 2M :re-44: Q2 @ $0.90");
+
+    resetButton.dispatchEvent(new Event("click", { bubbles: true }));
+
+    await _testUtils.renderSalesBuilder();
+
+    panel = document.getElementById("scx-warehouse-sales-builder");
+    expect(panel.querySelector('[data-sales-action="reset-price"]')).toBeNull();
+    expect(panel.querySelector('[data-sales-action="manual-price"]').value).toBe("");
+    expect(panel.querySelector("[data-sales-output]").textContent).toBe("sell 2M :re-44: Q2 @ $0.82");
   });
 
   it("renders compact empty state until products are checked on cards", async () => {

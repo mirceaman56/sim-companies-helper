@@ -160,6 +160,21 @@
   font-size: var(--scx-font-size-sm);
 }
 
+.scx-warehouse-sales-price-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--scx-spacing-xs);
+  min-width: 0;
+}
+
+.scx-warehouse-sales-reset {
+  border: 1px solid var(--scx-border-light);
+  color: var(--scx-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 2px 6px;
+}
+
 .scx-warehouse-sales-preview {
   display: none;
 }

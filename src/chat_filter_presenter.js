@@ -5,6 +5,7 @@ import { escapeHtml } from "./utils.js";
 const FILTER_TYPE_ID = "scx-filter-type";
 const FILTER_PRODUCT_ID = "scx-filter-product";
 const FILTER_QUALITY_ID = "scx-filter-quality";
+const FILTER_QUALITY_LABEL_ID = "scx-filter-quality-label";
 const FILTER_ACTION_ID = "scx-filter-action";
 const FILTER_STATUS_ID = "scx-filter-status";
 const FILTER_RESULTS_ID = "scx-filter-results";
@@ -37,18 +38,20 @@ export function createChatFilterContent({ onAction, recipesList = recipes } = {}
   container.innerHTML = `
     <div class="scx-chat-controls">
       <div class="scx-chat-row">
-        <select id="${FILTER_TYPE_ID}" class="scx-select scx-flex-1">
+        <label class="scx-visually-hidden" for="${FILTER_TYPE_ID}">${t("buying")} / ${t("selling")}</label>
+        <select id="${FILTER_TYPE_ID}" name="${FILTER_TYPE_ID}" class="scx-select scx-flex-1">
           <option value="buy">${t("buying")}</option>
           <option value="sell">${t("selling")}</option>
         </select>
       </div>
       <div class="scx-chat-row">
-        <select id="${FILTER_PRODUCT_ID}" class="scx-select scx-flex-1"></select>
+        <label class="scx-visually-hidden" for="${FILTER_PRODUCT_ID}">${t("product")}</label>
+        <select id="${FILTER_PRODUCT_ID}" name="${FILTER_PRODUCT_ID}" class="scx-select scx-flex-1"></select>
       </div>
       <div class="scx-chat-row">
-        <label class="scx-label scx-label-inline">${t("qualityOptional")}</label>
+        <div id="${FILTER_QUALITY_LABEL_ID}" class="scx-label scx-label-inline">${t("qualityOptional")}</div>
       </div>
-      <div class="scx-quality-container" id="${FILTER_QUALITY_ID}"></div>
+      <div class="scx-quality-container" id="${FILTER_QUALITY_ID}" aria-labelledby="${FILTER_QUALITY_LABEL_ID}"></div>
       <button id="${FILTER_ACTION_ID}" class="scx-btn scx-btn-primary scx-width-full">${t("startSearch")}</button>
     </div>
     <div id="${FILTER_STATUS_ID}" class="scx-status"></div>
@@ -67,7 +70,7 @@ export function createChatFilterContent({ onAction, recipesList = recipes } = {}
   for (let quality = 1; quality <= 12; quality += 1) {
     const label = document.createElement("label");
     label.className = "scx-quality-label";
-    label.innerHTML = `<input type="checkbox" value="Q${quality}" id="scx-quality-${quality}"> Q${quality}`;
+    label.innerHTML = `<input type="checkbox" value="Q${quality}" id="scx-quality-${quality}" name="scx-quality-${quality}"> Q${quality}`;
     qualityContainer?.appendChild(label);
   }
 

@@ -45,9 +45,27 @@ const salesBuilderSettings = {
 
 let salesBuilderSettingsLoaded = false;
 let salesBuilderRowsCache = [];
+let suppressWarehouseObserverUntil = 0;
+let injectInFlight = false;
+let injectQueued = false;
 
 function normalizeRowKey(row) {
   return row?.key || `${row?.kind}:${row?.quality}`;
+}
+
+function buildSalesFieldId(prefix, key) {
+  return `${prefix}-${String(key || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")}`;
+}
+
+function suppressWarehouseObserver(ms = 250) {
+  suppressWarehouseObserverUntil = Math.max(suppressWarehouseObserverUntil, Date.now() + ms);
+}
+
+function isWarehouseObserverSuppressed() {
+  return Date.now() < suppressWarehouseObserverUntil;
 }
 
 function compactQuantity(value) {
@@ -93,6 +111,11 @@ function getRowPrice(row, settings = salesBuilderSettings) {
   const manualPrice = normalizePriceInput(settings.manualPrices?.[key]);
   if (manualPrice !== null) return manualPrice;
   return calculateMarginPrice(row.unitCost, settings.marginPct);
+}
+
+function hasManualPriceOverride(row, settings = salesBuilderSettings) {
+  const key = normalizeRowKey(row);
+  return normalizePriceInput(settings.manualPrices?.[key]) !== null;
 }
 
 function buildSellMessageLine(row, settings = salesBuilderSettings) {
@@ -267,14 +290,24 @@ function renderSalesBuilderRows(rows, allRows) {
         ${rows
           .map((row) => {
             const key = normalizeRowKey(row);
+            const priceInputId = buildSalesFieldId("scx-warehouse-sales-price", key);
+            const selectInputId = buildSalesFieldId("scx-warehouse-sales-select", key);
             const selected = selectedKeys.has(key) ? " checked" : "";
             const manualValue = salesBuilderSettings.manualPrices[key] ?? "";
             const price = getRowPrice(row);
             const messagePreview = buildSellMessageLine(row);
+            const showReset = hasManualPriceOverride(row);
 
             return `
               <label class="scx-warehouse-sales-row" data-row-key="${escapeHtml(key)}">
-                <input class="scx-warehouse-sales-check" data-sales-action="select" data-row-key="${escapeHtml(key)}" type="checkbox"${selected}>
+                <input
+                  id="${escapeHtml(selectInputId)}"
+                  name="${escapeHtml(selectInputId)}"
+                  class="scx-warehouse-sales-check"
+                  data-sales-action="select"
+                  data-row-key="${escapeHtml(key)}"
+                  type="checkbox"${selected}
+                >
                 <span class="scx-warehouse-sales-product">${escapeHtml(row.name)}</span>
                 <span>${compactQuantity(row.amount)}</span>
                 <span>Q${Math.round(Number(row.quality || 0))}</span>
@@ -282,8 +315,10 @@ function renderSalesBuilderRows(rows, allRows) {
                 <span>${Number(salesBuilderSettings.marginPct || 0)
                   .toFixed(1)
                   .replace(/\.0$/, "")}%</span>
-                <span>
+                <span class="scx-warehouse-sales-price-cell">
                   <input
+                    id="${escapeHtml(priceInputId)}"
+                    name="${escapeHtml(priceInputId)}"
                     class="scx-warehouse-sales-price"
                     data-sales-action="manual-price"
                     data-row-key="${escapeHtml(key)}"
@@ -293,6 +328,16 @@ function renderSalesBuilderRows(rows, allRows) {
                     placeholder="${escapeHtml(formatMoney(price, { decimals: 2, prefix: false }))}"
                     aria-label="${escapeHtml(t("warehouseSalesPrice"))}"
                   >
+                  ${
+                    showReset
+                      ? `<button
+                    class="scx-chip scx-warehouse-sales-reset"
+                    data-sales-action="reset-price"
+                    data-row-key="${escapeHtml(key)}"
+                    type="button"
+                  >${escapeHtml(t("maReset"))}</button>`
+                      : ""
+                  }
                 </span>
                 <span class="scx-warehouse-sales-preview">${escapeHtml(messagePreview)}</span>
               </label>
@@ -319,6 +364,21 @@ function updateSalesBuilderCopyState(container, rows) {
 
 function attachSalesBuilderHandlers(container, rows) {
   wireCopyButton(container, () => buildSalesMessage(rows));
+
+  container.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const action = target.getAttribute("data-sales-action");
+    if (action !== "reset-price") return;
+
+    const key = target.getAttribute("data-row-key");
+    if (!key) return;
+
+    delete salesBuilderSettings.manualPrices[key];
+    persistSalesBuilderSettings();
+    void renderSalesBuilder(salesBuilderRowsCache);
+  });
 
   container.addEventListener("change", (event) => {
     const target = event.target;
@@ -389,6 +449,7 @@ async function renderSalesBuilder(existingRows = null) {
   rows.sort((a, b) => String(a.name).localeCompare(String(b.name)) || Number(a.quality) - Number(b.quality));
   const visibleRows = getSelectedProductRows(rows);
 
+  suppressWarehouseObserver();
   document.getElementById(SALES_BUILDER_ID)?.remove();
 
   const container = document.createElement("div");
@@ -402,6 +463,7 @@ async function renderSalesBuilder(existingRows = null) {
       <label class="scx-label" for="scx-warehouse-sales-margin">${t("warehouseSalesMargin")}</label>
       <input
         id="scx-warehouse-sales-margin"
+        name="scx-warehouse-sales-margin"
         class="scx-select scx-warehouse-sales-margin"
         data-sales-action="margin"
         type="number"
@@ -465,7 +527,10 @@ function getOrCreateSalesProductToggle(cardElement, item) {
     label.title = t("warehouseSalesToggleProduct");
 
     toggle = document.createElement("input");
+    const toggleId = buildSalesFieldId("scx-warehouse-sales-toggle", productId);
     toggle.type = "checkbox";
+    toggle.id = toggleId;
+    toggle.name = toggleId;
     toggle.setAttribute("data-scx-sales-product-toggle", "true");
     toggle.setAttribute("data-product-id", String(productId));
     toggle.setAttribute("aria-label", t("warehouseSalesToggleProduct"));
@@ -503,6 +568,7 @@ function getOrCreateSalesProductToggle(cardElement, item) {
 async function injectMarketButtons() {
   const domItems = extractWarehousePageItems(document);
   const apiItems = await fetchWarehouseInventoryItems();
+  suppressWarehouseObserver(500);
 
   const apiItemsByName = new Map();
   for (const apiItem of apiItems) {
@@ -541,6 +607,25 @@ async function injectMarketButtons() {
   void renderSalesBuilder(salesBuilderRowsCache);
 }
 
+async function queueInjectMarketButtons() {
+  if (injectInFlight) {
+    injectQueued = true;
+    return;
+  }
+
+  injectInFlight = true;
+  try {
+    suppressWarehouseObserver();
+    await injectMarketButtons();
+  } finally {
+    injectInFlight = false;
+    if (injectQueued) {
+      injectQueued = false;
+      void queueInjectMarketButtons();
+    }
+  }
+}
+
 export function initWarehouseHelper() {
   void hydrateSalesBuilderSettings().then(() => {
     if (isWarehouseOverviewPage(window.location.pathname) && salesBuilderRowsCache.length > 0) {
@@ -554,9 +639,11 @@ export function initWarehouseHelper() {
   let debounceTimer = null;
 
   function debouncedInject() {
+    if (isWarehouseObserverSuppressed()) return;
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      void injectMarketButtons();
+      if (isWarehouseObserverSuppressed()) return;
+      void queueInjectMarketButtons();
     }, 500);
   }
 
@@ -572,7 +659,7 @@ export function initWarehouseHelper() {
       characterData: false,
     });
 
-    void injectMarketButtons();
+    void queueInjectMarketButtons();
   }
 
   function stopObserver() {
@@ -619,6 +706,7 @@ export const _testUtils = {
   buildSellMessageLine,
   calculateMarginPrice,
   compactQuantity,
+  hasManualPriceOverride,
   getSelectedProductRows,
   fetchInventoryItems: fetchWarehouseInventoryItems,
   fetchStockRows: fetchWarehouseStockRows,
