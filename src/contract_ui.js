@@ -268,7 +268,8 @@ function injectIfNeeded() {
       <span>${t("contractApplyTooltip")}</span>
     </div>
     <div class="scx-contract-controls">
-      <select id="${DISCOUNT_SELECT_ID}" title="${t("contractDiscountLabel")}" class="scx-contract-select">
+      <label class="scx-visually-hidden" for="${DISCOUNT_SELECT_ID}">${t("contractDiscountLabel")}</label>
+      <select id="${DISCOUNT_SELECT_ID}" name="${DISCOUNT_SELECT_ID}" title="${t("contractDiscountLabel")}" class="scx-contract-select">
         <option value="0"${discountPct === 0 ? " selected" : ""}>+0%</option>
         <option value="1"${discountPct === 1 ? " selected" : ""}>-1%</option>
         <option value="2"${discountPct === 2 ? " selected" : ""}>-2%</option>

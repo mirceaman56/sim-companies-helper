@@ -6,7 +6,7 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 
 - Retail helper with profit-per-minute and retail vs market comparison.
 - Production and contract profit calculators.
-- Warehouse market price comparison tools.
+- Warehouse market price comparison tools and copyable sales chat messages.
 - Market alerts for target prices.
 - Recipe extractor that collects recipe-page data into copyable JSON.
 - Executive helper for chief and apprentice pages.

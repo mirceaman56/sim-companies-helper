@@ -814,13 +814,15 @@ function renderDrilldown(finance) {
 
 function renderTransactions(finance) {
   const rows = filteredTransactionsForTable(finance);
+  const txFilterId = "scx-fin-tx-filter";
 
   return `
     <div class="scx-panel scx-fin-section-card">
       <div class="scx-panel-head">
         <div class="scx-panel-title">${t("financeSectionTransactions")}</div>
         <div class="scx-fin-inline-actions">
-          <select class="scx-select scx-fin-tx-filter" data-fin-action="txFilter">
+          <label class="scx-visually-hidden" for="${txFilterId}">${t("financeSectionTransactions")}</label>
+          <select id="${txFilterId}" name="${txFilterId}" class="scx-select scx-fin-tx-filter" data-fin-action="txFilter">
             <option value="all" ${uiState.txFilter === "all" ? "selected" : ""}>${t("financeTxAll")}</option>
             <option value="income" ${uiState.txFilter === "income" ? "selected" : ""}>${t("financeTxIncome")}</option>
             <option value="expense" ${uiState.txFilter === "expense" ? "selected" : ""}>${t("financeTxExpense")}</option>
@@ -904,6 +906,7 @@ function renderHeader(finance) {
   const isPartial = Boolean(finance?.coverage?.partial);
   const rateLimitedUntil = Number(finance?.meta?.rateLimitedUntil || 0);
   const rateLimited = rateLimitedUntil > Date.now();
+  const periodSelectId = "scx-fin-period-select";
 
   const badges = [
     `<span class="scx-chip">${t("latest")}: ${formatRefreshTime(finance?.meta?.lastRefreshAt)}</span>`,
@@ -927,8 +930,8 @@ function renderHeader(finance) {
       </div>
 
       <div class="scx-fin-header-row">
-        <label class="scx-label scx-label-inline">${t("financePeriodLabel")}</label>
-        <select class="scx-select scx-fin-period-select" data-fin-action="period">
+        <label class="scx-label scx-label-inline" for="${periodSelectId}">${t("financePeriodLabel")}</label>
+        <select id="${periodSelectId}" name="${periodSelectId}" class="scx-select scx-fin-period-select" data-fin-action="period">
           ${PERIOD_OPTIONS.map((p) => `<option value="${p.id}" ${period === p.id ? "selected" : ""}>${t(p.labelKey)}</option>`).join("")}
         </select>
         <button class="scx-btn scx-fin-refresh-btn" data-fin-action="refresh">${t("financeRefresh")}</button>

@@ -166,16 +166,16 @@ function injectIfNeeded() {
           showMultiplier
             ? `
         <div class="scx-upgrade-control-group">
-          <label class="scx-upgrade-control-label">Multiplier:</label>
-          <select id="${MULTIPLIER_SELECT_ID}" class="scx-upgrade-select">
+          <label class="scx-upgrade-control-label" for="${MULTIPLIER_SELECT_ID}">Multiplier:</label>
+          <select id="${MULTIPLIER_SELECT_ID}" name="${MULTIPLIER_SELECT_ID}" class="scx-upgrade-select">
             ${createMultiplierOptions()}
           </select>
         </div>`
             : ""
         }
         <div class="scx-upgrade-control-group">
-          <label class="scx-upgrade-control-label">${t("upgradeDiscount")}</label>
-          <select id="${DISCOUNT_SELECT_ID}" class="scx-upgrade-select">
+          <label class="scx-upgrade-control-label" for="${DISCOUNT_SELECT_ID}">${t("upgradeDiscount")}</label>
+          <select id="${DISCOUNT_SELECT_ID}" name="${DISCOUNT_SELECT_ID}" class="scx-upgrade-select">
             ${createDiscountOptions()}
           </select>
         </div>

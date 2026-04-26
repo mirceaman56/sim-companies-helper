@@ -36,6 +36,12 @@ describe("chat_filter presenter", () => {
 
     container.querySelector("#scx-filter-action")?.click();
     expect(onAction).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('label[for="scx-filter-type"]')).not.toBeNull();
+    expect(container.querySelector('label[for="scx-filter-product"]')).not.toBeNull();
+    expect(container.querySelector("#scx-filter-type")?.getAttribute("name")).toBe("scx-filter-type");
+    expect(container.querySelector("#scx-filter-product")?.getAttribute("name")).toBe("scx-filter-product");
+    expect(container.querySelector("#scx-filter-quality")?.getAttribute("aria-labelledby")).toBe("scx-filter-quality-label");
+    expect(container.querySelector("#scx-quality-1")?.getAttribute("name")).toBe("scx-quality-1");
   });
 
   it("reads selected form values from the presenter DOM", () => {

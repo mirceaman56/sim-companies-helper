@@ -3,12 +3,13 @@ import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
 
-export const WAREHOUSE_INVENTORY_CACHE_TTL_MS = 5000;
+export const WAREHOUSE_INVENTORY_CACHE_TTL_MS = 5 * 60 * 1000;
 const INVENTORY_MAX_FETCH_ATTEMPTS = 2;
-const INVENTORY_LOG_COOLDOWN_MS = 60000;
+const INVENTORY_LOG_COOLDOWN_MS = 10 * 60 * 1000;
 const RETRYABLE_INVENTORY_STATUS = new Set([408, 429, 500, 502, 503, 504, 520, 522, 524]);
 
 let cachedInventoryItems = [];
+let cachedStockRows = [];
 let inventoryFetchedAt = 0;
 let inventoryFetchPromise = null;
 const inventoryLogTimestamps = new Map();
@@ -57,6 +58,20 @@ function logInventory(level, message) {
     return;
   }
   console.debug(fullMessage);
+}
+
+function sumInventoryCost(cost) {
+  if (!cost) return 0;
+  return (
+    (cost.workers || 0) +
+    (cost.admin || 0) +
+    (cost.material1 || 0) +
+    (cost.material2 || 0) +
+    (cost.material3 || 0) +
+    (cost.material4 || 0) +
+    (cost.material5 || 0) +
+    (cost.market || 0)
+  );
 }
 
 async function fetchInventoryResponse(companyId) {
@@ -128,17 +143,34 @@ export async function fetchWarehouseInventoryItems() {
 
       const rawItems = await response.json();
       const kindStats = new Map();
+      const stockStats = new Map();
 
       for (const item of rawItems || []) {
         const { kind, amount, quality } = item;
+        const numericAmount = Number(amount || 0);
+        const numericQuality = Number(quality || 0);
 
         if (!kindStats.has(kind)) {
           kindStats.set(kind, { kind, totalAmount: 0, qualityWeightSum: 0 });
         }
 
         const entry = kindStats.get(kind);
-        entry.totalAmount += amount;
-        entry.qualityWeightSum += quality * amount;
+        entry.totalAmount += numericAmount;
+        entry.qualityWeightSum += numericQuality * numericAmount;
+
+        const stockKey = `${kind}:${numericQuality}`;
+        if (!stockStats.has(stockKey)) {
+          stockStats.set(stockKey, {
+            kind,
+            quality: numericQuality,
+            amount: 0,
+            totalCost: 0,
+          });
+        }
+
+        const stockEntry = stockStats.get(stockKey);
+        stockEntry.amount += numericAmount;
+        stockEntry.totalCost += sumInventoryCost(item.cost);
       }
 
       const items = [];
@@ -154,9 +186,27 @@ export async function fetchWarehouseInventoryItems() {
         });
       }
 
+      const stockRows = [];
+      for (const entry of stockStats.values()) {
+        if (!entry.amount) continue;
+
+        const productName = getProductNameByKind(entry.kind);
+        if (!productName) continue;
+
+        stockRows.push({
+          key: `${entry.kind}:${entry.quality}`,
+          kind: entry.kind,
+          name: productName,
+          quality: entry.quality,
+          amount: entry.amount,
+          unitCost: entry.totalCost > 0 ? entry.totalCost / entry.amount : 0,
+        });
+      }
+
       const shouldUpdateCache = items.length > 0 || (rawItems || []).length === 0;
       if (shouldUpdateCache) {
         cachedInventoryItems = items;
+        cachedStockRows = stockRows;
         inventoryFetchedAt = Date.now();
       }
 
@@ -174,7 +224,51 @@ export async function fetchWarehouseInventoryItems() {
 
 export function resetWarehouseInventoryCache() {
   cachedInventoryItems = [];
+  cachedStockRows = [];
   inventoryFetchedAt = 0;
   inventoryFetchPromise = null;
   inventoryLogTimestamps.clear();
+}
+
+export async function fetchWarehouseStockRows(fallbackItems = []) {
+  await fetchWarehouseInventoryItems();
+
+  if (cachedStockRows.length > 0) {
+    const fallbackCostByKindQuality = new Map();
+    for (const item of Array.isArray(fallbackItems) ? fallbackItems : []) {
+      const kind = getWarehouseProductIdByName(item.name);
+      const quality = Number(item.weightedQuality ?? item.quality ?? 0);
+      if (kind) {
+        fallbackCostByKindQuality.set(`${kind}:${quality}`, Number(item.sourcingCost || 0));
+      }
+    }
+
+    return cachedStockRows.map((row) => ({
+      ...row,
+      unitCost:
+        row.unitCost > 0
+          ? row.unitCost
+          : fallbackCostByKindQuality.get(`${row.kind}:${row.quality}`) || row.unitCost,
+    }));
+  }
+
+  return (Array.isArray(fallbackItems) ? fallbackItems : [])
+    .map((item) => {
+      const kind = getWarehouseProductIdByName(item.name);
+      const amount = Number(item.totalAmount || item.quantity || 0);
+      const quality = Number(item.weightedQuality ?? item.quality ?? 0);
+      const unitCost = Number(item.sourcingCost || 0);
+
+      if (!kind || amount <= 0) return null;
+
+      return {
+        key: `${kind}:${quality}`,
+        kind,
+        name: item.name,
+        quality,
+        amount,
+        unitCost,
+      };
+    })
+    .filter(Boolean);
 }
