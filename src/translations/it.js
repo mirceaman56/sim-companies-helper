@@ -40,6 +40,8 @@ export default {
   keepUpdates: "Continua a ricevere gli aggiornamenti ⊂(◉‿◉)つ",
   supportOnKofi: "Supporto tramite Ko-fi",
   reportBug: "Segnala un Bug",
+  hideSidebar: "Nascondi pannello",
+  showSidebar: "Mostra pannello",
   ensureProductionQuantity:
     "Assicurati che un bene di produzione sia selezionato e che la sua quantità sia riempita",
   clickProductionBuilding: "Fai clic su un edificio di produzione per iniziare",

@@ -40,6 +40,8 @@ export default {
   keepUpdates: "Hilf mit, Updates zu ermöglichen ⊂(◉‿◉)つ",
   supportOnKofi: "Unterstützung über Ko-Fi",
   reportBug: "Fehler melden",
+  hideSidebar: "Seitenleiste ausblenden",
+  showSidebar: "Seitenleiste einblenden",
   ensureProductionQuantity:
     "Stellen Sie sicher, dass ein Produktionsgut ausgewählt ist und seine Menge eingegeben ist",
   clickProductionBuilding: "Klicken Sie auf ein Produktionsgebäude zum Starten",

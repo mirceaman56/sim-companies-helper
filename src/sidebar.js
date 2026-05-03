@@ -3,8 +3,41 @@
 import { SIDEBAR_ID } from "./state.js";
 import { escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
+import * as storage from "./data/storage.js";
 
 const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn }
+
+const SIDEBAR_PREFS_DOMAIN = "sidebar-prefs";
+const SIDEBAR_PREFS_VERSION = 1;
+let sidebarHidden = false;
+
+/**
+ * Toggle sidebar visibility and persist the preference.
+ */
+export function toggleSidebarVisibility() {
+  const el = document.getElementById(SIDEBAR_ID);
+  if (!el) return;
+
+  sidebarHidden = !sidebarHidden;
+  el.classList.toggle("scx-sidebar-hidden", sidebarHidden);
+
+  const tab = el.querySelector(".scx-sidebar-toggle-tab");
+  if (tab) {
+    tab.title = sidebarHidden
+      ? `${t("showSidebar")} (Alt+H)`
+      : `${t("hideSidebar")} (Alt+H)`;
+    tab.querySelector(".scx-sidebar-toggle-tab-icon").textContent = sidebarHidden ? "◀" : "▶";
+  }
+
+  storage.set({
+    domain: SIDEBAR_PREFS_DOMAIN,
+    version: SIDEBAR_PREFS_VERSION,
+    scope: "global",
+    backend: "local",
+    refreshAuth: false,
+    data: { hidden: sidebarHidden },
+  });
+}
 
 /**
  * Creates the main sidebar container (if not exists)
@@ -20,8 +53,55 @@ export function ensureSidebarContainer() {
     <!-- Sidebar sections will be added here dynamically -->
   `;
 
+  // Toggle tab — always visible, allows hiding/showing the sidebar
+  const tab = document.createElement("button");
+  tab.className = "scx-sidebar-toggle-tab";
+  tab.type = "button";
+  tab.title = `${t("hideSidebar")} (Alt+H)`;
+  tab.innerHTML = `<span class="scx-sidebar-toggle-tab-icon">▶</span>`;
+  tab.addEventListener("click", toggleSidebarVisibility);
+  el.prepend(tab);
+
   document.documentElement.appendChild(el);
+
+  // Restore persisted hidden state
+  _restoreSidebarState(el);
+
+  // Keyboard shortcut: Alt+H
+  document.addEventListener("keydown", _onSidebarShortcut);
+
   return el;
+}
+
+/** @param {KeyboardEvent} e */
+function _onSidebarShortcut(e) {
+  if (e.altKey && (e.key === "h" || e.key === "H") && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    toggleSidebarVisibility();
+  }
+}
+
+async function _restoreSidebarState(el) {
+  try {
+    const prefs = await storage.get({
+      domain: SIDEBAR_PREFS_DOMAIN,
+      version: SIDEBAR_PREFS_VERSION,
+      scope: "global",
+      backend: "local",
+      refreshAuth: false,
+    });
+    if (prefs?.hidden) {
+      sidebarHidden = true;
+      el.classList.add("scx-sidebar-hidden");
+      const tab = el.querySelector(".scx-sidebar-toggle-tab");
+      if (tab) {
+        tab.title = `${t("showSidebar")} (Alt+H)`;
+        tab.querySelector(".scx-sidebar-toggle-tab-icon").textContent = "◀";
+      }
+    }
+  } catch {
+    // Silently ignore — default to visible
+  }
 }
 
 /**
@@ -163,3 +243,16 @@ export function setSectionUpdateFn(sectionId, updateFn) {
     }
   }
 }
+
+/** @internal — exposed for unit tests only */
+export const _testUtils = {
+  get sidebarHidden() {
+    return sidebarHidden;
+  },
+  set sidebarHidden(v) {
+    sidebarHidden = v;
+  },
+  _onSidebarShortcut,
+  _restoreSidebarState,
+  SECTIONS,
+};

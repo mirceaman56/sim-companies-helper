@@ -39,6 +39,8 @@ export default {
   keepUpdates: "更新を受け続ける ⊂(◉‿◉)つ",
   supportOnKofi: "Ko-fi によるサポート",
   reportBug: "バグを報告",
+  hideSidebar: "サイドバーを非表示",
+  showSidebar: "サイドバーを表示",
   ensureProductionQuantity: "生産品を選択して数量を入力していることを確認してください",
   clickProductionBuilding: "生産建物をクリックして開始",
   qty: "数量",
