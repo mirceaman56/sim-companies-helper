@@ -60,8 +60,11 @@ export function getLowestSellerPrice(root = document) {
     const cells = firstRow.querySelectorAll("td");
     if (cells.length === 0) continue;
 
+    // The last cell may contain both quality (e.g. "7 ★") and price ("$1.370")
+    // in the same <td>. Use the last cell text but require the "$" prefix so
+    // the quality number is not mistakenly picked up.
     const priceText = cells[cells.length - 1]?.textContent?.trim() || "";
-    const match = priceText.match(/\$?\s*([\d.,]+)/);
+    const match = priceText.match(/\$\s*([\d.,]+)/);
     if (!match) continue;
 
     const price = parseContractPrice(match[1]);
