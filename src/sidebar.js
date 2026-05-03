@@ -23,9 +23,7 @@ export function toggleSidebarVisibility() {
 
   const tab = el.querySelector(".scx-sidebar-toggle-tab");
   if (tab) {
-    tab.title = sidebarHidden
-      ? `${t("showSidebar")} (Alt+H)`
-      : `${t("hideSidebar")} (Alt+H)`;
+    tab.title = sidebarHidden ? `${t("showSidebar")} (Alt+H)` : `${t("hideSidebar")} (Alt+H)`;
     tab.querySelector(".scx-sidebar-toggle-tab-icon").textContent = sidebarHidden ? "◀" : "▶";
   }
 
