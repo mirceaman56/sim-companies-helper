@@ -1,6 +1,7 @@
 import { CHAT_SEARCH_CUTOFF_HOURS, CHAT_SEARCH_TARGET_COUNT } from "./constants.js";
+import { buildChatApiBaseUrl, DEFAULT_CHAT_ROOM_DB_LETTER } from "./chat_rooms.js";
 
-export const CHAT_API_BASE_URL = "https://www.simcompanies.com/api/v2/chatroom/S/";
+export const CHAT_API_BASE_URL = buildChatApiBaseUrl(DEFAULT_CHAT_ROOM_DB_LETTER);
 const BUY_REGEX = /\b(buy\w*)\b/i;
 const SELL_REGEX = /\b(sell\w*)\b/i;
 const DEFAULT_MAX_PAGES = 50;
@@ -27,12 +28,14 @@ export function buildChatPageUrl(fromId = null, baseUrl = CHAT_API_BASE_URL) {
 export function buildChatSearchFilters({ filterType = "buy", productId, selectedQualities = [] } = {}) {
   const normalizedQualities = normalizeQualities(selectedQualities);
   const numericProductId = Number(productId);
+  const normalizedFilterType = filterType === "sell" ? "sell" : filterType === "any" ? "any" : "buy";
 
   return {
-    filterType: filterType === "sell" ? "sell" : "buy",
+    filterType: normalizedFilterType,
     productId: Number.isFinite(numericProductId) ? numericProductId : null,
     selectedQualities: normalizedQualities,
-    typeRegex: filterType === "sell" ? SELL_REGEX : BUY_REGEX,
+    typeRegex:
+      normalizedFilterType === "any" ? null : normalizedFilterType === "sell" ? SELL_REGEX : BUY_REGEX,
     productRegex: Number.isFinite(numericProductId) ? new RegExp(`:(re)-${numericProductId}:`, "i") : null,
     qualityRegex:
       normalizedQualities.length > 0 ? new RegExp(`\\b(${normalizedQualities.join("|")})\\b`, "i") : null,
@@ -40,12 +43,12 @@ export function buildChatSearchFilters({ filterType = "buy", productId, selected
 }
 
 export function messageMatchesChatFilters(message, filters) {
-  if (!filters?.productRegex || !filters?.typeRegex) return false;
+  if (!filters?.productRegex) return false;
 
   const body = String(message?.body || "");
   if (!body) return false;
 
-  const matchesType = filters.typeRegex.test(body);
+  const matchesType = filters.typeRegex === null || filters.typeRegex.test(body);
   const matchesProduct = filters.productRegex.test(body);
   const matchesQuality = filters.qualityRegex === null || filters.qualityRegex.test(body);
 
@@ -221,6 +224,7 @@ export async function findLatestRecentChatMatch(input) {
     cutoffHours = 1,
     maxPages = 30,
     now,
+    baseUrl = CHAT_API_BASE_URL,
   } = input;
 
   let latestMatch = null;
@@ -230,6 +234,7 @@ export async function findLatestRecentChatMatch(input) {
     cutoffHours,
     maxPages,
     now,
+    baseUrl,
     onPage: ({ messages }) => {
       for (const message of messages) {
         const row = {
@@ -241,6 +246,58 @@ export async function findLatestRecentChatMatch(input) {
 
         if (!messageMatchesChatAlert(row, { keywords, companyFilter })) continue;
         latestMatch = row;
+        return true;
+      }
+      return false;
+    },
+  });
+
+  return latestMatch;
+}
+
+/**
+ * Finds the latest recent match for structured chat search filters.
+ *
+ * @param {{
+ *  requestMessages: (url: string, signal?: AbortSignal) => Promise<any[]>,
+ *  filters: ReturnType<typeof buildChatSearchFilters>,
+ *  signal?: AbortSignal,
+ *  cutoffHours?: number,
+ *  maxPages?: number,
+ *  now?: () => number,
+ *  baseUrl?: string,
+ * }} input
+ * @returns {Promise<{id:number|null, datetime:string|null, companyName:string, body:string} | null>}
+ */
+export async function findLatestRecentChatFilterMatch(input) {
+  const {
+    requestMessages,
+    filters,
+    signal,
+    cutoffHours = 1,
+    maxPages = 30,
+    now,
+    baseUrl = CHAT_API_BASE_URL,
+  } = input;
+
+  let latestMatch = null;
+  await scanRecentChatWindow({
+    requestMessages,
+    signal,
+    cutoffHours,
+    maxPages,
+    now,
+    baseUrl,
+    onPage: ({ messages }) => {
+      for (const message of messages) {
+        if (!messageMatchesChatFilters(message, filters)) continue;
+
+        latestMatch = {
+          id: Number.isFinite(Number(message?.id)) ? Number(message.id) : null,
+          datetime: typeof message?.datetime === "string" ? message.datetime : null,
+          companyName: String(message?.sender?.company || ""),
+          body: String(message?.body || ""),
+        };
         return true;
       }
       return false;

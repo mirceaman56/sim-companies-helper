@@ -13,9 +13,14 @@ import {
   appendChatResult,
   createChatFilterContent,
   formatChatMessageBody,
+  getActiveChatTab,
+  populateChatRoomSelect,
   readChatSearchInput,
+  setActiveChatTab,
   setChatSearchState,
+  syncChatTypeState,
   updateChatStatus,
+  updateQualitySummary,
 } from "../src/chat_filter_presenter.js";
 
 describe("chat_filter presenter", () => {
@@ -23,9 +28,10 @@ describe("chat_filter presenter", () => {
     document.body.innerHTML = "";
   });
 
-  it("renders sorted product options and wires the action button", () => {
+  it("renders sorted product options and tab shell", () => {
     const onAction = vi.fn();
-    const container = createChatFilterContent({ onAction });
+    const onTabChange = vi.fn();
+    const container = createChatFilterContent({ onAction, onTabChange });
     document.body.appendChild(container);
 
     const optionTexts = [...container.querySelectorAll("#scx-filter-product option")].map(
@@ -33,35 +39,60 @@ describe("chat_filter presenter", () => {
     );
 
     expect(optionTexts).toEqual(["Apples", "Zinc"]);
+    expect(container.querySelectorAll(".scx-chat-tab")).toHaveLength(2);
 
     container.querySelector("#scx-filter-action")?.click();
     expect(onAction).toHaveBeenCalledTimes(1);
-    expect(container.querySelector('label[for="scx-filter-type"]')).not.toBeNull();
-    expect(container.querySelector('label[for="scx-filter-product"]')).not.toBeNull();
-    expect(container.querySelector("#scx-filter-type")?.getAttribute("name")).toBe("scx-filter-type");
-    expect(container.querySelector("#scx-filter-product")?.getAttribute("name")).toBe("scx-filter-product");
-    expect(container.querySelector("#scx-filter-quality")?.getAttribute("aria-labelledby")).toBe("scx-filter-quality-label");
-    expect(container.querySelector("#scx-quality-1")?.getAttribute("name")).toBe("scx-quality-1");
+
+    container.querySelector('[data-tab="alerts"]')?.click();
+    expect(onTabChange).toHaveBeenCalledWith("alerts");
+    expect(getActiveChatTab(container)).toBe("alerts");
   });
 
-  it("reads selected form values from the presenter DOM", () => {
+  it("reads selected form values and quality summary from compact picker", () => {
     const container = createChatFilterContent();
     document.body.appendChild(container);
+    populateChatRoomSelect(container, [
+      { dbLetter: "S", name: "Sales" },
+      { dbLetter: "DE", name: "German Trade" },
+    ]);
 
+    const roomSelect = container.querySelector("#scx-filter-room");
     const typeSelect = container.querySelector("#scx-filter-type");
     const productSelect = container.querySelector("#scx-filter-product");
+    roomSelect.value = "S";
     typeSelect.value = "sell";
     productSelect.value = "9";
     container.querySelector("#scx-quality-1").checked = true;
     container.querySelector("#scx-quality-3").checked = true;
+    updateQualitySummary(container);
 
+    expect(container.querySelector("#scx-filter-quality-summary")?.textContent).toBe("Q1, Q3");
     expect(readChatSearchInput(container)).toEqual({
+      roomDbLetter: "S",
+      roomName: "Sales",
       filterType: "sell",
       productId: 9,
       productName: "Zinc",
-      filterTypeLabel: "selling",
       selectedQualities: ["Q1", "Q3"],
     });
+  });
+
+  it("disables type selection for non-default room and forces any", () => {
+    const container = createChatFilterContent();
+    document.body.appendChild(container);
+    populateChatRoomSelect(container, [
+      { dbLetter: "S", name: "Sales" },
+      { dbLetter: "DE", name: "German Trade" },
+    ]);
+
+    const roomSelect = container.querySelector("#scx-filter-room");
+    const typeSelect = container.querySelector("#scx-filter-type");
+    roomSelect.value = "DE";
+    syncChatTypeState(container);
+
+    expect(typeSelect.disabled).toBe(true);
+    expect(readChatSearchInput(container).filterType).toBe("any");
   });
 
   it("formats messages and appends rendered results without changing styles", () => {
@@ -87,7 +118,7 @@ describe("chat_filter presenter", () => {
     expect(body?.innerHTML).toBe("Sell [Apples] &amp; fast");
   });
 
-  it("toggles search state and status text", () => {
+  it("toggles search state, status text, and tab visibility", () => {
     const container = createChatFilterContent();
     document.body.appendChild(container);
 
@@ -95,6 +126,10 @@ describe("chat_filter presenter", () => {
     updateChatStatus(container, "Scanning");
     expect(container.querySelector("#scx-filter-action")?.textContent).toBe("stop");
     expect(container.querySelector("#scx-filter-status")?.textContent).toBe("Scanning");
+
+    setActiveChatTab(container, "alerts");
+    expect(container.querySelector('[data-tab-panel="search"]')?.hidden).toBe(true);
+    expect(container.querySelector('[data-tab-panel="alerts"]')?.hidden).toBe(false);
 
     setChatSearchState(container, false);
     expect(container.querySelector("#scx-filter-action")?.textContent).toBe("startSearch");

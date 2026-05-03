@@ -184,8 +184,6 @@
   --scx-shell-section-title: oklch(90% 0.005 240);
 
   /* Chat */
-  --scx-chat-quality-bg: var(--scx-bg-tertiary);
-  --scx-chat-quality-border: var(--scx-border-light);
   --scx-chat-link: var(--scx-status-good-color);
   --scx-chat-link-hover: var(--scx-text-info-dark);
   --scx-chat-body: var(--scx-text-info);
@@ -281,8 +279,6 @@
     --scx-shell-section-header-border: 1px solid oklch(22% 0.008 240);
     --scx-shell-section-content-bg: var(--scx-bg-secondary);
 
-    --scx-chat-quality-bg: var(--scx-bg-quality-dark);
-    --scx-chat-quality-border: 1px solid oklch(36% 0.01 240);
     --scx-chat-link: var(--scx-text-success-soft);
     --scx-chat-link-hover: var(--scx-text-info-soft-strong);
     --scx-chat-body: var(--scx-text-info-soft);
