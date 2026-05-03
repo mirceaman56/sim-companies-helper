@@ -6,6 +6,8 @@
 }
 
 .scx-chat-alerts-form {
+  display: flex;
+  flex-direction: column;
   gap: var(--scx-spacing-sm);
 }
 
@@ -128,6 +130,7 @@
 
 .scx-ca-card-actions {
   display: flex;
+  align-items: center;
   gap: 6px;
   padding: 6px 10px;
   border-top: var(--scx-border-light);
@@ -136,6 +139,7 @@
 
 .scx-ca-card-actions .scx-btn {
   font-size: var(--scx-font-size-sm);
+  min-width: 0;
   padding: 4px 8px;
 }
 
@@ -146,10 +150,8 @@
 }
 
 .scx-ca-btn-remove {
-  background: none;
-  border: var(--scx-border-light);
-  color: var(--scx-text-muted);
-  min-width: 28px;
+  flex: 0 0 32px;
+  padding: 4px;
 }
 
 .scx-ca-btn-remove:hover {

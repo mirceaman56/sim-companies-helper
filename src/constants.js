@@ -17,6 +17,7 @@ export const CASHFLOW_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 // Chat filter
 export const CHAT_SEARCH_TARGET_COUNT = 500;
 export const CHAT_SEARCH_CUTOFF_HOURS = 8;
+export const CHAT_ROOMS_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 // Chat alerts
 export const CHAT_ALERT_CHECK_INTERVAL_MS = 120_000; // 2 minutes

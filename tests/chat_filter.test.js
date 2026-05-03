@@ -5,6 +5,7 @@ import {
   buildChatPageUrl,
   buildChatSearchFilters,
   collectChatSearchPage,
+  findLatestRecentChatFilterMatch,
   findLatestRecentChatMatch,
   messageMatchesChatAlert,
   messageMatchesChatFilters,
@@ -25,12 +26,22 @@ describe("chat_filter logic", () => {
       selectedQualities: ["Q1", "Q2"],
     });
 
-    expect(
-      messageMatchesChatFilters({ body: "Buying now :re-7: Q2 fast" }, filters),
-    ).toBe(true);
+    expect(messageMatchesChatFilters({ body: "Buying now :re-7: Q2 fast" }, filters)).toBe(true);
     expect(messageMatchesChatFilters({ body: "Selling :re-7: Q2" }, filters)).toBe(false);
     expect(messageMatchesChatFilters({ body: "Buying :re-8: Q2" }, filters)).toBe(false);
     expect(messageMatchesChatFilters({ body: "Buying :re-7: Q5" }, filters)).toBe(false);
+  });
+
+  it("matches resource-only searches when filter type is any", () => {
+    const filters = buildChatSearchFilters({
+      filterType: "any",
+      productId: 7,
+      selectedQualities: ["Q2"],
+    });
+
+    expect(messageMatchesChatFilters({ body: "Verkaufe :re-7: Q2 schnell" }, filters)).toBe(true);
+    expect(messageMatchesChatFilters({ body: "Ankauf :re-7: Q2" }, filters)).toBe(true);
+    expect(messageMatchesChatFilters({ body: "Verkaufe :re-8: Q2" }, filters)).toBe(false);
   });
 
   it("stops page collection when history cutoff is reached", () => {
@@ -211,12 +222,58 @@ describe("chat_filter logic", () => {
       cutoffHours: 1,
       maxPages: 3,
       now: () => now,
+      baseUrl: "https://www.simcompanies.com/api/v2/chatroom/DE/",
     });
 
+    expect(requestMessages).toHaveBeenCalledWith(
+      "https://www.simcompanies.com/api/v2/chatroom/DE/",
+      undefined,
+    );
     expect(match).toMatchObject({
       id: 700,
       companyName: "Acme Corp",
       body: "Selling :re-7: now",
+    });
+  });
+
+  it("finds latest recent match for structured room filter criteria", async () => {
+    const now = Date.parse("2026-04-12T12:00:00Z");
+    const requestMessages = vi.fn().mockResolvedValueOnce([
+      {
+        id: 710,
+        datetime: new Date(now - 60_000).toISOString(),
+        body: "Verkaufe :re-7: Q3",
+        sender: { company: "Berlin Trade" },
+      },
+      {
+        id: 700,
+        datetime: new Date(now - 90_000).toISOString(),
+        body: "Buying :re-7:",
+        sender: { company: "Acme" },
+      },
+    ]);
+
+    const match = await findLatestRecentChatFilterMatch({
+      requestMessages,
+      filters: buildChatSearchFilters({
+        filterType: "any",
+        productId: 7,
+        selectedQualities: ["Q3"],
+      }),
+      cutoffHours: 1,
+      maxPages: 3,
+      now: () => now,
+      baseUrl: "https://www.simcompanies.com/api/v2/chatroom/DE/",
+    });
+
+    expect(requestMessages).toHaveBeenCalledWith(
+      "https://www.simcompanies.com/api/v2/chatroom/DE/",
+      undefined,
+    );
+    expect(match).toMatchObject({
+      id: 710,
+      companyName: "Berlin Trade",
+      body: "Verkaufe :re-7: Q3",
     });
   });
 });
