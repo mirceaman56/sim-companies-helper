@@ -39,6 +39,8 @@ export default {
   keepUpdates: "Zůstanete informováni ⊂(◉‿◉)つ",
   supportOnKofi: "Podpora přes Ko-fi",
   reportBug: "Hlásit chybu",
+  hideSidebar: "Skrýt panel",
+  showSidebar: "Zobrazit panel",
   ensureProductionQuantity: "Ujistěte se, že jste vybrali výrobní zboží a zadali jeho množství",
   clickProductionBuilding: "Klikněte na výrobní budovu pro spuštění",
   qty: "Množství",

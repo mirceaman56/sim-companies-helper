@@ -39,6 +39,8 @@ export default {
   keepUpdates: "Güncellemeleri almaya devam edin ⊂(◉‿◉)つ",
   supportOnKofi: "Ko-fi aracılığıyla destek",
   reportBug: "Hata Bildir",
+  hideSidebar: "Paneli gizle",
+  showSidebar: "Paneli göster",
   ensureProductionQuantity: "Bir üretim malının seçildiğinden ve miktarının doldurulduğundan emin olun",
   clickProductionBuilding: "Başlamak için bir üretim binasına tıklayın",
   qty: "Mik.",

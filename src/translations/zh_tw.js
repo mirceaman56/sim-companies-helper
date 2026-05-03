@@ -39,6 +39,8 @@ export default {
   keepUpdates: "繼續獲得更新 ⊂(◉‿◉)つ",
   supportOnKofi: "透過 Ko-fi 支持",
   reportBug: "報告錯誤",
+  hideSidebar: "隱藏側邊欄",
+  showSidebar: "顯示側邊欄",
   ensureProductionQuantity: "確保選擇了生產商品並填入其數量",
   clickProductionBuilding: "點擊生產建築開始",
   qty: "數量",

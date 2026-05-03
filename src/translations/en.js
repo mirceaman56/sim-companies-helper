@@ -39,6 +39,8 @@ export default {
   keepUpdates: "Keep the updates coming ⊂(◉‿◉)つ",
   supportOnKofi: "Support via Ko-fi",
   reportBug: "Report a Bug",
+  hideSidebar: "Hide Sidebar",
+  showSidebar: "Show Sidebar",
   ensureProductionQuantity: "Ensure a production good is selected and its quantity is filled in",
   clickProductionBuilding: "Click on a production building to start",
   qty: "Qty",

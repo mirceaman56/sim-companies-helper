@@ -132,3 +132,40 @@
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
+/* ============ Sidebar Toggle Tab ============ */
+.scx-sidebar-toggle-tab {
+  align-self: flex-end;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--scx-shell-section-header-bg);
+  border: var(--scx-shell-section-border);
+  border-radius: 8px;
+  box-shadow: var(--scx-shell-section-shadow);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--scx-text-muted);
+  transition:
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.scx-sidebar-toggle-tab:hover {
+  box-shadow: var(--scx-shadow-lg);
+  color: var(--scx-text-primary);
+}
+
+.scx-sidebar-toggle-tab-icon {
+  pointer-events: none;
+}
+
+/* ============ Hidden State ============ */
+/* Hide every direct child except the toggle tab itself */
+#scx-sidebar.scx-sidebar-hidden > :not(.scx-sidebar-toggle-tab) {
+  display: none;
+}
