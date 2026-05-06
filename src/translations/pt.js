@@ -140,7 +140,7 @@ export default {
   productionAfterUpgrade: "Produção após melhoria",
   productionIncreasePercent: "Aumento de produção",
   qualityOptional: "Qualidade (Opcional):",
-  navigateToExecutives: "Navegue para sua página de executivos para detalhes",
+  navigateToExecutives: "Navegue para sua página de executivos para mais detalhes",
   skillsBreakdown: "Detalhamento de Habilidades",
   skillsBreakdownDescription: "Habilidades totais e suas fontes",
   extractedFeedback: "Feedback Extraído",
@@ -158,6 +158,8 @@ export default {
   executiveOrganicGrowth: "Crescimento orgânico",
   executiveOrganicGrowthTarget: "Alvo",
   executiveOrganicGrowthCountdown: "Tempo restante",
+  executiveOrganicGrowthCountdownHint:
+    "Executivos podem ganhar habilidades com o tempo mesmo sem treinamento. Executivos nos cargos principais têm mais chances de ganhar habilidades correspondentes, e a rolagem diária de crescimento orgânico não é garantida. Ela acontece às 14:00 UTC com base em quanto tempo o executivo está nesse cargo.",
   executiveOrganicGrowthEligible: "Executivos elegíveis",
   executiveOrganicGrowthNoneEligible: "Nenhum executivo está elegível para a próxima rolagem",
   cooTrainingWarning: "O COO está em treinamento — a margem de lucro de varejo pode ser reduzida",

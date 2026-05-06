@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "升级后的产量",
   productionIncreasePercent: "产量增加",
   qualityOptional: "质量（可选）:",
-  navigateToExecutives: "导航到您的执行官页面以获取详细信息",
+  navigateToExecutives: "导航到您的执行官页面以获取更多详细信息",
   skillsBreakdown: "技能分解",
   skillsBreakdownDescription: "总体技能及其来源",
   extractedFeedback: "提取的反馈",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "自然成长",
   executiveOrganicGrowthTarget: "目标时间",
   executiveOrganicGrowthCountdown: "剩余时间",
+  executiveOrganicGrowthCountdownHint:
+    "高管即使不训练，也会随着时间推移获得技能。处于主要职位的高管更容易获得对应技能，而每日自然成长判定并非保证触发。判定会在 14:00 UTC 进行，并取决于高管在该职位上任职了多久。",
   executiveOrganicGrowthEligible: "符合条件的高管",
   executiveOrganicGrowthNoneEligible: "下一次判定没有符合条件的高管",
   cooTrainingWarning: "COO正在培训中——零售利润率可能降低",

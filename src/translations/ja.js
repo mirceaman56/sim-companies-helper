@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "アップグレード後の生産",
   productionIncreasePercent: "生産増加",
   qualityOptional: "品質（オプション）:",
-  navigateToExecutives: "詳細については、エグゼクティブページに移動してください",
+  navigateToExecutives: "さらに詳しい情報については、エグゼクティブページに移動してください",
   skillsBreakdown: "スキル分析",
   skillsBreakdownDescription: "総スキルとそのソース",
   extractedFeedback: "抽出されたフィードバック",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "自然成長",
   executiveOrganicGrowthTarget: "対象時刻",
   executiveOrganicGrowthCountdown: "残り時間",
+  executiveOrganicGrowthCountdownHint:
+    "役員はトレーニングをしていなくても、時間の経過でスキルを獲得できます。主要ポジションの役員は対応するスキルを得やすく、毎日の自然成長判定は確定ではありません。判定は 14:00 UTC に行われ、その役職に就いている期間に応じて決まります。",
   executiveOrganicGrowthEligible: "対象の役員",
   executiveOrganicGrowthNoneEligible: "次回判定の対象になる役員はいません",
   cooTrainingWarning: "COOが研修中です — 小売利益率が低下する可能性があります",

@@ -141,7 +141,7 @@ export default {
   productionAfterUpgrade: "Produzione dopo aggiornamento",
   productionIncreasePercent: "Aumento di produzione",
   qualityOptional: "Qualità (Opzionale):",
-  navigateToExecutives: "Vai alla tua pagina dei dirigenti per i dettagli",
+  navigateToExecutives: "Vai alla tua pagina dei dirigenti per maggiori dettagli",
   skillsBreakdown: "Scomposizione delle competenze",
   skillsBreakdownDescription: "Competenze totali e loro fonti",
   extractedFeedback: "Feedback estratto",
@@ -159,6 +159,8 @@ export default {
   executiveOrganicGrowth: "Crescita organica",
   executiveOrganicGrowthTarget: "Obiettivo",
   executiveOrganicGrowthCountdown: "Tempo rimanente",
+  executiveOrganicGrowthCountdownHint:
+    "I dirigenti possono ottenere abilità nel tempo anche senza allenamento. I dirigenti nei ruoli principali hanno più probabilità di ottenere abilità corrispondenti e il tiro giornaliero di crescita organica non è garantito. Avviene alle 14:00 UTC in base a quanto tempo il dirigente ha ricoperto quel ruolo.",
   executiveOrganicGrowthEligible: "Dirigenti idonei",
   executiveOrganicGrowthNoneEligible: "Nessun dirigente è idoneo per il prossimo tiro",
   cooTrainingWarning: "Il COO è in formazione — il margine di profitto al dettaglio potrebbe essere ridotto",

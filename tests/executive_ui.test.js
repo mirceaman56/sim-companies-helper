@@ -155,9 +155,38 @@ describe("executive panel refresh", () => {
     expect(requestMock.mock.calls.map(([key]) => key)).toEqual(["executives"]);
     expect(content.textContent).toContain("executiveOrganicGrowth");
     expect(content.textContent).toContain("Amy White");
+    expect(content.textContent).toContain("roleCOO");
     expect(content.textContent).not.toContain("Zhi Maruyama");
     expect(content.textContent).toContain("navigateToExecutives");
     expect(content.querySelector("[data-growth-countdown]").textContent).toBe("01:00:00");
+    expect(content.textContent).not.toContain("executiveOrganicGrowthTarget");
+    expect(content.querySelector(".scx-executive-growth-info")?.getAttribute("data-tooltip")).toBe(
+      "executiveOrganicGrowthCountdownHint",
+    );
+  });
+
+  it("renders tied primary role labels for eligible executives", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
+    requestMock.mockResolvedValue({
+      executives: [
+        makeExecutive({
+          id: 1,
+          name: "Angela Parker",
+          position: "f",
+          skills: { coo: 3, cfo: 7, cmo: 7, cto: 2 },
+        }),
+      ],
+    });
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/overview/");
+
+    await updateExecutivePanel();
+
+    expect(content.textContent).toContain("Angela Parker");
+    expect(content.textContent).toContain("roleCFO / roleCMO");
   });
 
   it("renders apprentice skills from the matched DOM executive, not the main COO", async () => {

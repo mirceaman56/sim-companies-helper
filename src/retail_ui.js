@@ -562,12 +562,13 @@ export async function updatePanel() {
   let executiveWarningsHTML = "";
   if (STATE.executives.loaded) {
     const trainingExecs = [...getExecutivesTrainingForCOO(), ...getExecutivesTrainingForCMO()];
-    executiveWarningsHTML = trainingExecs
+    const warningItems = trainingExecs
       .map(({ executive, roleKey }) => {
         const roleLabel = t(RETAIL_ROLE_LABEL_KEYS[roleKey]);
-        return `<div class="scx-note scx-retail-note-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsRetail")}</div>`;
+        return `<div class="scx-note scx-retail-note-warning scx-retail-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsRetail")}</div>`;
       })
       .join("");
+    executiveWarningsHTML = warningItems ? `<div class="scx-retail-warnings">${warningItems}</div>` : "";
   }
 
   // --- HTML Render ---

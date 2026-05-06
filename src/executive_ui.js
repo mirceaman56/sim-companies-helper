@@ -4,7 +4,11 @@ import { t } from "./i18n.js";
 import { getSectionContent, setSectionToggleFn } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
 import { isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
-import { loadExecutivesOnce, resolveCurrentExecutivePageContext } from "./executives.js";
+import {
+  getExecutivePrimaryRoleKeys,
+  loadExecutivesOnce,
+  resolveCurrentExecutivePageContext,
+} from "./executives.js";
 import { buildExecutiveOrganicGrowthSummary, formatOrganicGrowthCountdown } from "./executive_growth_calc.js";
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
@@ -14,6 +18,12 @@ const REFRESH_BUTTON_ID = "scx-executive-refresh-btn";
 const GROWTH_COUNTDOWN_SELECTOR = "[data-growth-countdown]";
 const SIMILARITY_THRESHOLD = 0.7;
 const SKILL_KEYS = ["mgmt", "acct", "comm", "tech"];
+const EXECUTIVE_ROLE_LABEL_KEYS = {
+  coo: "roleCOO",
+  cfo: "roleCFO",
+  cmo: "roleCMO",
+  cto: "roleCTO",
+};
 const SKILL_LABELS = {
   mgmt: "Management",
   acct: "Accounting",
@@ -93,12 +103,6 @@ function createRefreshRowHTML() {
   `;
 }
 
-function formatOrganicGrowthTarget(targetAt) {
-  if (!(targetAt instanceof Date) || Number.isNaN(targetAt.getTime())) return "—";
-
-  return `${targetAt.toISOString().slice(0, 16).replace("T", " ")} UTC`;
-}
-
 function readExecutiveOrganicGrowthState(nowMs = Date.now()) {
   if (STATE.executives.loaded) {
     return {
@@ -118,23 +122,47 @@ function readExecutiveOrganicGrowthState(nowMs = Date.now()) {
   return { status: "loading", message: t("loading") };
 }
 
-function createOrganicGrowthNamesHTML(names) {
-  if (!names.length) {
-    return `<div class="scx-note">${t("executiveOrganicGrowthNoneEligible")}</div>`;
+function getExecutivePrimaryRoleLabel(executive) {
+  const roleKeys = getExecutivePrimaryRoleKeys(executive?.skills);
+  return roleKeys.map((roleKey) => t(EXECUTIVE_ROLE_LABEL_KEYS[roleKey])).join(" / ");
+}
+
+function formatExecutiveOrganicGrowthSummary(executive) {
+  const name = executive?.name || "";
+  const roleLabel = getExecutivePrimaryRoleLabel(executive);
+  return roleLabel ? `${name} (${roleLabel})` : name;
+}
+
+function createOrganicGrowthNamesHTML(executives) {
+  if (!executives.length) {
+    return `<div class="scx-note scx-executive-growth-empty">${t("executiveOrganicGrowthNoneEligible")}</div>`;
   }
 
   return `
     <div class="scx-executive-growth-names">
-      ${names
-        .map((name) => `<span class="scx-chip scx-executive-growth-chip">${escapeHtml(name)}</span>`)
+      ${executives
+        .map((executive) => {
+          const roleLabel = getExecutivePrimaryRoleLabel(executive);
+          return `<div class="scx-executive-growth-person">
+            <span class="scx-executive-growth-person-name">${escapeHtml(executive?.name || "")}</span>
+            ${
+              roleLabel
+                ? `<span class="scx-executive-growth-person-role">${escapeHtml(roleLabel)}</span>`
+                : ""
+            }
+          </div>`;
+        })
         .join("")}
     </div>
   `;
 }
 
 function createOrganicGrowthSectionHTML(growthState) {
+  const growthHint = escapeHtml(t("executiveOrganicGrowthCountdownHint"));
   const headingHtml = `
-    <div class="scx-executive-growth-heading">${t("executiveOrganicGrowth")}</div>
+    <div class="scx-executive-growth-heading">
+      <div class="scx-panel-title">${t("executiveOrganicGrowth")}</div>
+    </div>
   `;
 
   if (growthState.status !== "ready") {
@@ -147,22 +175,29 @@ function createOrganicGrowthSectionHTML(growthState) {
   }
 
   const { summary } = growthState;
-  const eligibleNames = summary.eligibleExecutives.map((executive) => executive?.name).filter(Boolean);
+  const eligibleExecutives = summary.eligibleExecutives.filter((executive) => executive?.name);
 
   return `
     <div class="scx-executive-growth-block">
       ${headingHtml}
-      <div class="scx-executive-growth-grid">
-        <div class="scx-k">${t("executiveOrganicGrowthTarget")}</div>
-        <div class="scx-v scx-text-right">${escapeHtml(formatOrganicGrowthTarget(summary.targetAt))}</div>
-        <div class="scx-k">${t("executiveOrganicGrowthCountdown")}</div>
-        <div class="scx-v scx-text-right scx-text-semibold" data-growth-countdown data-target-ms="${summary.targetAt.getTime()}">${escapeHtml(
+      <div class="scx-executive-growth-meta">
+        <div class="scx-executive-growth-meta-label">
+          <span>${t("executiveOrganicGrowthCountdown")}</span>
+          <span
+            class="scx-executive-growth-info"
+            role="img"
+            tabindex="0"
+            aria-label="${growthHint}"
+            data-tooltip="${growthHint}"
+          >i</span>
+        </div>
+        <div class="scx-executive-growth-countdown scx-mono" data-growth-countdown data-target-ms="${summary.targetAt.getTime()}">${escapeHtml(
           formatOrganicGrowthCountdown(summary.countdownMs),
         )}</div>
       </div>
-      <div class="scx-margin-top-4">
-        <div class="scx-label scx-margin-bottom-4">${t("executiveOrganicGrowthEligible")}</div>
-        ${createOrganicGrowthNamesHTML(eligibleNames)}
+      <div class="scx-executive-growth-section">
+        <div class="scx-executive-growth-section-title">${t("executiveOrganicGrowthEligible")}</div>
+        ${createOrganicGrowthNamesHTML(eligibleExecutives)}
       </div>
     </div>
   `;
@@ -306,13 +341,10 @@ function buildExecutiveCopyText(
   lines.push(`${t("executiveOrganicGrowth")}:`);
   if (growthState?.status === "ready") {
     lines.push(
-      `${t("executiveOrganicGrowthTarget")}: ${formatOrganicGrowthTarget(growthState.summary.targetAt)}`,
-    );
-    lines.push(
       `${t("executiveOrganicGrowthCountdown")}: ${formatOrganicGrowthCountdown(growthState.summary.countdownMs)}`,
     );
     const eligibleNames = growthState.summary.eligibleExecutives
-      .map((executive) => executive?.name)
+      .map((executive) => formatExecutiveOrganicGrowthSummary(executive))
       .filter(Boolean);
     lines.push(
       `${t("executiveOrganicGrowthEligible")}: ${
@@ -464,7 +496,6 @@ export const _testUtils = {
   readExecutiveHRFeedback,
   findBestMatchingEntry,
   calculateSimilarity,
-  formatOrganicGrowthTarget,
   readExecutiveOrganicGrowthState,
   handleExecutiveSectionToggle,
   stopOrganicGrowthTimer,

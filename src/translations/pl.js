@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "Produkcja po ulepszeniu",
   productionIncreasePercent: "Zwiększenie produkcji",
   qualityOptional: "Jakość (Opcjonalnie):",
-  navigateToExecutives: "Przejdź do strony kierownictwa, aby uzyskać szczegóły",
+  navigateToExecutives: "Przejdź do strony kierownictwa, aby uzyskać więcej szczegółów",
   skillsBreakdown: "Podział umiejętności",
   skillsBreakdownDescription: "Całkowite umiejętności i ich źródła",
   extractedFeedback: "Wyekstrahowana opinia zwrotna",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "Rozwój organiczny",
   executiveOrganicGrowthTarget: "Cel",
   executiveOrganicGrowthCountdown: "Pozostały czas",
+  executiveOrganicGrowthCountdownHint:
+    "Menedżerowie mogą zdobywać umiejętności z czasem nawet bez szkolenia. Menedżerowie na głównych stanowiskach mają większą szansę na zdobycie pasujących umiejętności, a codzienny rzut wzrostu organicznego nie jest gwarantowany. Odbywa się o 14:00 UTC i zależy od tego, jak długo dana rola jest pełniona.",
   executiveOrganicGrowthEligible: "Uprawnieni menedżerowie",
   executiveOrganicGrowthNoneEligible: "Żaden menedżer nie kwalifikuje się do następnego losowania",
   cooTrainingWarning: "COO jest na szkoleniu — marża zysku detalicznego może być obniżona",

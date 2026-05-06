@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "Production after upgrade",
   productionIncreasePercent: "Production increase",
   qualityOptional: "Quality (Optional):",
-  navigateToExecutives: "Navigate to your executives page for details",
+  navigateToExecutives: "Navigate to your executives page for more details",
   skillsBreakdown: "Skills Breakdown",
   skillsBreakdownDescription: "Total skills and their sources",
   extractedFeedback: "Extracted Feedback",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "Organic Growth",
   executiveOrganicGrowthTarget: "Target",
   executiveOrganicGrowthCountdown: "Time left",
+  executiveOrganicGrowthCountdownHint:
+    "Executives can gain skills over time even without training. Main-role executives have better odds for matching skills, and the daily organic growth roll is not guaranteed. It happens at 14:00 UTC based on how long they have held that role.",
   executiveOrganicGrowthEligible: "Eligible executives",
   executiveOrganicGrowthNoneEligible: "No executives are eligible for the next roll",
   cooTrainingWarning: "COO is in training — retail profit margin may be reduced",

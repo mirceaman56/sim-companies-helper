@@ -141,7 +141,7 @@ export default {
   productionAfterUpgrade: "Produktion nach Upgrade",
   productionIncreasePercent: "Produktionssteigerung",
   qualityOptional: "Qualität (Optional):",
-  navigateToExecutives: "Navigieren Sie zu Ihrer Führungskräfte-Seite für Details",
+  navigateToExecutives: "Navigieren Sie zu Ihrer Führungskräfte-Seite für weitere Details",
   skillsBreakdown: "Fähigkeitsenaufschlüsselung",
   skillsBreakdownDescription: "Gesamtfähigkeiten und ihre Quellen",
   extractedFeedback: "Extrahiertes Feedback",
@@ -159,6 +159,8 @@ export default {
   executiveOrganicGrowth: "Organisches Wachstum",
   executiveOrganicGrowthTarget: "Ziel",
   executiveOrganicGrowthCountdown: "Verbleibende Zeit",
+  executiveOrganicGrowthCountdownHint:
+    "Führungskräfte können mit der Zeit auch ohne Training Fähigkeiten erhalten. Führungskräfte in Hauptrollen haben bessere Chancen auf passende Fähigkeiten, und der tägliche Organic-Growth-Wurf ist nicht garantiert. Er findet um 14:00 UTC statt und hängt davon ab, wie lange die Rolle gehalten wurde.",
   executiveOrganicGrowthEligible: "Berechtigte Führungskräfte",
   executiveOrganicGrowthNoneEligible: "Keine Führungskräfte sind für den nächsten Wurf berechtigt",
   cooTrainingWarning: "COO befindet sich im Training — die Handelsmarge kann reduziert sein",
