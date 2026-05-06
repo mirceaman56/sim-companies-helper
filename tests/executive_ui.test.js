@@ -9,6 +9,7 @@ const { getSectionContentMock, requestMock } = vi.hoisted(() => ({
 vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
 vi.mock("../src/sidebar.js", () => ({
   getSectionContent: (...args) => getSectionContentMock(...args),
+  setSectionToggleFn: vi.fn(),
 }));
 vi.mock("../src/auth.js", () => ({
   loadAuthDataOnce: vi.fn(() => Promise.resolve()),
@@ -85,6 +86,7 @@ describe("executive route matching", () => {
 
 describe("executive panel refresh", () => {
   beforeEach(() => {
+    vi.useRealTimers();
     getSectionContentMock.mockReset();
     requestMock.mockReset();
     STATE.executives.loaded = false;
@@ -123,6 +125,41 @@ describe("executive panel refresh", () => {
     expect(getSectionContentMock.mock.calls.length).toBeGreaterThan(callCountBefore);
   });
 
+  it("renders the organic growth block on non-executive pages and keeps the navigation note", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
+    requestMock.mockResolvedValue({
+      executives: [
+        makeExecutive({
+          id: 1,
+          name: "Amy White",
+          position: "o",
+          skills: { coo: 4, cfo: 2, cmo: 1, cto: 3 },
+        }),
+        makeExecutive({
+          id: 2,
+          name: "Zhi Maruyama",
+          position: "f",
+          skills: { coo: 1, cfo: 4, cmo: 2, cto: 3 },
+          currentTraining: { datetime: "2026-05-06T07:56:14.635445+00:00", training: "o" },
+        }),
+      ],
+    });
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/overview/");
+
+    await updateExecutivePanel();
+
+    expect(requestMock.mock.calls.map(([key]) => key)).toEqual(["executives"]);
+    expect(content.textContent).toContain("executiveOrganicGrowth");
+    expect(content.textContent).toContain("Amy White");
+    expect(content.textContent).not.toContain("Zhi Maruyama");
+    expect(content.textContent).toContain("navigateToExecutives");
+    expect(content.querySelector("[data-growth-countdown]").textContent).toBe("01:00:00");
+  });
+
   it("renders apprentice skills from the matched DOM executive, not the main COO", async () => {
     setFreshExecutives([
       makeExecutive({
@@ -153,6 +190,8 @@ describe("executive panel refresh", () => {
   });
 
   it("renders 'currently training' indicator when executive has active training", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
     setFreshExecutives([
       makeExecutive({
         id: 1,
@@ -170,6 +209,7 @@ describe("executive panel refresh", () => {
 
     await updateExecutivePanel();
 
+    expect(content.textContent).toContain("executiveOrganicGrowth");
     const indicator = content.querySelector(".scx-skill-breakdown-training-indicator");
     expect(indicator).not.toBeNull();
     expect(indicator.textContent).toContain("tech");
@@ -322,6 +362,102 @@ describe("executive panel refresh", () => {
     await updateExecutivePanel();
 
     expect(content.textContent).toContain("navigateToExecutives");
+  });
+
+  it("shows the empty eligible state when no executives qualify", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
+    requestMock.mockResolvedValue({
+      executives: [
+        makeExecutive({
+          id: 2,
+          name: "Zhi Maruyama",
+          position: "f",
+          skills: { coo: 1, cfo: 4, cmo: 2, cto: 3 },
+          currentTraining: { datetime: "2026-05-05T11:00:01.000Z", training: "o" },
+        }),
+      ],
+    });
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/overview/");
+
+    await updateExecutivePanel();
+
+    expect(content.textContent).toContain("executiveOrganicGrowthNoneEligible");
+  });
+
+  it("force-refreshes the growth block data when refresh is clicked", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
+    requestMock
+      .mockResolvedValueOnce({
+        executives: [
+          makeExecutive({
+            id: 1,
+            name: "Amy White",
+            position: "o",
+            skills: { coo: 4, cfo: 2, cmo: 1, cto: 3 },
+          }),
+        ],
+      })
+      .mockResolvedValueOnce({
+        executives: [
+          makeExecutive({
+            id: 2,
+            name: "Zhi Maruyama",
+            position: "f",
+            skills: { coo: 1, cfo: 4, cmo: 2, cto: 3 },
+            currentTraining: { datetime: "2026-05-05T11:00:01.000Z", training: "o" },
+          }),
+        ],
+      });
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/overview/");
+
+    await updateExecutivePanel();
+    expect(content.textContent).toContain("Amy White");
+
+    content.querySelector("#scx-executive-refresh-btn").click();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(requestMock.mock.calls.map(([key]) => key)).toEqual(["executives", "executives"]);
+    expect(content.textContent).toContain("executiveOrganicGrowthNoneEligible");
+  });
+
+  it("updates the countdown every second and stops on collapse", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-06T13:00:00.000Z"));
+    requestMock.mockResolvedValue({
+      executives: [
+        makeExecutive({
+          id: 1,
+          name: "Amy White",
+          position: "o",
+          skills: { coo: 4, cfo: 2, cmo: 1, cto: 3 },
+        }),
+      ],
+    });
+
+    const content = document.createElement("div");
+    getSectionContentMock.mockReturnValue(content);
+    window.history.pushState({}, "", "/headquarters/overview/");
+
+    await updateExecutivePanel();
+    _testUtils.handleExecutiveSectionToggle(false);
+
+    const countdown = content.querySelector("[data-growth-countdown]");
+    expect(countdown.textContent).toBe("01:00:00");
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(countdown.textContent).toBe("00:59:59");
+
+    _testUtils.handleExecutiveSectionToggle(true);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(countdown.textContent).toBe("00:59:59");
   });
 });
 

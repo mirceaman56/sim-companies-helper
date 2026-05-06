@@ -5,7 +5,7 @@ import { escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
 import * as storage from "./data/storage.js";
 
-const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn }
+const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn, toggleFn }
 
 const SIDEBAR_PREFS_DOMAIN = "sidebar-prefs";
 const SIDEBAR_PREFS_VERSION = 1;
@@ -134,6 +134,11 @@ export function registerSection(sectionId, title, icon = "◆") {
       if (sectionData.updateFn && !isCollapsed) {
         sectionData.updateFn();
       }
+      if (sectionData.toggleFn) {
+        try {
+          sectionData.toggleFn(isCollapsed);
+        } catch {}
+      }
     }
   };
 
@@ -149,6 +154,7 @@ export function registerSection(sectionId, title, icon = "◆") {
     toggle,
     isCollapsed: true,
     updateFn: null,
+    toggleFn: null,
   });
 
   return section;
@@ -239,6 +245,13 @@ export function setSectionUpdateFn(sectionId, updateFn) {
         updateFn();
       } catch {}
     }
+  }
+}
+
+export function setSectionToggleFn(sectionId, toggleFn) {
+  const section = SECTIONS.get(sectionId);
+  if (section) {
+    section.toggleFn = toggleFn;
   }
 }
 

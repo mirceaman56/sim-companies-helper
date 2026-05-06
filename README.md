@@ -9,7 +9,7 @@ A Chrome extension that adds practical, in-game tools for Sim Companies players.
 - Warehouse market price comparison tools and copyable sales chat messages.
 - Market alerts for target prices.
 - Recipe extractor that collects recipe-page data into copyable JSON.
-- Executive helper for chief and apprentice pages.
+- Executive helper for chief and apprentice pages, plus a daily organic-growth timer with eligible executive names.
 - Upgrade helper with discount-aware, copyable buy messages for upgrade dialogs.
 - XP calculator widget with manual refresh (cache refreshes every 6 hours by default).
 - Global sales chat filter/search helper with joined-room selection, compact quality filters, and free-text room-aware alerts.

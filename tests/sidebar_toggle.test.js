@@ -26,6 +26,8 @@ vi.mock("../src/utils.js", () => ({
 
 import {
   ensureSidebarContainer,
+  registerSection,
+  setSectionToggleFn,
   toggleSidebarVisibility,
   _testUtils,
 } from "../src/sidebar.js";
@@ -234,5 +236,26 @@ describe("restore persisted state", () => {
       const tab = container.querySelector(".scx-sidebar-toggle-tab");
       expect(tab.title).toContain("showSidebar");
     });
+  });
+});
+
+describe("section toggle hooks", () => {
+  beforeEach(() => {
+    resetDOM();
+    mockStorageGet.mockReset().mockResolvedValue(null);
+    mockStorageSet.mockReset().mockResolvedValue(true);
+  });
+
+  it("calls the registered section toggle hook on expand and collapse", () => {
+    const toggleFn = vi.fn();
+    const section = registerSection("executive-section", "executiveHelper", "👔");
+    setSectionToggleFn("executive-section", toggleFn);
+
+    const header = section.querySelector(".scx-section-header");
+    header.click();
+    header.click();
+
+    expect(toggleFn).toHaveBeenNthCalledWith(1, false);
+    expect(toggleFn).toHaveBeenNthCalledWith(2, true);
   });
 });
