@@ -5,7 +5,7 @@ import { t } from "./i18n.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updateProductionPanel, setupProductionRowListeners } from "./production_ui.js";
 import { updatePanel as updateRetailPanel } from "./retail_ui.js";
-import { updateExecutivePanel } from "./executive_ui.js";
+import { initExecutiveHelper, updateExecutivePanel } from "./executive_ui.js";
 import { updateMarketAlertsPanel } from "./market_ui.js";
 import { initChatFilter, updateChatFilterPanel } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
@@ -54,6 +54,7 @@ export function bootstrapFeatureRegistry() {
   initWarehouseHelper();
   initUpgradeBuyMessage();
   initXpWidget();
+  initExecutiveHelper();
 
   // Attach listeners before users can interact with production rows.
   setupProductionRowListeners();

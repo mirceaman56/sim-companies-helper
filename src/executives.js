@@ -164,6 +164,7 @@ export async function resolveCurrentExecutivePageContext({
   pathname = window.location.pathname,
   root = document,
   force = false,
+  skipExecutivesLoad = false,
 } = {}) {
   const page = readExecutivePageIdentity(root, pathname);
 
@@ -171,7 +172,9 @@ export async function resolveCurrentExecutivePageContext({
     return buildExecutiveContext(null, null, "none");
   }
 
-  await loadExecutivesOnce({ force });
+  if (!skipExecutivesLoad) {
+    await loadExecutivesOnce({ force });
+  }
 
   let executive = findExecutiveByName(page.name, { roleKey: page.roleKey });
   if (!executive && page.pageKind === "role" && page.roleKey) {

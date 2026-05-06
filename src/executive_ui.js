@@ -1,14 +1,17 @@
 import { stringSimilarity } from "string-similarity-js";
 import hrBlurpData from "./resources/hr_blurp.json";
 import { t } from "./i18n.js";
-import { getSectionContent } from "./sidebar.js";
+import { getSectionContent, setSectionToggleFn } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
 import { isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
-import { resolveCurrentExecutivePageContext } from "./executives.js";
+import { loadExecutivesOnce, resolveCurrentExecutivePageContext } from "./executives.js";
+import { buildExecutiveOrganicGrowthSummary, formatOrganicGrowthCountdown } from "./executive_growth_calc.js";
 import { loadAuthDataOnce } from "./auth.js";
+import { STATE } from "./state.js";
 
 const SECTION_ID = "executive-section";
 const REFRESH_BUTTON_ID = "scx-executive-refresh-btn";
+const GROWTH_COUNTDOWN_SELECTOR = "[data-growth-countdown]";
 const SIMILARITY_THRESHOLD = 0.7;
 const SKILL_KEYS = ["mgmt", "acct", "comm", "tech"];
 const SKILL_LABELS = {
@@ -17,6 +20,7 @@ const SKILL_LABELS = {
   comm: "Communication",
   tech: "Technology",
 };
+let growthCountdownIntervalId = null;
 
 function getSkillLabel(skillKey) {
   const labelMap = {
@@ -85,6 +89,81 @@ function createRefreshRowHTML() {
       <button id="${REFRESH_BUTTON_ID}" class="scx-btn scx-btn-primary scx-text-xs" type="button">
         ${t("executiveRefresh")}
       </button>
+    </div>
+  `;
+}
+
+function formatOrganicGrowthTarget(targetAt) {
+  if (!(targetAt instanceof Date) || Number.isNaN(targetAt.getTime())) return "—";
+
+  return `${targetAt.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+}
+
+function readExecutiveOrganicGrowthState(nowMs = Date.now()) {
+  if (STATE.executives.loaded) {
+    return {
+      status: "ready",
+      summary: buildExecutiveOrganicGrowthSummary(STATE.executives.items, { nowMs }),
+    };
+  }
+
+  if (STATE.executives.error) {
+    return { status: "error", message: t("genericError") };
+  }
+
+  if (!STATE.auth?.companyId) {
+    return { status: "error", message: t("genericError") };
+  }
+
+  return { status: "loading", message: t("loading") };
+}
+
+function createOrganicGrowthNamesHTML(names) {
+  if (!names.length) {
+    return `<div class="scx-note">${t("executiveOrganicGrowthNoneEligible")}</div>`;
+  }
+
+  return `
+    <div class="scx-executive-growth-names">
+      ${names
+        .map((name) => `<span class="scx-chip scx-executive-growth-chip">${escapeHtml(name)}</span>`)
+        .join("")}
+    </div>
+  `;
+}
+
+function createOrganicGrowthSectionHTML(growthState) {
+  const headingHtml = `
+    <div class="scx-executive-growth-heading">${t("executiveOrganicGrowth")}</div>
+  `;
+
+  if (growthState.status !== "ready") {
+    return `
+      <div class="scx-executive-growth-block">
+        ${headingHtml}
+        <div class="scx-note">${escapeHtml(growthState.message || t("loading"))}</div>
+      </div>
+    `;
+  }
+
+  const { summary } = growthState;
+  const eligibleNames = summary.eligibleExecutives.map((executive) => executive?.name).filter(Boolean);
+
+  return `
+    <div class="scx-executive-growth-block">
+      ${headingHtml}
+      <div class="scx-executive-growth-grid">
+        <div class="scx-k">${t("executiveOrganicGrowthTarget")}</div>
+        <div class="scx-v scx-text-right">${escapeHtml(formatOrganicGrowthTarget(summary.targetAt))}</div>
+        <div class="scx-k">${t("executiveOrganicGrowthCountdown")}</div>
+        <div class="scx-v scx-text-right scx-text-semibold" data-growth-countdown data-target-ms="${summary.targetAt.getTime()}">${escapeHtml(
+          formatOrganicGrowthCountdown(summary.countdownMs),
+        )}</div>
+      </div>
+      <div class="scx-margin-top-4">
+        <div class="scx-label scx-margin-bottom-4">${t("executiveOrganicGrowthEligible")}</div>
+        ${createOrganicGrowthNamesHTML(eligibleNames)}
+      </div>
     </div>
   `;
 }
@@ -214,6 +293,7 @@ function wireRefreshButton(content) {
 }
 
 function buildExecutiveCopyText(
+  growthState,
   executiveSkills,
   currentTrainingSkillKey,
   feedbackText,
@@ -222,6 +302,26 @@ function buildExecutiveCopyText(
   trainingSkills,
 ) {
   const lines = [t("executiveHelper")];
+
+  lines.push(`${t("executiveOrganicGrowth")}:`);
+  if (growthState?.status === "ready") {
+    lines.push(
+      `${t("executiveOrganicGrowthTarget")}: ${formatOrganicGrowthTarget(growthState.summary.targetAt)}`,
+    );
+    lines.push(
+      `${t("executiveOrganicGrowthCountdown")}: ${formatOrganicGrowthCountdown(growthState.summary.countdownMs)}`,
+    );
+    const eligibleNames = growthState.summary.eligibleExecutives
+      .map((executive) => executive?.name)
+      .filter(Boolean);
+    lines.push(
+      `${t("executiveOrganicGrowthEligible")}: ${
+        eligibleNames.length ? eligibleNames.join(", ") : t("executiveOrganicGrowthNoneEligible")
+      }`,
+    );
+  } else {
+    lines.push(growthState?.message || t("loading"));
+  }
 
   if (executiveSkills) {
     lines.push(`${t("skillsBreakdown")}:`);
@@ -260,24 +360,33 @@ export async function updateExecutivePanel({ force = false } = {}) {
   const pathname = window.location.pathname;
 
   await loadAuthDataOnce();
+  await loadExecutivesOnce({ force });
+  const growthState = readExecutiveOrganicGrowthState();
   const { executiveSkills, currentTrainingSkillKey, organicSkills, trainingSkills } =
     await resolveCurrentExecutivePageContext({
       pathname,
       root: document,
       force,
+      skipExecutivesLoad: true,
     });
 
   const feedbackText = isExecutivePath(pathname) ? readExecutiveHRFeedback(document) : null;
   const matchedEntry = feedbackText ? findBestMatchingEntry(feedbackText) : null;
 
   if (!executiveSkills && !feedbackText) {
-    content.innerHTML = createPanelHeaderHTML() + createNavigationMessageHTML() + createRefreshRowHTML();
+    content.innerHTML =
+      createPanelHeaderHTML() +
+      createOrganicGrowthSectionHTML(growthState) +
+      createNavigationMessageHTML() +
+      createRefreshRowHTML();
     wireRefreshButton(content);
-    wireCopyButton(content, () => buildExecutiveCopyText(null, null, null, null, null, null));
+    updateOrganicGrowthCountdown();
+    wireCopyButton(content, () => buildExecutiveCopyText(growthState, null, null, null, null, null, null));
     return;
   }
 
   let html = createPanelHeaderHTML();
+  html += createOrganicGrowthSectionHTML(growthState);
   if (executiveSkills) {
     html += createSkillsBreakdownSectionHTML(
       executiveSkills,
@@ -298,8 +407,10 @@ export async function updateExecutivePanel({ force = false } = {}) {
 
   content.innerHTML = html;
   wireRefreshButton(content);
+  updateOrganicGrowthCountdown();
   wireCopyButton(content, () =>
     buildExecutiveCopyText(
+      growthState,
       executiveSkills,
       currentTrainingSkillKey,
       feedbackText,
@@ -311,7 +422,41 @@ export async function updateExecutivePanel({ force = false } = {}) {
 }
 
 export function initExecutiveHelper() {
-  // Initialization is handled by the sidebar system via setSectionUpdateFn.
+  setSectionToggleFn(SECTION_ID, handleExecutiveSectionToggle);
+}
+
+function updateOrganicGrowthCountdown() {
+  const content = getSectionContent(SECTION_ID);
+  const countdownEl = content?.querySelector(GROWTH_COUNTDOWN_SELECTOR);
+  const targetMs = Number(countdownEl?.dataset?.targetMs);
+  if (!countdownEl || !Number.isFinite(targetMs)) return;
+
+  countdownEl.textContent = formatOrganicGrowthCountdown(Math.max(0, targetMs - Date.now()));
+}
+
+function startOrganicGrowthTimer() {
+  if (growthCountdownIntervalId) return;
+
+  updateOrganicGrowthCountdown();
+  growthCountdownIntervalId = setInterval(() => {
+    updateOrganicGrowthCountdown();
+  }, 1000);
+}
+
+function stopOrganicGrowthTimer() {
+  if (!growthCountdownIntervalId) return;
+
+  clearInterval(growthCountdownIntervalId);
+  growthCountdownIntervalId = null;
+}
+
+function handleExecutiveSectionToggle(isCollapsed) {
+  if (isCollapsed) {
+    stopOrganicGrowthTimer();
+    return;
+  }
+
+  startOrganicGrowthTimer();
 }
 
 export const _testUtils = {
@@ -319,4 +464,9 @@ export const _testUtils = {
   readExecutiveHRFeedback,
   findBestMatchingEntry,
   calculateSimilarity,
+  formatOrganicGrowthTarget,
+  readExecutiveOrganicGrowthState,
+  handleExecutiveSectionToggle,
+  stopOrganicGrowthTimer,
+  startOrganicGrowthTimer,
 };
