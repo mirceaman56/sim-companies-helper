@@ -43,6 +43,19 @@
   color: var(--scx-text-muted);
 }
 
+.scx-retail-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scx-retail-warning {
+  margin-top: 0;
+  padding: 6px 10px;
+  line-height: 1.25;
+  opacity: 1;
+}
+
 .scx-retail-win-row {
   display: flex;
   justify-content: space-between;
