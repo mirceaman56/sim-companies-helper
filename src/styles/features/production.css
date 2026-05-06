@@ -18,21 +18,23 @@
   padding: 12px;
 }
 
-.scx-production-analysis-error {
-  font-size: var(--scx-font-size-xs);
-  color: var(--scx-color-error);
-  margin-top: 4px;
-}
-
 .scx-production-analysis-hint {
   font-size: var(--scx-font-size-xs);
   color: var(--scx-text-muted);
   margin-top: 8px;
 }
 
-.scx-production-error-note {
-  border-left-color: var(--scx-color-error);
-  color: var(--scx-color-error);
+.scx-production-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scx-production-warning {
+  margin-top: 0;
+  padding: 6px 10px;
+  line-height: 1.25;
+  opacity: 1;
 }
 
 .scx-production-profit-stack {

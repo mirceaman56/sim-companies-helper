@@ -221,12 +221,13 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
   const PROD_ROLE_LABEL_KEYS = { coo: "roleCOO" };
   let execWarningHTML = "";
   if (STATE.executives.loaded) {
-    execWarningHTML = getExecutivesTrainingForCOO()
+    const warningItems = getExecutivesTrainingForCOO()
       .map(({ executive, roleKey }) => {
         const roleLabel = t(PROD_ROLE_LABEL_KEYS[roleKey]);
-        return `<div class="scx-note scx-note-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsProduction")}</div>`;
+        return `<div class="scx-note scx-note-warning scx-production-warning">${escapeHtml(executive.name)} (${roleLabel}) ${t("inTrainingAffectsProduction")}</div>`;
       })
       .join("");
+    execWarningHTML = warningItems ? `<div class="scx-production-warnings">${warningItems}</div>` : "";
   }
 
   // Extract building level from the page
@@ -298,18 +299,18 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-xs">${t("profit")}</span>
-             <span class="scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.market.profit)}">
+             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.market.profit)}">
                ${formatMoney(profitAnalysis.market.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
              <span class="scx-k">${t("margin")}</span>
-             <span class="${getValueToneClass(profitAnalysis.market.margin)}">
+             <span class="scx-mono ${getValueToneClass(profitAnalysis.market.margin)}">
                ${profitAnalysis.market.margin.toFixed(2)}%
              </span>
           </div>
           <div class="scx-text-muted scx-margin-top-2 scx-text-right">
-             ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}
+             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}</span>
           </div>
         </div>
 
@@ -322,18 +323,18 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
           
            <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
              <span class="scx-k scx-text-xs">${t("profit")}</span>
-             <span class="scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.contract.profit)}">
+             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.contract.profit)}">
                ${formatMoney(profitAnalysis.contract.profit)}
              </span>
           </div>
           <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
              <span class="scx-k">${t("margin")}</span>
-             <span class="${getValueToneClass(profitAnalysis.contract.margin)}">
+             <span class="scx-mono ${getValueToneClass(profitAnalysis.contract.margin)}">
                ${profitAnalysis.contract.margin.toFixed(2)}%
              </span>
           </div>
            <div class="scx-text-muted scx-margin-top-2 scx-text-right">
-             ${t("breakEvenGt")} ${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}
+             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}</span>
           </div>
         </div>
       </div>
@@ -372,7 +373,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         <div class="scx-card scx-card-sm scx-tone-surface scx-tone-warning scx-margin-bottom-4">
           <div class="scx-flex-spaced scx-text-xs">
              <span>${t("marketSell")}</span>
-             <span class="scx-text-bold ${getValueToneClass(projectedMarketProfit)}">
+             <span class="scx-mono scx-text-bold ${getValueToneClass(projectedMarketProfit)}">
                ${formatMoney(projectedMarketProfit)}
              </span>
           </div>
@@ -381,7 +382,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
               ? `
           <div class="scx-flex-spaced scx-text-xs scx-text-muted scx-margin-top-1">
              <span>${t("delta")}:</span>
-             <span class="${getValueToneClass(marketProfitDelta)}">
+             <span class="scx-mono ${getValueToneClass(marketProfitDelta)}">
                ${formatMoney(marketProfitDelta)}
              </span>
           </div>
@@ -394,7 +395,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
         <div class="scx-card scx-card-sm scx-tone-surface scx-tone-neutral">
           <div class="scx-flex-spaced scx-text-xs">
              <span>${t("contractSell")}</span>
-             <span class="scx-text-bold ${getValueToneClass(projectedContractProfit)}">
+             <span class="scx-mono scx-text-bold ${getValueToneClass(projectedContractProfit)}">
                ${formatMoney(projectedContractProfit)}
              </span>
           </div>
@@ -403,7 +404,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
               ? `
           <div class="scx-flex-spaced scx-text-xs scx-text-muted scx-margin-top-1">
              <span>${t("delta")}:</span>
-             <span class="${getValueToneClass(contractProfitDelta)}">
+             <span class="scx-mono ${getValueToneClass(contractProfitDelta)}">
                ${formatMoney(contractProfitDelta)}
              </span>
           </div>
