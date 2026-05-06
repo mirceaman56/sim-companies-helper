@@ -188,7 +188,7 @@ function createOrganicGrowthSectionHTML(growthState) {
             role="img"
             tabindex="0"
             aria-label="${growthHint}"
-            title="${growthHint}"
+            data-tooltip="${growthHint}"
           >i</span>
         </div>
         <div class="scx-executive-growth-countdown scx-mono" data-growth-countdown data-target-ms="${summary.targetAt.getTime()}">${escapeHtml(

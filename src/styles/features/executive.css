@@ -226,6 +226,7 @@
 }
 
 .scx-executive-growth-info {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -237,6 +238,53 @@
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-bold);
   cursor: help;
+}
+
+.scx-executive-growth-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  min-width: 220px;
+  max-width: 260px;
+  padding: 8px 10px;
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-tooltip);
+  color: var(--scx-color-white);
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-normal);
+  line-height: 1.35;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
+  text-align: left;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-executive-growth-info::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 2px);
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--scx-bg-tooltip);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-executive-growth-info:hover::after,
+.scx-executive-growth-info:hover::before,
+.scx-executive-growth-info:focus-visible::after,
+.scx-executive-growth-info:focus-visible::before {
+  opacity: 1;
 }
 
 .scx-executive-growth-countdown {

@@ -160,7 +160,7 @@ describe("executive panel refresh", () => {
     expect(content.textContent).toContain("navigateToExecutives");
     expect(content.querySelector("[data-growth-countdown]").textContent).toBe("01:00:00");
     expect(content.textContent).not.toContain("executiveOrganicGrowthTarget");
-    expect(content.querySelector(".scx-executive-growth-info")?.getAttribute("title")).toBe(
+    expect(content.querySelector(".scx-executive-growth-info")?.getAttribute("data-tooltip")).toBe(
       "executiveOrganicGrowthCountdownHint",
     );
   });
