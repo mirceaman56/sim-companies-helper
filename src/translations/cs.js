@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "Výroba po upgradu",
   productionIncreasePercent: "Zvýšení výroby",
   qualityOptional: "Kvalita (Volitelné):",
-  navigateToExecutives: "Přejděte na stránku vedení pro podrobnosti",
+  navigateToExecutives: "Přejděte na stránku vedení pro více podrobností",
   skillsBreakdown: "Rozpad dovedností",
   skillsBreakdownDescription: "Celkové dovednosti a jejich zdroje",
   extractedFeedback: "Extrahovaná zpětná vazba",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "Organický růst",
   executiveOrganicGrowthTarget: "Cíl",
   executiveOrganicGrowthCountdown: "Zbývající čas",
+  executiveOrganicGrowthCountdownHint:
+    "Vedoucí mohou získávat dovednosti postupem času i bez tréninku. Vedoucí v hlavních rolích mají vyšší šanci získat odpovídající dovednosti a denní hod organického růstu není zaručen. Probíhá ve 14:00 UTC podle toho, jak dlouho danou roli zastávají.",
   executiveOrganicGrowthEligible: "Způsobilí vedoucí",
   executiveOrganicGrowthNoneEligible: "Pro příští hod není způsobilý žádný vedoucí",
   cooTrainingWarning: "COO je v tréninku — zisková marže v maloobchodu může být snížena",

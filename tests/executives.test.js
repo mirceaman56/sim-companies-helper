@@ -31,6 +31,7 @@ import {
   findExecutiveByPosition,
   findExecutiveByName,
   getExecutiveDetail,
+  getExecutivePrimaryRoleKeys,
   getExecutivesTrainingForCMO,
   getExecutivesTrainingForCOO,
   getTrainingSkillKey,
@@ -81,6 +82,21 @@ describe("apiSkillsToInternal", () => {
 
   it("handles null input", () => {
     expect(apiSkillsToInternal(null)).toEqual({ mgmt: 0, acct: 0, comm: 0, tech: 0 });
+  });
+});
+
+describe("getExecutivePrimaryRoleKeys", () => {
+  it("returns the role with the highest skill", () => {
+    expect(getExecutivePrimaryRoleKeys({ coo: 3, cfo: 7, cmo: 1, cto: 2 })).toEqual(["cfo"]);
+  });
+
+  it("returns every tied top role in stable order", () => {
+    expect(getExecutivePrimaryRoleKeys({ coo: 3, cfo: 7, cmo: 7, cto: 2 })).toEqual(["cfo", "cmo"]);
+  });
+
+  it("returns empty when all skills are zero or missing", () => {
+    expect(getExecutivePrimaryRoleKeys({ coo: 0, cfo: 0, cmo: 0, cto: 0 })).toEqual([]);
+    expect(getExecutivePrimaryRoleKeys(null)).toEqual([]);
   });
 });
 

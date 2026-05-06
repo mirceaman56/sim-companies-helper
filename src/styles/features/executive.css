@@ -204,17 +204,59 @@
 
 .scx-executive-growth-heading {
   margin-bottom: var(--scx-spacing-sm);
+}
+
+.scx-executive-growth-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--scx-spacing-sm);
+  padding: var(--scx-spacing-sm) 0;
+  border-top: var(--scx-border-light);
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-executive-growth-meta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+}
+
+.scx-executive-growth-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-bold);
+  cursor: help;
+}
+
+.scx-executive-growth-countdown {
+  color: var(--scx-text-primary);
+  font-size: var(--scx-font-size-lg);
+  font-weight: var(--scx-font-weight-bold);
+  white-space: nowrap;
+}
+
+.scx-executive-growth-section {
+  margin-top: var(--scx-spacing-md);
+}
+
+.scx-executive-growth-section-title {
+  margin-bottom: var(--scx-spacing-sm);
   color: var(--scx-text-secondary);
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-semibold);
   text-transform: uppercase;
-}
-
-.scx-executive-growth-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--scx-spacing-xs) var(--scx-spacing-sm);
-  align-items: center;
+  letter-spacing: 0.25px;
 }
 
 .scx-executive-growth-names {
@@ -223,8 +265,33 @@
   gap: var(--scx-spacing-xs);
 }
 
-.scx-executive-growth-chip {
+.scx-executive-growth-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   max-width: 100%;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-light);
+}
+
+.scx-executive-growth-person-name {
+  color: var(--scx-text-primary);
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+.scx-executive-growth-person-role {
+  color: var(--scx-text-muted);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.scx-executive-growth-empty {
+  margin-top: 0;
 }
 
 .scx-executive-refresh-row {

@@ -136,6 +136,7 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 - Keep sidebar panels narrow (max `350px`) — they overlay the game UI.
 - Use `var(--scx-border-light)` etc. as the **full border shorthand** (`border:` or `border-top:`) — never as a color inside another shorthand like `2px solid var(--scx-border-light)`.
 - Prefer semantic utility classes (`.scx-text-muted`, `.scx-text-xs`, `.scx-text-sm`) over numeric/legacy ones. The legacy `.scx-font-8/9/10` and `.scx-color-999/333` classes have been retired.
+- Clean-up unused CSS classes and tokens as you work on related features. If you see a class in the CSS that isn't used in any JS or HTML, delete it. If you see a token that's not used anywhere, delete it.
 
 ## What to never do
 

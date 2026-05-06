@@ -141,7 +141,7 @@ export default {
   productionAfterUpgrade: "Production après mise à niveau",
   productionIncreasePercent: "Augmentation de production",
   qualityOptional: "Qualité (Optionnel):",
-  navigateToExecutives: "Accédez à votre page des cadres pour plus de détails",
+  navigateToExecutives: "Accédez à votre page des cadres pour davantage de détails",
   skillsBreakdown: "Répartition des compétences",
   skillsBreakdownDescription: "Compétences totales et leurs sources",
   extractedFeedback: "Retour d'information extrait",
@@ -159,6 +159,8 @@ export default {
   executiveOrganicGrowth: "Croissance organique",
   executiveOrganicGrowthTarget: "Cible",
   executiveOrganicGrowthCountdown: "Temps restant",
+  executiveOrganicGrowthCountdownHint:
+    "Les cadres peuvent gagner des compétences avec le temps même sans formation. Les cadres occupant les postes principaux ont plus de chances d'obtenir les compétences correspondantes, et le tirage quotidien de croissance organique n'est pas garanti. Il a lieu à 14:00 UTC selon le temps passé dans ce poste.",
   executiveOrganicGrowthEligible: "Cadres éligibles",
   executiveOrganicGrowthNoneEligible: "Aucun cadre n'est éligible pour le prochain tirage",
   cooTrainingWarning: "Le COO est en formation — la marge bénéficiaire de vente au détail peut être réduite",

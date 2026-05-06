@@ -8,6 +8,7 @@ export const ROLE_POSITION_MAP = { coo: "o", cfo: "f", cmo: "m", cto: "t" };
 const POSITION_ROLE_MAP = { o: "coo", f: "cfo", m: "cmo", t: "cto" };
 
 const TRAINING_CODE_TO_SKILL_KEY = { o: "mgmt", f: "acct", m: "comm", t: "tech" };
+const EXECUTIVE_ROLE_KEYS = ["coo", "cfo", "cmo", "cto"];
 
 export async function loadExecutivesOnce({ force = false } = {}) {
   if (STATE.executives.loading) return;
@@ -131,6 +132,20 @@ export function apiSkillsToInternal(apiSkills) {
     comm: apiSkills?.cmo ?? 0,
     tech: apiSkills?.cto ?? 0,
   };
+}
+
+export function getExecutivePrimaryRoleKeys(apiSkills) {
+  const scores = EXECUTIVE_ROLE_KEYS.map((roleKey) => ({
+    roleKey,
+    value: Number(apiSkills?.[roleKey] ?? 0),
+  }));
+  const maxValue = scores.reduce((max, { value }) => (value > max ? value : max), 0);
+
+  if (!Number.isFinite(maxValue) || maxValue <= 0) {
+    return [];
+  }
+
+  return scores.filter(({ value }) => value === maxValue).map(({ roleKey }) => roleKey);
 }
 
 function buildExecutiveContext(executive, detail, pageKind) {

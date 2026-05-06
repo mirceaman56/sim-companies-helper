@@ -139,7 +139,7 @@ export default {
   productionAfterUpgrade: "Yükseltmeden sonra üretim",
   productionIncreasePercent: "Üretim artışı",
   qualityOptional: "Kalite (İsteğe Bağlı):",
-  navigateToExecutives: "Ayrıntılar için yöneticiler sayfanıza gidin",
+  navigateToExecutives: "Daha fazla ayrıntı için yöneticiler sayfanıza gidin",
   skillsBreakdown: "Beceri Dökümü",
   skillsBreakdownDescription: "Toplam beceriler ve kaynakları",
   extractedFeedback: "Çıkarılan Geri Bildirim",
@@ -157,6 +157,8 @@ export default {
   executiveOrganicGrowth: "Organik gelişim",
   executiveOrganicGrowthTarget: "Hedef",
   executiveOrganicGrowthCountdown: "Kalan süre",
+  executiveOrganicGrowthCountdownHint:
+    "Yöneticiler eğitim almadan da zaman içinde beceri kazanabilir. Ana rollerdeki yöneticilerin eşleşen becerileri kazanma şansı daha yüksektir ve günlük organik gelişim atışı garanti değildir. Bu atış 14:00 UTC'de yapılır ve yöneticinin o rolde ne kadar süredir bulunduğuna bağlıdır.",
   executiveOrganicGrowthEligible: "Uygun yöneticiler",
   executiveOrganicGrowthNoneEligible: "Bir sonraki çekiliş için uygun yönetici yok",
   cooTrainingWarning: "COO eğitimde — perakende kâr marjı azalabilir",
