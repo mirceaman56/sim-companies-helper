@@ -1,6 +1,8 @@
 import { t } from "./i18n.js";
 import { formatMoney, COPY_BUTTON_SVG, wireCopyButton } from "./utils.js";
 import { storage } from "./data/storage.js";
+import { loadAuthDataOnce, getRealmId } from "./auth.js";
+import { fetchMarketPrice } from "./market.js";
 import { observeDocumentBody } from "./page/page_utils.js";
 import {
   areUpgradePricesPopulated,
@@ -22,6 +24,16 @@ const MAX_MULTIPLIER = 15;
 
 let discountPct = 0;
 let multiplier = 1;
+let upgradeResourceState = createEmptyUpgradeResourceState();
+
+function createEmptyUpgradeResourceState() {
+  return {
+    signature: null,
+    resources: [],
+    priceCache: new Map(),
+    hydratePromise: null,
+  };
+}
 
 export function initUpgradeBuyMessage() {
   void hydrateSettings();
@@ -92,6 +104,7 @@ async function hydrateSettings() {
 
 function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
+  upgradeResourceState = createEmptyUpgradeResourceState();
 }
 
 function allItemsNeeded(resources, mult) {
@@ -110,10 +123,15 @@ function buildBuyMessage(resources, mult, discount) {
 
       if (neededToBuy === 0) return null;
 
+      const recipeTag = `:re-${recipeId}:`;
+
+      if (!Number.isFinite(price) || price <= 0) {
+        return `${neededToBuy} ${recipeTag}`;
+      }
+
       const discountedPrice = price * (1 - discount / 100);
       const rounded = Math.round(discountedPrice * 10 ** decimals) / 10 ** decimals;
       const formatted = formatMoney(rounded, { decimals, prefix: true });
-      const recipeTag = `:re-${recipeId}:`;
       return `${neededToBuy} ${recipeTag} @ ${formatted}`;
     })
     .filter((part) => part !== null);
@@ -140,13 +158,111 @@ function createMultiplierOptions() {
   }).join("");
 }
 
+function createResourceSignature(resources) {
+  return resources
+    .map(
+      ({ recipeId, requiredQty, warehouse, price }) =>
+        `${recipeId}:${requiredQty}:${warehouse}:${price ?? "null"}`,
+    )
+    .join("|");
+}
+
+function applyCachedPrices(resources, priceCache) {
+  return resources.map((resource) => {
+    if (Number.isFinite(resource.price) && resource.price > 0) {
+      return resource;
+    }
+
+    const cachedPrice = priceCache.get(resource.recipeId);
+    if (!Number.isFinite(cachedPrice) || cachedPrice <= 0) {
+      return resource;
+    }
+
+    return {
+      ...resource,
+      price: cachedPrice,
+    };
+  });
+}
+
+async function resolveUpgradeResourcePrices(resources, realmId, priceCache, fetchPrice = fetchMarketPrice) {
+  const missingPriceResources = resources.filter(
+    ({ recipeId, price }) => (!Number.isFinite(price) || price <= 0) && !priceCache.has(recipeId),
+  );
+
+  await Promise.all(
+    missingPriceResources.map(async ({ recipeId }) => {
+      const fetchedPrice = await fetchPrice(realmId, recipeId, 0);
+      if (Number.isFinite(fetchedPrice) && fetchedPrice > 0) {
+        priceCache.set(recipeId, fetchedPrice);
+        return;
+      }
+
+      priceCache.set(recipeId, null);
+    }),
+  );
+
+  return applyCachedPrices(resources, priceCache);
+}
+
+function syncUpgradeResourceState(modal) {
+  const parsedResources = parseUpgradeResourceRows(modal);
+  const signature = createResourceSignature(parsedResources);
+
+  if (upgradeResourceState.signature !== signature) {
+    upgradeResourceState = {
+      signature,
+      resources: parsedResources,
+      priceCache: new Map(),
+      hydratePromise: null,
+    };
+  } else {
+    upgradeResourceState.resources = parsedResources;
+  }
+
+  return applyCachedPrices(upgradeResourceState.resources, upgradeResourceState.priceCache);
+}
+
+async function ensureUpgradeResourcePrices(modal) {
+  const resources = syncUpgradeResourceState(modal);
+  const hasMissingPrices = resources.some(({ price }) => !Number.isFinite(price) || price <= 0);
+  if (!hasMissingPrices) return resources;
+
+  if (upgradeResourceState.hydratePromise) {
+    return upgradeResourceState.hydratePromise;
+  }
+
+  const stateSignature = upgradeResourceState.signature;
+  upgradeResourceState.hydratePromise = (async () => {
+    await loadAuthDataOnce();
+    const realmId = getRealmId();
+    const enrichedResources = await resolveUpgradeResourcePrices(
+      upgradeResourceState.resources,
+      realmId,
+      upgradeResourceState.priceCache,
+    );
+
+    if (upgradeResourceState.signature === stateSignature) {
+      upgradeResourceState.resources = enrichedResources;
+    }
+
+    return enrichedResources;
+  })().finally(() => {
+    if (upgradeResourceState.signature === stateSignature) {
+      upgradeResourceState.hydratePromise = null;
+    }
+  });
+
+  return upgradeResourceState.hydratePromise;
+}
+
 function injectIfNeeded() {
   if (document.getElementById(CONTAINER_ID)) return;
 
   const modal = findUpgradeModal(document);
   if (!modal) return;
 
-  const resources = parseUpgradeResourceRows(modal);
+  const resources = syncUpgradeResourceState(modal);
   if (resources.length === 0) return;
 
   const injectionTarget = getUpgradeInjectionTarget(modal);
@@ -232,19 +348,34 @@ function injectIfNeeded() {
     });
     updateBuyMessage();
   });
+
+  void refreshUpgradeResourcePrices();
 }
 
 function updateBuyMessage() {
   const modal = findUpgradeModal(document);
   if (!modal) return;
 
-  const resources = parseUpgradeResourceRows(modal);
+  const resources = syncUpgradeResourceState(modal);
   if (resources.length === 0) return;
 
   const msgEl = document.getElementById(MESSAGE_ID);
   if (msgEl) {
     msgEl.textContent = buildBuyMessage(resources, multiplier, discountPct);
   }
+
+  void refreshUpgradeResourcePrices();
 }
 
-export const _testUtils = { buildBuyMessage };
+async function refreshUpgradeResourcePrices() {
+  const modal = findUpgradeModal(document);
+  if (!modal) return;
+
+  const resources = await ensureUpgradeResourcePrices(modal);
+  const msgEl = document.getElementById(MESSAGE_ID);
+  if (msgEl) {
+    msgEl.textContent = buildBuyMessage(resources, multiplier, discountPct);
+  }
+}
+
+export const _testUtils = { buildBuyMessage, resolveUpgradeResourcePrices };
