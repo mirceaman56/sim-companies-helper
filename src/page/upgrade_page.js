@@ -102,10 +102,14 @@ export function parseUpgradeResourceRows(modal) {
 
     const exchangeText = cells[cells.length - 1]?.textContent?.trim() || "";
     const exchangeMatch = exchangeText.match(/([\d.,]+)\s*@\s*\$([\d.,]+)/);
-    if (!exchangeMatch) continue;
+    let price = null;
 
-    const price = parseLocaleNumber(exchangeMatch[2]);
-    if (!Number.isFinite(price) || price <= 0) continue;
+    if (exchangeMatch) {
+      const parsedPrice = parseLocaleNumber(exchangeMatch[2]);
+      if (Number.isFinite(parsedPrice) && parsedPrice > 0) {
+        price = parsedPrice;
+      }
+    }
 
     resources.push({
       recipeId,

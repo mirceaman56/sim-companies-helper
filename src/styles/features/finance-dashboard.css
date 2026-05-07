@@ -74,8 +74,7 @@
 
 .scx-fin-refresh-btn,
 .scx-fin-mode-btn,
-.scx-fin-clear-btn,
-.scx-fin-more-btn {
+.scx-fin-clear-btn {
   padding: 4px 8px;
   font-size: var(--scx-font-size-sm);
   border: var(--scx-border-light);

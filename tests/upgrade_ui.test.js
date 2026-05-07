@@ -5,6 +5,15 @@ vi.mock("../src/i18n.js", () => ({
   t: (key) => key,
 }));
 
+vi.mock("../src/auth.js", () => ({
+  loadAuthDataOnce: vi.fn(() => Promise.resolve()),
+  getRealmId: vi.fn(() => 0),
+}));
+
+vi.mock("../src/market.js", () => ({
+  fetchMarketPrice: vi.fn(() => Promise.resolve(10)),
+}));
+
 // Stub localStorage so the module loads without errors
 global.localStorage = {
   getItem: vi.fn(() => null),
@@ -18,7 +27,7 @@ global.MutationObserver = vi.fn(() => ({
 }));
 
 import { _testUtils } from "../src/upgrade_ui.js";
-const { buildBuyMessage } = _testUtils;
+const { buildBuyMessage, resolveUpgradeResourcePrices } = _testUtils;
 
 // ---------------------------------------------------------------------------
 // Base resources mirroring the upgrade building modal (no warehouse stock)
@@ -112,5 +121,54 @@ describe("buildBuyMessage", () => {
     },
   ])("$name", ({ resources, multiplier, expected }) => {
     expect(buildBuyMessage(resources, multiplier, 0)).toBe(expected);
+  });
+
+  it("keeps missing rows in message when price is unavailable", () => {
+    expect(
+      buildBuyMessage(
+        [
+          { recipeId: 108, requiredQty: 560, warehouse: 0, price: null, decimals: 1 },
+          { recipeId: 111, requiredQty: 35, warehouse: 0, price: null, decimals: 0 },
+        ],
+        2,
+        0,
+      ),
+    ).toBe("Buying\n1120 :re-108:\n70 :re-111:");
+  });
+});
+
+describe("resolveUpgradeResourcePrices", () => {
+  it("fetches only rows with missing prices", async () => {
+    const fetchPrice = vi.fn((realmId, recipeId) => Promise.resolve(recipeId === 108 ? 12.5 : 3000));
+    const priceCache = new Map();
+    const resources = [
+      { recipeId: 101, requiredQty: 280, warehouse: 0, price: 170, decimals: 0 },
+      { recipeId: 108, requiredQty: 1120, warehouse: 1120, price: null, decimals: 1 },
+      { recipeId: 111, requiredQty: 70, warehouse: 70, price: null, decimals: 0 },
+    ];
+
+    const enriched = await resolveUpgradeResourcePrices(resources, 0, priceCache, fetchPrice);
+
+    expect(fetchPrice).toHaveBeenCalledTimes(2);
+    expect(fetchPrice).toHaveBeenNthCalledWith(1, 0, 108, 0);
+    expect(fetchPrice).toHaveBeenNthCalledWith(2, 0, 111, 0);
+    expect(enriched).toEqual([
+      { recipeId: 101, requiredQty: 280, warehouse: 0, price: 170, decimals: 0 },
+      { recipeId: 108, requiredQty: 1120, warehouse: 1120, price: 12.5, decimals: 1 },
+      { recipeId: 111, requiredQty: 70, warehouse: 70, price: 3000, decimals: 0 },
+    ]);
+  });
+
+  it("reuses cached miss so failed fetch does not retry in same modal state", async () => {
+    const fetchPrice = vi.fn(() => Promise.resolve(null));
+    const priceCache = new Map();
+    const resources = [{ recipeId: 111, requiredQty: 70, warehouse: 0, price: null, decimals: 0 }];
+
+    const first = await resolveUpgradeResourcePrices(resources, 0, priceCache, fetchPrice);
+    const second = await resolveUpgradeResourcePrices(resources, 0, priceCache, fetchPrice);
+
+    expect(fetchPrice).toHaveBeenCalledTimes(1);
+    expect(first).toEqual(resources);
+    expect(second).toEqual(resources);
   });
 });

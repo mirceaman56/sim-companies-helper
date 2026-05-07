@@ -77,13 +77,6 @@
   font-size: var(--scx-font-size-sm);
   padding: 4px 10px;
 }
-.scx-btn-lg {
-  font-size: var(--scx-font-size-md);
-  padding: 10px 20px;
-}
-.scx-btn-full {
-  width: 100%;
-}
 
 /* Primary (brand green) */
 .scx-btn-primary,
@@ -110,17 +103,6 @@
 .scx-btn-secondary:hover:not(:disabled) {
   background: var(--scx-bg-muted);
   border-color: var(--scx-border-dark);
-}
-
-/* Ghost */
-.scx-btn-ghost {
-  background: transparent;
-  color: var(--scx-brand);
-  border-color: var(--scx-brand);
-}
-
-.scx-btn-ghost:hover:not(:disabled) {
-  background: var(--scx-brand-light);
 }
 
 /* Error / stop */

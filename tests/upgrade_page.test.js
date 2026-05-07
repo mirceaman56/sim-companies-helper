@@ -52,6 +52,19 @@ describe("upgrade_page adapter", () => {
     ]);
   });
 
+  it("keeps rows when exchange column is zero and marks missing prices as null", () => {
+    document.body.innerHTML = loadFixture("zero-exchange-modal.html");
+    const modal = findUpgradeModal(document);
+
+    expect(areUpgradePricesPopulated(modal)).toBe(true);
+    expect(parseUpgradeResourceRows(modal)).toEqual([
+      { recipeId: 101, requiredQty: 280, warehouse: 0, price: 170, decimals: 0 },
+      { recipeId: 102, requiredQty: 3850, warehouse: 0, price: 2.1, decimals: 1 },
+      { recipeId: 108, requiredQty: 1120, warehouse: 1120, price: null, decimals: 1 },
+      { recipeId: 111, requiredQty: 70, warehouse: 70, price: null, decimals: 0 },
+    ]);
+  });
+
   it("returns insertion target and table anchor inside modal body", () => {
     document.body.innerHTML = loadFixture("ready-modal.html");
     const modal = findUpgradeModal(document);

@@ -43,6 +43,7 @@ global.chrome = {
 };
 
 import { _testUtils } from "../src/market_ui.js";
+import { storageKeyForRealm } from "../src/market_alerts_storage.js";
 
 function makeContainer() {
   const el = document.createElement("div");
@@ -223,7 +224,7 @@ describe("alert persistence", () => {
   });
 
   it("loadAlerts restores alerts from storage", async () => {
-    const key = _testUtils.storageKey();
+    const key = storageKeyForRealm(0);
     storageStore[key] = {
       alerts: [
         {
@@ -250,7 +251,7 @@ describe("alert persistence", () => {
   });
 
   it("loadAlerts recovers nextAlertId from max alert id if missing", async () => {
-    const key = _testUtils.storageKey();
+    const key = storageKeyForRealm(0);
     storageStore[key] = {
       alerts: [
         {

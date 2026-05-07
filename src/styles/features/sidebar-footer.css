@@ -72,10 +72,3 @@
 .scx-sidebar-footer-support-kofi span {
   color: var(--scx-color-brand-kofi);
 }
-
-.scx-kofi-badge {
-  height: 28px;
-  width: auto;
-  display: block;
-  border: 0;
-}

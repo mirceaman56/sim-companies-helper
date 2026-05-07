@@ -72,16 +72,6 @@ export function updateXpWidget() {
   updateWidget();
 }
 
-/**
- * Find the level anchor in the navbar.
- * Looks for an <a> linking to the levels encyclopedia page.
- * @returns {Element|null}
- */
-function findLevelAnchor() {
-  const navContext = readXpNavbarContext(document);
-  return navContext?.levelAnchor || null;
-}
-
 function isVisible() {
   return _isVisible;
 }
@@ -233,7 +223,6 @@ function updateWidget() {
 }
 
 export const _testUtils = {
-  findLevelAnchor,
   isVisible,
   updateWidget,
   refreshBuildingsCache,

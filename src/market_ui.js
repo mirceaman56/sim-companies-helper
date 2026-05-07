@@ -52,10 +52,6 @@ const scheduleRenderAlertList = createRenderScheduler(() => {
   renderAlertListUI(alertsContainer);
 });
 
-function storageKey() {
-  return storageKeyForRealm(STATE.auth.realmId);
-}
-
 async function saveAlerts() {
   await saveAlertsSnapshot({ alerts, nextAlertId });
 }
@@ -349,5 +345,5 @@ export const _testUtils = {
   removeAlert,
   saveAlerts,
   loadAlerts,
-  storageKey,
+  storageKey: () => storageKeyForRealm(STATE.auth.realmId),
 };
