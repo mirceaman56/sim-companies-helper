@@ -55,10 +55,6 @@
   color: var(--scx-tone-warning-text);
 }
 
-.scx-text-neutral-strong {
-  color: var(--scx-tone-neutral-text);
-}
-
 .scx-text-muted {
   color: var(--scx-text-muted);
   font-size: var(--scx-font-size-xs);

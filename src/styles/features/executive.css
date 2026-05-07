@@ -103,12 +103,6 @@
   margin-bottom: 6px;
 }
 
-.scx-skill-breakdown-description {
-  font-size: 10px;
-  color: var(--scx-text-muted);
-  margin-bottom: 12px;
-}
-
 .scx-skill-breakdown-row {
   display: flex;
   justify-content: space-between;
