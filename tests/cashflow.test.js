@@ -188,7 +188,7 @@ describe("cashflow core metrics", () => {
   });
 
   it("rehydrates from the new realm cache and drops old realm transactions", () => {
-    const now = "2026-03-29T12:00:00.000Z";
+    const now = new Date().toISOString();
 
     STATE.auth.companyId = 900;
     STATE.auth.realmId = 0;

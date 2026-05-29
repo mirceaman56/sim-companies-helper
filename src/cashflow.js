@@ -177,6 +177,7 @@ function buildFinancePayload(finance, scope) {
 }
 
 function resetFinanceRuntime(finance) {
+  hydratedFinanceScopeKey = "";
   finance.datasets.transactions = [];
   finance.datasets.pastFinances = [];
   finance.datasets.outgoingContracts = [];
