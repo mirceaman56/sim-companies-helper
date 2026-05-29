@@ -115,3 +115,8 @@
 .scx-contract-profit-negative {
   color: var(--scx-color-error);
 }
+
+.scx-contract-profit-margin {
+  font-size: var(--scx-font-size-xs);
+  opacity: 0.8;
+}
