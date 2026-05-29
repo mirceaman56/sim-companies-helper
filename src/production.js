@@ -27,11 +27,13 @@ export function getRecipeByProductId(productId) {
  */
 export async function fetchMarketPrices(realmId, productIds) {
   const prices = new Map();
+  const STAGGER_MS = 200;
 
-  for (const productId of productIds) {
-    const price = await fetchMarketPrice(realmId, productId);
+  for (let i = 0; i < productIds.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, STAGGER_MS));
+    const price = await fetchMarketPrice(realmId, productIds[i]);
     if (Number.isFinite(price)) {
-      prices.set(productId, price);
+      prices.set(productIds[i], price);
     }
   }
 

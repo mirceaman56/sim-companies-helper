@@ -1,5 +1,6 @@
 const inflightByKey = new Map();
 const rateLimitByDomain = new Map();
+const rateLimitHitCount = new Map();
 
 /**
  * @typedef {Object} ApiRequestSpec
@@ -116,7 +117,10 @@ async function doRequest(domain, spec, attempt = 0) {
     });
 
     if (res.status === 429 && rateLimitCooldownMs > 0) {
-      rateLimitByDomain.set(domain, Date.now() + rateLimitCooldownMs);
+      const hits = (rateLimitHitCount.get(domain) || 0) + 1;
+      rateLimitHitCount.set(domain, hits);
+      const cooldown = hits <= 1 ? rateLimitCooldownMs / 2 : rateLimitCooldownMs;
+      rateLimitByDomain.set(domain, Date.now() + cooldown);
     }
 
     if (!res.ok) {
@@ -133,6 +137,7 @@ async function doRequest(domain, spec, attempt = 0) {
       });
     }
 
+    rateLimitHitCount.delete(domain);
     return parseResponse(res, responseType);
   } catch (error) {
     const isAbort = error?.name === "AbortError";
