@@ -219,6 +219,8 @@ async function calculateAndDisplayProfit() {
 
   const profit = revenue - totalSourcing - totalTransport;
   const profitToneClass = profit >= 0 ? "scx-contract-profit-positive" : "scx-contract-profit-negative";
+  const profitMarginPct = revenue > 0 ? (profit / revenue) * 100 : NaN;
+  const profitMarginStr = Number.isFinite(profitMarginPct) ? `${profitMarginPct.toFixed(2)}%` : "—";
 
   renderResult(
     resultDiv,
@@ -239,6 +241,10 @@ async function calculateAndDisplayProfit() {
     <div class="scx-contract-profit-row scx-contract-profit-total ${profitToneClass}">
       <span>${t("profit")}</span>
       <span class="scx-mono">${formatMoney(profit)}</span>
+    </div>
+    <div class="scx-contract-profit-row scx-contract-profit-margin ${profitToneClass}">
+      <span>${t("profitMargin")}</span>
+      <span class="scx-mono">${profitMarginStr}</span>
     </div>
     ${transportError ? renderStateBlock({ type: "error", message: transportError }) : ""}
   `,
