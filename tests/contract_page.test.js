@@ -56,6 +56,12 @@ describe("contract_page adapter", () => {
     expect(getSourcingCostPerUnit(document)).toBe(0.145);
   });
 
+  it("extracts sourcing unit cost from the current resource card markup", () => {
+    document.body.innerHTML = loadFixture("page-current.html");
+
+    expect(getSourcingCostPerUnit(document)).toBe(11.38);
+  });
+
   it("extracts total transport and ignores sourcing transport blocks", () => {
     document.body.innerHTML = loadFixture("page.html");
 
