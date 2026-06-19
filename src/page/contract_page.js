@@ -7,6 +7,24 @@ const MARKET_LINK_SELECTOR = 'a[href*="market/resource"]';
 const ENCYCLOPEDIA_LINK_SELECTOR = 'a[href*="encyclopedia"]';
 const TRANSPORT_IMAGE_SELECTOR = 'img[src*="transport"]';
 
+function findNearestCurrencyContainer(element, root = document) {
+  const boundary = root?.body || root;
+
+  for (let ancestor = element?.parentElement || null; ancestor; ancestor = ancestor.parentElement) {
+    if (ancestor.tagName === "DIV") {
+      const hasCurrencySpan = Array.from(ancestor.querySelectorAll("span")).some((span) =>
+        span.textContent.trim().startsWith("$"),
+      );
+
+      if (hasCurrencySpan) return ancestor;
+    }
+
+    if (ancestor === boundary) break;
+  }
+
+  return null;
+}
+
 export function findContractPriceInput(root = document) {
   return root?.querySelector?.(PRICE_INPUT_SELECTOR) || null;
 }
@@ -78,7 +96,7 @@ export function getSourcingCostPerUnit(root = document) {
   const encyclopediaLinks = root?.querySelectorAll?.(ENCYCLOPEDIA_LINK_SELECTOR) || [];
 
   for (const link of encyclopediaLinks) {
-    const container = link.closest("div");
+    const container = findNearestCurrencyContainer(link, root);
     if (!container) continue;
 
     const spans = container.querySelectorAll("span");
