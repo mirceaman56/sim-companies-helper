@@ -297,6 +297,35 @@ describe("warehouse sales message builder", () => {
     expect(document.querySelector(".scx-warehouse-sales-empty").textContent).toBe("warehouseSalesChooseProducts");
   });
 
+  it("creates the sales product toggle for a localized (pt-BR) product name via the icon slug", async () => {
+    window.history.pushState({}, "", "/headquarters/warehouse/");
+    document.body.innerHTML = `
+      <div role="list">
+        <div role="link" aria-label="Barras de ouro, quantidade 8, preço de custo médio $5.607,39">
+          <img src="/static/images/resources/golden-bars.4a6b04c0890f.png" alt="">
+          <b>Barras de ouro</b>
+        </div>
+      </div>
+    `;
+    _testUtils.setSalesBuilderSettingsForTest({
+      marginPct: 5,
+      productIds: [],
+      selectedKeys: [],
+      manualPrices: {},
+    });
+
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
+
+    await _testUtils.injectMarketButtons();
+
+    const toggle = document.querySelector("[data-scx-sales-product-toggle]");
+    expect(toggle).not.toBeNull();
+    expect(toggle.getAttribute("data-product-id")).toBe("69");
+
+    const marketButton = document.querySelector("[data-scx-market-btn]");
+    expect(marketButton).not.toBeNull();
+  });
+
   it("does not render the sales builder on warehouse product subpages", async () => {
     window.history.pushState({}, "", "/headquarters/warehouse/oranges");
     document.body.innerHTML = `<div><div role="list"></div></div>`;

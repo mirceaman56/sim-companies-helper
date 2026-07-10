@@ -44,6 +44,23 @@ describe("warehouse_page adapter", () => {
     expect(items.length).toBe(2);
   });
 
+  it("extracts warehouse items from a localized (pt-BR) aria-label and reads the icon slug", () => {
+    document.body.innerHTML = loadFixture("cards-i18n.html");
+
+    const items = extractWarehousePageItems(document);
+
+    expect(items).toMatchObject([
+      {
+        name: "Barras de ouro",
+        iconSlug: "golden-bars",
+        quantity: 8,
+        sourcingCost: 5607.39,
+        quality: 0,
+      },
+    ]);
+    expect(items.length).toBe(1);
+  });
+
   it("returns an empty array when no parsable inventory cards exist", () => {
     document.body.innerHTML = loadFixture("empty.html");
 
