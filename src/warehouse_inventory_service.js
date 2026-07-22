@@ -14,19 +14,28 @@ let inventoryFetchedAt = 0;
 let inventoryFetchPromise = null;
 const inventoryLogTimestamps = new Map();
 
+function slugify(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function buildRecipeMaps() {
   const kindToRecipe = new Map();
   const nameToKind = new Map();
+  const slugToKind = new Map();
 
   for (const recipe of recipes) {
     kindToRecipe.set(recipe.id, recipe);
     nameToKind.set(recipe.name, recipe.id);
+    slugToKind.set(slugify(recipe.name), recipe.id);
   }
 
-  return { kindToRecipe, nameToKind };
+  return { kindToRecipe, nameToKind, slugToKind };
 }
 
-const { kindToRecipe, nameToKind } = buildRecipeMaps();
+const { kindToRecipe, nameToKind, slugToKind } = buildRecipeMaps();
 
 function getProductNameByKind(kind) {
   return kindToRecipe.get(kind)?.name || null;
@@ -34,6 +43,15 @@ function getProductNameByKind(kind) {
 
 export function getWarehouseProductIdByName(name) {
   return nameToKind.get(name) || null;
+}
+
+export function getWarehouseProductIdBySlug(slug) {
+  if (!slug) return null;
+  return slugToKind.get(slug) || null;
+}
+
+export function resolveWarehouseProductId(item) {
+  return getWarehouseProductIdBySlug(item?.iconSlug) || getWarehouseProductIdByName(item?.name) || null;
 }
 
 function shouldRetryInventoryStatus(status) {
@@ -236,7 +254,7 @@ export async function fetchWarehouseStockRows(fallbackItems = []) {
   if (cachedStockRows.length > 0) {
     const fallbackCostByKindQuality = new Map();
     for (const item of Array.isArray(fallbackItems) ? fallbackItems : []) {
-      const kind = getWarehouseProductIdByName(item.name);
+      const kind = resolveWarehouseProductId(item);
       const quality = Number(item.weightedQuality ?? item.quality ?? 0);
       if (kind) {
         fallbackCostByKindQuality.set(`${kind}:${quality}`, Number(item.sourcingCost || 0));
@@ -254,7 +272,7 @@ export async function fetchWarehouseStockRows(fallbackItems = []) {
 
   return (Array.isArray(fallbackItems) ? fallbackItems : [])
     .map((item) => {
-      const kind = getWarehouseProductIdByName(item.name);
+      const kind = resolveWarehouseProductId(item);
       const amount = Number(item.totalAmount || item.quantity || 0);
       const quality = Number(item.weightedQuality ?? item.quality ?? 0);
       const unitCost = Number(item.sourcingCost || 0);

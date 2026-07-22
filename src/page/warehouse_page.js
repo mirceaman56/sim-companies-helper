@@ -1,5 +1,13 @@
-const INVENTORY_CARD_SELECTOR = '[role="link"][aria-label*="quantity"][aria-label*="cost"]';
+import { parseLocaleNumber } from "../utils.js";
+
+const INVENTORY_CARD_SELECTOR = '[role="list"] [role="link"][aria-label]';
 const INVENTORY_CONTAINER_SELECTOR = '[role="list"]';
+
+function extractIconSlug(cardElement) {
+  const src = cardElement.querySelector("img[src]")?.getAttribute("src") || "";
+  const fileName = src.split("/").pop() || "";
+  return fileName.split(".")[0] || null;
+}
 
 export function isWarehousePage(pathname = window.location.pathname) {
   return String(pathname || "").includes("/warehouse/");
@@ -23,21 +31,31 @@ export function extractWarehousePageItems(root = document) {
 
   for (const card of cards) {
     const label = card.getAttribute("aria-label") || "";
-    const nameMatch = label.match(/^([^,]+),/);
-    const quantityMatch = label.match(/quantity\s+([0-9,.]+)/i);
-    const costMatch = label.match(/\$([0-9,.]+)(?:\s|$)/);
-    const qualityMatch = label.match(/quality\s+([0-9]+)/i);
+    const segments = label
+      .split(/,\s+/)
+      .map((segment) => segment.trim())
+      .filter(Boolean);
 
-    if (!nameMatch || !costMatch) continue;
+    if (segments.length < 2) continue;
 
-    const name = nameMatch[1].trim();
-    const quantity = quantityMatch ? Number.parseFloat(quantityMatch[1].replace(/,/g, "")) : 0;
-    const sourcingCost = Number.parseFloat(costMatch[1].replace(/,/g, ""));
-    const quality = qualityMatch ? Number.parseInt(qualityMatch[1], 10) : 0;
+    const costSegmentIndex = segments.findIndex((segment) => segment.includes("$"));
+    if (costSegmentIndex < 1) continue;
+
+    const name = segments[0];
+    const costSegment = segments[costSegmentIndex];
+    const middleSegments = segments.slice(1, costSegmentIndex);
+
+    const quantitySegment = middleSegments.length ? middleSegments[middleSegments.length - 1] : null;
+    const qualitySegment = middleSegments.length > 1 ? middleSegments[0] : null;
+
+    const quantity = quantitySegment ? parseLocaleNumber(quantitySegment) : 0;
+    const sourcingCost = parseLocaleNumber(costSegment);
+    const quality = qualitySegment ? parseLocaleNumber(qualitySegment) : 0;
 
     items.push({
       element: card,
       name,
+      iconSlug: extractIconSlug(card),
       quantity: Number.isFinite(quantity) ? quantity : 0,
       sourcingCost: Number.isFinite(sourcingCost) ? sourcingCost : 0,
       quality: Number.isFinite(quality) ? quality : 0,
