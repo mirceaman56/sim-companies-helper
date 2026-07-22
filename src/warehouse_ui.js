@@ -19,7 +19,7 @@ import {
 } from "./page/warehouse_page.js";
 import {
   fetchWarehouseInventoryItems,
-  getWarehouseProductIdByName,
+  resolveWarehouseProductId,
   resetWarehouseInventoryCache,
   fetchWarehouseStockRows,
   WAREHOUSE_INVENTORY_CACHE_TTL_MS,
@@ -201,8 +201,8 @@ function scheduleReset(button, originalText, delayMs) {
 }
 
 async function handleMarketButtonClick(button, item) {
-  const { name, sourcingCost, weightedQuality } = item;
-  const productId = getWarehouseProductIdByName(name);
+  const { sourcingCost, weightedQuality } = item;
+  const productId = resolveWarehouseProductId(item);
 
   if (!productId) {
     setButtonDisplayState(button, {
@@ -249,7 +249,7 @@ async function handleMarketButtonClick(button, item) {
 
     scheduleReset(button, originalText, 10000);
   } catch (error) {
-    console.debug(`[WarehouseUI] Failed to fetch price for ${name}:`, error);
+    console.debug(`[WarehouseUI] Failed to fetch price for ${item.name}:`, error);
     setButtonDisplayState(button, {
       state: BUTTON_STATE_ERROR,
       text: t("genericError"),
@@ -517,7 +517,7 @@ function getOrCreateSalesProductToggle(cardElement, item) {
   const wrapper = cardElement.closest("[data-scx-market-wrapper]");
   if (!wrapper) return null;
 
-  const productId = getWarehouseProductIdByName(item.name);
+  const productId = resolveWarehouseProductId(item);
   if (!productId) return null;
 
   let toggle = wrapper.querySelector("[data-scx-sales-product-toggle]");
@@ -570,13 +570,13 @@ async function injectMarketButtons() {
   const apiItems = await fetchWarehouseInventoryItems();
   suppressWarehouseObserver(500);
 
-  const apiItemsByName = new Map();
+  const apiItemsByKind = new Map();
   for (const apiItem of apiItems) {
-    apiItemsByName.set(apiItem.name, apiItem);
+    apiItemsByKind.set(apiItem.kind, apiItem);
   }
 
   for (const domItem of domItems) {
-    const apiItem = apiItemsByName.get(domItem.name);
+    const apiItem = apiItemsByKind.get(resolveWarehouseProductId(domItem));
     if (apiItem) {
       domItem.weightedQuality = apiItem.weightedQuality;
       domItem.totalAmount = apiItem.totalAmount;
@@ -712,6 +712,7 @@ export const _testUtils = {
   fetchStockRows: fetchWarehouseStockRows,
   INVENTORY_CACHE_TTL_MS: WAREHOUSE_INVENTORY_CACHE_TTL_MS,
   renderSalesBuilder,
+  injectMarketButtons,
   resetInventoryCache() {
     resetWarehouseInventoryCache();
     salesBuilderRowsCache = [];
