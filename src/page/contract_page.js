@@ -6,6 +6,7 @@ const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
 const MARKET_LINK_SELECTOR = 'a[href*="market/resource"]';
 const ENCYCLOPEDIA_LINK_SELECTOR = 'a[href*="encyclopedia"]';
 const TRANSPORT_IMAGE_SELECTOR = 'img[src*="transport"]';
+const RECIPIENT_LOOKUP_SELECTOR = 'input[name="recipientLookup"]';
 
 function findNearestCurrencyContainer(element, root = document) {
   const boundary = root?.body || root;
@@ -35,6 +36,46 @@ export function findContractAmountInput(root = document) {
 
 export function hasContractPageElements(root = document) {
   return hasAllSelectors(root, [PRICE_INPUT_SELECTOR, MARKET_LINK_SELECTOR]);
+}
+
+export function getContractProductId(root = document) {
+  const link = root?.querySelector?.(MARKET_LINK_SELECTOR);
+  const href = link?.getAttribute("href") || "";
+  const match = href.match(/\/resource\/(\d+)\//);
+  return match ? Number(match[1]) : null;
+}
+
+/**
+ * The beneficiary section is always the first <h3>'s next sibling inside the
+ * contract form. This is a structural assumption (not text-based, since the
+ * game's own UI is localized independently of this extension) that would
+ * break if the game reorders the form's sections.
+ */
+function findBeneficiarySection(root = document) {
+  const form = findContractPriceInput(root)?.closest("form");
+  return form?.querySelector("h3")?.nextElementSibling || null;
+}
+
+export function hasSelectedBeneficiary(root = document) {
+  const section = findBeneficiarySection(root);
+  if (!section) return false;
+  if (section.querySelector(RECIPIENT_LOOKUP_SELECTOR)) return false;
+  return Boolean(section.querySelector("b"));
+}
+
+export function getSelectedCompanyName(root = document) {
+  if (!hasSelectedBeneficiary(root)) return null;
+  const name = findBeneficiarySection(root)?.querySelector("b")?.textContent?.trim();
+  return name || null;
+}
+
+/**
+ * Same rounding SimCompanies uses for contract prices (3 decimal places).
+ */
+export function computeDiscountedPrice(lowestPrice, discountPct) {
+  if (!Number.isFinite(lowestPrice) || lowestPrice <= 0) return null;
+  const pct = Number.isFinite(discountPct) ? discountPct : 0;
+  return Math.floor(lowestPrice * (1 - pct / 100) * 1000) / 1000;
 }
 
 export function parseContractPrice(raw) {

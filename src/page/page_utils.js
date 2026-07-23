@@ -147,6 +147,26 @@ export function waitForStructuralValue(input) {
   });
 }
 
+/**
+ * Set a value on a React-controlled input. React overrides the native value
+ * setter, so we bypass it via the native HTMLInputElement setter and dispatch
+ * input/change events so React picks up the change.
+ * @param {HTMLInputElement} input
+ * @param {string} value
+ */
+export function setReactControlledValue(input, value) {
+  const nativeSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+
+  if (nativeSetter) {
+    nativeSetter.call(input, value);
+  } else {
+    input.value = value;
+  }
+
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
 export const _testUtils = {
   DEFAULT_OBSERVER_OPTIONS,
 };

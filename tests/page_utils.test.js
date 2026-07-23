@@ -7,6 +7,7 @@ import {
   hasAnySelector,
   observeDocumentBody,
   observeMutations,
+  setReactControlledValue,
   waitForStructuralValue,
 } from "../src/page/page_utils.js";
 
@@ -123,5 +124,19 @@ describe("page_utils", () => {
     await expect(waitPromise).resolves.toBe(0);
 
     vi.useRealTimers();
+  });
+
+  it("setReactControlledValue updates the value and dispatches input/change events", () => {
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+
+    const events = [];
+    input.addEventListener("input", () => events.push("input"));
+    input.addEventListener("change", () => events.push("change"));
+
+    setReactControlledValue(input, "42");
+
+    expect(input.value).toBe("42");
+    expect(events).toEqual(["input", "change"]);
   });
 });
