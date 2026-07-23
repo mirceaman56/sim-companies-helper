@@ -5,8 +5,20 @@ vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
 vi.mock("../src/state.js", () => ({ SIDEBAR_ID: "scx-sidebar" }));
 vi.mock("../src/market.js", () => ({ fetchMarketPrice: vi.fn() }));
 vi.mock("../src/auth.js", () => ({ getRealmId: vi.fn(() => 1) }));
+vi.mock("../src/contract_rules_ui.js", () => ({
+  initContractRulesState: vi.fn(async () => {}),
+  mountContractRulesPanel: vi.fn(),
+  refreshContractRulesPanel: vi.fn(),
+}));
+vi.mock("../src/data/storage.js", () => ({
+  storage: {
+    migrate: vi.fn(async () => ({ data: null })),
+    set: vi.fn(async () => true),
+  },
+}));
 
-import { _testUtils } from "../src/contract_ui.js";
+import { _testUtils, initContractHelper } from "../src/contract_ui.js";
+import { refreshContractRulesPanel } from "../src/contract_rules_ui.js";
 
 const { parsePrice, getAmountValue, getPriceValue } = _testUtils;
 
@@ -39,5 +51,31 @@ describe("contract_ui parsing", () => {
     document.body.appendChild(input);
     expect(getPriceValue()).toBe(0.296);
     input.remove();
+  });
+});
+
+describe("contract_ui rules panel refresh", () => {
+  it("refreshes the rules panel when the amount input is typed into", () => {
+    // Typing changes the input's value property, which produces no DOM
+    // mutation — the MutationObserver never fires, so the panel needs its own
+    // input listener to notice the amount became valid.
+    document.body.innerHTML = `
+      <form>
+        <input name="price" value="" />
+        <input name="amount" value="" />
+        <a href="/market/resource/9/"></a>
+      </form>`;
+
+    initContractHelper();
+    refreshContractRulesPanel.mockClear();
+
+    const amountInput = document.querySelector('input[name="amount"]');
+    amountInput.value = "5000";
+    amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(refreshContractRulesPanel).toHaveBeenCalled();
+
+    // Stop the observer so it does not fire against a torn-down jsdom document.
+    _testUtils.stopObserving();
   });
 });

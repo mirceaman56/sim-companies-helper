@@ -20,6 +20,7 @@ import {
   getSourcingCostPerUnit,
   getTransportCount,
   hasContractPageElements,
+  isContractAmountInput,
   parseContractPrice,
 } from "./page/contract_page.js";
 import { initContractRulesState, mountContractRulesPanel, refreshContractRulesPanel } from "./contract_rules_ui.js";
@@ -34,6 +35,23 @@ const STORAGE_DOMAIN = "contract-discount";
 const STORAGE_VERSION = 1;
 
 let discountPct = 3; // default
+let amountListenerAttached = false;
+let stopObservingBody = null;
+
+/**
+ * Typing into the amount input changes only the value property, which produces
+ * no DOM mutation — the observer below never sees it. The rules panel gates its
+ * save button on that amount, so it needs this to notice the value became
+ * valid. Delegated on the document because React remounts the input itself.
+ */
+function attachAmountInputListener() {
+  if (amountListenerAttached) return;
+  amountListenerAttached = true;
+
+  document.addEventListener("input", (e) => {
+    if (isContractAmountInput(e.target)) refreshContractRulesPanel(document);
+  });
+}
 
 /**
  * Initialise the contract helper.
@@ -43,6 +61,7 @@ let discountPct = 3; // default
  */
 export function initContractHelper() {
   void hydrateDiscountPreference();
+  attachAmountInputListener();
   // The rules snapshot loads asynchronously (auth + chrome.storage.local).
   // Once it resolves, try to (re)inject and refresh right away instead of
   // waiting on some unrelated future DOM mutation to trigger the observer.
@@ -54,7 +73,7 @@ export function initContractHelper() {
   });
 
   // Observe DOM changes to inject when contract elements are present
-  observeDocumentBody(() => {
+  stopObservingBody = observeDocumentBody(() => {
     if (hasContractPageElements()) {
       injectIfNeeded();
       refreshContractRulesPanel(document);
@@ -159,6 +178,10 @@ export const _testUtils = {
   parsePrice: parseContractPrice,
   getAmountValue: () => getContractAmountValue(document),
   getPriceValue: () => getContractPriceValue(document),
+  stopObserving() {
+    stopObservingBody?.();
+    stopObservingBody = null;
+  },
 };
 
 function renderResult(resultDiv, html) {

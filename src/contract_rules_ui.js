@@ -42,6 +42,10 @@ let nextRuleId = 1;
 // refresh fired right after the change finds the panel mid-remount.
 let rulesVersion = 0;
 let lastRenderedKey = null;
+// The panel node the memoized key describes. contract_ui.js tears the widget
+// down and re-injects it, and the replacement panel starts empty — so a key
+// match only means "already rendered" while it is the same node.
+let lastRenderedPanel = null;
 
 /**
  * Load the saved rules once. Call from contract_ui.js's init.
@@ -126,7 +130,18 @@ function saveCurrentAsRule(productId, companyName) {
   refreshContractRulesPanel(document);
 }
 
-function renderState(panel, productId, companyName) {
+/**
+ * Whether the current page state allows saving a new rule. Read live on every
+ * refresh — the amount input is filled in at any point, often after the
+ * beneficiary is picked.
+ * @returns {boolean}
+ */
+function canSaveCurrentValues(root = document) {
+  const amount = getContractAmountValue(root);
+  return Number.isFinite(amount) && amount > 0 && canAddRule(rules, CONTRACT_RULE_MAX_COUNT);
+}
+
+function renderState(panel, productId, companyName, canSave) {
   if (!companyName) {
     renderNoCompanySelectedState({ container: panel, t });
     return;
@@ -148,9 +163,6 @@ function renderState(panel, productId, companyName) {
     return;
   }
 
-  const amount = getContractAmountValue(document);
-  const canSave = Number.isFinite(amount) && amount > 0 && canAddRule(rules, CONTRACT_RULE_MAX_COUNT);
-
   renderNoMatchState({
     container: panel,
     t,
@@ -170,12 +182,17 @@ export function refreshContractRulesPanel(root = document) {
 
   const productId = getContractProductId(root);
   const companyName = hasSelectedBeneficiary(root) ? getSelectedCompanyName(root) : null;
-  const key = `${productId}:${companyName}:${rulesVersion}`;
+  // canSave is part of the key because it drives the save button's disabled
+  // state. It is the boolean, not the raw amount, so typing only re-renders
+  // when it crosses the empty/valid boundary.
+  const canSave = canSaveCurrentValues(root);
+  const key = `${productId}:${companyName}:${rulesVersion}:${canSave}`;
 
-  if (key === lastRenderedKey) return;
+  if (key === lastRenderedKey && panel === lastRenderedPanel) return;
   lastRenderedKey = key;
+  lastRenderedPanel = panel;
 
-  renderState(panel, productId, companyName);
+  renderState(panel, productId, companyName, canSave);
 }
 
 export const _testUtils = {
@@ -184,6 +201,7 @@ export const _testUtils = {
     nextRuleId = 1;
     rulesVersion = 0;
     lastRenderedKey = null;
+    lastRenderedPanel = null;
   },
   setRules(newRules, newNextRuleId) {
     rules = newRules;

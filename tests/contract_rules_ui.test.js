@@ -176,6 +176,46 @@ describe("contract_rules_ui", () => {
     expect(document.querySelector('[data-rule-id="1"]')).not.toBeNull();
   });
 
+  it("enables the save button once the amount is filled in after the company was picked", () => {
+    // The natural order of use: the beneficiary gets selected while the amount
+    // field is still empty. The disabled state must not be memoized past the
+    // moment the amount becomes valid, or the button stays dead forever.
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+    const amountInput = document.querySelector('input[name="amount"]');
+    amountInput.value = "";
+    mountPanel();
+    refreshContractRulesPanel(document);
+
+    expect(document.querySelector(".scx-contract-rules-save-btn").disabled).toBe(true);
+
+    amountInput.value = "5000";
+    refreshContractRulesPanel(document);
+
+    expect(document.querySelector(".scx-contract-rules-save-btn").disabled).toBe(false);
+
+    document.querySelector(".scx-contract-rules-save-btn").click();
+
+    expect(_testUtils.getRules()).toEqual([
+      { id: 1, productId: 9, productName: "Eggs", companyName: "Grupo Negreiros", amount: 5000, discountPct: 0 },
+    ]);
+  });
+
+  it("re-renders a freshly remounted panel even when nothing else changed", () => {
+    // contract_ui.js's removeIfPresent()/injectIfNeeded() cycle destroys the
+    // panel and recreates it empty. The memo key is unchanged, so without
+    // tracking the panel node itself the panel would stay blank.
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+    const containerA = mountPanel();
+    refreshContractRulesPanel(document);
+    expect(document.querySelector(".scx-contract-rules-save-btn")).not.toBeNull();
+
+    containerA.remove();
+    mountPanel();
+    refreshContractRulesPanel(document);
+
+    expect(document.querySelector(".scx-contract-rules-save-btn")).not.toBeNull();
+  });
+
   it("saves the current amount as a new rule for the selected product+company", () => {
     document.body.innerHTML = loadFixture("beneficiary-selected.html");
     mountPanel();

@@ -34,6 +34,10 @@ export function findContractAmountInput(root = document) {
   return root?.querySelector?.(AMOUNT_INPUT_SELECTOR) || null;
 }
 
+export function isContractAmountInput(element) {
+  return Boolean(element?.matches?.(AMOUNT_INPUT_SELECTOR));
+}
+
 export function hasContractPageElements(root = document) {
   return hasAllSelectors(root, [PRICE_INPUT_SELECTOR, MARKET_LINK_SELECTOR]);
 }
