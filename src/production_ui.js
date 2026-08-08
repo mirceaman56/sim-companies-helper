@@ -21,6 +21,7 @@ const SECTION_ID = "production-section";
 // Store current state
 let currentProductId = null;
 let currentQuantity = 1;
+let currentQuality = 0;
 // eslint-disable-next-line no-unused-vars
 let currentLaborCost = 0;
 let currentUnitCost = null; // Stored from UI if available
@@ -39,6 +40,7 @@ async function updateForRow(row) {
   const productionRow = readProductionRow(row);
   const productId = productionRow?.productId;
   const quantity = productionRow?.quantity ?? 1;
+  const quality = productionRow?.quality ?? 0;
   const unitCost = productionRow?.unitCost ?? null;
 
   if (!productId) {
@@ -49,6 +51,7 @@ async function updateForRow(row) {
 
   currentProductId = productId;
   currentQuantity = quantity;
+  currentQuality = quality;
   currentUnitCost = unitCost;
   pricesCache = null; // Reset cache to fetch fresh prices
 
@@ -174,9 +177,12 @@ async function renderProductAnalysis(contentEl, recipe) {
     });
 
     try {
-      // Just fetch product and container
-      const productIds = [currentProductId, TRANSPORT_RESOURCE_ID];
-      pricesCache = await fetchMarketPrices(realmId, productIds);
+      // Just fetch product (at its produced quality) and container
+      const productRequests = [
+        { productId: currentProductId, quality: currentQuality },
+        { productId: TRANSPORT_RESOURCE_ID, quality: 0 },
+      ];
+      pricesCache = await fetchMarketPrices(realmId, productRequests);
     } catch (e) {
       const message = e instanceof Error && e.message ? e.message : t("genericError");
       contentEl.innerHTML = renderStateBlock({
@@ -195,6 +201,7 @@ async function renderProductAnalysis(contentEl, recipe) {
     pricesCache,
     realmId,
     currentUnitCost,
+    currentQuality,
   );
 
   if (!analysis || analysis.error) {
@@ -216,7 +223,8 @@ async function renderProductAnalysis(contentEl, recipe) {
  * Render the full analysis UI
  */
 function renderAnalysisUI(contentEl, recipe, analysis) {
-  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice } = analysis;
+  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, quality } = analysis;
+  const qualityBadge = quality > 0 ? `<span class="scx-chip">Q${quality}</span>` : "";
 
   const PROD_ROLE_LABEL_KEYS = { coo: "roleCOO" };
   let execWarningHTML = "";
@@ -261,6 +269,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       
       <div class="scx-text-muted scx-text-sm scx-margin-bottom-4">
         ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
+        ${qualityBadge}
         <span class="scx-badge-active">${t("active")}</span>
         ${buildingLevel ? `<span class="scx-badge-level">${t("lvl")} ${buildingLevel}</span>` : ""}
       </div>
@@ -285,7 +294,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
 
       <div class="scx-flex-spaced scx-margin-bottom-4">
          <div class="scx-panel-title scx-text-xs">${t("profitAnalysis")}</div>
-         <div class="scx-text-xs scx-text-muted">@ <span class="scx-mono">${formatMoney(marketPrice)}</span></div>
+         <div class="scx-text-xs scx-text-muted">@ <span class="scx-mono">${formatMoney(marketPrice)}</span>${quality > 0 ? ` (Q${quality})` : ""}</div>
       </div>
       
       <div class="scx-flex-column scx-production-profit-stack">

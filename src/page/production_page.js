@@ -5,6 +5,9 @@ import { findAncestorWithin, waitForStructuralValue } from "./page_utils.js";
 const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
 const RESOURCE_LINK_SELECTOR = 'a[href*="/encyclopedia/"][href*="/resource/"]';
 const MAX_ROW_SEARCH_DEPTH = 25;
+const QUALITY_STAR_SELECTOR = 'svg[data-icon="star"], .fa-star';
+const QUALITY_TEXT_PATTERN = /\bQ\s?(\d{1,2})\b/;
+export const MAX_PRODUCTION_QUALITY = 12;
 
 function isElement(value) {
   return value instanceof Element;
@@ -144,6 +147,41 @@ export function getProductionLaborCost(row) {
   return 0;
 }
 
+function clampQuality(value) {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Math.min(Math.floor(value), MAX_PRODUCTION_QUALITY);
+}
+
+function countQualityStars(infoCol) {
+  const scope = infoCol?.parentElement;
+  if (!scope) return 0;
+
+  const stars = scope.querySelectorAll?.(QUALITY_STAR_SELECTOR) || [];
+
+  let count = 0;
+  for (const star of stars) {
+    if (infoCol.contains?.(star)) continue;
+    count += 1;
+  }
+
+  return count;
+}
+
+export function getProductionQuality(row) {
+  if (!isElement(row)) return 0;
+
+  const infoCol = getInfoColumn(row);
+
+  const starCount = countQualityStars(infoCol);
+  if (starCount > 0) return clampQuality(starCount);
+
+  const infoText = infoCol?.textContent || "";
+  const match = infoText.match(QUALITY_TEXT_PATTERN);
+  if (match) return clampQuality(Number(match[1]));
+
+  return 0;
+}
+
 export function readProductionRow(row) {
   if (!isElement(row)) return null;
 
@@ -159,6 +197,7 @@ export function readProductionRow(row) {
     productName,
     quantityInput: row.querySelector(AMOUNT_INPUT_SELECTOR),
     quantity: getProductionQuantity(row),
+    quality: getProductionQuality(row),
     unitCost: getProductionUnitCost(row),
     laborCost: getProductionLaborCost(row),
     isActive: Boolean(dataWrapperEl),

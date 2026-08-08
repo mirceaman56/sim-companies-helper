@@ -8,6 +8,7 @@ import {
   findFirstProductionRow,
   findProductionRowFromTarget,
   getProductionDataWrapper,
+  getProductionQuality,
   readProductionRow,
 } from "../src/page/production_page.js";
 
@@ -71,6 +72,71 @@ describe("production_page adapter", () => {
       isActive: true,
     });
     expect(getProductionDataWrapper(productionRow.infoColumnEl)).not.toBeNull();
+  });
+
+  it("reads the quality level from the star icons next to the product image", () => {
+    document.body.innerHTML = loadFixture("quality-row.html");
+    const row = document.querySelector('[data-testid="quality-row"]');
+
+    expect(getProductionQuality(row)).toBe(4);
+    expect(readProductionRow(row)).toMatchObject({
+      productId: 44,
+      productName: "Bread Q4",
+      quality: 4,
+    });
+  });
+
+  it("falls back to the Q marker in the info column when no stars are rendered", () => {
+    document.body.innerHTML = loadFixture("active-row.html");
+    const row = document.querySelector('[data-testid="active-row"]');
+
+    expect(getProductionQuality(row)).toBe(1);
+  });
+
+  it("reports quality 0 when the row has no quality markers", () => {
+    document.body.innerHTML = loadFixture("setup-row.html");
+    const row = document.querySelector('[data-testid="setup-row"]');
+
+    expect(getProductionQuality(row)).toBe(0);
+    expect(readProductionRow(row).quality).toBe(0);
+  });
+
+  it("reads per-product quality across a real factory page", () => {
+    document.body.innerHTML = loadFixture("factory-page.html");
+
+    const byProduct = {};
+    for (const link of document.querySelectorAll('a[href*="/encyclopedia/"][href*="/resource/"]')) {
+      const productionRow = readProductionRow(findProductionRowFromTarget(link));
+      byProduct[productionRow.productName] = productionRow.quality;
+    }
+
+    expect(byProduct).toEqual({
+      "Silicon Q4": 4,
+      "Chemicals Q4": 4,
+      Aluminium: 0,
+      "Steel Q2": 2,
+      "Xmas crackers": 0,
+    });
+  });
+
+  it("does not sum quality stars from other products when the row lookup widens", () => {
+    document.body.innerHTML = loadFixture("factory-page.html");
+
+    // The active order block has no encyclopedia link, so the row walk resolves
+    // to the whole production container. Quality must still come from the
+    // active product's own column, not every star on the page.
+    const activeTitle = [...document.querySelectorAll("h3")].find((h) => h.textContent === "Chemicals Q4");
+    const row = findProductionRowFromTarget(activeTitle);
+
+    expect(getProductionQuality(row)).toBe(4);
+  });
+
+  it("reads quality from the real page export", () => {
+    document.documentElement.innerHTML = loadFixture("real-page.html");
+
+    const row = findFirstProductionRow(document);
+
+    expect(readProductionRow(row).quality).toBe(2);
   });
 
   it("extracts a building level while ignoring top navigation matches", () => {

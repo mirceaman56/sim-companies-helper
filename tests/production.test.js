@@ -8,7 +8,13 @@ vi.mock("../src/i18n.js", () => ({
   t: (key) => key,
 }));
 
-import { getRecipes, getRecipeByProductId, analyzeProduction, fetchMarketPrices } from "../src/production.js";
+import {
+  getRecipes,
+  getRecipeByProductId,
+  analyzeProduction,
+  fetchMarketPrices,
+  buildPriceKey,
+} from "../src/production.js";
 import { MARKET_FEE, TRANSPORT_RESOURCE_ID } from "../src/utils.js";
 
 const MOCK_PRICES = new Map([
@@ -73,6 +79,14 @@ describe("fetchMarketPrices", () => {
   it("returns empty map when no ids given", async () => {
     const prices = await fetchMarketPrices(0, []);
     expect(prices.size).toBe(0);
+  });
+
+  it("keys quality requests separately and uses the quality price", async () => {
+    const prices = await fetchMarketPrices(0, [{ productId: 1, quality: 1 }, { productId: 2 }]);
+
+    expect(prices.get(buildPriceKey(1, 1))).toBe(5.5);
+    expect(prices.get(buildPriceKey(2))).toBe(5.0);
+    expect(prices.has(1)).toBe(false);
   });
 });
 
@@ -150,6 +164,44 @@ describe("analyzeProduction", () => {
 
     const expectedContractProfit = revenue - baseCost;
     expect(result.profitAnalysis.contract.profit).toBeCloseTo(expectedContractProfit, 2);
+  });
+
+  it("uses the quality market price instead of the Q0 price", async () => {
+    const recipes = getRecipes();
+    const recipe = recipes[0];
+    const qty = 10;
+    const unitCost = 100;
+    const q0Price = 153.0;
+    const q4Price = 230.0;
+
+    const prices = new Map([
+      [buildPriceKey(TRANSPORT_RESOURCE_ID), 0],
+      [buildPriceKey(recipe.id), q0Price],
+      [buildPriceKey(recipe.id, 4), q4Price],
+    ]);
+
+    const result = await analyzeProduction(recipe.id, qty, prices, 0, unitCost, 4);
+
+    expect(result.quality).toBe(4);
+    expect(result.marketPrice).toBe(q4Price);
+
+    const expectedMarketProfit = q4Price * qty * (1 - MARKET_FEE) - unitCost * qty;
+    expect(result.profitAnalysis.market.profit).toBeCloseTo(expectedMarketProfit, 2);
+  });
+
+  it("falls back to the Q0 price when no quality is given", async () => {
+    const recipes = getRecipes();
+    const recipe = recipes[0];
+    const prices = new Map([
+      [buildPriceKey(TRANSPORT_RESOURCE_ID), 0],
+      [buildPriceKey(recipe.id), 153.0],
+      [buildPriceKey(recipe.id, 4), 230.0],
+    ]);
+
+    const result = await analyzeProduction(recipe.id, 10, prices, 0, 100);
+
+    expect(result.quality).toBe(0);
+    expect(result.marketPrice).toBe(153.0);
   });
 
   it("contract uses half the transport cost of market", async () => {
