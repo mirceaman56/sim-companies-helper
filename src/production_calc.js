@@ -13,10 +13,6 @@ export function extractDollarValue(text) {
   return null;
 }
 
-/**
- * Production multiplier for a building upgrade.
- * Formula: multiplier = 1 + 1/currentLevel
- */
 export function calculateUpgradeMultiplier(currentLevel) {
   if (!currentLevel || currentLevel <= 0) {
     return null;
@@ -37,9 +33,10 @@ export function formatProductionAsText(
   marketProfitDelta,
   contractProfitDelta,
 ) {
-  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, unitCost } = analysis;
+  const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, unitCost, quality } = analysis;
+  const qualitySuffix = quality > 0 ? ` Q${quality}` : "";
   const lines = [
-    `${t("product")}: ${recipe.name}`,
+    `${t("product")}: ${recipe.name}${qualitySuffix}`,
     `${t("quantity")}: ${quantity}`,
     ``,
     `${t("costLabel")}:`,
@@ -65,7 +62,7 @@ export function formatProductionAsText(
 
   if (profitAnalysis) {
     lines.push(
-      `${t("profitAnalysisText")} (at $${formatMoney(marketPrice)}):`,
+      `${t("profitAnalysisText")} (at $${formatMoney(marketPrice)}${qualitySuffix}):`,
       `  ${t("marketProfit")}: ${formatMoney(profitAnalysis.market.profit)}`,
       `  ${t("marketMargin")}: ${profitAnalysis.market.margin.toFixed(2)}%`,
       `  ${t("contractProfit")}: ${formatMoney(profitAnalysis.contract.profit)}`,
