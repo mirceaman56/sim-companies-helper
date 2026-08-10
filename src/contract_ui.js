@@ -23,7 +23,11 @@ import {
   isContractAmountInput,
   parseContractPrice,
 } from "./page/contract_page.js";
-import { initContractRulesState, mountContractRulesPanel, refreshContractRulesPanel } from "./contract_rules_ui.js";
+import {
+  initContractRulesState,
+  mountContractRulesPanel,
+  refreshContractRulesPanel,
+} from "./contract_rules_ui.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const DISCOUNT_SELECT_ID = "scx-contract-discount-select";

@@ -28,7 +28,11 @@ import {
   resolveNextRuleId,
 } from "./contract_rules_state.js";
 import { loadRulesSnapshot, saveRulesSnapshot } from "./contract_rules_storage.js";
-import { renderNoCompanySelectedState, renderNoMatchState, renderRulesList } from "./contract_rules_render.js";
+import {
+  renderNoCompanySelectedState,
+  renderNoMatchState,
+  renderRulesList,
+} from "./contract_rules_render.js";
 import recipes from "./resources/recipes.json";
 
 // Must match the select's id in contract_ui.js's widget markup.
@@ -111,6 +115,10 @@ function saveCurrentAsRule(productId, companyName) {
   const amount = getContractAmountValue(document);
   const discountPct = getCurrentDiscountPct();
 
+  // A rule without a resolvable productId is dropped by hydrateRules() on the
+  // next load, so refuse it here instead of persisting a template that
+  // silently disappears after a reload.
+  if (!Number.isFinite(productId)) return;
   if (!isValidRuleInput({ amount, discountPct }) || !canAddRule(rules, CONTRACT_RULE_MAX_COUNT)) return;
 
   const id = resolveNextRuleId(rules, nextRuleId);
@@ -185,7 +193,7 @@ export function refreshContractRulesPanel(root = document) {
   // canSave is part of the key because it drives the save button's disabled
   // state. It is the boolean, not the raw amount, so typing only re-renders
   // when it crosses the empty/valid boundary.
-  const canSave = canSaveCurrentValues(root);
+  const canSave = Number.isFinite(productId) && canSaveCurrentValues(root);
   const key = `${productId}:${companyName}:${rulesVersion}:${canSave}`;
 
   if (key === lastRenderedKey && panel === lastRenderedPanel) return;
@@ -210,4 +218,3 @@ export const _testUtils = {
   },
   getRules: () => rules,
 };
-

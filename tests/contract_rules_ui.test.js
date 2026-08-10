@@ -216,6 +216,24 @@ describe("contract_rules_ui", () => {
     expect(document.querySelector(".scx-contract-rules-save-btn")).not.toBeNull();
   });
 
+  it("refuses to save a rule when the product id cannot be resolved", () => {
+    // hydrateRules() drops rules with a non-finite productId, so a rule saved
+    // without one looks fine until the next reload and then silently vanishes.
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+    const marketLink = document.querySelector('a[href*="market/resource"]');
+    marketLink.setAttribute("href", "/market/resource/");
+    mountPanel();
+    refreshContractRulesPanel(document);
+
+    const saveBtn = document.querySelector(".scx-contract-rules-save-btn");
+    expect(saveBtn.disabled).toBe(true);
+
+    saveBtn.click();
+
+    expect(_testUtils.getRules()).toEqual([]);
+    expect(saveRulesSnapshot).not.toHaveBeenCalled();
+  });
+
   it("saves the current amount as a new rule for the selected product+company", () => {
     document.body.innerHTML = loadFixture("beneficiary-selected.html");
     mountPanel();

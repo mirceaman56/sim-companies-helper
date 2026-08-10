@@ -148,6 +148,11 @@
   width: 100%;
   padding: 5px 10px;
   font-size: var(--scx-font-size-sm);
+  /* .scx-btn is nowrap; these labels are long in every locale and overflow the
+     fixed-width sidebar, so let them wrap inside the button. */
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .scx-contract-rules-list {
