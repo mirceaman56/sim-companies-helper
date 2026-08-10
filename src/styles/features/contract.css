@@ -131,10 +131,78 @@
   gap: 6px;
 }
 
+.scx-contract-rules-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
 .scx-contract-rules-title {
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-semibold);
   color: var(--scx-text-secondary);
+}
+
+.scx-contract-rules-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  font-size: 10px;
+  font-weight: var(--scx-font-weight-bold);
+  cursor: help;
+}
+
+/* Anchored to the right edge rather than centred like the executive panel's
+   info icon: this widget is only 180px wide, so a centred tooltip would hang
+   off the right of the viewport. */
+.scx-contract-rules-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: -4px;
+  top: calc(100% + 8px);
+  width: 210px;
+  padding: 8px 10px;
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-tooltip);
+  color: var(--scx-color-white);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-normal);
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-contract-rules-info::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: calc(100% + 2px);
+  border: 5px solid transparent;
+  border-bottom-color: var(--scx-bg-tooltip);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-contract-rules-info:hover::after,
+.scx-contract-rules-info:hover::before,
+.scx-contract-rules-info:focus-visible::after,
+.scx-contract-rules-info:focus-visible::before {
+  opacity: 1;
 }
 
 .scx-contract-rules-empty {
@@ -161,15 +229,16 @@
   gap: 6px;
 }
 
+/* Stacked rather than a single row: the widget is fixed at 180px, which cannot
+   fit a contract quantity plus a labelled Apply button side by side. Values get
+   the top line, actions the bottom one. */
 .scx-contract-rule-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  /* Without min-width: 0 a long amount keeps the card from shrinking and the
-     action buttons get pushed past the fixed-width sidebar's edge. */
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
   min-width: 0;
-  padding: 4px 6px;
+  padding: 5px 6px;
   border: var(--scx-border-light);
   border-radius: var(--scx-border-radius-sm);
   background: var(--scx-bg-secondary);
@@ -177,36 +246,47 @@
 
 .scx-contract-rule-info {
   display: flex;
-  gap: 5px;
-  align-items: baseline;
-  flex: 1 1 auto;
+  gap: 10px;
+  align-items: flex-start;
   min-width: 0;
-  overflow: hidden;
   font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rule-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.scx-contract-rule-field-label {
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+  color: var(--scx-text-muted);
 }
 
 .scx-contract-rule-amount {
   color: var(--scx-text-primary);
   font-weight: var(--scx-font-weight-semibold);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.3;
 }
 
 .scx-contract-rule-discount {
-  color: var(--scx-text-muted);
-  font-size: var(--scx-font-size-xs);
-  flex-shrink: 0;
+  color: var(--scx-text-secondary);
+  line-height: 1.3;
 }
 
 .scx-contract-rule-actions {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex-shrink: 0;
 }
 
 .scx-contract-rule-apply-btn {
+  flex: 1;
+  min-width: 0;
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-semibold);
   padding: 3px 8px;

@@ -115,6 +115,11 @@ export default {
   contractRuleNoMatch: "Pro tento produkt a společnost není uloženo žádné pravidlo",
   contractRuleSaveCurrent: "Uložit aktuální hodnoty jako nové pravidlo",
   contractRuleApply: "Použít",
+  contractRuleQuantity: "Množství",
+  contractRuleDiscount: "Sleva",
+  contractRuleRemove: "Odebrat pravidlo",
+  contractRuleInfoTooltip:
+    "Použít vyplní toto uložené množství a spočítá cenu z nejlevnější aktuální nabídky na trhu po odečtení zobrazené slevy.",
   buildingUpgradeProjection: "Projekce upgradu budovy",
   currentLevel: "Aktuální úroveň",
   afterUpgradeLevel: "Po upgradu (úroveň",

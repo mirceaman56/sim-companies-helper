@@ -115,6 +115,11 @@ export default {
   contractRuleNoMatch: "No saved rule for this product & company",
   contractRuleSaveCurrent: "Save current values as a new rule",
   contractRuleApply: "Apply",
+  contractRuleQuantity: "Quantity",
+  contractRuleDiscount: "Discount",
+  contractRuleRemove: "Remove rule",
+  contractRuleInfoTooltip:
+    "Apply fills in this saved quantity and works out the price from the cheapest offer on the market right now, minus the discount shown.",
   buildingUpgradeProjection: "Building Upgrade Projection",
   currentLevel: "Current Level",
   afterUpgradeLevel: "After Upgrade (Lvl",

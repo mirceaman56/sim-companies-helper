@@ -115,6 +115,11 @@ export default {
   contractRuleNoMatch: "Brak zapisanych reguł dla tego produktu i firmy",
   contractRuleSaveCurrent: "Zapisz bieżące wartości jako nową regułę",
   contractRuleApply: "Stosować",
+  contractRuleQuantity: "Ilość",
+  contractRuleDiscount: "Rabat",
+  contractRuleRemove: "Usuń regułę",
+  contractRuleInfoTooltip:
+    "Zastosuj wypełnia zapisaną ilość i wylicza cenę na podstawie najtańszej obecnej oferty na rynku, pomniejszoną o pokazany rabat.",
   buildingUpgradeProjection: "Projekcja ulepszenia budynku",
   currentLevel: "Aktualny poziom",
   afterUpgradeLevel: "Po ulepszeniu (poziom",

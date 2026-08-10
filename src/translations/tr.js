@@ -115,6 +115,11 @@ export default {
   contractRuleNoMatch: "Bu ürün ve şirket için kayıtlı kural yok",
   contractRuleSaveCurrent: "Mevcut değerleri yeni kural olarak kaydet",
   contractRuleApply: "Uygula",
+  contractRuleQuantity: "Miktar",
+  contractRuleDiscount: "İndirim",
+  contractRuleRemove: "Kuralı kaldır",
+  contractRuleInfoTooltip:
+    "Uygula, kaydedilen bu miktarı doldurur ve fiyatı şu anda piyasadaki en ucuz teklife göre, gösterilen indirim düşülerek hesaplar.",
   buildingUpgradeProjection: "Bina Yükseltme Projeksiyonu",
   currentLevel: "Mevcut Seviye",
   afterUpgradeLevel: "Yükseltmeden Sonra (Seviye",

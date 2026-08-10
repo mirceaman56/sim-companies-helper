@@ -11,12 +11,40 @@ function formatDiscountLabel(discountPct) {
 }
 
 /**
+ * Section header: title plus a hover/focus hint explaining what applying a
+ * rule does. Mirrors the info-icon pattern in executive_ui.js.
  * @param {(key: string) => string} t
  * @param {string} bodyHtml
  * @returns {string}
  */
 function panelShell(t, bodyHtml) {
-  return `<div class="scx-contract-rules-title">${t("contractRulesTitle")}</div>${bodyHtml}`;
+  const hint = t("contractRuleInfoTooltip");
+
+  return `<div class="scx-contract-rules-head">
+      <span class="scx-contract-rules-title">${t("contractRulesTitle")}</span>
+      <span
+        class="scx-contract-rules-info"
+        role="img"
+        tabindex="0"
+        aria-label="${hint}"
+        data-tooltip="${hint}"
+      >i</span>
+    </div>${bodyHtml}`;
+}
+
+/**
+ * A labelled value column inside a rule card. The label is what makes the two
+ * bare numbers readable at the sidebar's fixed 180px width.
+ * @param {string} label
+ * @param {string} valueClass
+ * @param {string} value
+ * @returns {string}
+ */
+function labelledField(label, valueClass, value) {
+  return `<span class="scx-contract-rule-field">
+      <span class="scx-contract-rule-field-label">${label}</span>
+      <span class="${valueClass}">${value}</span>
+    </span>`;
 }
 
 /**
@@ -41,12 +69,20 @@ export function renderRulesList(input) {
           (rule) => `
         <div class="scx-contract-rule-card" data-rule-id="${rule.id}">
           <div class="scx-contract-rule-info">
-            <span class="scx-contract-rule-amount">${formatMoney(rule.amount, { prefix: false, decimals: 0 })}</span>
-            <span class="scx-contract-rule-discount">${formatDiscountLabel(rule.discountPct)}</span>
+            ${labelledField(
+              t("contractRuleQuantity"),
+              "scx-contract-rule-amount",
+              formatMoney(rule.amount, { prefix: false, decimals: 0 }),
+            )}
+            ${labelledField(
+              t("contractRuleDiscount"),
+              "scx-contract-rule-discount",
+              formatDiscountLabel(rule.discountPct),
+            )}
           </div>
           <div class="scx-contract-rule-actions">
-            <button class="scx-btn scx-btn-info scx-contract-rule-apply-btn" data-action="apply">${t("contractRuleApply")}</button>
-            <button class="scx-btn scx-contract-rule-remove-btn" data-action="remove">✕</button>
+            <button type="button" class="scx-btn scx-btn-secondary scx-contract-rule-apply-btn" data-action="apply">${t("contractRuleApply")}</button>
+            <button type="button" class="scx-btn scx-contract-rule-remove-btn" data-action="remove" aria-label="${t("contractRuleRemove")}" title="${t("contractRuleRemove")}">✕</button>
           </div>
         </div>
       `,
@@ -80,7 +116,7 @@ export function renderNoMatchState(input) {
   container.innerHTML = panelShell(
     t,
     `<div class="scx-contract-rules-empty">${t("contractRuleNoMatch")}</div>
-    <button class="scx-btn scx-btn-success scx-contract-rules-save-btn" ${disabled ? "disabled" : ""}>
+    <button type="button" class="scx-btn scx-btn-success scx-contract-rules-save-btn" ${disabled ? "disabled" : ""}>
       ${t("contractRuleSaveCurrent")}
     </button>`,
   );
