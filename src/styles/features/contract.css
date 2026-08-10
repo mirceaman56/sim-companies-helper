@@ -120,3 +120,84 @@
   font-size: var(--scx-font-size-xs);
   opacity: 0.8;
 }
+
+.scx-contract-rules-panel {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: var(--scx-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scx-contract-rules-title {
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-secondary);
+}
+
+.scx-contract-rules-empty {
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+  text-align: center;
+  padding: 6px 0;
+}
+
+.scx-contract-rules-save-btn {
+  width: 100%;
+  padding: 5px 10px;
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scx-contract-rule-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-secondary);
+}
+
+.scx-contract-rule-info {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rule-discount {
+  color: var(--scx-text-muted);
+  font-size: var(--scx-font-size-xs);
+}
+
+.scx-contract-rule-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.scx-contract-rule-apply-btn {
+  font-size: var(--scx-font-size-xs);
+  padding: 4px 8px;
+}
+
+.scx-contract-rule-remove-btn {
+  background: none;
+  border: var(--scx-border-light);
+  color: var(--scx-text-muted);
+  min-width: 24px;
+  font-size: var(--scx-font-size-xs);
+}
+
+.scx-contract-rule-remove-btn:hover {
+  color: var(--scx-color-error);
+  border-color: var(--scx-color-error);
+}

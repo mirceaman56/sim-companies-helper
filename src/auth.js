@@ -18,11 +18,9 @@ function applyAuthData(data) {
   STATE.levelInfo.experienceToNextLevel = li?.experienceToNextLevel ?? null;
 }
 
-export async function loadAuthDataOnce({ force = false } = {}) {
-  if ((!force && STATE.auth.loaded) || STATE.auth.loading) {
-    return;
-  }
+let inflightAuthLoad = null;
 
+async function fetchAndApplyAuthData() {
   STATE.auth.loading = true;
   STATE.auth.error = null;
 
@@ -40,6 +38,22 @@ export async function loadAuthDataOnce({ force = false } = {}) {
   } finally {
     STATE.auth.loading = false;
   }
+}
+
+export async function loadAuthDataOnce({ force = false } = {}) {
+  if (!force && STATE.auth.loaded) return;
+
+  // Join an in-flight load instead of returning a no-op. Callers rely on auth
+  // being resolved once this settles — notably resolveScope(), which fails
+  // closed and silently drops scoped storage reads when companyId/realmId are
+  // still null.
+  if (inflightAuthLoad) return inflightAuthLoad;
+
+  inflightAuthLoad = fetchAndApplyAuthData().finally(() => {
+    inflightAuthLoad = null;
+  });
+
+  return inflightAuthLoad;
 }
 
 export function getRealmId() {

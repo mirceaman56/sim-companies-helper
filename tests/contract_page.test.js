@@ -4,12 +4,16 @@ import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
+  computeDiscountedPrice,
   getContractAmountValue,
   getContractPriceValue,
+  getContractProductId,
   getLowestSellerPrice,
+  getSelectedCompanyName,
   getSourcingCostPerUnit,
   getTransportCount,
   hasContractPageElements,
+  hasSelectedBeneficiary,
   parseContractPrice,
 } from "../src/page/contract_page.js";
 
@@ -66,5 +70,34 @@ describe("contract_page adapter", () => {
     document.body.innerHTML = loadFixture("page.html");
 
     expect(getTransportCount(document)).toBe(6301);
+  });
+
+  it("extracts the product id from the market link", () => {
+    document.body.innerHTML = loadFixture("page.html");
+    expect(getContractProductId(document)).toBe(9);
+
+    document.body.innerHTML = loadFixture("page-current.html");
+    expect(getContractProductId(document)).toBe(17);
+  });
+
+  it("detects no beneficiary selected while the recipient search input is present", () => {
+    document.body.innerHTML = loadFixture("beneficiary-not-selected.html");
+
+    expect(hasSelectedBeneficiary(document)).toBe(false);
+    expect(getSelectedCompanyName(document)).toBeNull();
+  });
+
+  it("detects the selected beneficiary company by name once chosen", () => {
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+
+    expect(hasSelectedBeneficiary(document)).toBe(true);
+    expect(getSelectedCompanyName(document)).toBe("Grupo Negreiros");
+  });
+
+  it("computes the discounted price with 3-decimal rounding", () => {
+    expect(computeDiscountedPrice(1.8, 3)).toBeCloseTo(1.746, 5);
+    expect(computeDiscountedPrice(1.8, 0)).toBeCloseTo(1.8, 5);
+    expect(computeDiscountedPrice(null, 3)).toBeNull();
+    expect(computeDiscountedPrice(0, 3)).toBeNull();
   });
 });
