@@ -28,3 +28,6 @@ export const CHAT_ALERT_MAX_PAGES = 30;
 
 // Buildings (XP calculator)
 export const BUILDINGS_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+// Contract rules
+export const CONTRACT_RULE_MAX_COUNT = 50;

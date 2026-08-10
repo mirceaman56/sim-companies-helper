@@ -1,4 +1,8 @@
 .scx-contract-helper {
+  /* Shares an element with .scx-sidebar-footer-contract, which sets
+     overflow: hidden and would clip the saved-rules tooltip inside the widget.
+     Nothing in this widget relies on that clipping. */
+  overflow: visible;
   margin-top: 4px;
   padding: 10px;
   gap: 8px;
@@ -119,4 +123,199 @@
 .scx-contract-profit-margin {
   font-size: var(--scx-font-size-xs);
   opacity: 0.8;
+}
+
+.scx-contract-rules-panel {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: var(--scx-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scx-contract-rules-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.scx-contract-rules-title {
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-secondary);
+}
+
+.scx-contract-rules-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  font-size: 10px;
+  font-weight: var(--scx-font-weight-bold);
+  cursor: help;
+}
+
+/* Anchored to the right edge rather than centred like the executive panel's
+   info icon: this widget is only 180px wide, so a centred tooltip would hang
+   off the right of the viewport. Opens upward because the widget is the last
+   thing in the sidebar and can sit near the bottom of the screen. */
+.scx-contract-rules-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: -4px;
+  bottom: calc(100% + 8px);
+  width: 210px;
+  padding: 8px 10px;
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-tooltip);
+  color: var(--scx-color-white);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-normal);
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-contract-rules-info::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: calc(100% + 2px);
+  border: 5px solid transparent;
+  border-top-color: var(--scx-bg-tooltip);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.1s;
+  z-index: 1000;
+}
+
+.scx-contract-rules-info:hover::after,
+.scx-contract-rules-info:hover::before,
+.scx-contract-rules-info:focus-visible::after,
+.scx-contract-rules-info:focus-visible::before {
+  opacity: 1;
+}
+
+.scx-contract-rules-empty {
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+  text-align: center;
+  padding: 6px 0;
+}
+
+.scx-contract-rules-save-btn {
+  width: 100%;
+  padding: 5px 10px;
+  font-size: var(--scx-font-size-sm);
+  /* .scx-btn is nowrap; these labels are long in every locale and overflow the
+     fixed-width sidebar, so let them wrap inside the button. */
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.scx-contract-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Stacked rather than a single row: the widget is fixed at 180px, which cannot
+   fit a contract quantity plus a labelled Apply button side by side. Values get
+   the top line, actions the bottom one. */
+.scx-contract-rule-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  min-width: 0;
+  padding: 5px 6px;
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-secondary);
+}
+
+.scx-contract-rule-info {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rule-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.scx-contract-rule-field-label {
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+  color: var(--scx-text-muted);
+}
+
+.scx-contract-rule-amount {
+  color: var(--scx-text-primary);
+  font-weight: var(--scx-font-weight-semibold);
+  line-height: 1.3;
+}
+
+.scx-contract-rule-discount {
+  color: var(--scx-text-secondary);
+  line-height: 1.3;
+}
+
+.scx-contract-rule-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.scx-contract-rule-apply-btn {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  padding: 3px 8px;
+}
+
+/* Square icon button. The market-alerts remove button is fully transparent,
+   which reads as an artifact against the card fill — this one keeps a real
+   surface and only turns red on hover. --scx-bg-primary is used because
+   --scx-bg-subtle is identical to the card's --scx-bg-secondary in light mode. */
+.scx-contract-rule-remove-btn {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: var(--scx-font-size-xs);
+  line-height: 1;
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-light);
+  color: var(--scx-text-muted);
+}
+
+.scx-contract-rule-remove-btn:hover:not(:disabled) {
+  background: var(--scx-bg-error);
+  border-color: var(--scx-color-error);
+  color: var(--scx-color-error);
+  box-shadow: none;
 }

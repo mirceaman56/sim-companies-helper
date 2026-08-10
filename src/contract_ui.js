@@ -10,8 +10,9 @@ import { getRealmId } from "./auth.js";
 import { formatMoney, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { renderStateBlock } from "./ui_state.js";
 import { storage } from "./data/storage.js";
-import { observeDocumentBody } from "./page/page_utils.js";
+import { observeDocumentBody, setReactControlledValue } from "./page/page_utils.js";
 import {
+  computeDiscountedPrice,
   findContractPriceInput,
   getContractAmountValue,
   getContractPriceValue,
@@ -19,8 +20,14 @@ import {
   getSourcingCostPerUnit,
   getTransportCount,
   hasContractPageElements,
+  isContractAmountInput,
   parseContractPrice,
 } from "./page/contract_page.js";
+import {
+  initContractRulesState,
+  mountContractRulesPanel,
+  refreshContractRulesPanel,
+} from "./contract_rules_ui.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const DISCOUNT_SELECT_ID = "scx-contract-discount-select";
@@ -32,6 +39,23 @@ const STORAGE_DOMAIN = "contract-discount";
 const STORAGE_VERSION = 1;
 
 let discountPct = 3; // default
+let amountListenerAttached = false;
+let stopObservingBody = null;
+
+/**
+ * Typing into the amount input changes only the value property, which produces
+ * no DOM mutation — the observer below never sees it. The rules panel gates its
+ * save button on that amount, so it needs this to notice the value became
+ * valid. Delegated on the document because React remounts the input itself.
+ */
+function attachAmountInputListener() {
+  if (amountListenerAttached) return;
+  amountListenerAttached = true;
+
+  document.addEventListener("input", (e) => {
+    if (isContractAmountInput(e.target)) refreshContractRulesPanel(document);
+  });
+}
 
 /**
  * Initialise the contract helper.
@@ -41,18 +65,32 @@ let discountPct = 3; // default
  */
 export function initContractHelper() {
   void hydrateDiscountPreference();
-
-  // Observe DOM changes to inject when contract elements are present
-  observeDocumentBody(() => {
+  attachAmountInputListener();
+  // The rules snapshot loads asynchronously (auth + chrome.storage.local).
+  // Once it resolves, try to (re)inject and refresh right away instead of
+  // waiting on some unrelated future DOM mutation to trigger the observer.
+  void initContractRulesState().then(() => {
     if (hasContractPageElements()) {
       injectIfNeeded();
+      refreshContractRulesPanel(document);
+    }
+  });
+
+  // Observe DOM changes to inject when contract elements are present
+  stopObservingBody = observeDocumentBody(() => {
+    if (hasContractPageElements()) {
+      injectIfNeeded();
+      refreshContractRulesPanel(document);
     } else {
       removeIfPresent();
     }
   });
 
   // Initial check
-  if (hasContractPageElements()) injectIfNeeded();
+  if (hasContractPageElements()) {
+    injectIfNeeded();
+    refreshContractRulesPanel(document);
+  }
 }
 
 async function hydrateDiscountPreference() {
@@ -84,25 +122,6 @@ function removeIfPresent() {
 }
 
 /**
- * Set a React-controlled input's value properly.
- * React overrides the native value setter, so we need to use the
- * native HTMLInputElement setter and dispatch an input event.
- */
-function setInputValue(input, value) {
-  const nativeSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-
-  if (nativeSetter) {
-    nativeSetter.call(input, value);
-  } else {
-    input.value = value;
-  }
-
-  // Dispatch events to notify React
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-  input.dispatchEvent(new Event("change", { bubbles: true }));
-}
-
-/**
  * Apply the discount: read lowest price, calculate discounted price, fill input.
  */
 function applyDiscount() {
@@ -125,11 +144,9 @@ function applyDiscount() {
     return;
   }
 
-  const discountedPrice = lowestPrice * (1 - discountPct / 100);
-  // Round to 3 decimal places (SimCompanies precision)
-  const rounded = Math.floor(discountedPrice * 1000) / 1000;
+  const rounded = computeDiscountedPrice(lowestPrice, discountPct);
 
-  setInputValue(priceInput, rounded.toFixed(3));
+  setReactControlledValue(priceInput, rounded.toFixed(3));
 
   // Visual feedback on the button
   const btn = document.getElementById("scx-contract-apply-btn");
@@ -165,6 +182,10 @@ export const _testUtils = {
   parsePrice: parseContractPrice,
   getAmountValue: () => getContractAmountValue(document),
   getPriceValue: () => getContractPriceValue(document),
+  stopObserving() {
+    stopObservingBody?.();
+    stopObservingBody = null;
+  },
 };
 
 function renderResult(resultDiv, html) {
@@ -294,6 +315,8 @@ function injectIfNeeded() {
       <div id="${PROFIT_RESULT_ID}" class="scx-contract-profit-result scx-contract-profit-hidden"></div>
     </div>
   `;
+
+  mountContractRulesPanel(container);
 
   // Append to sidebar — appears after the existing footer buttons
   sidebar.appendChild(container);
