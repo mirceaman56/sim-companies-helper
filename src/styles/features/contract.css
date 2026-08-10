@@ -165,8 +165,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 5px 8px;
+  gap: 6px;
+  /* Without min-width: 0 a long amount keeps the card from shrinking and the
+     action buttons get pushed past the fixed-width sidebar's edge. */
+  min-width: 0;
+  padding: 4px 6px;
   border: var(--scx-border-light);
   border-radius: var(--scx-border-radius-sm);
   background: var(--scx-bg-secondary);
@@ -174,35 +177,60 @@
 
 .scx-contract-rule-info {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: baseline;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
   font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rule-amount {
+  color: var(--scx-text-primary);
+  font-weight: var(--scx-font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .scx-contract-rule-discount {
   color: var(--scx-text-muted);
   font-size: var(--scx-font-size-xs);
+  flex-shrink: 0;
 }
 
 .scx-contract-rule-actions {
   display: flex;
+  align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .scx-contract-rule-apply-btn {
   font-size: var(--scx-font-size-xs);
-  padding: 4px 8px;
+  font-weight: var(--scx-font-weight-semibold);
+  padding: 3px 8px;
 }
 
+/* Square icon button. The market-alerts remove button is fully transparent,
+   which reads as an artifact against the card fill — this one keeps a real
+   surface and only turns red on hover. --scx-bg-primary is used because
+   --scx-bg-subtle is identical to the card's --scx-bg-secondary in light mode. */
 .scx-contract-rule-remove-btn {
-  background: none;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: var(--scx-font-size-xs);
+  line-height: 1;
+  background: var(--scx-bg-primary);
   border: var(--scx-border-light);
   color: var(--scx-text-muted);
-  min-width: 24px;
-  font-size: var(--scx-font-size-xs);
 }
 
-.scx-contract-rule-remove-btn:hover {
-  color: var(--scx-color-error);
+.scx-contract-rule-remove-btn:hover:not(:disabled) {
+  background: var(--scx-bg-error);
   border-color: var(--scx-color-error);
+  color: var(--scx-color-error);
+  box-shadow: none;
 }
