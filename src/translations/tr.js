@@ -358,4 +358,9 @@ export default {
   financeAlertLiquidityTight: "Cari oran 1,0'ın altında; likidite sıkışık olabilir.",
   financeAlertInventoryHigh: "Envanter gelire göre yüksektir.",
   financeAlertWorkforceHigh: "İşgücü ve liderlik maliyetleri gelire göre yüksektir.",
+  apiLimitBannerTitle: "API sınırına ulaşıldı",
+  apiLimitBannerBody: "Fiyatlar ve finans verileri eksik veya hatalı olabilir.",
+  apiLimitBannerRetry: "Yeniden deneme:",
+  marketPriceUnavailable: "Piyasa fiyatı yok — kâr hesaplanmadı.",
+  marketPriceUnavailableRateLimited: "Piyasa fiyatı yok (API sınırına ulaşıldı) — kâr hesaplanmadı.",
 };

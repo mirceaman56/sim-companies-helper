@@ -358,4 +358,10 @@ export default {
   financeAlertLiquidityTight: "流動比率は 1.0 を下回ります。流動性が逼迫している可能性がある。",
   financeAlertInventoryHigh: "収益に比べて在庫が多い。",
   financeAlertWorkforceHigh: "従業員とリーダーシップのコストは収益に比べて高額です。",
+  apiLimitBannerTitle: "API の上限に達しました",
+  apiLimitBannerBody: "価格や財務データが欠落または不正確な可能性があります。",
+  apiLimitBannerRetry: "再試行まで",
+  marketPriceUnavailable: "市場価格を取得できません — 利益は計算されていません。",
+  marketPriceUnavailableRateLimited:
+    "市場価格を取得できません（API の上限に達しました）— 利益は計算されていません。",
 };

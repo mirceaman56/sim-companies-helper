@@ -14,6 +14,7 @@ import {
   extractProductionBuildingLevel,
 } from "./page/production_page.js";
 import { STATE } from "./state.js";
+import { getApiHealth } from "./data/apiHealth.js";
 import { loadExecutivesOnce, getExecutivesTrainingForCOO } from "./executives.js";
 
 const SECTION_ID = "production-section";
@@ -297,56 +298,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
          <div class="scx-text-xs scx-text-muted">@ <span class="scx-mono">${formatMoney(marketPrice)}</span>${quality > 0 ? ` (Q${quality})` : ""}</div>
       </div>
       
-      <div class="scx-flex-column scx-production-profit-stack">
-        
-        <!-- Market Profit -->
-        <div class="scx-card scx-tone-surface scx-tone-warning">
-          <div class="scx-flex-spaced scx-text-xs">
-             <span class="scx-text-semibold">${t("marketSell")}</span>
-             <div class="scx-muted scx-text-xs">${t("fullTransportFee")}</div>
-          </div>
-          
-          <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
-             <span class="scx-k scx-text-xs">${t("profit")}</span>
-             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.market.profit)}">
-               ${formatMoney(profitAnalysis.market.profit)}
-             </span>
-          </div>
-          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
-             <span class="scx-k">${t("margin")}</span>
-             <span class="scx-mono ${getValueToneClass(profitAnalysis.market.margin)}">
-               ${profitAnalysis.market.margin.toFixed(2)}%
-             </span>
-          </div>
-          <div class="scx-text-muted scx-margin-top-2 scx-text-right">
-             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}</span>
-          </div>
-        </div>
-
-        <!-- Contract Profit -->
-        <div class="scx-card scx-tone-surface scx-tone-neutral">
-          <div class="scx-flex-spaced scx-text-xs">
-             <span class="scx-text-semibold">${t("contractSell")}</span>
-             <div class="scx-muted scx-text-xs">${t("halfTransport")}</div>
-          </div>
-          
-           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
-             <span class="scx-k scx-text-xs">${t("profit")}</span>
-             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.contract.profit)}">
-               ${formatMoney(profitAnalysis.contract.profit)}
-             </span>
-          </div>
-          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
-             <span class="scx-k">${t("margin")}</span>
-             <span class="scx-mono ${getValueToneClass(profitAnalysis.contract.margin)}">
-               ${profitAnalysis.contract.margin.toFixed(2)}%
-             </span>
-          </div>
-           <div class="scx-text-muted scx-margin-top-2 scx-text-right">
-             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}</span>
-          </div>
-        </div>
-      </div>
+      ${profitAnalysis && breakEvenAnalysis ? renderProfitStackHTML(profitAnalysis, breakEvenAnalysis) : renderPriceUnavailableHTML(breakEvenAnalysis)}
 
       ${
         buildingLevel && upgradeMultiplier && upgradedProduction
@@ -447,6 +399,88 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       contractProfitDelta,
     ),
   );
+}
+
+function renderProfitStackHTML(profitAnalysis, breakEvenAnalysis) {
+  return `
+      <div class="scx-flex-column scx-production-profit-stack">
+
+        <!-- Market Profit -->
+        <div class="scx-card scx-tone-surface scx-tone-warning">
+          <div class="scx-flex-spaced scx-text-xs">
+             <span class="scx-text-semibold">${t("marketSell")}</span>
+             <div class="scx-muted scx-text-xs">${t("fullTransportFee")}</div>
+          </div>
+
+          <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-text-xs">${t("profit")}</span>
+             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.market.profit)}">
+               ${formatMoney(profitAnalysis.market.profit)}
+             </span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
+             <span class="scx-k">${t("margin")}</span>
+             <span class="scx-mono ${getValueToneClass(profitAnalysis.market.margin)}">
+               ${profitAnalysis.market.margin.toFixed(2)}%
+             </span>
+          </div>
+          <div class="scx-text-muted scx-margin-top-2 scx-text-right">
+             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}</span>
+          </div>
+        </div>
+
+        <!-- Contract Profit -->
+        <div class="scx-card scx-tone-surface scx-tone-neutral">
+          <div class="scx-flex-spaced scx-text-xs">
+             <span class="scx-text-semibold">${t("contractSell")}</span>
+             <div class="scx-muted scx-text-xs">${t("halfTransport")}</div>
+          </div>
+
+           <div class="scx-flex-row scx-margin-top-4 scx-padding-top-4 scx-border-top-sm">
+             <span class="scx-k scx-text-xs">${t("profit")}</span>
+             <span class="scx-mono scx-text-bold scx-text-xs ${getValueToneClass(profitAnalysis.contract.profit)}">
+               ${formatMoney(profitAnalysis.contract.profit)}
+             </span>
+          </div>
+          <div class="scx-flex-row scx-margin-top-1 scx-text-xs">
+             <span class="scx-k">${t("margin")}</span>
+             <span class="scx-mono ${getValueToneClass(profitAnalysis.contract.margin)}">
+               ${profitAnalysis.contract.margin.toFixed(2)}%
+             </span>
+          </div>
+           <div class="scx-text-muted scx-margin-top-2 scx-text-right">
+             ${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}</span>
+          </div>
+        </div>
+      </div>
+  `;
+}
+
+/**
+ * Shown instead of the profit cards when a market price is missing. Rendering
+ * the cards with a $0 price produced a -100% margin and a huge fake loss.
+ */
+function renderPriceUnavailableHTML(breakEvenAnalysis) {
+  const messageKey = getApiHealth().blocked ? "marketPriceUnavailableRateLimited" : "marketPriceUnavailable";
+  const breakEvenHTML = breakEvenAnalysis
+    ? `
+        <div class="scx-flex-spaced scx-text-xs scx-margin-top-2">
+          <span class="scx-text-semibold">${t("marketSell")}</span>
+          <span class="scx-text-muted">${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.market.breakEvenPrice)}</span></span>
+        </div>
+        <div class="scx-flex-spaced scx-text-xs scx-margin-top-1">
+          <span class="scx-text-semibold">${t("contractSell")}</span>
+          <span class="scx-text-muted">${t("breakEvenGt")} <span class="scx-mono">${formatMoney(breakEvenAnalysis.contract.breakEvenPrice)}</span></span>
+        </div>
+      `
+    : "";
+
+  return `
+      <div class="scx-flex-column scx-production-profit-stack">
+        <div class="scx-note scx-note-warning scx-production-warning">${t(messageKey)}</div>
+        ${breakEvenHTML}
+      </div>
+  `;
 }
 
 function getValueToneClass(value) {

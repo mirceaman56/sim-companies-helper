@@ -4,6 +4,7 @@
 // Market API
 export const MARKET_CACHE_TTL_MS = 60_000; // 1 minute
 export const RATE_LIMIT_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+export const MARKET_ERROR_RETRY_MS = 30_000; // back-off after a failed market fetch
 
 // Market alerts
 export const ALERT_CHECK_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes

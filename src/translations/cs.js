@@ -358,4 +358,9 @@ export default {
   financeAlertLiquidityTight: "Aktuální poměr je nižší než 1,0; likvidita může být napjatá.",
   financeAlertInventoryHigh: "Zásoby jsou v poměru k výnosům vysoké.",
   financeAlertWorkforceHigh: "Náklady na pracovní sílu a vedení jsou vysoké v porovnání s příjmy.",
+  apiLimitBannerTitle: "Dosažen limit API",
+  apiLimitBannerBody: "Ceny a finanční údaje mohou chybět nebo být nesprávné.",
+  apiLimitBannerRetry: "Opakování za",
+  marketPriceUnavailable: "Tržní cena není k dispozici — zisk nebyl vypočten.",
+  marketPriceUnavailableRateLimited: "Tržní cena není k dispozici (dosažen limit API) — zisk nebyl vypočten.",
 };

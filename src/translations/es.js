@@ -365,4 +365,10 @@ export default {
   financeAlertInventoryHigh: "El inventario es alto en relación con los ingresos.",
   financeAlertWorkforceHigh:
     "Los costos de mano de obra y liderazgo son altos en comparación con los ingresos.",
+  apiLimitBannerTitle: "Límite de la API alcanzado",
+  apiLimitBannerBody: "Los precios y los datos financieros pueden faltar o ser incorrectos.",
+  apiLimitBannerRetry: "Reintento en",
+  marketPriceUnavailable: "Precio de mercado no disponible — beneficio no calculado.",
+  marketPriceUnavailableRateLimited:
+    "Precio de mercado no disponible (límite de la API alcanzado) — beneficio no calculado.",
 };

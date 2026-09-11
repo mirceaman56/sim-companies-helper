@@ -223,3 +223,43 @@ describe("analyzeProduction", () => {
     );
   });
 });
+
+describe("analyzeProduction with missing prices", () => {
+  it("leaves profit out instead of using a $0 market price", async () => {
+    const recipe = getRecipes().find((r) => r.transport > 0);
+    if (!recipe) return;
+
+    const prices = new Map([[TRANSPORT_RESOURCE_ID, 4.5]]);
+    const result = await analyzeProduction(recipe.id, 10, prices, null, 20);
+
+    expect(result.marketPrice).toBeNull();
+    expect(result.profitAnalysis).toBeNull();
+    expect(result.missingPrices).toEqual({ transport: false, product: true });
+    expect(result.breakEvenAnalysis.market.breakEvenPrice).toBeGreaterThan(0);
+  });
+
+  it("leaves break-even and profit out when the transport price is missing", async () => {
+    const recipe = getRecipes().find((r) => r.transport > 0);
+    if (!recipe) return;
+
+    const prices = new Map([[recipe.id, 100]]);
+    const result = await analyzeProduction(recipe.id, 10, prices, null, 20);
+
+    expect(result.productionCost).toBe(200);
+    expect(result.breakEvenAnalysis).toBeNull();
+    expect(result.profitAnalysis).toBeNull();
+    expect(result.missingPrices).toEqual({ transport: true, product: false });
+  });
+
+  it("does not need a transport price for recipes without transport", async () => {
+    const recipe = getRecipes().find((r) => !r.transport);
+    if (!recipe) return;
+
+    const prices = new Map([[recipe.id, 100]]);
+    const result = await analyzeProduction(recipe.id, 10, prices, null, 20);
+
+    expect(result.breakEvenAnalysis).not.toBeNull();
+    expect(result.profitAnalysis).not.toBeNull();
+    expect(result.missingPrices).toEqual({ transport: false, product: false });
+  });
+});

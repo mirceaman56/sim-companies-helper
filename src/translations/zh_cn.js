@@ -356,4 +356,9 @@ export default {
   financeAlertLiquidityTight: "流动比率低于1.0；流动性可能紧张。",
   financeAlertInventoryHigh: "库存相对于收入较高。",
   financeAlertWorkforceHigh: "与收入相比，劳动力和领导成本很高。",
+  apiLimitBannerTitle: "已达到 API 请求上限",
+  apiLimitBannerBody: "价格和财务数据可能缺失或不准确。",
+  apiLimitBannerRetry: "重试倒计时",
+  marketPriceUnavailable: "市场价格不可用 — 未计算利润。",
+  marketPriceUnavailableRateLimited: "市场价格不可用（已达到 API 上限）— 未计算利润。",
 };

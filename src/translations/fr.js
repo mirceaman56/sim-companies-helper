@@ -366,4 +366,10 @@ export default {
   financeAlertInventoryHigh: "Les stocks sont élevés par rapport aux revenus.",
   financeAlertWorkforceHigh:
     "Les coûts de main-d'œuvre et de leadership sont élevés par rapport aux revenus.",
+  apiLimitBannerTitle: "Limite d'API atteinte",
+  apiLimitBannerBody: "Les prix et les données financières peuvent être manquants ou erronés.",
+  apiLimitBannerRetry: "Nouvel essai dans",
+  marketPriceUnavailable: "Prix du marché indisponible — profit non calculé.",
+  marketPriceUnavailableRateLimited:
+    "Prix du marché indisponible (limite d'API atteinte) — profit non calculé.",
 };
