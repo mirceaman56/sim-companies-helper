@@ -1,6 +1,6 @@
 // cashflow.js
 import recipesData from "./resources/recipes.json";
-import { loadAuthDataOnce } from "./auth.js";
+import { ensureAuthContextCurrent } from "./auth_sync.js";
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
 import { storage } from "./data/storage.js";
@@ -19,7 +19,6 @@ const CASHFLOW_ACTIVE_TTL_MS = 60 * 1000;
 const CASHFLOW_IDLE_TTL_MS = 5 * 60 * 1000;
 const PAST_FINANCES_TTL_MS = 30 * 60 * 1000;
 const OUTGOING_CONTRACTS_TTL_MS = 10 * 60 * 1000;
-const AUTH_REFRESH_TTL_MS = 30 * 1000;
 const STORAGE_RETENTION_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
 const CASHFLOW_STORAGE_DOMAIN = "cashflow-finance";
 
@@ -38,7 +37,6 @@ const schedulerState = {
 };
 
 let hydratedFinanceScopeKey = "";
-let lastFinanceAuthRefreshAt = 0;
 
 const recipes = Array.isArray(recipesData) ? recipesData : [];
 const RESOURCE_NAME_BY_KIND = new Map(recipes.map((r) => [Number(r.id), String(r.name || r.id)]));
@@ -1250,13 +1248,10 @@ function markRateLimitFromError(error) {
 }
 
 async function refreshFinanceAuthContext() {
-  const now = nowMs();
-  const shouldRefresh = !STATE.auth.loaded || now - lastFinanceAuthRefreshAt > AUTH_REFRESH_TTL_MS;
-
-  if (!shouldRefresh) return;
-
-  await loadAuthDataOnce({ force: true });
-  lastFinanceAuthRefreshAt = nowMs();
+  // The /me/ endpoints answer for the company the game has active, so the cache
+  // scope must match it. Auth is re-fetched only when missing or when the
+  // company changed (see auth_sync.js) — not on a timer.
+  await ensureAuthContextCurrent();
 }
 
 async function refreshRecentTransactions({ force = false } = {}) {

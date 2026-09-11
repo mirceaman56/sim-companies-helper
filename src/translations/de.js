@@ -363,4 +363,10 @@ export default {
   financeAlertLiquidityTight: "Aktuelles Verhältnis liegt unter 1,0; Die Liquidität könnte knapp sein.",
   financeAlertInventoryHigh: "Der Lagerbestand ist im Verhältnis zum Umsatz hoch.",
   financeAlertWorkforceHigh: "Die Personal- und Führungskosten sind im Vergleich zum Umsatz hoch.",
+  apiLimitBannerTitle: "API-Limit erreicht",
+  apiLimitBannerBody: "Preise und Finanzdaten können fehlen oder falsch sein.",
+  apiLimitBannerRetry: "Erneut in",
+  marketPriceUnavailable: "Marktpreis nicht verfügbar – Gewinn nicht berechnet.",
+  marketPriceUnavailableRateLimited:
+    "Marktpreis nicht verfügbar (API-Limit erreicht) – Gewinn nicht berechnet.",
 };

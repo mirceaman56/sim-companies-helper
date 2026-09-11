@@ -356,4 +356,9 @@ export default {
   financeAlertLiquidityTight: "流動比率低於1.0；流動性可能緊張。",
   financeAlertInventoryHigh: "庫存相對於收入較高。",
   financeAlertWorkforceHigh: "與收入相比，勞動力和領導成本很高。",
+  apiLimitBannerTitle: "已達到 API 請求上限",
+  apiLimitBannerBody: "價格與財務資料可能缺失或不正確。",
+  apiLimitBannerRetry: "重試倒數",
+  marketPriceUnavailable: "市場價格無法取得 — 未計算利潤。",
+  marketPriceUnavailableRateLimited: "市場價格無法取得（已達到 API 上限）— 未計算利潤。",
 };

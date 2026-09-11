@@ -362,4 +362,10 @@ export default {
   financeAlertLiquidityTight: "Wskaźnik prądu jest poniżej 1,0; płynność może być ograniczona.",
   financeAlertInventoryHigh: "Zapasy są wysokie w stosunku do przychodów.",
   financeAlertWorkforceHigh: "Koszty siły roboczej i przywództwa są wysokie w porównaniu do przychodów.",
+  apiLimitBannerTitle: "Osiągnięto limit API",
+  apiLimitBannerBody: "Ceny i dane finansowe mogą być niepełne lub błędne.",
+  apiLimitBannerRetry: "Ponowna próba za",
+  marketPriceUnavailable: "Cena rynkowa niedostępna — zysk nie został obliczony.",
+  marketPriceUnavailableRateLimited:
+    "Cena rynkowa niedostępna (osiągnięto limit API) — zysk nie został obliczony.",
 };

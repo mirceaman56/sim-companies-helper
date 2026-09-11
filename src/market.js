@@ -1,15 +1,15 @@
 // market.js
 import { STATE } from "./state.js";
 import { getRealmId } from "./auth.js";
-import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS } from "./constants.js";
+import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS, MARKET_ERROR_RETRY_MS } from "./constants.js";
 import { request, getRateLimitStatus as getApiRateLimitStatus } from "./data/apiClient.js";
 
 /**
- * Check if market calls are currently blocked due to rate limiting.
+ * Check if market calls are currently blocked because the game API is rate limiting.
  * @returns {{ blocked: boolean, remainingMs: number }}
  */
 export function getRateLimitStatus() {
-  const status = getApiRateLimitStatus("market");
+  const status = getApiRateLimitStatus();
   return { blocked: status.blocked, remainingMs: status.remainingMs };
 }
 
@@ -30,7 +30,7 @@ export async function fetchMarket(realmId, productId) {
   const cacheKey = `${realmId}:${productId}`;
 
   // If rate-limited, return cached data if available, otherwise throw immediately
-  const rateLimit = getApiRateLimitStatus("market");
+  const rateLimit = getApiRateLimitStatus();
   if (rateLimit.blocked) {
     const cached = STATE.marketCache.get(cacheKey);
     if (cached) return cached.data;
@@ -98,12 +98,12 @@ function ensureMarketFetch(realmId, productId, scheduleUpdate) {
   if (!productId) return;
 
   const ms = STATE.marketState;
-  if (
-    ms.productId === productId &&
-    ms.realmId === realmId &&
-    (ms.status === "ok" || ms.status === "loading")
-  ) {
-    return;
+  if (ms.productId === productId && ms.realmId === realmId) {
+    if (ms.status === "ok" || ms.status === "loading") return;
+    // Back off after a failure. Retrying straight away, with an update callback
+    // that re-renders synchronously, made an endless fetch/fail/re-render loop
+    // that froze the page while the API was in cooldown.
+    if (ms.status === "error" && Date.now() - Number(ms.errorAt || 0) < MARKET_ERROR_RETRY_MS) return;
   }
 
   STATE.marketState = { status: "loading", realmId, productId, data: null, error: null };
@@ -121,6 +121,7 @@ function ensureMarketFetch(realmId, productId, scheduleUpdate) {
         productId,
         data: null,
         error: String(err?.message || err),
+        errorAt: Date.now(),
       };
       scheduleUpdate();
     });

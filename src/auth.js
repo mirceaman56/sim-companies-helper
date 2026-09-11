@@ -2,6 +2,30 @@
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
 
+const authListeners = new Set();
+
+/**
+ * Subscribe to successfully applied auth-data loads.
+ * @param {(context: { companyId: number|null, realmId: number|null }) => void} listener
+ * @returns {() => void} Unsubscribe function.
+ */
+export function onAuthDataApplied(listener) {
+  if (typeof listener !== "function") return () => {};
+  authListeners.add(listener);
+  return () => authListeners.delete(listener);
+}
+
+function notifyAuthDataApplied() {
+  const context = { companyId: STATE.auth.companyId, realmId: STATE.auth.realmId };
+  for (const listener of authListeners) {
+    try {
+      listener(context);
+    } catch {
+      // A broken listener must not break auth loading.
+    }
+  }
+}
+
 function applyAuthData(data) {
   const c = data?.authCompany;
 
@@ -16,6 +40,8 @@ function applyAuthData(data) {
   STATE.levelInfo.level = li?.level ?? null;
   STATE.levelInfo.experience = li?.experience ?? null;
   STATE.levelInfo.experienceToNextLevel = li?.experienceToNextLevel ?? null;
+
+  notifyAuthDataApplied();
 }
 
 let inflightAuthLoad = null;

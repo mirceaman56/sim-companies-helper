@@ -357,4 +357,9 @@ export default {
   financeAlertLiquidityTight: "Current ratio is below 1.0; liquidity may be tight.",
   financeAlertInventoryHigh: "Inventory is high relative to revenue.",
   financeAlertWorkforceHigh: "Workforce and leadership costs are high vs revenue.",
+  apiLimitBannerTitle: "API limit reached",
+  apiLimitBannerBody: "Prices and finance data may be missing or wrong.",
+  apiLimitBannerRetry: "Retry in",
+  marketPriceUnavailable: "Market price unavailable — profit not calculated.",
+  marketPriceUnavailableRateLimited: "Market price unavailable (API limit reached) — profit not calculated.",
 };

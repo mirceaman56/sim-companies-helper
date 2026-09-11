@@ -522,12 +522,48 @@ export async function migrate({
   return { data: legacyData, migrated: true };
 }
 
+/**
+ * Watch a global chrome.storage value for writes from any tab or the background
+ * worker. Only the chrome backend broadcasts changes across tabs.
+ *
+ * @param {{ domain: string, version: number, prefix?: string }} options
+ * @param {(data: unknown) => void} listener Receives the new data value, or null when removed.
+ * @returns {() => void} Unsubscribe function.
+ */
+export function watchGlobal({ domain, version, prefix = DEFAULT_PREFIX } = {}, listener) {
+  if (typeof listener !== "function") return () => {};
+
+  let events = null;
+  try {
+    events = typeof chrome !== "undefined" ? chrome?.storage?.onChanged || null : null;
+  } catch {
+    events = null;
+  }
+  if (!events?.addListener) return () => {};
+
+  const key = buildStorageKey({ domain, version, scopeKey: "global", prefix });
+  const handler = (changes, areaName) => {
+    if (areaName !== "local") return;
+    const change = changes?.[key];
+    if (!change) return;
+    listener(parseJson(change.newValue)?.data ?? null);
+  };
+
+  events.addListener(handler);
+  return () => {
+    try {
+      events.removeListener?.(handler);
+    } catch {}
+  };
+}
+
 export const storage = {
   get,
   set,
   remove,
   listByPrefix,
   migrate,
+  watchGlobal,
   buildStorageKey,
   getRaw,
   setRaw,

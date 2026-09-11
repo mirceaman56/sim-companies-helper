@@ -362,4 +362,10 @@ export default {
   financeAlertInventoryHigh: "O estoque é alto em relação à receita.",
   financeAlertWorkforceHigh:
     "Os custos da força de trabalho e da liderança são altos em relação às receitas.",
+  apiLimitBannerTitle: "Limite da API atingido",
+  apiLimitBannerBody: "Preços e dados financeiros podem estar ausentes ou incorretos.",
+  apiLimitBannerRetry: "Nova tentativa em",
+  marketPriceUnavailable: "Preço de mercado indisponível — lucro não calculado.",
+  marketPriceUnavailableRateLimited:
+    "Preço de mercado indisponível (limite da API atingido) — lucro não calculado.",
 };

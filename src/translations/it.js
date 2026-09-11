@@ -363,4 +363,10 @@ export default {
   financeAlertLiquidityTight: "Il rapporto attuale è inferiore a 1,0; la liquidità potrebbe essere limitata.",
   financeAlertInventoryHigh: "L'inventario è elevato rispetto alle entrate.",
   financeAlertWorkforceHigh: "I costi della forza lavoro e della leadership sono elevati rispetto ai ricavi.",
+  apiLimitBannerTitle: "Limite API raggiunto",
+  apiLimitBannerBody: "Prezzi e dati finanziari potrebbero mancare o essere errati.",
+  apiLimitBannerRetry: "Nuovo tentativo tra",
+  marketPriceUnavailable: "Prezzo di mercato non disponibile — profitto non calcolato.",
+  marketPriceUnavailableRateLimited:
+    "Prezzo di mercato non disponibile (limite API raggiunto) — profitto non calcolato.",
 };

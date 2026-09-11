@@ -1,0 +1,44 @@
+/* ============ API Rate-Limit Warning ============ */
+/* Banner sits under the toggle tab; same width as a collapsed section. */
+.scx-api-health-banner {
+  box-sizing: border-box;
+  width: 180px;
+  padding: var(--scx-spacing-sm) var(--scx-spacing-md);
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-text);
+  border: 1px solid var(--scx-color-warning);
+  border-radius: var(--scx-border-radius-lg);
+  box-shadow: var(--scx-shell-section-shadow);
+  font-size: var(--scx-font-size-xs);
+  line-height: 1.3;
+}
+
+.scx-api-health-banner-title {
+  display: flex;
+  align-items: center;
+  gap: var(--scx-spacing-xs);
+  font-weight: var(--scx-font-weight-bold);
+  text-transform: uppercase;
+}
+
+.scx-api-health-banner-body {
+  margin-top: var(--scx-spacing-xs);
+}
+
+.scx-api-health-banner-retry {
+  margin-top: var(--scx-spacing-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tint the whole sidebar so the state is visible even with sections collapsed
+   or the sidebar hidden behind its toggle tab. */
+#scx-sidebar.scx-sidebar--rate-limited > .scx-section {
+  border-color: var(--scx-color-warning);
+}
+
+#scx-sidebar.scx-sidebar--rate-limited .scx-sidebar-toggle-tab {
+  background: var(--scx-tone-warning-bg);
+  border-color: var(--scx-color-warning);
+  color: var(--scx-color-warning);
+}

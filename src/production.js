@@ -80,29 +80,29 @@ export async function analyzeProduction(
   const productQuality = Number.isFinite(quality) && quality > 0 ? quality : 0;
 
   // 1. Determine Transport Container Price and Product Price
-  let containerPrice = 0;
-  let productMarketPrice = 0;
+  // null means "unknown" — never substitute 0, it turns into fake losses.
+  let containerPrice = null;
+  let productMarketPrice = null;
+  const transportNeeded = recipe.transport || 0; // units per item
 
   try {
-    if (realmId != null) {
-      // Container Price (containers are always quality 0)
-      containerPrice = pricesMap?.get(buildPriceKey(TRANSPORT_RESOURCE_ID));
-      if (!Number.isFinite(containerPrice)) {
-        containerPrice = await fetchMarketPrice(realmId, TRANSPORT_RESOURCE_ID);
-      }
+    // Container Price (containers are always quality 0), only when the recipe ships transport
+    containerPrice = pricesMap?.get(buildPriceKey(TRANSPORT_RESOURCE_ID));
+    if (!Number.isFinite(containerPrice) && transportNeeded > 0 && realmId != null) {
+      containerPrice = await fetchMarketPrice(realmId, TRANSPORT_RESOURCE_ID);
+    }
 
-      // Product Market Price at the produced quality (for profit analysis)
-      productMarketPrice = pricesMap?.get(buildPriceKey(productId, productQuality));
-      if (!Number.isFinite(productMarketPrice)) {
-        productMarketPrice = await fetchMarketPrice(realmId, productId, productQuality);
-      }
+    // Product Market Price at the produced quality (for profit analysis)
+    productMarketPrice = pricesMap?.get(buildPriceKey(productId, productQuality));
+    if (!Number.isFinite(productMarketPrice) && realmId != null) {
+      productMarketPrice = await fetchMarketPrice(realmId, productId, productQuality);
     }
   } catch {
     // Silent catch
   }
 
-  if (!Number.isFinite(containerPrice)) containerPrice = 0;
-  if (!Number.isFinite(productMarketPrice)) productMarketPrice = 0;
+  if (!Number.isFinite(containerPrice)) containerPrice = null;
+  if (!Number.isFinite(productMarketPrice)) productMarketPrice = null;
 
   // 2. Calculate Base Production Cost
   // Strictly use UI Unit Cost as requested.
@@ -124,13 +124,36 @@ export async function analyzeProduction(
   const totalBaseCost = uiUnitCost * quantity;
 
   // 3. Calculate Transport Costs
-  const transportNeeded = recipe.transport || 0; // units per item
+  // A recipe without transport never needs the container price.
+  const effectiveContainerPrice = transportNeeded > 0 ? containerPrice : 0;
+  const marketPriceKnown = Number.isFinite(productMarketPrice);
+  const missingPrices = {
+    transport: !Number.isFinite(effectiveContainerPrice),
+    product: !marketPriceKnown,
+  };
+
+  // Without a real price every break-even and profit figure would be made up
+  // (a $0 price used to show a -100% margin), so those sections are left out.
+  if (missingPrices.transport) {
+    return {
+      recipe,
+      quantity,
+      productionCost: totalBaseCost,
+      unitCost: uiUnitCost,
+      transportCost: NaN,
+      marketPrice: marketPriceKnown ? productMarketPrice : null,
+      quality: productQuality,
+      missingPrices,
+      breakEvenAnalysis: null,
+      profitAnalysis: null,
+    };
+  }
 
   // Market needs full transport
-  const marketTransportCost = transportNeeded * quantity * containerPrice;
+  const marketTransportCost = transportNeeded * quantity * effectiveContainerPrice;
 
   // Contract needs half transport
-  const contractTransportCost = (transportNeeded / 2) * quantity * containerPrice;
+  const contractTransportCost = (transportNeeded / 2) * quantity * effectiveContainerPrice;
 
   // 4. Calculate Break-even Prices
   // Market: (Base + Transport) / (1 - fee) / Qty
@@ -141,40 +164,35 @@ export async function analyzeProduction(
   const contractTotalCost = totalBaseCost + contractTransportCost;
   const contractBreakEvenPrice = contractTotalCost / quantity;
 
-  // 5. Profit Analysis (Assuming selling at Market Price)
-  const sellRevenue = productMarketPrice * quantity;
-
-  // Market Profit
-  const marketRevenueNet = sellRevenue * (1 - MARKET_FEE); // Deduct fee
-  const marketProfit = marketRevenueNet - marketTotalCost;
-  const marketMargin = marketTotalCost > 0 ? (marketProfit / marketTotalCost) * 100 : 0;
-
-  // Contract Profit (No fee, Half Transport)
-  // Revenue is full Market Price (as per user request "assuming selling at lowest market price")
-  const contractProfit = sellRevenue - contractTotalCost;
-  const contractMargin = contractTotalCost > 0 ? (contractProfit / contractTotalCost) * 100 : 0;
-
-  return {
-    recipe,
-    quantity,
-    productionCost: totalBaseCost, // Base Cost
-    unitCost: uiUnitCost,
-    transportCost: marketTransportCost,
-    marketPrice: productMarketPrice,
-    quality: productQuality,
-    breakEvenAnalysis: {
-      market: {
-        totalCost: marketTotalCost,
-        transportCost: marketTransportCost,
-        breakEvenPrice: marketBreakEvenPrice,
-      },
-      contract: {
-        totalCost: contractTotalCost,
-        transportCost: contractTransportCost,
-        breakEvenPrice: contractBreakEvenPrice,
-      },
+  const breakEvenAnalysis = {
+    market: {
+      totalCost: marketTotalCost,
+      transportCost: marketTransportCost,
+      breakEvenPrice: marketBreakEvenPrice,
     },
-    profitAnalysis: {
+    contract: {
+      totalCost: contractTotalCost,
+      transportCost: contractTransportCost,
+      breakEvenPrice: contractBreakEvenPrice,
+    },
+  };
+
+  let profitAnalysis = null;
+  if (marketPriceKnown) {
+    // 5. Profit Analysis (Assuming selling at Market Price)
+    const sellRevenue = productMarketPrice * quantity;
+
+    // Market Profit
+    const marketRevenueNet = sellRevenue * (1 - MARKET_FEE); // Deduct fee
+    const marketProfit = marketRevenueNet - marketTotalCost;
+    const marketMargin = marketTotalCost > 0 ? (marketProfit / marketTotalCost) * 100 : 0;
+
+    // Contract Profit (No fee, Half Transport)
+    // Revenue is full Market Price (as per user request "assuming selling at lowest market price")
+    const contractProfit = sellRevenue - contractTotalCost;
+    const contractMargin = contractTotalCost > 0 ? (contractProfit / contractTotalCost) * 100 : 0;
+
+    profitAnalysis = {
       market: {
         profit: marketProfit,
         margin: marketMargin,
@@ -183,6 +201,19 @@ export async function analyzeProduction(
         profit: contractProfit,
         margin: contractMargin,
       },
-    },
+    };
+  }
+
+  return {
+    recipe,
+    quantity,
+    productionCost: totalBaseCost, // Base Cost
+    unitCost: uiUnitCost,
+    transportCost: marketTransportCost,
+    marketPrice: marketPriceKnown ? productMarketPrice : null,
+    quality: productQuality,
+    missingPrices,
+    breakEvenAnalysis,
+    profitAnalysis,
   };
 }

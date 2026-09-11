@@ -13,6 +13,7 @@ import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initXpWidget } from "./xp_ui.js";
 import { initWhatsNewToast } from "./whats_new_ui.js";
+import { initApiHealthBanner } from "./api_health_banner.js";
 
 /**
  * @typedef {{id: string, titleKey: string, icon: string}} SidebarSection
@@ -33,6 +34,7 @@ const SIDEBAR_SECTIONS = [
  */
 export function bootstrapFeatureRegistry() {
   ensureSidebarContainer();
+  initApiHealthBanner();
   initWhatsNewToast();
 
   for (const section of SIDEBAR_SECTIONS) {

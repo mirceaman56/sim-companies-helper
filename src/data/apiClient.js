@@ -1,6 +1,16 @@
 const inflightByKey = new Map();
-const rateLimitByDomain = new Map();
+const rateLimitByGroup = new Map();
 const rateLimitHitCount = new Map();
+const rateLimitListeners = new Set();
+
+/**
+ * Every simcompanies.com endpoint shares one rate-limit group: the server limits
+ * the player's session, not individual endpoints, so a 429 on one call means all
+ * other calls to the game are about to fail too.
+ */
+export const SIMCOMPANIES_RATE_LIMIT_GROUP = "simcompanies";
+const SIMCOMPANIES_HOST_SUFFIX = "simcompanies.com";
+const DEFAULT_RATE_LIMIT_COOLDOWN_MS = 10 * 60 * 1000;
 
 /**
  * @typedef {Object} ApiRequestSpec
@@ -13,8 +23,8 @@ const rateLimitHitCount = new Map();
  * @property {"json"|"text"|"blob"|"arrayBuffer"|"response"} [responseType="json"] Response parsing mode.
  * @property {number} [retries=0] Number of retry attempts after the first request fails.
  * @property {number} [retryDelayMs=0] Delay between retries.
- * @property {number[]} [retryStatuses=[408,425,429,500,502,503,504]] HTTP statuses that are eligible for retry.
- * @property {number} [rateLimitCooldownMs=0] Cooldown window to apply to the domain after a `429` response.
+ * @property {number[]} [retryStatuses=[408,425,500,502,503,504]] HTTP statuses that are eligible for retry. `429` is never retried.
+ * @property {number} [rateLimitCooldownMs=600000] Cooldown window to apply to the rate-limit group after a `429` or Cloudflare challenge. The first hit uses half of it.
  * @property {number} [timeoutMs=0] Request timeout in milliseconds. `0` disables the timeout.
  * @property {boolean} [coalesce=false] Reuse an in-flight request with the same URL and method.
  * @property {string} [coalesceKey] Override the default coalescing key when several requests share the same logical resource.
@@ -51,15 +61,102 @@ function buildInflightKey(domain, coalesceKey, url, method) {
   return `${domain}:${method}:${url}`;
 }
 
-export function getRateLimitStatus(domain = "default") {
-  const d = normalizeDomain(domain);
-  const blockedUntil = Number(rateLimitByDomain.get(d) || 0);
-  const remainingMs = Math.max(0, blockedUntil - Date.now());
+/**
+ * Map a request to its rate-limit group: all simcompanies.com hosts share one
+ * group, anything else is tracked under its own logical domain.
+ * @param {string} url
+ * @param {string} domain
+ * @returns {string}
+ */
+export function resolveRateLimitGroup(url, domain) {
+  // Relative URLs are served by the game itself.
+  const match = String(url || "").match(/^[a-z][a-z\d+.-]*:\/\/([^/?#:]+)/i);
+  const host = match ? match[1].toLowerCase() : SIMCOMPANIES_HOST_SUFFIX;
+  if (host === SIMCOMPANIES_HOST_SUFFIX || host.endsWith(`.${SIMCOMPANIES_HOST_SUFFIX}`)) {
+    return SIMCOMPANIES_RATE_LIMIT_GROUP;
+  }
+  return normalizeDomain(domain);
+}
+
+/**
+ * @param {string} [group] Rate-limit group, defaults to the shared simcompanies.com group.
+ * @param {number} [now]
+ * @returns {{ blocked: boolean, remainingMs: number, blockedUntil: number, reason: string|null, hits: number }}
+ */
+export function getRateLimitStatus(group = SIMCOMPANIES_RATE_LIMIT_GROUP, now = Date.now()) {
+  const g = normalizeDomain(group);
+  const entry = rateLimitByGroup.get(g);
+  const blockedUntil = Number(entry?.blockedUntil || 0);
+  const remainingMs = Math.max(0, blockedUntil - now);
   return {
     blocked: remainingMs > 0,
     remainingMs,
     blockedUntil,
+    reason: remainingMs > 0 ? entry?.reason || null : null,
+    hits: Number(rateLimitHitCount.get(g) || 0),
   };
+}
+
+/**
+ * Subscribe to rate-limit changes (local hits and changes applied from other tabs).
+ * @param {(event: { group: string, source: "local"|"external", status: ReturnType<typeof getRateLimitStatus> }) => void} listener
+ * @returns {() => void} Unsubscribe function.
+ */
+export function onRateLimitChange(listener) {
+  if (typeof listener !== "function") return () => {};
+  rateLimitListeners.add(listener);
+  return () => rateLimitListeners.delete(listener);
+}
+
+function notifyRateLimitChange(group, source) {
+  const event = { group, source, status: getRateLimitStatus(group) };
+  for (const listener of rateLimitListeners) {
+    try {
+      listener(event);
+    } catch {
+      // A broken listener must not break request handling.
+    }
+  }
+}
+
+function recordRateLimitHit(group, cooldownMs, reason) {
+  const hits = (rateLimitHitCount.get(group) || 0) + 1;
+  rateLimitHitCount.set(group, hits);
+  const cooldown = hits <= 1 ? cooldownMs / 2 : cooldownMs;
+  rateLimitByGroup.set(group, { blockedUntil: Date.now() + cooldown, reason });
+  notifyRateLimitChange(group, "local");
+}
+
+/**
+ * Apply a rate-limit window observed elsewhere (another tab, or persisted state
+ * from before a reload). Only ever extends the current window.
+ * @param {string} group
+ * @param {{ blockedUntil: number, reason?: string|null, hits?: number }} entry
+ * @returns {boolean} true when the local state changed.
+ */
+export function applyExternalRateLimit(group, entry) {
+  const g = normalizeDomain(group);
+  const blockedUntil = Number(entry?.blockedUntil || 0);
+  if (!Number.isFinite(blockedUntil) || blockedUntil <= Date.now()) return false;
+
+  const current = Number(rateLimitByGroup.get(g)?.blockedUntil || 0);
+  if (blockedUntil <= current) return false;
+
+  rateLimitByGroup.set(g, { blockedUntil, reason: entry?.reason || "429" });
+  const hits = Number(entry?.hits || 0);
+  if (Number.isFinite(hits) && hits > (rateLimitHitCount.get(g) || 0)) {
+    rateLimitHitCount.set(g, hits);
+  }
+  notifyRateLimitChange(g, "external");
+  return true;
+}
+
+function isCloudflareChallenge(res) {
+  try {
+    return String(res?.headers?.get?.("cf-mitigated") || "").toLowerCase() === "challenge";
+  } catch {
+    return false;
+  }
 }
 
 async function parseResponse(res, responseType) {
@@ -81,16 +178,18 @@ async function doRequest(domain, spec, attempt = 0) {
     responseType = "json",
     retries = 0,
     retryDelayMs = 0,
-    retryStatuses = [408, 425, 429, 500, 502, 503, 504],
-    rateLimitCooldownMs = 0,
+    retryStatuses = [408, 425, 500, 502, 503, 504],
+    rateLimitCooldownMs = DEFAULT_RATE_LIMIT_COOLDOWN_MS,
     timeoutMs = 0,
   } = spec;
 
-  const rate = getRateLimitStatus(domain);
+  const group = resolveRateLimitGroup(url, domain);
+  const rate = getRateLimitStatus(group);
   if (rate.blocked) {
     throw makeError(`RATE_LIMIT_COOLDOWN:${Math.ceil(rate.remainingMs / 1000)}`, {
       code: "RATE_LIMIT_COOLDOWN",
       domain,
+      group,
       remainingMs: rate.remainingMs,
       status: 429,
     });
@@ -116,15 +215,17 @@ async function doRequest(domain, spec, attempt = 0) {
       signal: mergedSignal,
     });
 
-    if (res.status === 429 && rateLimitCooldownMs > 0) {
-      const hits = (rateLimitHitCount.get(domain) || 0) + 1;
-      rateLimitHitCount.set(domain, hits);
-      const cooldown = hits <= 1 ? rateLimitCooldownMs / 2 : rateLimitCooldownMs;
-      rateLimitByDomain.set(domain, Date.now() + cooldown);
+    const challenged = isCloudflareChallenge(res);
+    const rateLimited = res.status === 429 || challenged;
+    if (rateLimited) {
+      const cooldownMs = rateLimitCooldownMs > 0 ? rateLimitCooldownMs : DEFAULT_RATE_LIMIT_COOLDOWN_MS;
+      recordRateLimitHit(group, cooldownMs, challenged ? "challenge" : "429");
     }
 
-    if (!res.ok) {
-      const canRetry = attempt < retries && retryStatuses.includes(res.status);
+    if (!res.ok || challenged) {
+      // Never retry a rate-limit response: the retry would only add to the load
+      // that caused it, and the group is already in cooldown.
+      const canRetry = !rateLimited && attempt < retries && retryStatuses.includes(res.status);
       if (canRetry) {
         if (retryDelayMs > 0) await wait(retryDelayMs);
         return doRequest(domain, spec, attempt + 1);
@@ -133,15 +234,20 @@ async function doRequest(domain, spec, attempt = 0) {
       throw makeError(`HTTP ${res.status}`, {
         code: "HTTP_ERROR",
         domain,
+        group,
         status: res.status,
+        rateLimited,
       });
     }
 
-    rateLimitHitCount.delete(domain);
+    rateLimitHitCount.delete(group);
     return parseResponse(res, responseType);
   } catch (error) {
     const isAbort = error?.name === "AbortError";
-    const canRetry = !isAbort && attempt < retries;
+    // HTTP and cooldown errors were already classified above; only transport
+    // failures (network, timeout) are retried here.
+    const isClassified = error?.code === "HTTP_ERROR" || error?.code === "RATE_LIMIT_COOLDOWN";
+    const canRetry = !isAbort && !isClassified && attempt < retries;
     if (canRetry) {
       if (retryDelayMs > 0) await wait(retryDelayMs);
       return doRequest(domain, spec, attempt + 1);
@@ -211,4 +317,16 @@ export async function request(domain, spec) {
 export const apiClient = {
   request,
   getRateLimitStatus,
+  onRateLimitChange,
+  applyExternalRateLimit,
+};
+
+export const _testUtils = {
+  reset() {
+    inflightByKey.clear();
+    rateLimitByGroup.clear();
+    rateLimitHitCount.clear();
+    rateLimitListeners.clear();
+  },
+  DEFAULT_RATE_LIMIT_COOLDOWN_MS,
 };
