@@ -7,7 +7,14 @@ import { t } from "./i18n.js";
 import { SIDEBAR_ID } from "./state.js";
 import { fetchMarketPrice } from "./market.js";
 import { getRealmId } from "./auth.js";
-import { formatMoney, TRANSPORT_RESOURCE_ID } from "./utils.js";
+import {
+  DISCOUNT_PCT_MAX,
+  DISCOUNT_PCT_MIN,
+  DISCOUNT_PCT_STEP,
+  formatMoney,
+  normalizeDiscountPct,
+  TRANSPORT_RESOURCE_ID,
+} from "./utils.js";
 import { renderStateBlock } from "./ui_state.js";
 import { storage } from "./data/storage.js";
 import { observeDocumentBody, setReactControlledValue } from "./page/page_utils.js";
@@ -30,7 +37,7 @@ import {
 } from "./contract_rules_ui.js";
 
 const CONTAINER_ID = "scx-contract-helper";
-const DISCOUNT_SELECT_ID = "scx-contract-discount-select";
+const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
 const APPLY_BUTTON_ID = "scx-contract-apply-btn";
 const CALC_BUTTON_ID = "scx-contract-calc-btn";
 const PROFIT_RESULT_ID = "scx-contract-profit-result";
@@ -112,9 +119,20 @@ async function hydrateDiscountPreference() {
     },
   });
 
-  if (Number.isFinite(data) && data >= 0 && data <= 100) {
-    discountPct = data;
+  const stored = normalizeDiscountPct(data);
+  if (stored !== null) {
+    discountPct = stored;
+    // The widget may already be on the page: chrome.storage.local resolves
+    // after the observer's first injection, so push the value into the control
+    // instead of leaving it showing the default.
+    syncDiscountControls();
   }
+}
+
+function syncDiscountControls() {
+  const input = document.getElementById(DISCOUNT_INPUT_ID);
+  if (input) input.value = String(discountPct);
+  updateButtonLabel();
 }
 
 function removeIfPresent() {
@@ -295,15 +313,23 @@ function injectIfNeeded() {
       <span>${t("contractApplyTooltip")}</span>
     </div>
     <div class="scx-contract-controls">
-      <label class="scx-visually-hidden" for="${DISCOUNT_SELECT_ID}">${t("contractDiscountLabel")}</label>
-      <select id="${DISCOUNT_SELECT_ID}" name="${DISCOUNT_SELECT_ID}" title="${t("contractDiscountLabel")}" class="scx-contract-select">
-        <option value="0"${discountPct === 0 ? " selected" : ""}>+0%</option>
-        <option value="1"${discountPct === 1 ? " selected" : ""}>-1%</option>
-        <option value="2"${discountPct === 2 ? " selected" : ""}>-2%</option>
-        <option value="3"${discountPct === 3 ? " selected" : ""}>-3%</option>
-        <option value="4"${discountPct === 4 ? " selected" : ""}>-4%</option>
-        <option value="5"${discountPct === 5 ? " selected" : ""}>-5%</option>
-      </select>
+      <label class="scx-visually-hidden" for="${DISCOUNT_INPUT_ID}">${t("contractDiscountLabel")}</label>
+      <div class="scx-contract-discount-field">
+        <span class="scx-contract-discount-sign" aria-hidden="true">-</span>
+        <input
+          type="number"
+          id="${DISCOUNT_INPUT_ID}"
+          name="${DISCOUNT_INPUT_ID}"
+          class="scx-contract-discount-input"
+          title="${t("contractDiscountLabel")}"
+          inputmode="decimal"
+          min="${DISCOUNT_PCT_MIN}"
+          max="${DISCOUNT_PCT_MAX}"
+          step="${DISCOUNT_PCT_STEP}"
+          value="${discountPct}"
+        />
+        <span class="scx-contract-discount-suffix" aria-hidden="true">%</span>
+      </div>
       <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-btn scx-btn-info scx-contract-apply-btn">
         ${t("contractApplyBtn")}${discountPct}%
       </button>
@@ -321,11 +347,21 @@ function injectIfNeeded() {
   // Append to sidebar — appears after the existing footer buttons
   sidebar.appendChild(container);
 
-  // Event: dropdown change
-  document.getElementById(DISCOUNT_SELECT_ID)?.addEventListener("change", (e) => {
-    const nextValue = Number(e.target && "value" in e.target ? e.target.value : NaN);
-    if (!Number.isFinite(nextValue)) return;
+  // Event: discount typed or stepped. "input" keeps the button label in step
+  // with every keystroke; persisting waits for "change" (blur / spinner) so a
+  // half-typed "1" on the way to "12.5" is not what gets written to storage.
+  const discountInput = document.getElementById(DISCOUNT_INPUT_ID);
+  discountInput?.addEventListener("input", (e) => {
+    const nextValue = normalizeDiscountPct(e.target?.value);
+    if (nextValue === null) return;
     discountPct = nextValue;
+    updateButtonLabel();
+  });
+  discountInput?.addEventListener("change", (e) => {
+    // An out-of-range or empty field falls back to the last good value so the
+    // control never sits on something the apply button cannot use.
+    discountPct = normalizeDiscountPct(e.target?.value) ?? discountPct;
+    syncDiscountControls();
     void storage.set({
       domain: STORAGE_DOMAIN,
       version: STORAGE_VERSION,
@@ -334,7 +370,6 @@ function injectIfNeeded() {
       refreshAuth: false,
       data: discountPct,
     });
-    updateButtonLabel();
   });
 
   // Event: apply button click

@@ -4,7 +4,7 @@
 // rules matching both (or a "save current values" prompt), and applies a
 // rule with one click by filling the amount and a freshly recalculated price.
 import { t } from "./i18n.js";
-import { formatMoney } from "./utils.js";
+import { formatMoney, normalizeDiscountPct } from "./utils.js";
 import { CONTRACT_RULE_MAX_COUNT } from "./constants.js";
 import { setReactControlledValue } from "./page/page_utils.js";
 import {
@@ -35,8 +35,8 @@ import {
 } from "./contract_rules_render.js";
 import recipes from "./resources/recipes.json";
 
-// Must match the select's id in contract_ui.js's widget markup.
-const DISCOUNT_SELECT_ID = "scx-contract-discount-select";
+// Must match the discount input's id in contract_ui.js's widget markup.
+const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
 const PANEL_ID = "scx-contract-rules-panel";
 
 let rules = [];
@@ -86,9 +86,8 @@ function getProductName(productId) {
 }
 
 function getCurrentDiscountPct() {
-  const select = document.getElementById(DISCOUNT_SELECT_ID);
-  const value = Number(select?.value);
-  return Number.isFinite(value) ? value : 0;
+  const input = document.getElementById(DISCOUNT_INPUT_ID);
+  return normalizeDiscountPct(input?.value) ?? 0;
 }
 
 function applyRule(ruleId) {

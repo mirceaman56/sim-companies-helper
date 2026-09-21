@@ -2314,14 +2314,12 @@ svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
       <span>Apply Price</span>
     </div>
     <div class="scx-contract-controls">
-      <select id="scx-contract-discount-select" title="Discount %" class="scx-contract-select">
-        <option value="0">+0%</option>
-        <option value="1">-1%</option>
-        <option value="2">-2%</option>
-        <option value="3" selected="">-3%</option>
-        <option value="4">-4%</option>
-        <option value="5">-5%</option>
-      </select>
+      <label class="scx-visually-hidden" for="scx-contract-discount-input">Discount %</label>
+      <div class="scx-contract-discount-field">
+        <span class="scx-contract-discount-sign" aria-hidden="true">-</span>
+        <input type="number" id="scx-contract-discount-input" name="scx-contract-discount-input" class="scx-contract-discount-input" title="Discount %" inputmode="decimal" min="0" max="100" step="0.5" value="3">
+        <span class="scx-contract-discount-suffix" aria-hidden="true">%</span>
+      </div>
       <button id="scx-contract-apply-btn" title="Apply Price" class="scx-btn scx-btn-info scx-contract-apply-btn">
         Market -3%
       </button>
