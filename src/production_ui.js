@@ -2,32 +2,32 @@
 // Renders production helper section in the sidebar
 import { formatMoney, escapeHtml, COPY_BUTTON_SVG, wireCopyButton, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
-import { getRecipes, analyzeProduction, fetchMarketPrices } from "./production.js";
+import { getRecipes, analyzeProduction, fetchMarketPrices, getRecipeIdBySlug } from "./production.js";
 import { getRealmId } from "./auth.js";
 import { t } from "./i18n.js";
 import { calculateUpgradeMultiplier, formatProductionAsText } from "./production_calc.js";
 import { renderStateBlock } from "./ui_state.js";
 import {
   findProductionRowFromTarget,
+  findFirstProductionRow,
   readProductionRow,
-  waitForProductionLaborCost,
   extractProductionBuildingLevel,
 } from "./page/production_page.js";
+import { observeDocumentBody } from "./page/page_utils.js";
 import { STATE } from "./state.js";
 import { getApiHealth } from "./data/apiHealth.js";
 import { loadExecutivesOnce, getExecutivesTrainingForCOO } from "./executives.js";
 
 const SECTION_ID = "production-section";
+const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
 
 // Store current state
 let currentProductId = null;
 let currentQuantity = 1;
 let currentQuality = 0;
-// eslint-disable-next-line no-unused-vars
-let currentLaborCost = 0;
-let currentUnitCost = null; // Stored from UI if available
+let currentUnitCost = null; // As printed by the game
+let currentIsActive = false;
 let pricesCache = null;
-let currentRow = null;
 
 /**
  * Update production helper for a specific row
@@ -37,33 +37,24 @@ async function updateForRow(row) {
     return;
   }
 
-  currentRow = row;
   const productionRow = readProductionRow(row);
-  const productId = productionRow?.productId;
-  const quantity = productionRow?.quantity ?? 1;
-  const quality = productionRow?.quality ?? 0;
-  const unitCost = productionRow?.unitCost ?? null;
+  // The running order carries no encyclopedia link, so fall back to the
+  // (untranslated) resource icon slug.
+  const productId = productionRow?.productId ?? getRecipeIdBySlug(productionRow?.productSlug);
 
   if (!productId) {
     currentProductId = null;
-    updateProductionPanel();
+    await updateProductionPanel();
     return;
   }
 
   currentProductId = productId;
-  currentQuantity = quantity;
-  currentQuality = quality;
-  currentUnitCost = unitCost;
+  currentQuantity = productionRow?.quantity ?? 1;
+  currentQuality = productionRow?.quality ?? 0;
+  currentUnitCost = productionRow?.unitCost ?? null;
+  currentIsActive = Boolean(productionRow?.isActive);
   pricesCache = null; // Reset cache to fetch fresh prices
 
-  // Wait for labor cost
-  let laborCost = 0;
-  if (currentUnitCost === null) {
-    laborCost = await waitForProductionLaborCost(row);
-  }
-  currentLaborCost = laborCost;
-
-  // Trigger update
   await updateProductionPanel();
 }
 
@@ -79,10 +70,10 @@ function handleProductionInteraction(e) {
     return;
   }
 
+  // Interacting with a block (quality stepper, quantity field) selects it
+  // straight away instead of waiting for the next DOM sync.
   const row = findProductionRowFromTarget(target);
   if (row) {
-    // If clicking input, handle normally.
-    // If clicking elsewhere in the row, only update if it's an active row (has unit cost) or has input
     updateForRow(row);
   }
 }
@@ -95,25 +86,55 @@ export function setupProductionRowListeners() {
   document.addEventListener("focusin", handleProductionInteraction, true);
   document.addEventListener("click", handleProductionInteraction, true);
 
-  // Listen for input changes on quantity fields
+  // A busy building renders its running order with no input to click, and the
+  // setup form recomputes its costs after a quantity change, so the block is
+  // picked up from the DOM instead of from a single event.
+  observeDocumentBody(() => scheduleProductionSync());
   document.addEventListener("input", (e) => {
-    const target = e.target;
-    if (target instanceof Element && target.matches('input[name="amount"]')) {
-      const row = findProductionRowFromTarget(target);
-      if (row && currentRow === row) {
-        const productionRow = readProductionRow(row);
-        currentQuantity = productionRow?.quantity ?? 1;
-        currentUnitCost = null;
-        currentLaborCost = productionRow?.laborCost ?? 0;
-
-        if (stateTimeout) clearTimeout(stateTimeout);
-        stateTimeout = setTimeout(() => updateProductionPanel(), 300);
-      }
+    if (e.target instanceof Element && e.target.matches(AMOUNT_INPUT_SELECTOR)) {
+      scheduleProductionSync();
     }
   });
+
+  scheduleProductionSync();
 }
 
-let stateTimeout = null;
+let syncTimeout = null;
+let lastProductionSignature = null;
+
+/**
+ * Detect the production block on screen (running order or setup form) and
+ * refresh the panel when it changes.
+ */
+function syncProductionBlock() {
+  const row = findFirstProductionRow(document);
+
+  if (!row) {
+    lastProductionSignature = null;
+    return;
+  }
+
+  const productionRow = readProductionRow(row);
+  if (!productionRow) return;
+
+  const signature = [
+    productionRow.productId,
+    productionRow.productSlug,
+    productionRow.quantity,
+    productionRow.quality,
+    productionRow.unitCost,
+  ].join("|");
+
+  if (signature === lastProductionSignature) return;
+  lastProductionSignature = signature;
+
+  updateForRow(row);
+}
+
+function scheduleProductionSync() {
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => syncProductionBlock(), 200);
+}
 
 /**
  * Update the production helper panel
@@ -271,7 +292,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
       <div class="scx-text-muted scx-text-sm scx-margin-bottom-4">
         ${t("qty")}: <span class="scx-prod-qty">${currentQuantity}</span>
         ${qualityBadge}
-        <span class="scx-badge-active">${t("active")}</span>
+        ${currentIsActive ? `<span class="scx-badge-active">${t("active")}</span>` : ""}
         ${buildingLevel ? `<span class="scx-badge-level">${t("lvl")} ${buildingLevel}</span>` : ""}
       </div>
 

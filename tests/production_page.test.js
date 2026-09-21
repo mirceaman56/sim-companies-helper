@@ -1,15 +1,18 @@
 // @vitest-environment jsdom
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   extractProductionBuildingLevel,
+  findBusyProductionBlock,
   findFirstProductionRow,
   findProductionRowFromTarget,
-  getProductionDataWrapper,
   getProductionQuality,
+  readBusyProductionBlock,
   readProductionRow,
+  readProductionStats,
+  readSelectedStarQuality,
 } from "../src/page/production_page.js";
 
 function loadFixture(name) {
@@ -21,122 +24,181 @@ describe("production_page adapter", () => {
     document.body.innerHTML = "";
   });
 
-  it("finds the first setup production row from the document", () => {
-    document.body.innerHTML = loadFixture("setup-row.html");
+  describe("running order block", () => {
+    it("finds the block and reads it without matching any UI copy", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
 
-    const row = findFirstProductionRow(document);
+      const block = findBusyProductionBlock(document);
 
-    expect(row).not.toBeNull();
-    expect(row.dataset.testid).toBe("setup-row");
-  });
-
-  it("finds the active production row from a nested target", () => {
-    document.body.innerHTML = loadFixture("active-row.html");
-    const target = document.querySelector(".production-data div:last-child");
-
-    const row = findProductionRowFromTarget(target);
-
-    expect(row).not.toBeNull();
-    expect(row.dataset.testid).toBe("active-row");
-  });
-
-  it("reads setup production rows into a stable structured shape", () => {
-    document.body.innerHTML = loadFixture("setup-row.html");
-    const row = document.querySelector('[data-testid="setup-row"]');
-
-    const productionRow = readProductionRow(row);
-
-    expect(productionRow).toMatchObject({
-      productId: 7,
-      productName: "Iron",
-      quantity: 25,
-      unitCost: 12.5,
-      laborCost: 4.5,
-      isActive: false,
+      expect(block).not.toBeNull();
+      expect(findFirstProductionRow(document)).toBe(block);
+      expect(readBusyProductionBlock(block)).toMatchObject({
+        productSlug: "minerals",
+        productName: "Minerals",
+        quantity: 6100,
+        quality: 4,
+        unitCost: 8.79,
+        sourcingValue: 53614,
+      });
     });
-    expect(productionRow.quantityInput?.value).toBe("25");
-  });
 
-  it("reads active production rows into a stable structured shape", () => {
-    document.body.innerHTML = loadFixture("active-row.html");
-    const row = document.querySelector('[data-testid="active-row"]');
+    it("walks up to the block from a nested target", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
+      const target = document.querySelector('td[headers="busy-info-label-3"]');
 
-    const productionRow = readProductionRow(row);
-
-    expect(productionRow).toMatchObject({
-      productId: 9,
-      productName: "Steel",
-      quantity: 1200,
-      unitCost: 7.5,
-      laborCost: 0,
-      isActive: true,
+      expect(findProductionRowFromTarget(target)).toBe(findBusyProductionBlock(document));
     });
-    expect(getProductionDataWrapper(productionRow.infoColumnEl)).not.toBeNull();
-  });
 
-  it("reads the quality level from the star icons next to the product image", () => {
-    document.body.innerHTML = loadFixture("quality-row.html");
-    const row = document.querySelector('[data-testid="quality-row"]');
+    it("reads the block in a non-English locale", () => {
+      window.history.replaceState({}, "", "/de/company/1/building/2/");
+      document.body.innerHTML = loadFixture("busy-block-localized.html");
 
-    expect(getProductionQuality(row)).toBe(4);
-    expect(readProductionRow(row)).toMatchObject({
-      productId: 44,
-      productName: "Bread Q4",
-      quality: 4,
+      try {
+        expect(readBusyProductionBlock(findBusyProductionBlock(document))).toMatchObject({
+          productSlug: "golden-bars",
+          productName: "Goldbarren",
+          quantity: 1250,
+          quality: 3,
+          unitCost: 10,
+          sourcingValue: 12500,
+        });
+      } finally {
+        window.history.replaceState({}, "", "/");
+      }
     });
-  });
 
-  it("falls back to the Q marker in the info column when no stars are rendered", () => {
-    document.body.innerHTML = loadFixture("active-row.html");
-    const row = document.querySelector('[data-testid="active-row"]');
+    it("exposes the block through readProductionRow", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
 
-    expect(getProductionQuality(row)).toBe(1);
-  });
+      expect(readProductionRow(findBusyProductionBlock(document))).toMatchObject({
+        productId: null,
+        productSlug: "minerals",
+        quantity: 6100,
+        quality: 4,
+        unitCost: 8.79,
+        isActive: true,
+      });
+    });
 
-  it("reports quality 0 when the row has no quality markers", () => {
-    document.body.innerHTML = loadFixture("setup-row.html");
-    const row = document.querySelector('[data-testid="setup-row"]');
+    it("keeps quantity and quality apart when the rows are reordered", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
+      const block = findBusyProductionBlock(document);
+      const table = block.querySelector("tbody");
+      // Move the quality row in front of the quantity row.
+      table.prepend(table.querySelector('td[id="busy-info-label-2"]').parentElement);
 
-    expect(getProductionQuality(row)).toBe(0);
-    expect(readProductionRow(row).quality).toBe(0);
-  });
+      expect(readBusyProductionBlock(block)).toMatchObject({ quantity: 6100, quality: 4 });
+    });
 
-  it("reads per-product quality across a real factory page", () => {
-    document.body.innerHTML = loadFixture("factory-page.html");
+    it("ignores percentage rows such as abundance", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
+      const block = findBusyProductionBlock(document);
+      document.querySelector('td[headers="busy-info-label-4"]').textContent = "5%";
 
-    const byProduct = {};
-    for (const link of document.querySelectorAll('a[href*="/encyclopedia/"][href*="/resource/"]')) {
-      const productionRow = readProductionRow(findProductionRowFromTarget(link));
-      byProduct[productionRow.productName] = productionRow.quality;
-    }
-
-    expect(byProduct).toEqual({
-      "Silicon Q4": 4,
-      "Chemicals Q4": 4,
-      Aluminium: 0,
-      "Steel Q2": 2,
-      "Xmas crackers": 0,
+      expect(readBusyProductionBlock(block)).toMatchObject({ quantity: 6100, quality: 4 });
     });
   });
 
-  it("does not sum quality stars from other products when the row lookup widens", () => {
-    document.body.innerHTML = loadFixture("factory-page.html");
+  describe("setup form", () => {
+    it("finds the form and reads the cost the game prints", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
 
-    // The active order block has no encyclopedia link, so the row walk resolves
-    // to the whole production container. Quality must still come from the
-    // active product's own column, not every star on the page.
-    const activeTitle = [...document.querySelectorAll("h3")].find((h) => h.textContent === "Chemicals Q4");
-    const row = findProductionRowFromTarget(activeTitle);
+      const row = findFirstProductionRow(document);
 
-    expect(getProductionQuality(row)).toBe(4);
-  });
+      expect(row).not.toBeNull();
+      expect(readProductionRow(row)).toMatchObject({
+        productId: 14,
+        productName: "Minerals",
+        quantity: 48476,
+        quality: 4,
+        unitCost: 8.85,
+        isActive: false,
+      });
+    });
 
-  it("reads quality from the real page export", () => {
-    document.documentElement.innerHTML = loadFixture("real-page.html");
+    it("separates the order cost from the total labor cost and the stocked average", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
 
-    const row = findFirstProductionRow(document);
+      expect(readProductionStats(findFirstProductionRow(document))).toMatchObject({
+        unitCost: 8.85,
+        stockUnitCost: 8.7,
+        abundancePct: 97.41,
+      });
+    });
 
-    expect(readProductionRow(row).quality).toBe(2);
+    it("reads the same values in a non-English locale", () => {
+      window.history.replaceState({}, "", "/de/company/1/building/2/");
+      document.body.innerHTML = loadFixture("idle-block-localized.html");
+
+      try {
+        expect(readProductionStats(findFirstProductionRow(document))).toMatchObject({
+          unitCost: 8.85,
+          stockUnitCost: 8.7,
+          abundancePct: 97.41,
+        });
+      } finally {
+        window.history.replaceState({}, "", "/");
+      }
+    });
+
+    it("falls back to the labor/unit cost order when no stocked average is shown", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
+      const row = findFirstProductionRow(document);
+      for (const cell of row.querySelectorAll("dl dd")) {
+        if (cell.textContent.includes("8.70")) cell.textContent = "$8.85";
+      }
+
+      expect(readProductionStats(row)).toMatchObject({
+        unitCost: 8.85,
+        laborCostTotal: 150501,
+        stockUnitCost: null,
+      });
+    });
+
+    it("reports no unit cost while the form only shows building rates", () => {
+      document.body.innerHTML = loadFixture("idle-block-rates.html");
+      const row = findFirstProductionRow(document);
+
+      expect(readProductionStats(row)).toMatchObject({
+        unitCost: null,
+        laborCostTotal: null,
+        currentStock: 162566,
+        abundancePct: 97.41,
+      });
+      expect(readProductionStats(row).laborCostPerUnit).toBeCloseTo(6271 / 2019.87, 6);
+      expect(readProductionRow(row).unitCost).toBeNull();
+    });
+
+    it("ignores the finish-at clock value", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
+
+      expect(readProductionStats(findFirstProductionRow(document)).currentStock).toBeNull();
+    });
+
+    it("takes quality from the stepper stars, not from the artwork stars", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
+      const row = findFirstProductionRow(document);
+
+      expect(row.querySelectorAll('svg[data-icon="star"]').length).toBe(8);
+      expect(readSelectedStarQuality(row)).toBe(4);
+      expect(getProductionQuality(row)).toBe(4);
+    });
+
+    it("follows the stepper when the selected quality is lowered", () => {
+      document.body.innerHTML = loadFixture("idle-block.html");
+      const row = findFirstProductionRow(document);
+      const stepperStars = row.querySelector('[role="img"]');
+      stepperStars.removeChild(stepperStars.lastElementChild);
+      stepperStars.removeChild(stepperStars.lastElementChild);
+
+      expect(getProductionQuality(row)).toBe(2);
+    });
+
+    it("defaults to a quantity of 1 while the input is empty", () => {
+      document.body.innerHTML = loadFixture("idle-block-rates.html");
+
+      expect(readProductionRow(findFirstProductionRow(document)).quantity).toBe(1);
+    });
   });
 
   it("extracts a building level while ignoring top navigation matches", () => {
@@ -164,40 +226,5 @@ describe("production_page adapter", () => {
     } finally {
       Element.prototype.getBoundingClientRect = original;
     }
-  });
-
-  it("waits for labor cost to appear after a row mutation", async () => {
-    vi.useFakeTimers();
-    document.body.innerHTML = loadFixture("setup-row.html");
-    const row = document.querySelector('[data-testid="setup-row"]');
-    const spans = row.querySelectorAll("span");
-    spans[1].textContent = "";
-
-    const waitPromise = import("../src/page/production_page.js").then(({ waitForProductionLaborCost }) =>
-      waitForProductionLaborCost(row, 1000),
-    );
-
-    setTimeout(() => {
-      spans[1].textContent = "$8.25";
-    }, 50);
-
-    vi.advanceTimersByTime(60);
-    await expect(waitPromise).resolves.toBe(8.25);
-    vi.useRealTimers();
-  });
-
-  it("parses first production row from real page export with wages fallback", () => {
-    document.documentElement.innerHTML = loadFixture("real-page.html");
-
-    const row = findFirstProductionRow(document);
-    const productionRow = readProductionRow(row);
-
-    expect(row).not.toBeNull();
-    expect(productionRow).toMatchObject({
-      productId: 44,
-      productName: "Sand Q2",
-      laborCost: 4210,
-      isActive: false,
-    });
   });
 });

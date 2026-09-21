@@ -22,6 +22,34 @@ export function getRecipeByProductId(productId) {
 }
 
 /**
+ * Resource icon file names are not translated, so the icon slug is a
+ * language-independent way to resolve a product when the page has no
+ * encyclopedia link (new busy-production layout).
+ */
+function slugifyRecipeName(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+let recipeIdBySlug = null;
+
+export function getRecipeIdBySlug(slug) {
+  const key = slugifyRecipeName(slug);
+  if (!key) return null;
+
+  if (!recipeIdBySlug) {
+    recipeIdBySlug = new Map();
+    for (const recipe of getRecipes()) {
+      recipeIdBySlug.set(slugifyRecipeName(recipe.name), recipe.id);
+    }
+  }
+
+  return recipeIdBySlug.get(key) ?? null;
+}
+
+/**
  * Build the cache key used by the prices map.
  * Quality 0 keeps the plain product id so existing callers stay compatible.
  */

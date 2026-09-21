@@ -1,17 +1,7 @@
 // production_calc.js
 // Pure calculation and formatting helpers extracted from production_ui.js
-import { formatMoney, parseLocaleNumber } from "./utils.js";
+import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
-
-export function extractDollarValue(text) {
-  if (!text) return null;
-  const match = text.match(/\$\s*([\d.,]+)/);
-  if (match) {
-    const val = parseLocaleNumber(match[1]);
-    return Number.isFinite(val) ? val : null;
-  }
-  return null;
-}
 
 export function calculateUpgradeMultiplier(currentLevel) {
   if (!currentLevel || currentLevel <= 0) {

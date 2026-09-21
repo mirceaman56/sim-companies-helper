@@ -75,6 +75,20 @@ export function getLang() {
   return currentLang;
 }
 
+const HTML_LANG_TAGS = {
+  zh_cn: "zh-CN",
+  zh_tw: "zh-TW",
+};
+
+/**
+ * Current language as a BCP 47 tag, for the `lang` attribute on extension
+ * markup. Browsers need it to hyphenate long compound words.
+ * @returns {string}
+ */
+export function getHtmlLang() {
+  return HTML_LANG_TAGS[currentLang] || currentLang;
+}
+
 /**
  * Parse a locale-formatted number string into a JS number.
  * Re-exports the shared parseLocaleNumber from utils.js for backward compatibility.

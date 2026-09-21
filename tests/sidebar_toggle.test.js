@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Mock i18n
 vi.mock("../src/i18n.js", () => ({
   t: (key) => key,
+  getHtmlLang: () => "de",
 }));
 
 // Mock storage
@@ -27,6 +28,7 @@ vi.mock("../src/utils.js", () => ({
 import {
   ensureSidebarContainer,
   registerSection,
+  getSectionTitleSizeClass,
   setSectionToggleFn,
   toggleSidebarVisibility,
   _testUtils,
@@ -257,5 +259,44 @@ describe("section toggle hooks", () => {
 
     expect(toggleFn).toHaveBeenNthCalledWith(1, false);
     expect(toggleFn).toHaveBeenNthCalledWith(2, true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Section title sizing
+// ---------------------------------------------------------------------------
+describe("section title sizing", () => {
+  beforeEach(() => {
+    resetDOM();
+  });
+
+  it("keeps the base size for titles that wrap on spaces", () => {
+    expect(getSectionTitleSizeClass("Production Helper")).toBe("");
+    expect(getSectionTitleSizeClass("Assistant de Vente au Détail")).toBe("");
+    expect(getSectionTitleSizeClass("生産アシスタント")).toBe("");
+  });
+
+  it("steps down for long compound words that cannot wrap", () => {
+    expect(getSectionTitleSizeClass("Markt-Warnungen")).toBe("scx-section-title-sm");
+    expect(getSectionTitleSizeClass("Produktionshelfer")).toBe("scx-section-title-sm");
+    expect(getSectionTitleSizeClass("Einzelhandelshelfer")).toBe("scx-section-title-xs");
+    expect(getSectionTitleSizeClass("Führungskräftehelfer")).toBe("scx-section-title-xs");
+  });
+
+  it("handles empty titles", () => {
+    expect(getSectionTitleSizeClass("")).toBe("");
+    expect(getSectionTitleSizeClass(undefined)).toBe("");
+  });
+
+  it("applies the size class and the language tag to the rendered title", () => {
+    registerSection("sizing-section", "Führungskräftehelfer", "◆");
+
+    const section = document.querySelector('[data-section-id="sizing-section"]');
+    const titleEl = section.querySelector(".scx-section-title");
+    const textEl = section.querySelector(".scx-section-title-text");
+
+    expect(titleEl.classList.contains("scx-section-title-xs")).toBe(true);
+    expect(textEl.getAttribute("lang")).toBe("de");
+    expect(textEl.textContent).toBe("Führungskräftehelfer");
   });
 });

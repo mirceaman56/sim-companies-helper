@@ -2,7 +2,7 @@
 // Main sidebar container system with collapsible sections that snap together
 import { SIDEBAR_ID } from "./state.js";
 import { escapeHtml } from "./utils.js";
-import { t } from "./i18n.js";
+import { t, getHtmlLang } from "./i18n.js";
 import * as storage from "./data/storage.js";
 
 const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updateFn, toggleFn }
@@ -102,6 +102,27 @@ async function _restoreSidebarState(el) {
   }
 }
 
+const TITLE_WORD_LENGTH_SM = 14;
+const TITLE_WORD_LENGTH_XS = 18;
+
+/**
+ * Pick a title size for the collapsed sidebar width.
+ * Titles wrap on spaces, so what overflows is a single long word — German and
+ * Czech compounds ("Einzelhandelshelfer", "Führungskräftehelfer") rather than
+ * long titles as such.
+ * @param {string} title
+ * @returns {string} size class, empty when the base size fits
+ */
+export function getSectionTitleSizeClass(title) {
+  const longestWord = String(title || "")
+    .split(/\s+/)
+    .reduce((longest, word) => Math.max(longest, word.length), 0);
+
+  if (longestWord >= TITLE_WORD_LENGTH_XS) return "scx-section-title-xs";
+  if (longestWord >= TITLE_WORD_LENGTH_SM) return "scx-section-title-sm";
+  return "";
+}
+
 /**
  * Register a new collapsible section in the sidebar
  */
@@ -113,9 +134,9 @@ export function registerSection(sectionId, title, icon = "◆") {
   section.dataset.sectionId = sectionId;
   section.innerHTML = `
     <div class="scx-section-header">
-      <div class="scx-section-title">
+      <div class="scx-section-title ${getSectionTitleSizeClass(title)}">
         <span class="scx-section-icon">${escapeHtml(icon)}</span>
-        <span>${escapeHtml(title)}</span>
+        <span class="scx-section-title-text" lang="${escapeHtml(getHtmlLang())}">${escapeHtml(title)}</span>
       </div>
       <div class="scx-section-toggle">▼</div>
     </div>
