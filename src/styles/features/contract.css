@@ -39,17 +39,54 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  /* The apply button's label grows with the discount ("Market -12.5%") and
+     cannot wrap, so let it drop to its own line in the 180px collapsed
+     sidebar instead of overflowing the widget. */
+  flex-wrap: wrap;
 }
 
-.scx-contract-select {
-  background: var(--scx-bg-neutral);
+/* Free-form discount entry: the sign and the "%" are static decoration around
+   a bare number input, so the field reads like the old "-3%" dropdown while
+   accepting any value in 0.5 steps. */
+.scx-contract-discount-field {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 4px 6px;
   border: var(--scx-border-medium-light);
   border-radius: var(--scx-border-radius-sm);
-  padding: 5px 6px;
+  background: var(--scx-bg-neutral);
   font-size: var(--scx-font-size-base);
   font-weight: var(--scx-font-weight-semibold);
   color: var(--scx-text-primary);
-  cursor: pointer;
+}
+
+.scx-contract-discount-field:focus-within {
+  border-color: var(--scx-color-info);
+}
+
+.scx-contract-discount-input {
+  width: 3.2em;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-align: right;
+}
+
+.scx-contract-discount-input:focus {
+  outline: none;
+}
+
+.scx-contract-discount-sign,
+.scx-contract-discount-suffix {
+  color: var(--scx-text-secondary);
 }
 
 .scx-contract-apply-btn,
@@ -61,6 +98,7 @@
 }
 
 .scx-contract-apply-btn {
+  flex: 1 1 auto;
   white-space: nowrap;
 }
 

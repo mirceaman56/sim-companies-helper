@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { copyToClipboard, parseLocaleNumber } from "../src/utils.js";
+import { copyToClipboard, formatDiscountPct, normalizeDiscountPct, parseLocaleNumber } from "../src/utils.js";
 
 describe("parseLocaleNumber", () => {
   it("uses dot decimal by default", () => {
@@ -58,5 +58,37 @@ describe("copyToClipboard", () => {
 
     vi.advanceTimersByTime(1500);
     expect(button.querySelector("svg")).not.toBeNull();
+  });
+});
+
+describe("normalizeDiscountPct", () => {
+  it.each([
+    [0, 0],
+    [10, 10],
+    [2.5, 2.5],
+    ["7.5", 7.5],
+    ["7,5", 7.5],
+    // Clamped to the allowed range
+    [-5, 0],
+    [250, 100],
+    // Float noise from repeated 0.5 steps is rounded away
+    [2.5000000000000004, 2.5],
+  ])("normalizes %s", (raw, expected) => {
+    expect(normalizeDiscountPct(raw)).toBe(expected);
+  });
+
+  it.each([[""], [null], [undefined], ["abc"], [NaN]])("rejects %s", (raw) => {
+    expect(normalizeDiscountPct(raw)).toBeNull();
+  });
+});
+
+describe("formatDiscountPct", () => {
+  it.each([
+    [0, "+0%"],
+    [3, "-3%"],
+    [2.5, "-2.5%"],
+    [12.25, "-12.25%"],
+  ])("formats %s", (pct, expected) => {
+    expect(formatDiscountPct(pct)).toBe(expected);
   });
 });

@@ -1,14 +1,7 @@
 // contract_rules_render.js
 // Rendering helpers for the saved contract rule templates panel.
 
-/**
- * Matches the discount dropdown labels in contract_ui.js ("+0%", "-3%").
- * @param {number} discountPct
- * @returns {string}
- */
-function formatDiscountLabel(discountPct) {
-  return discountPct === 0 ? "+0%" : `-${discountPct}%`;
-}
+import { formatDiscountPct } from "./utils.js";
 
 /**
  * Section header: title plus a hover/focus hint explaining what applying a
@@ -77,7 +70,7 @@ export function renderRulesList(input) {
             ${labelledField(
               t("contractRuleDiscount"),
               "scx-contract-rule-discount",
-              formatDiscountLabel(rule.discountPct),
+              formatDiscountPct(rule.discountPct),
             )}
           </div>
           <div class="scx-contract-rule-actions">

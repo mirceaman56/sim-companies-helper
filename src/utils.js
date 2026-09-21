@@ -157,6 +157,36 @@ export function formatMoney(x, options = {}) {
   return prefix ? `${sign}$${formatted}` : `${sign}${formatted}`;
 }
 
+/** Contract discount bounds, shared by the widget input and rule templates. */
+export const DISCOUNT_PCT_MIN = 0;
+export const DISCOUNT_PCT_MAX = 100;
+export const DISCOUNT_PCT_STEP = 0.5;
+
+/**
+ * Clamps a free-form discount percentage into the allowed range.
+ * Users can type any value, so the fraction is rounded to 2 decimals to keep
+ * float noise ("2.5000000000000004") out of storage and out of the UI.
+ * @param {unknown} raw
+ * @returns {number|null} null when the value is not a usable number
+ */
+export function normalizeDiscountPct(raw) {
+  const value = typeof raw === "number" ? raw : parseFloat(String(raw ?? "").replace(",", "."));
+  if (!Number.isFinite(value)) return null;
+  const clamped = Math.min(DISCOUNT_PCT_MAX, Math.max(DISCOUNT_PCT_MIN, value));
+  return Math.round(clamped * 100) / 100;
+}
+
+/**
+ * Signed label for a discount percentage: "+0%" when there is no discount,
+ * "-2.5%" otherwise. Trailing zeros are dropped ("3" not "3.00").
+ * @param {number} discountPct
+ * @returns {string}
+ */
+export function formatDiscountPct(discountPct) {
+  const pct = normalizeDiscountPct(discountPct) ?? 0;
+  return pct === 0 ? "+0%" : `-${pct}%`;
+}
+
 /**
  * Escapes HTML special characters to prevent XSS
  */
