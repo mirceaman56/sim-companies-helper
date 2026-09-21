@@ -11,6 +11,7 @@ vi.mock("../src/i18n.js", () => ({
 import {
   getRecipes,
   getRecipeByProductId,
+  getRecipeIdBySlug,
   analyzeProduction,
   fetchMarketPrices,
   buildPriceKey,
@@ -47,6 +48,19 @@ describe("getRecipeByProductId", () => {
 
   it("returns undefined for unknown id", () => {
     expect(getRecipeByProductId(999999)).toBeUndefined();
+  });
+});
+
+describe("getRecipeIdBySlug", () => {
+  it("resolves the product id from an untranslated resource icon slug", () => {
+    expect(getRecipeIdBySlug("minerals")).toBe(14);
+    expect(getRecipeIdBySlug("golden-bars")).toBe(getRecipes().find((r) => r.name === "Golden bars").id);
+  });
+
+  it("returns null for unknown or empty slugs", () => {
+    expect(getRecipeIdBySlug("not-a-resource")).toBeNull();
+    expect(getRecipeIdBySlug("")).toBeNull();
+    expect(getRecipeIdBySlug(null)).toBeNull();
   });
 });
 
