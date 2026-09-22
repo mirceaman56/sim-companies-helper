@@ -263,6 +263,13 @@ export default {
   financePeriodDay: "Gün",
   financePeriodWeek: "Hafta",
   financePeriodMonth: "Ay",
+  financePeriodInfoTitleCurrent: "Dönem: Bugün",
+  financePeriodInfoBodyCurrent: "Yerel saatle gece yarısından şimdiye kadar olan toplamlar.",
+  financePeriodInfoTitleDay: "Dönem: Gün",
+  financePeriodInfoBodyDay: "Şu andan geriye doğru kayan son 24 saat.",
+  financePeriodInfoTitleWeek: "Haftalık veriler neden eksik görünebilir",
+  financePeriodInfoBodyWeek:
+    'SimCompanies API sınırlarına uymak için işlem geçmişini küçük parçalar halinde çekiyoruz. Uzantıyı her gün açarsanız haftalık toplamlar zamanla doğru kalır. Bir gün veya daha fazlasını atlarsanız, uzantı arka planda yakalanana kadar o aralıktaki bazı işlemler eksik olabilir — bu durumda "Kısmi geçmiş" rozetini görürsünüz. Güvenilir bir haftalık tahmin için her gün giriş yapın.',
   financeRefresh: "Yenile",
   financeExpand: "Genişletmek",
   financeCompact: "Kompakt",

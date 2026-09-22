@@ -265,6 +265,13 @@ export default {
   financePeriodDay: "Día",
   financePeriodWeek: "Semana",
   financePeriodMonth: "Mes",
+  financePeriodInfoTitleCurrent: "Período: Hoy",
+  financePeriodInfoBodyCurrent: "Totales desde la medianoche (hora local) hasta ahora.",
+  financePeriodInfoTitleDay: "Período: Día",
+  financePeriodInfoBodyDay: "Últimas 24 horas continuas desde ahora.",
+  financePeriodInfoTitleWeek: "Por qué los datos de la semana pueden verse incompletos",
+  financePeriodInfoBodyWeek:
+    'Para respetar los límites de la API de SimCompanies, obtenemos el historial de transacciones en lotes pequeños. Si abres la extensión todos los días, los totales semanales se mantienen precisos con el tiempo. Si te saltas uno o más días, es posible que falten algunas transacciones de ese intervalo hasta que la extensión se ponga al día en segundo plano; verás la insignia "Historial parcial" cuando eso ocurra. Para un pronóstico semanal fiable, entra cada día.',
   financeRefresh: "Refrescar",
   financeExpand: "Expandir",
   financeCompact: "Compacto",

@@ -264,6 +264,13 @@ export default {
   financePeriodDay: "Dia",
   financePeriodWeek: "Semana",
   financePeriodMonth: "Mês",
+  financePeriodInfoTitleCurrent: "Período: Hoje",
+  financePeriodInfoBodyCurrent: "Totais desde a meia-noite (horário local) até agora.",
+  financePeriodInfoTitleDay: "Período: Dia",
+  financePeriodInfoBodyDay: "Últimas 24 horas contínuas a partir de agora.",
+  financePeriodInfoTitleWeek: "Por que os dados da semana podem parecer incompletos",
+  financePeriodInfoBodyWeek:
+    'Para respeitar os limites da API da SimCompanies, buscamos o histórico de transações em pequenos lotes. Se você abrir a extensão todos os dias, os totais semanais permanecem precisos. Se pular um dia ou mais, algumas transações desse intervalo podem faltar até a extensão se atualizar em segundo plano — você verá o selo "Histórico parcial" quando isso acontecer. Para uma previsão semanal confiável, acesse diariamente.',
   financeRefresh: "Atualizar",
   financeExpand: "Expandir",
   financeCompact: "Compactar",

@@ -262,6 +262,13 @@ export default {
   financePeriodDay: "天",
   financePeriodWeek: "星期",
   financePeriodMonth: "月",
+  financePeriodInfoTitleCurrent: "期間:今天",
+  financePeriodInfoBodyCurrent: "自本地午夜至今的合計。",
+  financePeriodInfoTitleDay: "期間:日",
+  financePeriodInfoBodyDay: "從現在起滾動的最近 24 小時。",
+  financePeriodInfoTitleWeek: "為什麼每週資料有時不完整",
+  financePeriodInfoBodyWeek:
+    "為遵守 SimCompanies 的 API 限制,我們每次只拉取一小部分交易紀錄。如果你每天都開啟擴充功能,每週總額會保持準確。如果你跳過一天或更多,該時段內的部分交易可能會缺漏,直到擴充功能在背景補齊——這時會顯示「部分紀錄」標籤。要獲得可靠的每週預測,請每天登入使用。",
   financeRefresh: "重新整理",
   financeExpand: "擴張",
   financeCompact: "袖珍的",

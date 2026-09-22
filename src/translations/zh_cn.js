@@ -262,6 +262,13 @@ export default {
   financePeriodDay: "天",
   financePeriodWeek: "星期",
   financePeriodMonth: "月",
+  financePeriodInfoTitleCurrent: "周期:今天",
+  financePeriodInfoBodyCurrent: "自本地午夜至今的合计。",
+  financePeriodInfoTitleDay: "周期:日",
+  financePeriodInfoBodyDay: "从现在起滚动的最近 24 小时。",
+  financePeriodInfoTitleWeek: "为什么每周数据有时不完整",
+  financePeriodInfoBodyWeek:
+    "为遵守 SimCompanies 的 API 限制,我们每次只拉取一小部分交易历史。如果你每天都打开扩展,每周总额会保持准确。如果你跳过一天或更多,该时间段内的部分交易可能会缺失,直到扩展在后台补齐——此时会显示“部分历史”标签。要获得可靠的每周预测,请每天登录使用。",
   financeRefresh: "刷新",
   financeExpand: "扩张",
   financeCompact: "袖珍的",

@@ -265,6 +265,13 @@ export default {
   financePeriodDay: "Tag",
   financePeriodWeek: "Woche",
   financePeriodMonth: "Monat",
+  financePeriodInfoTitleCurrent: "Zeitraum: Heute",
+  financePeriodInfoBodyCurrent: "Summen seit Mitternacht (lokale Zeit) bis jetzt.",
+  financePeriodInfoTitleDay: "Zeitraum: Tag",
+  financePeriodInfoBodyDay: "Rollierende letzte 24 Stunden ab jetzt.",
+  financePeriodInfoTitleWeek: "Warum Wochendaten unvollständig wirken können",
+  financePeriodInfoBodyWeek:
+    "Um die API-Limits von SimCompanies einzuhalten, laden wir den Transaktionsverlauf nur in kleinen Abschnitten. Wenn du die Erweiterung täglich öffnest, bleiben die Wochenwerte im Laufe der Zeit genau. Überspringst du einen oder mehrere Tage, können Transaktionen aus dieser Lücke fehlen, bis die Erweiterung im Hintergrund aufholt – dann siehst du das Abzeichen „Teilverlauf“. Für eine zuverlässige Wochenprognose: täglich reinschauen.",
   financeRefresh: "Aktualisieren",
   financeExpand: "Expandieren",
   financeCompact: "Kompakt",
