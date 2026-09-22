@@ -3,21 +3,18 @@ name: Publish to Chrome Web Store
 on:
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
       - name: Install
@@ -29,22 +26,20 @@ jobs:
       - name: Pack ZIP
         run: npm run pack
 
+      # MobileFirstLLC/cws-publish is unmaintained (node16 runtime), so the
+      # Chrome Web Store API is driven directly by fregante's CLI instead.
       - name: Upload to Chrome Web Store
-        uses: MobileFirstLLC/cws-publish@latest
-        with:
-          action: upload
-          client_id: ${{ secrets.CWS_CLIENT_ID }}
-          client_secret: ${{ secrets.CWS_CLIENT_SECRET }}
-          refresh_token: ${{ secrets.CWS_REFRESH_TOKEN }}
-          extension_id: ${{ secrets.CWS_EXTENSION_ID }}
-          zip_file: sim-companies-extension-chrome.zip
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: npx --yes chrome-webstore-upload-cli@4 upload --source sim-companies-extension-chrome.zip
 
       - name: Submit for Review
-        uses: MobileFirstLLC/cws-publish@latest
-        with:
-          action: publish
-          client_id: ${{ secrets.CWS_CLIENT_ID }}
-          client_secret: ${{ secrets.CWS_CLIENT_SECRET }}
-          refresh_token: ${{ secrets.CWS_REFRESH_TOKEN }}
-          extension_id: ${{ secrets.CWS_EXTENSION_ID }}
-          zip_file: sim-companies-extension-chrome.zip
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: npx --yes chrome-webstore-upload-cli@4 publish
