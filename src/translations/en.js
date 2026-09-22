@@ -263,6 +263,13 @@ export default {
   financePeriodDay: "Day",
   financePeriodWeek: "Week",
   financePeriodMonth: "Month",
+  financePeriodInfoTitleCurrent: "Current period",
+  financePeriodInfoBodyCurrent: "Totals since local midnight today, up to now.",
+  financePeriodInfoTitleDay: "Day period",
+  financePeriodInfoBodyDay: "Rolling last 24 hours, counted back from right now.",
+  financePeriodInfoTitleWeek: "Why Week data can look incomplete",
+  financePeriodInfoBodyWeek:
+    "To respect SimCompanies' API limits, we only pull transaction history in small batches. If you open the extension every day, Week totals stay accurate over time. If you skip a day or more, some transactions from that gap may be missing until the extension catches up in the background — you'll see a \"Partial history\" badge when that happens. For a reliable weekly forecast, check in daily.",
   financeRefresh: "Refresh",
   financeExpand: "Expand",
   financeCompact: "Compact",

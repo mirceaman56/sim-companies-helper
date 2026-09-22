@@ -98,6 +98,16 @@ function ratioTooltip(ratioId) {
   return t(map[ratioId] || "");
 }
 
+function periodInfoTooltip(period) {
+  const map = {
+    current: ["financePeriodInfoTitleCurrent", "financePeriodInfoBodyCurrent"],
+    day: ["financePeriodInfoTitleDay", "financePeriodInfoBodyDay"],
+    week: ["financePeriodInfoTitleWeek", "financePeriodInfoBodyWeek"],
+  };
+  const [titleKey, bodyKey] = map[period] || map.current;
+  return `${t(titleKey)}: ${t(bodyKey)}`;
+}
+
 function severityLabel(severity) {
   if (severity === "danger") return t("financeSeverityDanger");
   if (severity === "warn") return t("financeSeverityWarn");
@@ -934,6 +944,14 @@ function renderHeader(finance) {
         <select id="${periodSelectId}" name="${periodSelectId}" class="scx-select scx-fin-period-select" data-fin-action="period">
           ${PERIOD_OPTIONS.map((p) => `<option value="${p.id}" ${period === p.id ? "selected" : ""}>${t(p.labelKey)}</option>`).join("")}
         </select>
+        <span
+          class="scx-fin-period-info-icon"
+          role="img"
+          tabindex="0"
+          aria-label="${escapeHtml(periodInfoTooltip(period))}"
+          data-tooltip="${escapeHtml(periodInfoTooltip(period))}"
+          >i</span
+        >
         <button class="scx-btn scx-fin-refresh-btn" data-fin-action="refresh">${t("financeRefresh")}</button>
         <button class="scx-btn scx-fin-mode-btn" data-fin-action="toggleMode">
           ${mode === "compact" ? t("financeExpand") : t("financeCompact")}

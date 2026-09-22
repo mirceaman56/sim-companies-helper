@@ -16,6 +16,7 @@ const {
   getFinanceStorageKey,
   hydrateFinanceCache,
   resetFinanceRuntime,
+  extendCoverageFromRecentBatch,
 } = _testUtils;
 
 function createLocalStorageMock() {
@@ -195,7 +196,7 @@ describe("cashflow core metrics", () => {
     localStorage.setItem(
       "scx-finance-cache-900-0",
       JSON.stringify({
-        v: 2,
+        v: 3,
         ts: Date.parse(now),
         scope: { companyId: 900, realmId: 0 },
         datasets: {
@@ -213,7 +214,7 @@ describe("cashflow core metrics", () => {
     localStorage.setItem(
       "scx-finance-cache-900-1",
       JSON.stringify({
-        v: 2,
+        v: 3,
         ts: Date.parse(now),
         scope: { companyId: 900, realmId: 1 },
         datasets: {
@@ -259,7 +260,7 @@ describe("cashflow core metrics", () => {
     localStorage.setItem(
       "scx-finance-cache-777-1",
       JSON.stringify({
-        v: 2,
+        v: 3,
         ts: Date.parse(now),
         scope: { companyId: 777, realmId: 1 },
         datasets: {
@@ -276,5 +277,66 @@ describe("cashflow core metrics", () => {
     hydrateFinanceCache();
 
     expect(localStorage.getItem("scx-finance-cache-legacy-company-only")).toBeNull();
+  });
+});
+
+describe("coverage floor gap detection", () => {
+  it("extends the floor when a fresh recent batch reconnects with the previous top", () => {
+    const finance = STATE.cashflow.finance;
+    const dayMs = 24 * 60 * 60 * 1000;
+    const t0 = Date.parse("2026-09-15T12:00:00.000Z");
+
+    // First session: recent batch spans the last few hours, ending "now".
+    extendCoverageFromRecentBatch(
+      finance,
+      [{ id: 2, datetime: new Date(t0).toISOString(), money: 100 }],
+      t0,
+    );
+    expect(finance.cache.coverageFloorMs).toBe(t0);
+
+    // Deep pagination earns a much older floor within the same session.
+    finance.cache.coverageFloorMs = t0 - 6 * dayMs;
+    finance.cache.coverageFloorId = 1;
+
+    // A later routine refresh (minutes later, same session) pulls a recent
+    // window whose oldest entry is newer than the deep floor, but still
+    // reaches back far enough to touch the old top, so no gap: the deep
+    // floor must be preserved, not collapsed back to the shallow window.
+    const t1 = t0 + 5 * 60 * 1000;
+    extendCoverageFromRecentBatch(
+      finance,
+      [
+        { id: 3, datetime: new Date(t1).toISOString(), money: -50 },
+        { id: 2, datetime: new Date(t0 - 2 * 60 * 60 * 1000).toISOString(), money: 100 },
+      ],
+      t1,
+    );
+
+    expect(finance.cache.coverageFloorMs).toBe(t0 - 6 * dayMs);
+    expect(finance.cache.coverageFloorId).toBe(1);
+  });
+
+  it("resets the floor when a fresh recent batch does not reach the previous top (real gap)", () => {
+    const finance = STATE.cashflow.finance;
+    const dayMs = 24 * 60 * 60 * 1000;
+    const t0 = Date.parse("2026-09-11T12:00:00.000Z");
+
+    // Old session earned deep coverage, with top at t0.
+    finance.cache.coverageTopMs = t0;
+    finance.cache.coverageFloorMs = t0 - 6 * dayMs;
+    finance.cache.coverageFloorId = 1;
+
+    // User reopens 11 days later. The fresh recent batch only spans the
+    // last few hours — nowhere near t0 — so the old deep floor can no
+    // longer be trusted; it must reset to this batch's own boundary.
+    const t1 = t0 + 11 * dayMs;
+    extendCoverageFromRecentBatch(
+      finance,
+      [{ id: 99, datetime: new Date(t1).toISOString(), money: 200 }],
+      t1,
+    );
+
+    expect(finance.cache.coverageFloorMs).toBe(t1);
+    expect(finance.cache.coverageFloorId).toBe(99);
   });
 });

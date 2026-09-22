@@ -264,6 +264,13 @@ export default {
   financePeriodDay: "Dzień",
   financePeriodWeek: "Tydzień",
   financePeriodMonth: "Miesiąc",
+  financePeriodInfoTitleCurrent: "Okres: Dziś",
+  financePeriodInfoBodyCurrent: "Sumy od północy (czas lokalny) do teraz.",
+  financePeriodInfoTitleDay: "Okres: Dzień",
+  financePeriodInfoBodyDay: "Ostatnie 24 godziny licząc od teraz.",
+  financePeriodInfoTitleWeek: "Dlaczego dane tygodniowe mogą wyglądać na niekompletne",
+  financePeriodInfoBodyWeek:
+    "Aby przestrzegać limitów API SimCompanies, pobieramy historię transakcji małymi partiami. Jeśli otwierasz rozszerzenie codziennie, sumy tygodniowe pozostają dokładne. Jeśli pominiesz dzień lub więcej, niektóre transakcje z tego okresu mogą brakować, dopóki rozszerzenie nie nadrobi zaległości w tle — zobaczysz wtedy odznakę „Częściowa historia”. Aby uzyskać wiarygodną prognozę tygodniową, loguj się codziennie.",
   financeRefresh: "Odświeżać",
   financeExpand: "Zwiększać",
   financeCompact: "Kompaktowy",

@@ -23,7 +23,12 @@ const STORAGE_RETENTION_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
 const CASHFLOW_STORAGE_DOMAIN = "cashflow-finance";
 
 const MAX_PAGINATION_PAGES_PER_RUN = 120;
-const STORAGE_VERSION = 2;
+// Bumped once to force a one-time full re-pull for all users: earlier
+// cached payloads predate the coverage-floor fix and can carry stale,
+// disjoint transaction history that this version's gap detection depends on
+// being absent. cleanupStaleFinanceCaches() purges the old payloads
+// automatically via this bump — safe to drop this comment on the next bump.
+const STORAGE_VERSION = 3;
 const FINANCE_PERIODS = ["current", "day", "week"];
 
 const inflightByUrl = new Map();
@@ -213,6 +218,9 @@ function resetFinanceRuntime(finance) {
     oldestPulled: false,
     pagesLoaded: 0,
     transactionsFetchedUntilMs: 0,
+    coverageFloorMs: 0,
+    coverageFloorId: null,
+    coverageTopMs: 0,
     lastTxFetchAt: 0,
     lastPastFinancesAt: 0,
     lastOutgoingContractsAt: 0,
@@ -273,6 +281,11 @@ function applyStorageRetention(finance, { now = nowMs() } = {}) {
 
   const oldest = getOldestTransactionMs(finance.datasets.transactions);
   finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldest) ? oldest : 0;
+
+  if (Number(finance.cache.coverageFloorMs || 0) > 0 && finance.cache.coverageFloorMs < cutoff) {
+    finance.cache.coverageFloorMs = cutoff;
+    finance.cache.coverageFloorId = null;
+  }
 }
 
 function cleanupStaleFinanceCaches() {
@@ -337,9 +350,9 @@ function hydrateFinanceCache() {
   const scope = getCurrentFinanceScope();
   if (!scope.hasScope) return;
   if (hydratedFinanceScopeKey === scope.key) return;
-  hydratedFinanceScopeKey = scope.key;
   const finance = getFinanceState();
   resetFinanceRuntime(finance);
+  hydratedFinanceScopeKey = scope.key;
 
   cleanupStaleFinanceCaches();
 
@@ -473,6 +486,48 @@ function getNewestTransactionMs(transactions) {
   if (!Array.isArray(transactions) || transactions.length === 0) return NaN;
   const first = transactions[0];
   return Number.isFinite(first?._dtMs) ? first._dtMs : NaN;
+}
+
+/** Oldest/newest normalized entries in a raw API batch (unsorted). */
+function getBatchExtent(rawItems) {
+  let oldest = null;
+  let newest = null;
+
+  for (const raw of rawItems || []) {
+    const tx = normalizeTransaction(raw);
+    if (!Number.isFinite(tx._dtMs)) continue;
+    if (!oldest || tx._dtMs < oldest._dtMs) oldest = tx;
+    if (!newest || tx._dtMs > newest._dtMs) newest = tx;
+  }
+
+  return { oldest, newest };
+}
+
+/**
+ * Record a batch of transactions that is contiguous from "now" back to its
+ * own oldest entry (true for the /recent/ endpoint). If it doesn't reach
+ * back far enough to touch the previously verified coverage top, there is a
+ * real gap in between (e.g. the extension wasn't opened for a while) and the
+ * old, deeper floor can no longer be trusted — reset to this batch's own
+ * range instead of falsely claiming the old, deeper coverage still holds.
+ */
+function extendCoverageFromRecentBatch(finance, rawItems, atMs = nowMs()) {
+  const { oldest, newest } = getBatchExtent(rawItems);
+  if (!oldest || !newest) return;
+
+  const topMs = Number(finance.cache.coverageTopMs || 0);
+  const floorMs = Number(finance.cache.coverageFloorMs || 0);
+  const reachesOldTop = topMs > 0 && oldest._dtMs <= topMs;
+
+  if (reachesOldTop && floorMs > 0) {
+    finance.cache.coverageFloorMs = Math.min(floorMs, oldest._dtMs);
+    finance.cache.coverageFloorId = oldest._dtMs <= floorMs ? oldest.id : finance.cache.coverageFloorId;
+  } else {
+    finance.cache.coverageFloorMs = oldest._dtMs;
+    finance.cache.coverageFloorId = oldest.id;
+  }
+
+  finance.cache.coverageTopMs = Math.max(topMs, newest._dtMs, atMs);
 }
 
 function startOfTodayLocalMs(baseMs = nowMs()) {
@@ -1193,11 +1248,13 @@ function recomputeDerived(period) {
 
   const oldestMs = getOldestTransactionMs(transactions);
   const newestMs = getNewestTransactionMs(transactions);
+  const floorMs = Number(finance.cache.coverageFloorMs || 0);
+  const requiredStart = Math.min(bounds.startMs, prevBounds.startMs);
 
   finance.coverage = {
     startMs: Number.isFinite(oldestMs) ? oldestMs : 0,
     endMs: Number.isFinite(newestMs) ? newestMs : nowMs(),
-    partial: Number.isFinite(oldestMs) ? oldestMs > Math.min(bounds.startMs, prevBounds.startMs) : true,
+    partial: floorMs > 0 ? floorMs > requiredStart : true,
   };
 
   if (finance.coverage.partial) {
@@ -1277,6 +1334,7 @@ async function refreshRecentTransactions({ force = false } = {}) {
     finance.datasets.transactions = mergeTransactions(finance.datasets.transactions, data);
     finance.cache.lastTxFetchAt = nowMs();
     finance.cache.pagesLoaded = Math.max(1, Number(finance.cache.pagesLoaded || 0));
+    extendCoverageFromRecentBatch(finance, data, finance.cache.lastTxFetchAt);
 
     if (json?.oldestPulled === true) {
       finance.cache.oldestPulled = true;
@@ -1306,34 +1364,39 @@ export async function ensureFinanceCoverage(startMs, { reason: _reason = "" } = 
     return { partial: false };
   }
 
-  let oldestMs = getOldestTransactionMs(finance.datasets.transactions);
+  // Coverage is judged by the verified gap-free floor, not merely the
+  // oldest transaction id/date in the dataset — that can include disjoint
+  // older data left over from before a session gap (see
+  // extendCoverageFromRecentBatch).
+  let floorMs = Number(finance.cache.coverageFloorMs || 0);
 
-  if (Number.isFinite(oldestMs) && oldestMs <= startMs) {
+  if (floorMs > 0 && floorMs <= startMs) {
     return { partial: false };
   }
 
   if (finance.cache.oldestPulled) {
-    return { partial: true };
+    return { partial: floorMs > 0 ? floorMs > startMs : true };
   }
 
   let pages = 0;
 
-  while ((!Number.isFinite(oldestMs) || oldestMs > startMs) && !finance.cache.oldestPulled) {
+  while ((!(floorMs > 0) || floorMs > startMs) && !finance.cache.oldestPulled) {
     if (pages >= MAX_PAGINATION_PAGES_PER_RUN) {
       break;
     }
 
-    const last = finance.datasets.transactions[finance.datasets.transactions.length - 1];
-    const lastId = Number(last?.id);
+    const cursorId = Number.isFinite(finance.cache.coverageFloorId)
+      ? Number(finance.cache.coverageFloorId)
+      : Number(finance.datasets.transactions[finance.datasets.transactions.length - 1]?.id);
 
-    if (!Number.isFinite(lastId)) {
+    if (!Number.isFinite(cursorId)) {
       break;
     }
 
     pages += 1;
 
     try {
-      const json = await fetchJson(PAGE_URL(lastId));
+      const json = await fetchJson(PAGE_URL(cursorId));
       const data = Array.isArray(json?.data) ? json.data : [];
 
       finance.datasets.transactions = mergeTransactions(finance.datasets.transactions, data);
@@ -1342,18 +1405,28 @@ export async function ensureFinanceCoverage(startMs, { reason: _reason = "" } = 
 
       if (json?.oldestPulled === true || data.length === 0) {
         finance.cache.oldestPulled = true;
+      } else {
+        // Fetched via cursor pagination from the verified floor, so this
+        // page is by definition a contiguous continuation — safe to extend
+        // the floor to its oldest entry.
+        const { oldest } = getBatchExtent(data);
+        if (oldest) {
+          finance.cache.coverageFloorMs = oldest._dtMs;
+          finance.cache.coverageFloorId = oldest.id;
+        }
       }
 
-      oldestMs = getOldestTransactionMs(finance.datasets.transactions);
-      finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldestMs) ? oldestMs : 0;
+      const oldest = getOldestTransactionMs(finance.datasets.transactions);
+      finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldest) ? oldest : 0;
+      floorMs = Number(finance.cache.coverageFloorMs || 0);
     } catch (e) {
       markRateLimitFromError(e);
       break;
     }
   }
 
-  oldestMs = getOldestTransactionMs(finance.datasets.transactions);
-  const partial = !Number.isFinite(oldestMs) || oldestMs > startMs;
+  floorMs = Number(finance.cache.coverageFloorMs || 0);
+  const partial = !(floorMs > 0) || floorMs > startMs;
 
   return { partial };
 }
@@ -1510,4 +1583,6 @@ export const _testUtils = {
   getFinanceStorageKey,
   hydrateFinanceCache,
   resetFinanceRuntime,
+  extendCoverageFromRecentBatch,
+  getBatchExtent,
 };

@@ -103,6 +103,14 @@ export const STATE = {
         oldestPulled: false,
         pagesLoaded: 0,
         transactionsFetchedUntilMs: 0,
+        // Range of transaction history verified gap-free: [coverageFloorMs,
+        // coverageTopMs]. Distinct from the oldest/newest transaction
+        // id/date in the dataset, which can include disjoint older data
+        // (e.g. left over from before a session gap) that must not count as
+        // coverage until pagination reconnects it.
+        coverageFloorMs: 0,
+        coverageFloorId: null,
+        coverageTopMs: 0,
         lastTxFetchAt: 0,
         lastPastFinancesAt: 0,
         lastOutgoingContractsAt: 0,

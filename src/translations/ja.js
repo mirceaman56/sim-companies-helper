@@ -264,6 +264,13 @@ export default {
   financePeriodDay: "日",
   financePeriodWeek: "週",
   financePeriodMonth: "月",
+  financePeriodInfoTitleCurrent: "期間:今日",
+  financePeriodInfoBodyCurrent: "現地時間の午前0時から現在までの合計です。",
+  financePeriodInfoTitleDay: "期間:1日",
+  financePeriodInfoBodyDay: "現在から遡った直近24時間です。",
+  financePeriodInfoTitleWeek: "週データが不完全に見える理由",
+  financePeriodInfoBodyWeek:
+    "SimCompanies の API 制限を守るため、取引履歴は少しずつ取得しています。拡張機能を毎日開いていれば、週の合計は時間とともに正確になります。1日以上開かない期間があると、その間の一部の取引が欠けることがあり、バックグラウンドで拡張機能が追いつくまで反映されません。その場合は「履歴が一部のみ」のバッジが表示されます。信頼できる週間予測を得るには、毎日ログインしてご利用ください。",
   financeRefresh: "リフレッシュ",
   financeExpand: "拡大する",
   financeCompact: "コンパクト",

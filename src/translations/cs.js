@@ -264,6 +264,13 @@ export default {
   financePeriodDay: "Den",
   financePeriodWeek: "Týden",
   financePeriodMonth: "Měsíc",
+  financePeriodInfoTitleCurrent: "Období: Dnes",
+  financePeriodInfoBodyCurrent: "Součty od půlnoci (místní čas) do teď.",
+  financePeriodInfoTitleDay: "Období: Den",
+  financePeriodInfoBodyDay: "Posledních 24 hodin klouzavě od teď.",
+  financePeriodInfoTitleWeek: "Proč mohou být týdenní data neúplná",
+  financePeriodInfoBodyWeek:
+    "Abychom respektovali limity API SimCompanies, stahujeme historii transakcí jen po malých dávkách. Pokud rozšíření otevíráte každý den, týdenní součty zůstávají přesné. Pokud vynecháte den nebo více, mohou v tomto úseku chybět některé transakce, dokud je rozšíření na pozadí nedostáhne — v tu chvíli uvidíte štítek „Částečná historie“. Pro spolehlivý týdenní odhad se přihlašujte denně.",
   financeRefresh: "Obnovit",
   financeExpand: "Rozšířit",
   financeCompact: "Kompaktní",
