@@ -1,0 +1,121 @@
+.scx-whats-new-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-md);
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-whats-new-empty {
+  padding: var(--scx-spacing-sm) 0;
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+  text-align: center;
+}
+
+.scx-whats-new-version {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: var(--scx-spacing-sm);
+  border-bottom: var(--scx-border-light);
+}
+
+.scx-whats-new-version:last-of-type {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.scx-whats-new-version-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scx-whats-new-version-label {
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-text-primary);
+}
+
+.scx-whats-new-date {
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+}
+
+/* Marks the versions that arrived since this player last ran the extension. */
+.scx-whats-new-badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: var(--scx-border-radius-lg);
+  background: var(--scx-bg-info);
+  color: var(--scx-color-info);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.scx-whats-new-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scx-whats-new-group-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-secondary);
+}
+
+.scx-whats-new-entries {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.scx-whats-new-entry {
+  margin: 1px 0;
+  color: var(--scx-text-primary);
+  line-height: 1.4;
+}
+
+.scx-whats-new-link {
+  align-self: flex-start;
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-color-info);
+  text-decoration: underline;
+}
+
+/* Toast action: the toast only summarises, this opens the full panel. */
+.scx-whats-new-action {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: var(--scx-border-radius-sm);
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+/* Credits: contributors and issue reporters, collected at release time. */
+.scx-whats-new-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+}
+
+.scx-whats-new-credits-label {
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+a.scx-whats-new-credit {
+  color: var(--scx-color-info);
+  text-decoration: none;
+}
+
+a.scx-whats-new-credit:hover {
+  text-decoration: underline;
+}

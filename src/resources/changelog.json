@@ -1,0 +1,142 @@
+{
+  "generatedAt": "2026-09-22T13:06:04.824Z",
+  "versions": [
+    {
+      "version": "0.29.2",
+      "date": "2026-09-21",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 158,
+          "text": "Contracts UI - number input instead of dropdown"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "irenes-cv",
+          "role": "reporter",
+          "url": "https://github.com/irenes-cv"
+        }
+      ]
+    },
+    {
+      "version": "0.29.1",
+      "date": "2026-09-21",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": 157,
+          "text": "Fixed the production UI after the game update"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.29.0",
+      "date": "2026-09-11",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 154,
+          "text": "New api limit warning and api call optimisations"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.28.0",
+      "date": "2026-08-10",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": null,
+          "text": "Users can now create contract rule templates"
+        },
+        {
+          "cat": "feature",
+          "pr": null,
+          "text": "Small performance optimisation and loading race condition fix"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "Cauadsm",
+          "role": "contributor",
+          "url": null
+        }
+      ]
+    },
+    {
+      "version": "0.27.3",
+      "date": "2026-08-08",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": null,
+          "text": "Fix price Profit Analysis at the produced quality"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "astermaster9-gif",
+          "role": "reporter",
+          "url": "https://github.com/astermaster9-gif"
+        }
+      ]
+    },
+    {
+      "version": "0.27.2",
+      "date": "2026-07-22",
+      "entries": [
+        {
+          "cat": "other",
+          "pr": 148,
+          "text": "Fix warehouse sales toggle and market price lookup for non-English locales"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "Cauadsm",
+          "role": "contributor",
+          "url": "https://github.com/Cauadsm"
+        }
+      ]
+    },
+    {
+      "version": "0.27.1",
+      "date": "2026-06-19",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": 147,
+          "text": "Fixed contract ui not taking sourcing costs into consideration"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.26.10",
+      "date": "2026-05-29",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 144,
+          "text": "Added margin % on the contractui"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.26.9",
+      "date": "2026-05-07",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": null,
+          "text": "Fixed Upgrade-ui quantities not being displayed correctly if warehouse contained partial quantities."
+        }
+      ],
+      "credits": []
+    }
+  ]
+}

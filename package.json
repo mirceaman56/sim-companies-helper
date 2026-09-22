@@ -18,6 +18,8 @@
     "hooks:install": "git config core.hooksPath .githooks",
     "check:data-platform": "node scripts/check-data-platform-boundaries.mjs",
     "translate:sync": "node scripts/translate-translations.mjs",
+    "changelog:build": "node scripts/build-changelog.mjs",
+    "changelog:seed": "node scripts/build-changelog.mjs --seed",
     "test": "vitest run",
     "test:watch": "vitest"
   },

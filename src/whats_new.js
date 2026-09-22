@@ -1,5 +1,26 @@
+// whats_new.js
+// Pure logic for the "What's new" panel.
+//
+// The changelog itself is built at release time by scripts/build-changelog.mjs
+// and bundled as src/resources/changelog.json, so nothing here touches the
+// network: no GitHub rate limit, no markdown scraping, works offline.
+//
+// Entries are English only by design. The panel's own chrome (section title,
+// category headings, credit labels) still goes through t().
+
+import changelog from "./resources/changelog.json";
+
 const REPO_OWNER = "mirceaman56";
 const REPO_NAME = "sim-companies-helper";
+
+/** Render order, mirroring the category blocks in .github/release.yml. */
+export const CATEGORY_ORDER = ["feature", "fix", "other"];
+
+const CATEGORY_META = {
+  feature: { icon: "✨", titleKey: "whatsNewCatFeature" },
+  fix: { icon: "🐛", titleKey: "whatsNewCatFix" },
+  other: { icon: "🔧", titleKey: "whatsNewCatOther" },
+};
 
 function parseVersion(version) {
   const parts = String(version || "")
@@ -16,118 +37,100 @@ export function compareVersions(a, b) {
   return aPatch - bPatch;
 }
 
-export function minorKey(version) {
-  const parts = String(version || "").split(".");
-  const major = parts[0] || "0";
-  const minor = parts[1] || "0";
-  return `${major}.${minor}`;
-}
-
-export function releaseApiUrl(version) {
-  const v = String(version || "").trim();
-  return `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/tags/v${encodeURIComponent(v)}`;
-}
-
 export function releasePageUrl(version) {
   const v = String(version || "").trim();
   return `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/tag/v${encodeURIComponent(v)}`;
 }
 
-function stripMarkdown(s) {
-  let out = String(s || "");
-  out = out.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1"); // [text](url) -> text
-  out = out.replace(/https?:\/\/\S+/gi, ""); // drop raw URLs
-  out = out.replace(/[`*_>#]/g, ""); // minimal markdown noise
-  out = out.replace(/\s+/g, " ").trim();
-  return out;
+export function getCategoryMeta(category) {
+  return CATEGORY_META[category] || CATEGORY_META.other;
 }
 
-function humanizeHighlight(s) {
-  let out = stripMarkdown(s);
-
-  // Common GitHub auto-generated release-note bullets:
-  // "fix: something by @user in https://..."
-  out = out.replace(/\s+by\s+@?[a-z0-9_-]+/gi, "");
-  out = out.replace(/\s+in\s*$/i, "");
-  out = out.replace(/\s*\(#?\d+\)\s*$/i, ""); // trailing PR reference
-
-  const m = out.match(/^([a-z]+)(\([^)]+\))?:\s*(.+)$/i);
-  if (m) {
-    const type = m[1].toLowerCase();
-    const rest = m[3];
-    const prefix =
-      type === "feat"
-        ? "New"
-        : type === "fix"
-          ? "Fixed"
-          : type === "perf"
-            ? "Improved"
-            : type === "docs"
-              ? "Updated"
-              : null;
-    if (prefix) out = `${prefix}: ${rest}`;
-  }
-
-  out = out.replace(/\s+/g, " ").trim();
-  return out;
+/** The bundled changelog, newest version first. */
+export function getChangelog() {
+  return Array.isArray(changelog?.versions) ? changelog.versions : [];
 }
 
-export function extractHighlights(markdownBody, { limit = 5 } = {}) {
-  const body = String(markdownBody || "");
-  const lines = body.split(/\r?\n/);
+/**
+ * Versions released after `fromVersion` and up to `toVersion`, newest first.
+ * An unknown or missing `fromVersion` yields nothing rather than the whole
+ * history — a first install gets a welcome card, not a wall of old fixes.
+ * @param {string} fromVersion
+ * @param {string} toVersion
+ * @param {{versions?: Array}} [source]
+ */
+export function getVersionsBetween(fromVersion, toVersion, source = null) {
+  const versions = Array.isArray(source) ? source : getChangelog();
+  if (!fromVersion || !toVersion) return [];
 
-  const highlights = [];
-  let inCode = false;
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (line.startsWith("```")) {
-      inCode = !inCode;
-      continue;
-    }
-    if (inCode) continue;
-    if (!line) continue;
-    if (/^#+\s+/.test(line)) continue; // headings
-
-    // Bullet-like lines
-    const bulletMatch = line.match(/^(\*|-|•|\d+\.)\s+(.*)$/);
-    if (bulletMatch) {
-      const cleaned = humanizeHighlight(bulletMatch[2]);
-      if (cleaned) highlights.push(cleaned);
-    }
-
-    if (highlights.length >= limit) break;
-  }
-
-  return highlights.slice(0, limit);
+  return versions
+    .filter((v) => v?.version)
+    .filter((v) => compareVersions(v.version, fromVersion) > 0)
+    .filter((v) => compareVersions(v.version, toVersion) <= 0)
+    .sort((a, b) => compareVersions(b.version, a.version));
 }
 
-export function collectHighlightsFromReleases(releases, fromVersion, toVersion, { limit = 10 } = {}) {
-  const filtered = (Array.isArray(releases) ? releases : [])
-    .filter((r) => !r?.prerelease)
-    .map((r) => ({ ...r, tag_name: String(r?.tag_name || "") }))
-    .filter((r) => /^v?\d+\.\d+\.\d+$/.test(r.tag_name))
-    .filter((r) => compareVersions(r.tag_name, fromVersion) > 0)
-    .filter((r) => compareVersions(r.tag_name, toVersion) <= 0)
-    .sort((a, b) => compareVersions(a.tag_name, b.tag_name));
+/** The most recent `count` versions, for the always-available panel. */
+export function getLatestVersions(count = 5, source = null) {
+  const versions = Array.isArray(source) ? source : getChangelog();
+  return [...versions]
+    .filter((v) => v?.version)
+    .sort((a, b) => compareVersions(b.version, a.version))
+    .slice(0, Math.max(0, count));
+}
 
-  const highlights = [];
-  for (const rel of filtered) {
-    const items = extractHighlights(rel.body, { limit });
-    for (const item of items) {
-      highlights.push(item);
-      if (highlights.length >= limit) return highlights;
+/** An entry's text, tolerating a malformed or empty entry. */
+export function pickEntryText(entry) {
+  return entry?.text ? String(entry.text) : "";
+}
+
+/**
+ * People to thank for a version, split by role so the panel can label them.
+ * Built at release time from PR authors and the authors of the issues those
+ * PRs close, so nobody has to be listed by hand.
+ * @param {{credits?: Array}} version
+ * @returns {{contributors: Array, reporters: Array}}
+ */
+export function getCredits(version) {
+  const credits = Array.isArray(version?.credits) ? version.credits : [];
+  const valid = credits.filter((c) => c?.handle);
+  return {
+    contributors: valid.filter((c) => c.role !== "reporter"),
+    reporters: valid.filter((c) => c.role === "reporter"),
+  };
+}
+
+/** Entries of one version grouped into render order, empty groups dropped. */
+export function groupEntriesByCategory(entries) {
+  const list = Array.isArray(entries) ? entries : [];
+  return CATEGORY_ORDER.map((cat) => ({
+    cat,
+    entries: list.filter((e) => (e?.cat || "other") === cat),
+  })).filter((group) => group.entries.length > 0);
+}
+
+/** Per-category counts across versions, for the toast's one-line summary. */
+export function summarizeCounts(versions) {
+  const counts = { feature: 0, fix: 0, other: 0, total: 0 };
+
+  for (const version of Array.isArray(versions) ? versions : []) {
+    for (const entry of Array.isArray(version?.entries) ? version.entries : []) {
+      const cat = CATEGORY_ORDER.includes(entry?.cat) ? entry.cat : "other";
+      counts[cat] += 1;
+      counts.total += 1;
     }
   }
 
-  return highlights.slice(0, limit);
+  return counts;
 }
 
 export const _testUtils = {
   compareVersions,
-  minorKey,
-  releaseApiUrl,
+  getCredits,
   releasePageUrl,
-  extractHighlights,
-  collectHighlightsFromReleases,
+  getVersionsBetween,
+  getLatestVersions,
+  pickEntryText,
+  groupEntriesByCategory,
+  summarizeCounts,
 };

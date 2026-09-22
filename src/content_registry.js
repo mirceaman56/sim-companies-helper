@@ -12,7 +12,7 @@ import { initContractHelper } from "./contract_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initXpWidget } from "./xp_ui.js";
-import { initWhatsNewToast } from "./whats_new_ui.js";
+import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
 
 /**
@@ -27,6 +27,7 @@ const SIDEBAR_SECTIONS = [
   { id: "market-alerts-section", titleKey: "marketAlerts", icon: "🔔" },
   { id: "chat-section", titleKey: "chatFilter", icon: "💬" },
   { id: "executive-section", titleKey: "executiveHelper", icon: "👔" },
+  { id: "whats-new-section", titleKey: "whatsNewSectionTitle", icon: "✨" },
 ];
 
 /**
@@ -35,7 +36,6 @@ const SIDEBAR_SECTIONS = [
 export function bootstrapFeatureRegistry() {
   ensureSidebarContainer();
   initApiHealthBanner();
-  initWhatsNewToast();
 
   for (const section of SIDEBAR_SECTIONS) {
     registerSection(section.id, t(section.titleKey), section.icon);
@@ -49,6 +49,9 @@ export function bootstrapFeatureRegistry() {
   setSectionUpdateFn("executive-section", updateExecutivePanel);
   setSectionUpdateFn("market-alerts-section", updateMarketAlertsPanel);
   setSectionUpdateFn("chat-section", updateChatFilterPanel);
+
+  // Registers the panel's update fn and shows the post-update toast once.
+  void initWhatsNew();
 
   // Static one-time feature initializers.
   initChatFilter();
