@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
@@ -67,12 +68,6 @@ jobs:
             echo "🆕 New version v${{ steps.ver.outputs.version }} — will release."
           fi
 
-      # Entry text is the PR title, categorized by PR label and machine
-      # translated, so no release copy is written by hand. Runs before the
-      # build because the result is bundled into the extension.
-      # Never blocks a release: a GitHub API or translation hiccup leaves the
-      # previous changelog bundled, and `npm run changelog:build -- --seed`
-      # backfills the missing version afterwards.
       - name: 📝 Build changelog
         if: steps.check.outputs.skip == 'false'
         continue-on-error: true
@@ -80,12 +75,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run changelog:build -- --version=${{ steps.ver.outputs.version }}
 
-      # Keeps the generated entries (and their translations) in the repo so the
-      # next release does not pay to rebuild them. [skip ci] stops this push
-      # from starting another release run.
-      - name: Commit changelog
+      - name: 📝 Open changelog PR
         if: steps.check.outputs.skip == 'false'
         continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if git diff --quiet -- src/resources/changelog.json; then
             echo "⏭️ changelog.json unchanged."
@@ -93,11 +87,17 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="chore/changelog-v${{ steps.ver.outputs.version }}"
           git add src/resources/changelog.json
-          git commit -m "chore: changelog for v${{ steps.ver.outputs.version }} [skip ci]"
-          # Another merge may have landed on main while this run was building.
-          git pull --rebase --autostash origin main
-          git push origin HEAD:main
+          git commit -m "chore: changelog for v${{ steps.ver.outputs.version }}"
+          git push --force origin HEAD:"$BRANCH"
+          if gh pr view "$BRANCH" >/dev/null 2>&1; then
+            echo "PR already open for $BRANCH"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore: changelog for v${{ steps.ver.outputs.version }}" \
+              --body "Auto-generated changelog entries for v${{ steps.ver.outputs.version }}. Not auto-merged — review and merge manually."
+          fi
 
       - name: Build
         run: npm run build
