@@ -56,7 +56,10 @@ function readMoneyValues(text) {
  * The running order block. Detected structurally so no UI copy is matched.
  */
 function isBusyProductionBlock(el) {
-  return Boolean(el?.querySelector?.(BUSY_VALUE_SELECTOR) && el.querySelector("h3") && hasResourceImage(el));
+  // Artwork is not required: when it is missing (or not a resource image) the
+  // walk would climb to the building page and pick up unrelated icons such as
+  // the header's "install robots" button.
+  return Boolean(el?.querySelector?.(BUSY_VALUE_SELECTOR) && el.querySelector("h3"));
 }
 
 export function findProductionRowFromTarget(target) {
@@ -107,7 +110,10 @@ export function findFirstProductionRow(root = document) {
  * @returns {string | null}
  */
 export function extractResourceSlug(root) {
-  const src = root?.querySelector?.(RESOURCE_IMAGE_SELECTOR)?.getAttribute("src") || "";
+  // Action buttons ("install robots") carry resource icons of their own.
+  const images = root?.querySelectorAll?.(RESOURCE_IMAGE_SELECTOR) || [];
+  const image = [...images].find((img) => !img.closest("button"));
+  const src = image?.getAttribute("src") || "";
   const fileName = src.split("/").pop() || "";
   return fileName.split(".")[0] || null;
 }

@@ -40,7 +40,10 @@ async function updateForRow(row) {
   const productionRow = readProductionRow(row);
   // The running order carries no encyclopedia link, so fall back to the
   // (untranslated) resource icon slug.
-  const productId = productionRow?.productId ?? getRecipeIdBySlug(productionRow?.productSlug);
+  const productId =
+    productionRow?.productId ??
+    getRecipeIdBySlug(productionRow?.productSlug) ??
+    (productionRow?.isActive ? getRecipeIdBySlug(productionRow?.productName) : null);
 
   if (!productId) {
     currentProductId = null;
