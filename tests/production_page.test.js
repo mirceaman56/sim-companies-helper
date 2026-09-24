@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   extractProductionBuildingLevel,
+  extractResourceSlug,
   findBusyProductionBlock,
   findFirstProductionRow,
   findProductionRowFromTarget,
@@ -40,6 +41,24 @@ describe("production_page adapter", () => {
         unitCost: 8.79,
         sourcingValue: 53614,
       });
+    });
+
+    it("ignores header action icons when the block has no resource artwork", () => {
+      const header = `<div><button type="button"><img src="/static/images/resources/robots.468692deb9ce.png" alt="">Install</button></div>`;
+      document.body.innerHTML = `<div id="page">${header}${loadFixture("busy-block.html")}</div>`;
+      for (const img of document.querySelectorAll(".css-1ko0oks img")) img.remove();
+
+      const block = findBusyProductionBlock(document);
+
+      expect(block.contains(document.querySelector("button"))).toBe(false);
+      expect(readProductionRow(block)).toMatchObject({ productSlug: null, productName: "Minerals" });
+    });
+
+    it("skips resource icons inside buttons when reading the slug", () => {
+      const header = `<div><button type="button"><img src="/static/images/resources/robots.468692deb9ce.png" alt="">Install</button></div>`;
+      document.body.innerHTML = `<div id="page">${header}${loadFixture("busy-block.html")}</div>`;
+
+      expect(extractResourceSlug(document.getElementById("page"))).toBe("minerals");
     });
 
     it("walks up to the block from a nested target", () => {
