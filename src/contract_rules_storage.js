@@ -1,66 +1,123 @@
 // contract_rules_storage.js
 // Persistence bridge for saved contract rule templates.
+//
+// Rules live in chrome.storage.sync so they follow the user across devices.
+// Sync can refuse a write (8KB per-item quota, sync turned off), so every save
+// that sync rejects lands in chrome.storage.local instead. That local copy only
+// exists while it is newer than the synced one, and wins on the next load.
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { storage } from "./data/storage.js";
+import { CONTRACT_RULE_NOTE_MAX_LENGTH } from "./constants.js";
 import { hydrateRules, resolveNextRuleId, serializeRules } from "./contract_rules_state.js";
 
 export const STORAGE_DOMAIN = "contract-rules";
-export const STORAGE_VERSION = 1;
+export const STORAGE_VERSION = 2;
+// v1 kept percent-only rules in chrome.storage.local.
+export const LEGACY_STORAGE_VERSION = 1;
+
+const SYNC_BACKEND = "sync";
+const LOCAL_BACKEND = "chrome";
 
 /**
  * @param {{ auth: { realmId: number|null|undefined } }} state
  * @param {() => Promise<void>} ensureAuthFn
  */
+function hasAccountScope(state) {
+  const isId = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));
+  return isId(state.auth.companyId) && isId(state.auth.realmId);
+}
+
+/**
+ * Rules are stored per company + realm. Without both ids every read comes back
+ * empty and every write is dropped, so fail loudly instead.
+ * @param {{ auth: { companyId?: number|null, realmId: number|null|undefined } }} state
+ * @param {() => Promise<void>} ensureAuthFn
+ */
 async function ensureAuth(state, ensureAuthFn) {
-  if (state.auth.realmId === null || state.auth.realmId === undefined) {
-    await ensureAuthFn();
+  if (!hasAccountScope(state)) await ensureAuthFn();
+  if (!hasAccountScope(state)) throw new Error("Contract rules: company/realm not known yet");
+}
+
+function keyOptions(backend, version = STORAGE_VERSION) {
+  return { domain: STORAGE_DOMAIN, version, scope: "scoped", backend, refreshAuth: true };
+}
+
+function toSnapshot(data) {
+  const rules = hydrateRules(data.rules || [], { noteMaxLength: CONTRACT_RULE_NOTE_MAX_LENGTH });
+  return { rules, nextRuleId: resolveNextRuleId(rules, data.nextRuleId) };
+}
+
+/**
+ * Write the payload to sync, or to local when sync refuses it.
+ * @returns {Promise<{saved: boolean, synced: boolean}>}
+ */
+async function writeSnapshot(storageApi, data) {
+  if (await storageApi.set({ ...keyOptions(SYNC_BACKEND), data })) {
+    // The synced copy is now the newest one; drop any stale local fallback.
+    await storageApi.remove(keyOptions(LOCAL_BACKEND));
+    return { saved: true, synced: true };
   }
+
+  const saved = Boolean(await storageApi.set({ ...keyOptions(LOCAL_BACKEND), data }));
+  return { saved, synced: false };
 }
 
 /**
  * Save current rules snapshot.
  * @param {{rules: object[], nextRuleId: number, state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} input
+ * @returns {Promise<{saved: boolean, synced: boolean}>}
  */
 export async function saveRulesSnapshot(input) {
   const { rules, nextRuleId, state = STATE, storageApi = storage, ensureAuthFn = loadAuthDataOnce } = input;
 
-  await ensureAuth(state, ensureAuthFn);
+  try {
+    await ensureAuth(state, ensureAuthFn);
+  } catch {
+    return { saved: false, synced: false };
+  }
 
-  await storageApi.set({
-    domain: STORAGE_DOMAIN,
-    version: STORAGE_VERSION,
-    scope: "scoped",
-    backend: "chrome",
-    refreshAuth: true,
-    data: {
-      rules: serializeRules(rules),
-      nextRuleId,
-    },
-  });
+  return writeSnapshot(storageApi, { rules: serializeRules(rules), nextRuleId });
 }
 
 /**
  * Load rules snapshot.
  * @param {{state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} [input]
- * @returns {Promise<{rules: object[], nextRuleId: number} | null>}
+ * @returns {Promise<{rules: object[], nextRuleId: number, synced: boolean} | null>} Null when
+ *   nothing is stored. Rejects when the account is unknown, which is not the same as empty.
  */
 export async function loadRulesSnapshot(input = {}) {
   const { state = STATE, storageApi = storage, ensureAuthFn = loadAuthDataOnce } = input;
 
   await ensureAuth(state, ensureAuthFn);
 
-  const data = await storageApi.get({
-    domain: STORAGE_DOMAIN,
-    version: STORAGE_VERSION,
-    scope: "scoped",
-    backend: "chrome",
-    refreshAuth: true,
+  // A local v2 copy means the last save could not reach sync, so it is newer
+  // than whatever sync holds. Use it and retry the upload.
+  const localData = await storageApi.get(keyOptions(LOCAL_BACKEND));
+  if (localData) {
+    const snapshot = toSnapshot(localData);
+    const { synced } = await writeSnapshot(storageApi, {
+      rules: serializeRules(snapshot.rules),
+      nextRuleId: snapshot.nextRuleId,
+    });
+    return { ...snapshot, synced };
+  }
+
+  const syncedData = await storageApi.get(keyOptions(SYNC_BACKEND));
+  if (syncedData) return { ...toSnapshot(syncedData), synced: true };
+
+  // Dual-read: move v1 rules forward, and only delete them once the new copy
+  // is safely written somewhere.
+  const legacyOptions = keyOptions(LOCAL_BACKEND, LEGACY_STORAGE_VERSION);
+  const legacyData = await storageApi.get(legacyOptions);
+  if (!legacyData) return null;
+
+  const snapshot = toSnapshot(legacyData);
+  const { saved, synced } = await writeSnapshot(storageApi, {
+    rules: serializeRules(snapshot.rules),
+    nextRuleId: snapshot.nextRuleId,
   });
+  if (saved) await storageApi.remove(legacyOptions);
 
-  if (!data) return null;
-
-  const rules = hydrateRules(data.rules || []);
-  const nextRuleId = resolveNextRuleId(rules, data.nextRuleId);
-  return { rules, nextRuleId };
+  return { ...snapshot, synced };
 }

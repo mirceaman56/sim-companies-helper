@@ -95,4 +95,55 @@ describe("data/storage", () => {
     const all = await storage.listByPrefix({ backend: "local", prefix: "scx:" });
     expect(all.length).toBe(2);
   });
+
+  describe("sync backend", () => {
+    function createArea({ rejectWrites = false } = {}) {
+      const items = {};
+      return {
+        items,
+        get: async (key) => (key == null ? { ...items } : { [key]: items[key] }),
+        set: async (entries) => {
+          if (rejectWrites) throw new Error("QUOTA_BYTES_PER_ITEM quota exceeded");
+          Object.assign(items, entries);
+        },
+        remove: async (key) => {
+          delete items[key];
+        },
+      };
+    }
+
+    function installChrome(areas) {
+      Object.defineProperty(globalThis, "chrome", { value: { storage: areas }, configurable: true, writable: true });
+    }
+
+    it("reads and writes chrome.storage.sync without touching the local area", async () => {
+      const local = createArea();
+      const sync = createArea();
+      installChrome({ local, sync });
+
+      const ok = await set({ domain: "sync-test", version: 1, scope: "global", backend: "sync", data: { a: 1 } });
+
+      expect(ok).toBe(true);
+      expect(Object.keys(sync.items)).toEqual(["scx:sync-test:v1:global"]);
+      expect(local.items).toEqual({});
+      expect(await get({ domain: "sync-test", version: 1, scope: "global", backend: "sync" })).toEqual({ a: 1 });
+      expect(await get({ domain: "sync-test", version: 1, scope: "global", backend: "chrome" })).toBeNull();
+    });
+
+    it("reports a rejected sync write as false", async () => {
+      installChrome({ local: createArea(), sync: createArea({ rejectWrites: true }) });
+
+      const ok = await set({ domain: "sync-test", version: 1, scope: "global", backend: "sync", data: { a: 1 } });
+
+      expect(ok).toBe(false);
+    });
+
+    it("reports false when chrome.storage.sync is unavailable", async () => {
+      installChrome({ local: createArea() });
+
+      const ok = await set({ domain: "sync-test", version: 1, scope: "global", backend: "sync", data: { a: 1 } });
+
+      expect(ok).toBe(false);
+    });
+  });
 });
