@@ -32,3 +32,5 @@ export const BUILDINGS_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 // Contract rules
 export const CONTRACT_RULE_MAX_COUNT = 50;
+export const CONTRACT_RULE_MAX_PER_CUSTOMER = 5;
+export const CONTRACT_RULE_NOTE_MAX_LENGTH = 40;

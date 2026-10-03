@@ -11,7 +11,9 @@ const DEFAULT_PREFIX = "scx";
  * @property {string} domain Logical feature namespace, for example `market-alerts`.
  * @property {number} version Version segment used in the generated storage key.
  * @property {StorageScopeMode} [scope="scoped"] Scope mode resolved through `resolveScope()`.
- * @property {"local"|"chrome"} [backend="local"] Storage backend.
+ * @property {"local"|"chrome"|"sync"} [backend="local"] Storage backend. `chrome` is
+ *   chrome.storage.local (this device only); `sync` is chrome.storage.sync (follows the
+ *   user's browser profile across devices, 8KB per item).
  * @property {string} [prefix="scx"] Storage key prefix.
  * @property {boolean} [refreshAuth=true] Refresh auth-derived scope values before resolving the key.
  */
@@ -77,8 +79,26 @@ function parseJson(raw) {
   }
 }
 
+function hasSyncStorage() {
+  try {
+    return typeof chrome !== "undefined" && Boolean(chrome?.storage?.sync);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolve the chrome.storage area behind a non-local backend.
+ * @param {"chrome"|"sync"} backend
+ * @returns {object|null}
+ */
+function chromeArea(backend) {
+  if (backend === "sync") return hasSyncStorage() ? chrome.storage.sync : null;
+  return hasChromeStorage() ? chrome.storage.local : null;
+}
+
 function toStorageRaw(backend, value) {
-  if (backend === "chrome") return value;
+  if (backend === "chrome" || backend === "sync") return value;
   return JSON.stringify(value);
 }
 
@@ -102,7 +122,7 @@ function isExpired(envelope, ttlOverrideMs = null, now = Date.now()) {
 }
 
 function normalizeBackend(backend) {
-  return backend === "chrome" ? "chrome" : "local";
+  return backend === "chrome" || backend === "sync" ? backend : "local";
 }
 
 function normalizePrefix(prefix) {
@@ -121,9 +141,9 @@ export function buildStorageKey({ domain, version, scopeKey, prefix = DEFAULT_PR
   return `${normalizePrefix(prefix)}:${normalizeDomain(domain)}:v${Number(version)}:${scopeKey}`;
 }
 
-async function chromeGet(keys) {
-  if (!hasChromeStorage()) return {};
-  const api = chrome.storage.local;
+async function chromeGet(keys, backend = "chrome") {
+  const api = chromeArea(backend);
+  if (!api) return {};
 
   try {
     const result = api.get(keys);
@@ -141,31 +161,38 @@ async function chromeGet(keys) {
   });
 }
 
-async function chromeSet(items) {
-  if (!hasChromeStorage()) return false;
-  const api = chrome.storage.local;
+async function chromeSet(items, backend = "chrome") {
+  const api = chromeArea(backend);
+  if (!api) return false;
 
+  let result;
   try {
-    const result = api.set(items);
-    if (result && typeof result.then === "function") {
-      await result;
-      return true;
-    }
-    return true;
-  } catch {}
+    result = api.set(items);
+  } catch {
+    return new Promise((resolve) => {
+      try {
+        api.set(items, () => resolve(true));
+      } catch {
+        resolve(false);
+      }
+    });
+  }
 
-  return new Promise((resolve) => {
+  if (result && typeof result.then === "function") {
+    // A rejected write (chrome.storage.sync over quota, sync disabled) must
+    // surface as `false` so callers can fall back instead of losing data.
     try {
-      api.set(items, () => resolve(true));
+      await result;
     } catch {
-      resolve(false);
+      return false;
     }
-  });
+  }
+  return true;
 }
 
-async function chromeRemove(keys) {
-  if (!hasChromeStorage()) return false;
-  const api = chrome.storage.local;
+async function chromeRemove(keys, backend = "chrome") {
+  const api = chromeArea(backend);
+  if (!api) return false;
 
   try {
     const result = api.remove(keys);
@@ -196,7 +223,7 @@ export async function getRaw(backend, key) {
     }
   }
 
-  const data = await chromeGet(key);
+  const data = await chromeGet(key, b);
   return data?.[key] ?? null;
 }
 
@@ -258,7 +285,7 @@ export async function setRaw(backend, key, value) {
     }
   }
 
-  return chromeSet({ [key]: value });
+  return chromeSet({ [key]: value }, b);
 }
 
 export async function removeRaw(backend, key) {
@@ -274,7 +301,7 @@ export async function removeRaw(backend, key) {
     }
   }
 
-  return chromeRemove(key);
+  return chromeRemove(key, b);
 }
 
 export async function listByPrefix({ backend = "local", prefix = "" } = {}) {
@@ -296,7 +323,7 @@ export async function listByPrefix({ backend = "local", prefix = "" } = {}) {
     return out;
   }
 
-  const all = await chromeGet(null);
+  const all = await chromeGet(null, b);
   return Object.entries(all || {})
     .filter(([key]) => (p ? key.startsWith(p) : true))
     .map(([key, value]) => ({ key, value }));

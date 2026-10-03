@@ -4,8 +4,13 @@
 // rules matching both (or a "save current values" prompt), and applies a
 // rule with one click by filling the amount and a freshly recalculated price.
 import { t } from "./i18n.js";
+import { onAuthDataApplied } from "./auth.js";
 import { formatMoney, normalizeDiscountPct } from "./utils.js";
-import { CONTRACT_RULE_MAX_COUNT } from "./constants.js";
+import {
+  CONTRACT_RULE_MAX_COUNT,
+  CONTRACT_RULE_MAX_PER_CUSTOMER,
+  CONTRACT_RULE_NOTE_MAX_LENGTH,
+} from "./constants.js";
 import { setReactControlledValue } from "./page/page_utils.js";
 import {
   computeDiscountedPrice,
@@ -20,23 +25,27 @@ import {
 import {
   appendRule,
   canAddRule,
+  canAddRuleForCustomer,
   createRule,
   findRuleById,
   findRulesForProductAndCompany,
+  findRulesForProduct,
   isValidRuleInput,
+  normalizeFixedPrice,
+  normalizeNote,
+  normalizePriceMode,
+  PRICE_MODE_FIXED,
   removeRuleState,
   resolveNextRuleId,
 } from "./contract_rules_state.js";
 import { loadRulesSnapshot, saveRulesSnapshot } from "./contract_rules_storage.js";
-import {
-  renderNoCompanySelectedState,
-  renderNoMatchState,
-  renderRulesList,
-} from "./contract_rules_render.js";
-import recipes from "./resources/recipes.json";
+import { renderNoCompanySelectedState, renderRulesPanel } from "./contract_rules_render.js";
 
 // Must match the discount input's id in contract_ui.js's widget markup.
 const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
+// The widget in contract_ui.js owns these controls; this module only reads them.
+export const FIXED_PRICE_INPUT_ID = "scx-contract-fixed-price-input";
+export const PRICE_MODE_SELECTOR = "[data-scx-price-mode]";
 const PANEL_ID = "scx-contract-rules-panel";
 
 let rules = [];
@@ -45,6 +54,17 @@ let nextRuleId = 1;
 // data change is never invisible to the next render check — even when the
 // refresh fired right after the change finds the panel mid-remount.
 let rulesVersion = 0;
+// Where the last load/save left the rules: "synced" (chrome.storage.sync),
+// "local" (sync refused, kept in chrome.storage.local) or "failed" (nothing
+// could be written, e.g. the account is not known yet).
+let persistStatus = "synced";
+// Rules must be loaded before any change is written: saving an in-memory list
+// that never saw the stored rules would overwrite them.
+let rulesLoaded = false;
+let loadPromise = null;
+let authListenerAttached = false;
+// Survives the panel re-rendering while the user is still filling the form.
+let noteDraft = "";
 let lastRenderedKey = null;
 // The panel node the memoized key describes. contract_ui.js tears the widget
 // down and re-injects it, and the replacement panel starts empty — so a key
@@ -52,15 +72,51 @@ let lastRenderedKey = null;
 let lastRenderedPanel = null;
 
 /**
- * Load the saved rules once. Call from contract_ui.js's init.
+ * Load the stored rules, joining an in-flight load. A load that cannot resolve
+ * the account (auth not ready or failed) leaves `rulesLoaded` false so the next
+ * call retries instead of treating the store as empty.
+ * @returns {Promise<boolean>} Whether the rules are loaded.
+ */
+async function ensureRulesLoaded() {
+  if (rulesLoaded) return true;
+
+  if (!loadPromise) {
+    loadPromise = loadRulesSnapshot()
+      .then((snapshot) => {
+        if (snapshot) {
+          rules = snapshot.rules;
+          nextRuleId = snapshot.nextRuleId;
+          persistStatus = snapshot.synced === false ? "local" : "synced";
+        }
+        rulesLoaded = true;
+        rulesVersion += 1;
+      })
+      .catch((e) => {
+        console.debug("[SimHelper] Could not load contract rules:", e);
+      })
+      .finally(() => {
+        loadPromise = null;
+      });
+  }
+
+  await loadPromise;
+  return rulesLoaded;
+}
+
+/**
+ * Load the saved rules. Call from contract_ui.js's init. When auth arrives
+ * later than the first load attempt, the load is retried then.
  */
 export async function initContractRulesState() {
-  const snapshot = await loadRulesSnapshot();
-  if (snapshot) {
-    rules = snapshot.rules;
-    nextRuleId = snapshot.nextRuleId;
+  if (!authListenerAttached) {
+    authListenerAttached = true;
+    onAuthDataApplied(() => {
+      if (rulesLoaded) return;
+      void ensureRulesLoaded().then(() => refreshContractRulesPanel(document));
+    });
   }
-  rulesVersion += 1;
+
+  await ensureRulesLoaded();
   refreshContractRulesPanel(document);
 }
 
@@ -80,9 +136,37 @@ export function mountContractRulesPanel(parentContainer) {
   return panel;
 }
 
-function getProductName(productId) {
-  const recipe = recipes.find((r) => Number(r.id) === productId);
-  return recipe?.name || String(productId);
+/**
+ * Apply a change to the stored rules and persist it. The change runs only once
+ * the stored rules are loaded, so it never writes over rules it has not seen.
+ * @param {(current: object[]) => object[]|null} mutate Returns the next rules, or null to skip.
+ */
+async function commitRules(mutate) {
+  if (!(await ensureRulesLoaded())) {
+    persistStatus = "failed";
+    refreshContractRulesPanel(document);
+    return;
+  }
+
+  const next = mutate(rules);
+  if (!next) return;
+
+  rules = next;
+  rulesVersion += 1;
+  refreshContractRulesPanel(document);
+
+  const result = await saveRulesSnapshot({ rules, nextRuleId });
+  persistStatus = !result?.saved ? "failed" : result.synced ? "synced" : "local";
+  if (persistStatus === "failed") console.debug("[SimHelper] Could not save contract rules.");
+  refreshContractRulesPanel(document);
+}
+
+function getCurrentPriceMode(root = document) {
+  return normalizePriceMode(root.querySelector(PRICE_MODE_SELECTOR)?.dataset.scxPriceMode);
+}
+
+function getCurrentFixedPrice(root = document) {
+  return normalizeFixedPrice(root.getElementById(FIXED_PRICE_INPUT_ID)?.value);
 }
 
 function getCurrentDiscountPct() {
@@ -94,7 +178,12 @@ function applyRule(ruleId) {
   const rule = findRuleById(rules, ruleId);
   if (!rule) return;
 
-  const price = computeDiscountedPrice(getLowestSellerPrice(document), rule.discountPct);
+  // A fixed rule carries its own price, so it applies even when the market
+  // has no offers to discount from.
+  const price =
+    rule.priceMode === PRICE_MODE_FIXED
+      ? rule.fixedPrice
+      : computeDiscountedPrice(getLowestSellerPrice(document), rule.discountPct);
   if (price === null) return;
 
   const priceInput = findContractPriceInput(document);
@@ -104,77 +193,85 @@ function applyRule(ruleId) {
 }
 
 function removeRule(ruleId) {
-  rules = removeRuleState(rules, ruleId);
-  rulesVersion += 1;
-  void saveRulesSnapshot({ rules, nextRuleId });
-  refreshContractRulesPanel(document);
+  return commitRules((current) => removeRuleState(current, ruleId));
 }
 
 function saveCurrentAsRule(productId, companyName) {
+  // Read the form now: it can change while the stored rules are loading.
   const amount = getContractAmountValue(document);
+  const priceMode = getCurrentPriceMode();
   const discountPct = getCurrentDiscountPct();
+  const fixedPrice = getCurrentFixedPrice();
+  const note = normalizeNote(noteDraft, CONTRACT_RULE_NOTE_MAX_LENGTH);
 
   // A rule without a resolvable productId is dropped by hydrateRules() on the
   // next load, so refuse it here instead of persisting a template that
   // silently disappears after a reload.
-  if (!Number.isFinite(productId)) return;
-  if (!isValidRuleInput({ amount, discountPct }) || !canAddRule(rules, CONTRACT_RULE_MAX_COUNT)) return;
+  if (!Number.isFinite(productId)) return Promise.resolve();
+  if (!isValidRuleInput({ amount, priceMode, discountPct, fixedPrice })) return Promise.resolve();
 
-  const id = resolveNextRuleId(rules, nextRuleId);
-  const rule = createRule({
-    id,
-    productId,
-    productName: getProductName(productId),
-    companyName,
-    amount,
-    discountPct,
+  return commitRules((current) => {
+    if (!canAddRule(current, CONTRACT_RULE_MAX_COUNT)) return null;
+    if (!canAddRuleForCustomer(current, productId, companyName, CONTRACT_RULE_MAX_PER_CUSTOMER)) return null;
+
+    const id = resolveNextRuleId(current, nextRuleId);
+    nextRuleId = id + 1;
+    noteDraft = "";
+    return appendRule(
+      current,
+      createRule({ id, productId, companyName, amount, priceMode, discountPct, fixedPrice, note }),
+    );
   });
-
-  rules = appendRule(rules, rule);
-  nextRuleId = id + 1;
-  rulesVersion += 1;
-  void saveRulesSnapshot({ rules, nextRuleId });
-  refreshContractRulesPanel(document);
 }
 
 /**
  * Whether the current page state allows saving a new rule. Read live on every
  * refresh — the amount input is filled in at any point, often after the
- * beneficiary is picked.
+ * beneficiary is picked, and fixed mode also needs a price typed in.
  * @returns {boolean}
  */
 function canSaveCurrentValues(root = document) {
   const amount = getContractAmountValue(root);
-  return Number.isFinite(amount) && amount > 0 && canAddRule(rules, CONTRACT_RULE_MAX_COUNT);
+  if (!Number.isFinite(amount) || amount <= 0) return false;
+  if (getCurrentPriceMode(root) === PRICE_MODE_FIXED && getCurrentFixedPrice(root) === null) return false;
+  return canAddRule(rules, CONTRACT_RULE_MAX_COUNT);
+}
+
+function handleRuleAction(action, ruleId) {
+  if (action === "apply") applyRule(ruleId);
+  if (action === "remove") void removeRule(ruleId);
 }
 
 function renderState(panel, productId, companyName, canSave) {
   if (!companyName) {
-    renderNoCompanySelectedState({ container: panel, t });
-    return;
-  }
-
-  const matches = findRulesForProductAndCompany(rules, productId, companyName);
-
-  if (matches.length > 0) {
-    renderRulesList({
+    // Every rule for this product stays visible (and deletable) before a
+    // company is picked, so a saved rule is never out of sight.
+    renderNoCompanySelectedState({
       container: panel,
-      rules: matches,
       t,
+      rules: findRulesForProduct(rules, productId),
       formatMoney,
-      onAction: (action, ruleId) => {
-        if (action === "apply") applyRule(ruleId);
-        if (action === "remove") removeRule(ruleId);
-      },
+      status: persistStatus,
+      onAction: handleRuleAction,
     });
     return;
   }
 
-  renderNoMatchState({
+  renderRulesPanel({
     container: panel,
+    rules: findRulesForProductAndCompany(rules, productId, companyName),
     t,
+    formatMoney,
+    maxPerCustomer: CONTRACT_RULE_MAX_PER_CUSTOMER,
+    noteMaxLength: CONTRACT_RULE_NOTE_MAX_LENGTH,
+    noteDraft,
     disabled: !canSave,
-    onSaveCurrent: () => saveCurrentAsRule(productId, companyName),
+    status: persistStatus,
+    onAction: handleRuleAction,
+    onSaveCurrent: () => void saveCurrentAsRule(productId, companyName),
+    onNoteInput: (value) => {
+      noteDraft = value;
+    },
   });
 }
 
@@ -193,7 +290,7 @@ export function refreshContractRulesPanel(root = document) {
   // state. It is the boolean, not the raw amount, so typing only re-renders
   // when it crosses the empty/valid boundary.
   const canSave = Number.isFinite(productId) && canSaveCurrentValues(root);
-  const key = `${productId}:${companyName}:${rulesVersion}:${canSave}`;
+  const key = `${productId}:${companyName}:${rulesVersion}:${canSave}:${persistStatus}`;
 
   if (key === lastRenderedKey && panel === lastRenderedPanel) return;
   lastRenderedKey = key;
@@ -207,13 +304,20 @@ export const _testUtils = {
     rules = [];
     nextRuleId = 1;
     rulesVersion = 0;
+    persistStatus = "synced";
+    rulesLoaded = false;
+    loadPromise = null;
+    noteDraft = "";
     lastRenderedKey = null;
     lastRenderedPanel = null;
   },
   setRules(newRules, newNextRuleId) {
     rules = newRules;
     if (Number.isFinite(newNextRuleId)) nextRuleId = newNextRuleId;
+    rulesLoaded = true;
     rulesVersion += 1;
   },
+  saveCurrentAsRule,
+  removeRule,
   getRules: () => rules,
 };

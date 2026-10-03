@@ -6,6 +6,7 @@ vi.mock("../src/state.js", () => ({ SIDEBAR_ID: "scx-sidebar" }));
 vi.mock("../src/market.js", () => ({ fetchMarketPrice: vi.fn() }));
 vi.mock("../src/auth.js", () => ({ getRealmId: vi.fn(() => 1) }));
 vi.mock("../src/contract_rules_ui.js", () => ({
+  FIXED_PRICE_INPUT_ID: "scx-contract-fixed-price-input",
   initContractRulesState: vi.fn(async () => {}),
   mountContractRulesPanel: vi.fn(),
   refreshContractRulesPanel: vi.fn(),
@@ -181,5 +182,42 @@ describe("contract_ui discount input", () => {
 
     expect(getInput().value).toBe("8.5");
     expect(document.getElementById("scx-contract-apply-btn").textContent).toContain("8.5%");
+  });
+
+  it("switches to fixed-price mode and applies the typed price without a market lookup", () => {
+    setupContractPage();
+    // No offers on the market: percent mode would have nothing to discount.
+    document.querySelector("table").remove();
+    initContractHelper();
+
+    const container = document.getElementById("scx-contract-helper");
+    const fixedBtn = container.querySelector('[data-mode="fixed"]');
+    const percentBtn = container.querySelector('[data-mode="percent"]');
+    expect(container.dataset.scxPriceMode).toBe("percent");
+    expect(container.querySelector(".scx-contract-fixed-field").classList.contains("scx-hidden")).toBe(true);
+
+    fixedBtn.click();
+
+    expect(container.dataset.scxPriceMode).toBe("fixed");
+    expect(fixedBtn.getAttribute("aria-pressed")).toBe("true");
+    expect(percentBtn.getAttribute("aria-pressed")).toBe("false");
+    expect(container.querySelector(".scx-contract-fixed-field").classList.contains("scx-hidden")).toBe(false);
+    expect(container.querySelector(".scx-contract-percent-field").classList.contains("scx-hidden")).toBe(true);
+    expect(document.querySelector('label[for="scx-contract-fixed-price-input"]')).not.toBeNull();
+
+    const fixedInput = document.getElementById("scx-contract-fixed-price-input");
+    fixedInput.value = "0.315";
+    refreshContractRulesPanel.mockClear();
+    fixedInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(refreshContractRulesPanel).toHaveBeenCalled();
+    expect(document.getElementById("scx-contract-apply-btn").textContent).toContain("0.315");
+
+    document.getElementById("scx-contract-apply-btn").click();
+    expect(document.querySelector('input[name="price"]').value).toBe("0.315");
+
+    // Module state outlives the test; leave it in the default mode.
+    percentBtn.click();
+    expect(document.getElementById("scx-contract-apply-btn").textContent).toContain("contractApplyBtn");
   });
 });

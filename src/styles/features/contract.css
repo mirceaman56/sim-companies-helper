@@ -35,6 +35,35 @@
   font-size: var(--scx-font-size-base);
 }
 
+/* Segmented "% under market" / "fixed price" switch. Labels wrap because both
+   are long in most locales and the collapsed sidebar is only 180px wide. */
+.scx-contract-mode {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.scx-contract-mode-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 6px;
+  border: var(--scx-border-medium-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-primary);
+  color: var(--scx-text-secondary);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  line-height: 1.3;
+  white-space: normal;
+  text-align: center;
+}
+
+.scx-contract-mode-btn-active {
+  border-color: var(--scx-color-info);
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+}
+
 .scx-contract-controls {
   display: flex;
   align-items: center;
@@ -78,6 +107,10 @@
   font-weight: inherit;
   color: inherit;
   text-align: right;
+}
+
+.scx-contract-fixed-price-input {
+  width: 4.6em;
 }
 
 .scx-contract-discount-input:focus {
@@ -184,6 +217,55 @@
   font-size: var(--scx-font-size-xs);
   font-weight: var(--scx-font-weight-semibold);
   color: var(--scx-text-secondary);
+}
+
+.scx-contract-rules-count {
+  margin-left: 4px;
+  font-weight: var(--scx-font-weight-normal);
+  color: var(--scx-text-muted);
+}
+
+.scx-contract-rules-local-only {
+  padding: 4px 6px;
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-text);
+  font-size: var(--scx-font-size-xs);
+  line-height: 1.3;
+}
+
+.scx-contract-rules-save-failed {
+  padding: 4px 6px;
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-tone-error-bg);
+  color: var(--scx-tone-error-text);
+  font-size: var(--scx-font-size-xs);
+  line-height: 1.3;
+}
+
+.scx-contract-rules-note-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.scx-contract-rules-note-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  border: var(--scx-border-medium-light);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-input-bg);
+  color: var(--scx-input-text);
+  font-family: inherit;
+  font-size: var(--scx-font-size-sm);
+}
+
+.scx-contract-rules-note-input:focus {
+  outline: none;
+  border-color: var(--scx-color-info);
 }
 
 .scx-contract-rules-info {
@@ -321,6 +403,21 @@
   line-height: 1.3;
 }
 
+.scx-contract-rule-company {
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.scx-contract-rule-note {
+  font-size: var(--scx-font-size-xs);
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--scx-text-secondary);
+  overflow-wrap: anywhere;
+}
+
 .scx-contract-rule-actions {
   display: flex;
   align-items: center;
@@ -335,20 +432,20 @@
   padding: 3px 8px;
 }
 
-/* Square icon button. The market-alerts remove button is fully transparent,
+/* Labelled delete button. The market-alerts remove button is fully transparent,
    which reads as an artifact against the card fill — this one keeps a real
    surface and only turns red on hover. --scx-bg-primary is used because
    --scx-bg-subtle is identical to the card's --scx-bg-secondary in light mode. */
 .scx-contract-rule-remove-btn {
-  width: 22px;
-  min-width: 22px;
-  height: 22px;
-  padding: 0;
+  flex: 0 0 auto;
+  min-height: 22px;
+  padding: 3px 8px;
   font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
   line-height: 1;
   background: var(--scx-bg-primary);
   border: var(--scx-border-light);
-  color: var(--scx-text-muted);
+  color: var(--scx-text-secondary);
 }
 
 .scx-contract-rule-remove-btn:hover:not(:disabled) {

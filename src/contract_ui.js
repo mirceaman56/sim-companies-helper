@@ -31,10 +31,12 @@ import {
   parseContractPrice,
 } from "./page/contract_page.js";
 import {
+  FIXED_PRICE_INPUT_ID,
   initContractRulesState,
   mountContractRulesPanel,
   refreshContractRulesPanel,
 } from "./contract_rules_ui.js";
+import { normalizeFixedPrice, PRICE_MODE_FIXED, PRICE_MODE_PERCENT } from "./contract_rules_state.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
@@ -46,6 +48,8 @@ const STORAGE_DOMAIN = "contract-discount";
 const STORAGE_VERSION = 1;
 
 let discountPct = 3; // default
+let priceMode = PRICE_MODE_PERCENT;
+let fixedPrice = null;
 let amountListenerAttached = false;
 let stopObservingBody = null;
 
@@ -135,6 +139,59 @@ function syncDiscountControls() {
   updateButtonLabel();
 }
 
+/**
+ * Reflect the active price mode on the widget: which toggle is pressed and
+ * which of the two entry fields is shown. The rules panel reads the mode back
+ * from the container's data attribute.
+ */
+function syncPriceModeControls() {
+  const container = document.getElementById(CONTAINER_ID);
+  if (!container) return;
+
+  container.dataset.scxPriceMode = priceMode;
+  container.querySelectorAll("[data-mode]").forEach((btn) => {
+    const active = btn.dataset.mode === priceMode;
+    btn.classList.toggle("scx-contract-mode-btn-active", active);
+    btn.setAttribute("aria-pressed", String(active));
+  });
+  container
+    .querySelector(".scx-contract-percent-field")
+    ?.classList.toggle("scx-hidden", priceMode !== PRICE_MODE_PERCENT);
+  container
+    .querySelector(".scx-contract-fixed-field")
+    ?.classList.toggle("scx-hidden", priceMode !== PRICE_MODE_FIXED);
+  updateButtonLabel();
+}
+
+function showApplied(price, message) {
+  const btn = document.getElementById(APPLY_BUTTON_ID);
+  if (btn) {
+    btn.textContent = `✓ ${formatMoney(price, { decimals: 3 })}`;
+    setTimeout(updateButtonLabel, 1500);
+  }
+
+  const resultDiv = document.getElementById(PROFIT_RESULT_ID);
+  if (resultDiv) renderResult(resultDiv, renderStateBlock({ type: "success", message }));
+}
+
+/**
+ * Fill the price input with the agreed fixed price — no market lookup needed.
+ */
+function applyFixedPrice() {
+  const resultDiv = document.getElementById(PROFIT_RESULT_ID);
+  const priceInput = findContractPriceInput(document);
+  if (fixedPrice === null || !priceInput) {
+    if (resultDiv) {
+      const message = fixedPrice === null ? t("contractSetValues") : t("genericError");
+      renderResult(resultDiv, renderStateBlock({ type: "error", message }));
+    }
+    return;
+  }
+
+  setReactControlledValue(priceInput, fixedPrice.toFixed(3));
+  showApplied(fixedPrice, fixedPriceLabel());
+}
+
 function removeIfPresent() {
   document.getElementById(CONTAINER_ID)?.remove();
 }
@@ -143,6 +200,11 @@ function removeIfPresent() {
  * Apply the discount: read lowest price, calculate discounted price, fill input.
  */
 function applyDiscount() {
+  if (priceMode === PRICE_MODE_FIXED) {
+    applyFixedPrice();
+    return;
+  }
+
   const resultDiv = document.getElementById(PROFIT_RESULT_ID);
   const lowestPrice = getLowestSellerPrice(document);
   if (lowestPrice === null) {
@@ -166,31 +228,20 @@ function applyDiscount() {
 
   setReactControlledValue(priceInput, rounded.toFixed(3));
 
-  // Visual feedback on the button
-  const btn = document.getElementById("scx-contract-apply-btn");
-  if (btn) {
-    const orig = btn.textContent;
-    btn.textContent = `✓ ${formatMoney(rounded, { decimals: 3 })}`;
-    setTimeout(() => {
-      btn.textContent = orig;
-    }, 1500);
-  }
+  showApplied(rounded, `${t("contractApplyBtn")}${discountPct}%`);
+}
 
-  if (resultDiv) {
-    renderResult(
-      resultDiv,
-      renderStateBlock({
-        type: "success",
-        message: `${t("contractApplyBtn")}${discountPct}%`,
-      }),
-    );
-  }
+function fixedPriceLabel() {
+  return fixedPrice === null
+    ? t("contractApplyFixedBtn")
+    : `${t("contractApplyFixedBtn")} ${formatMoney(fixedPrice, { decimals: 3 })}`;
 }
 
 function updateButtonLabel() {
   const btn = document.getElementById(APPLY_BUTTON_ID);
   if (btn) {
-    btn.textContent = `${t("contractApplyBtn")}${discountPct}%`;
+    btn.textContent =
+      priceMode === PRICE_MODE_FIXED ? fixedPriceLabel() : `${t("contractApplyBtn")}${discountPct}%`;
   }
 }
 
@@ -312,9 +363,13 @@ function injectIfNeeded() {
       <span class="scx-contract-title-icon">📝</span>
       <span>${t("contractApplyTooltip")}</span>
     </div>
+    <div class="scx-contract-mode" role="group" aria-label="${t("contractPriceModeLabel")}">
+      <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_PERCENT}">${t("contractModePercent")}</button>
+      <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_FIXED}">${t("contractModeFixed")}</button>
+    </div>
     <div class="scx-contract-controls">
       <label class="scx-visually-hidden" for="${DISCOUNT_INPUT_ID}">${t("contractDiscountLabel")}</label>
-      <div class="scx-contract-discount-field">
+      <div class="scx-contract-discount-field scx-contract-percent-field">
         <span class="scx-contract-discount-sign" aria-hidden="true">-</span>
         <input
           type="number"
@@ -329,6 +384,21 @@ function injectIfNeeded() {
           value="${discountPct}"
         />
         <span class="scx-contract-discount-suffix" aria-hidden="true">%</span>
+      </div>
+      <label class="scx-visually-hidden" for="${FIXED_PRICE_INPUT_ID}">${t("contractFixedPriceLabel")}</label>
+      <div class="scx-contract-discount-field scx-contract-fixed-field">
+        <span class="scx-contract-discount-sign" aria-hidden="true">$</span>
+        <input
+          type="number"
+          id="${FIXED_PRICE_INPUT_ID}"
+          name="${FIXED_PRICE_INPUT_ID}"
+          class="scx-contract-discount-input scx-contract-fixed-price-input"
+          title="${t("contractFixedPriceLabel")}"
+          inputmode="decimal"
+          min="0"
+          step="0.001"
+          value="${fixedPrice ?? ""}"
+        />
       </div>
       <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-btn scx-btn-info scx-contract-apply-btn">
         ${t("contractApplyBtn")}${discountPct}%
@@ -371,6 +441,25 @@ function injectIfNeeded() {
       data: discountPct,
     });
   });
+
+  // Event: fixed price typed. Typing changes no DOM, so the rules panel is
+  // refreshed by hand — its save button depends on a usable price.
+  document.getElementById(FIXED_PRICE_INPUT_ID)?.addEventListener("input", (e) => {
+    fixedPrice = normalizeFixedPrice(e.target?.value);
+    updateButtonLabel();
+    refreshContractRulesPanel(document);
+  });
+
+  // Event: price mode toggle
+  container.querySelectorAll("[data-mode]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      priceMode = btn.dataset.mode === PRICE_MODE_FIXED ? PRICE_MODE_FIXED : PRICE_MODE_PERCENT;
+      syncPriceModeControls();
+      refreshContractRulesPanel(document);
+    });
+  });
+  syncPriceModeControls();
 
   // Event: apply button click
   document.getElementById(APPLY_BUTTON_ID)?.addEventListener("click", (e) => {
