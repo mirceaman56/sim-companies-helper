@@ -9,11 +9,6 @@ vi.mock("../src/buildings.js", () => ({
   loadBuildings: vi.fn(() => Promise.resolve()),
 }));
 
-global.localStorage = {
-  getItem: vi.fn(() => null),
-  setItem: vi.fn(),
-};
-
 global.MutationObserver = vi.fn(() => ({
   observe: vi.fn(),
   disconnect: vi.fn(),
@@ -38,7 +33,7 @@ function setupNavbar() {
 function injectContainer() {
   const container = document.createElement("div");
   container.id = CONTAINER_ID;
-  container.className = "scx-xp-widget";
+  container.className = "scx-navchip-widget";
   const host = document.querySelector('[data-testid="levels-host"]');
   host.appendChild(container);
 }
@@ -54,6 +49,7 @@ function setStateLoaded(buildings = [], level = 20, experience = 83599, experien
 beforeEach(() => {
   vi.clearAllMocks();
   document.body.innerHTML = "";
+  _testUtils.popover.setOpen(false);
   STATE.buildings.loaded = false;
   STATE.buildings.loading = false;
   STATE.buildings.error = null;
@@ -71,8 +67,9 @@ describe("XP UI Widget", () => {
     STATE.buildings.loaded = false;
     STATE.levelInfo.level = null;
     updateWidget();
-    const btn = document.querySelector(".scx-xp-toggle--loading");
-    expect(btn).not.toBeNull();
+    const chip = document.querySelector(".scx-navchip--loading");
+    expect(chip).not.toBeNull();
+    expect(chip.disabled).toBe(true);
   });
 
   it("renders XP/hour and time estimate when data is loaded", () => {
@@ -128,16 +125,39 @@ describe("XP UI Widget", () => {
     updateWidget();
     const container = document.getElementById(CONTAINER_ID);
     // Building earns 12 XP/hr with v3 static data
-    expect(container.querySelector(".scx-xp-toggle").textContent).not.toContain("—");
+    expect(container.querySelector(".scx-navchip-amount").textContent).not.toContain("—");
   });
 
-  it("renders toggle button", () => {
+  it("renders an info chip that toggles the details popover", () => {
     setupNavbar();
     injectContainer();
     setStateLoaded([], 20, 83599, 110000);
     updateWidget();
-    const toggle = document.querySelector(".scx-xp-toggle");
-    expect(toggle).not.toBeNull();
+    const chip = document.querySelector(".scx-navchip--info");
+    expect(chip).not.toBeNull();
+
+    const popoverEl = document.querySelector(".scx-navpop");
+    expect(popoverEl.classList.contains("scx-hidden")).toBe(true);
+    _testUtils.popover.setOpen(true);
+    expect(popoverEl.classList.contains("scx-hidden")).toBe(false);
+    expect(chip.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("shows the level gauge from the game's level percentage", () => {
+    setupNavbar();
+    injectContainer();
+    setStateLoaded([], 20, 83599, 110000);
+    updateWidget();
+    expect(document.querySelector(".scx-navpop-meter").getAttribute("value")).toBe("82");
+  });
+
+  it("shows an error chip with the refresh action available", () => {
+    setupNavbar();
+    injectContainer();
+    STATE.buildings.error = "HTTP 500";
+    updateWidget();
+    expect(document.querySelector(".scx-navchip--warn")).not.toBeNull();
+    expect(document.querySelector(".scx-xp-refresh")).not.toBeNull();
   });
 
   it("renders refresh button and cache tooltip", () => {
