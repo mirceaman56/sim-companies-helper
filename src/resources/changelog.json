@@ -1,6 +1,60 @@
 {
-  "generatedAt": "2026-09-22T13:06:04.824Z",
+  "generatedAt": "2026-10-04T07:02:03.099Z",
   "versions": [
+    {
+      "version": "0.29.6",
+      "date": "2026-10-03",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 164,
+          "text": "Contract ui enhancements"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "eneri81",
+          "role": "reporter",
+          "url": "https://github.com/eneri81"
+        }
+      ]
+    },
+    {
+      "version": "0.29.5",
+      "date": "2026-09-24",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": 161,
+          "text": "Fixed small production ui issue occurring when page loads slow"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.29.4",
+      "date": "2026-09-22",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": 160,
+          "text": "Fixed stale data in financials helper"
+        }
+      ],
+      "credits": []
+    },
+    {
+      "version": "0.29.3",
+      "date": "2026-09-22",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 159,
+          "text": "Updated the change log updates"
+        }
+      ],
+      "credits": []
+    },
     {
       "version": "0.29.2",
       "date": "2026-09-21",
