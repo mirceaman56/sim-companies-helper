@@ -1,15 +1,11 @@
-// state.js
 export const SIDEBAR_ID = "scx-sidebar";
 
 export const STATE = {
-  rafPending: false,
-
   // selection
   selectedRow: null,
   selectedRowObserver: null,
   selectedInputs: null,
 
-  // auth
   auth: {
     companyId: null,
     realmId: null,
@@ -30,30 +26,10 @@ export const STATE = {
     byKind: new Map(),
   },
 
-  // cashflow
   cashflow: {
     loaded: false,
     loading: false,
     error: null,
-
-    // Today's
-    items: [], // alias for todayItems (backward compat)
-    summary: {
-      salesCount: 0,
-      salesMoney: 0,
-    },
-
-    // Today + Yesterday
-    todayItems: [],
-    yesterdayItems: [],
-    todaySummary: {
-      salesCount: 0,
-      salesMoney: 0,
-    },
-    yesterdaySummary: {
-      salesCount: 0,
-      salesMoney: 0,
-    },
 
     lastRefreshAt: 0, // ms epoch
 
@@ -103,11 +79,8 @@ export const STATE = {
         oldestPulled: false,
         pagesLoaded: 0,
         transactionsFetchedUntilMs: 0,
-        // Range of transaction history verified gap-free: [coverageFloorMs,
-        // coverageTopMs]. Distinct from the oldest/newest transaction
-        // id/date in the dataset, which can include disjoint older data
-        // (e.g. left over from before a session gap) that must not count as
-        // coverage until pagination reconnects it.
+        // Verified gap-free history range. Not the oldest stored transaction: older disjoint
+        // data (from before a session gap) only counts once pagination reconnects it.
         coverageFloorMs: 0,
         coverageFloorId: null,
         coverageTopMs: 0,
@@ -147,14 +120,12 @@ export const STATE = {
     sold: [],
   },
 
-  // level info (from auth-data)
   levelInfo: {
     level: null,
     experience: null,
     experienceToNextLevel: null,
   },
 
-  // market
   marketCache: new Map(), // `${realmId}:${productId}` -> { ts, data }
   marketDeltaCache: new Map(), // `${realmId}:${productId}` -> { ts, delta } for warehouse UI
   marketState: { status: "idle", productId: null, realmId: null, data: null, error: null },

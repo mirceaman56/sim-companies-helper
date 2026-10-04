@@ -152,8 +152,7 @@ describe("what's new toast", () => {
   });
 
   it("marks itself shown only after the toast is in the DOM", async () => {
-    // The old build wrote the flag first, so a navigation mid-load cost the
-    // player the announcement permanently.
+    // why: writing the flag before the toast renders loses the announcement on navigation.
     storage.migrate.mockResolvedValue({
       data: { kind: "changelog", version: "0.29.2", lastVersion: "0.29.1", show: true },
     });
@@ -166,7 +165,9 @@ describe("what's new toast", () => {
     await initWhatsNew();
 
     expect(toastExistedAtWrite).toBe(true);
-    expect(storage.set).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ show: false }) }));
+    expect(storage.set).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ show: false }) }),
+    );
   });
 
   it("opens the panel section from the toast action", async () => {

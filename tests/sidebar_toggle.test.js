@@ -7,7 +7,6 @@ vi.mock("../src/i18n.js", () => ({
   getHtmlLang: () => "de",
 }));
 
-// Mock storage
 const mockStorageGet = vi.fn(async () => null);
 const mockStorageSet = vi.fn(async () => true);
 vi.mock("../src/data/storage.js", () => ({
@@ -131,7 +130,7 @@ describe("toggleSidebarVisibility", () => {
         domain: "sidebar-prefs",
         version: 1,
         scope: "global",
-        backend: "local",
+        backend: "chrome",
         data: { hidden: true },
       }),
     );
@@ -298,5 +297,30 @@ describe("section title sizing", () => {
     expect(titleEl.classList.contains("scx-section-title-xs")).toBe(true);
     expect(textEl.getAttribute("lang")).toBe("de");
     expect(textEl.textContent).toBe("Führungskräftehelfer");
+  });
+});
+
+describe("section header accessibility", () => {
+  it("toggles with Enter/Space and reflects state in aria-expanded", async () => {
+    const { registerSection } = await import("../src/sidebar.js");
+    const section = registerSection("a11y-section", "A11y", "◆");
+    const header = section.querySelector(".scx-section-header");
+
+    expect(header.getAttribute("role")).toBe("button");
+    expect(header.getAttribute("aria-expanded")).toBe("false");
+
+    header.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    expect(header.getAttribute("aria-expanded")).toBe("true");
+
+    header.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
+    expect(header.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("ignores Alt+H while typing in a field", async () => {
+    const { _testUtils } = await import("../src/sidebar.js");
+    const input = document.createElement("input");
+    const before = _testUtils.sidebarHidden;
+    _testUtils._onSidebarShortcut({ altKey: true, key: "h", target: input, preventDefault() {} });
+    expect(_testUtils.sidebarHidden).toBe(before);
   });
 });

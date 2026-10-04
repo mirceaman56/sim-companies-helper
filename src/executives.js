@@ -12,11 +12,8 @@ const TRAINING_CODE_TO_SKILL_KEY = { o: "mgmt", f: "acct", m: "comm", t: "tech" 
 const EXECUTIVE_ROLE_KEYS = ["coo", "cfo", "cmo", "cto"];
 
 /**
- * Load the company executives into STATE.executives.
- * @returns {Promise<boolean>} true only when this call stored fresh data. Callers
- * that re-render on completion must check it: re-rendering after a skipped or
- * failed load calls this again straight away, and while the game API is in
- * cooldown that fails instantly, so the loop never yields and freezes the tab.
+ * @returns {Promise<boolean>} true only when this call stored fresh data. why: re-render only
+ *   then; re-rendering after a failed load retries instantly during API cooldown and freezes the tab.
  */
 export async function loadExecutivesOnce({ force = false } = {}) {
   if (STATE.executives.loading) return false;

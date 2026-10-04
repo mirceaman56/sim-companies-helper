@@ -6,7 +6,8 @@ const { getSectionContentMock, requestMock } = vi.hoisted(() => ({
   requestMock: vi.fn(),
 }));
 
-vi.mock("../src/i18n.js", () => ({ t: (key) => key }));
+const i18nMock = vi.hoisted(() => ({ lang: "en" }));
+vi.mock("../src/i18n.js", () => ({ t: (key) => key, getLang: () => i18nMock.lang }));
 vi.mock("../src/sidebar.js", () => ({
   getSectionContent: (...args) => getSectionContentMock(...args),
   setSectionToggleFn: vi.fn(),
@@ -490,6 +491,8 @@ describe("executive panel refresh", () => {
   });
 });
 
+const GERMAN_AURA_FEEDBACK = "Sandra hat mir gesagt, dass sie meine Aura riechen kann.";
+
 describe("HR blurp matching", () => {
   it("matches 'Sandra told me she can smell my aura.' to blurp 84", () => {
     const feedbackText = "Sandra told me she can smell my aura.";
@@ -502,6 +505,16 @@ describe("HR blurp matching", () => {
     const feedbackText = "completely unrelated feedback about something else entirely";
     const match = _testUtils.findBestMatchingEntry(feedbackText);
     expect(match).toBeNull();
+  });
+
+  it("matches feedback shown in the page language", () => {
+    i18nMock.lang = "de";
+    try {
+      const match = _testUtils.findBestMatchingEntry(GERMAN_AURA_FEEDBACK);
+      expect(match?.id).toBe(84);
+    } finally {
+      i18nMock.lang = "en";
+    }
   });
 
   it("matches with exact original feedback string", () => {

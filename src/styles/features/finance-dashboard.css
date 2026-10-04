@@ -425,11 +425,6 @@
   font-weight: var(--scx-font-weight-semibold);
 }
 
-.scx-fin-error-note {
-  border-left-color: var(--scx-color-error);
-  color: var(--scx-color-error);
-}
-
 .scx-fin-empty {
   color: var(--scx-text-muted);
   font-size: var(--scx-font-size-sm);
@@ -441,14 +436,6 @@
 
 .scx-fin-neg {
   color: var(--scx-tone-error-text);
-}
-
-.scx-fin-copy-buffer {
-  position: fixed;
-  top: -9999px;
-  left: -9999px;
-  opacity: 0;
-  pointer-events: none;
 }
 
 @media (max-width: 1200px) {

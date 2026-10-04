@@ -1,4 +1,3 @@
-// buildings.js
 // Fetches and caches the player's building list for the XP calculator.
 import { STATE } from "./state.js";
 import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";

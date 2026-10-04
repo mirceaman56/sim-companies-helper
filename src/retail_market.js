@@ -1,4 +1,3 @@
-// retail_market.js
 // Fetches and caches SimCompanies retail-info API
 // https://www.simcompanies.com/api/v4/{realm}/resources-retail-info/
 // Data is daily-granularity, so a 4-hour TTL is appropriate.
@@ -13,11 +12,8 @@ let _cache = null;
 let _inflight = null;
 
 /**
- * Fetch the full retail-info array from SimCompanies, with caching.
- * Only fetches quality=null (base-quality) rows—multi-quality products
- * also appear with quality=1/2/3, but the base row is most useful for
- * the opportunity score.
- *
+ * Cached retail info. Keeps only base-quality (quality=null) rows: those drive the
+ * opportunity score.
  * @param {number} realmId
  * @returns {Promise<Array>}
  */

@@ -1,13 +1,10 @@
-// xp_calc.js
 // Pure calculation logic for XP estimation
 
-/** XP per hour for a normal operating building */
 export const XP_PER_HOUR_BUILDING = 12;
 
 /** XP per hour per level for recreation buildings */
 export const XP_PER_HOUR_PER_LEVEL_RECREATION = 40;
 
-/** XP per hour for new construction / prospecting */
 export const XP_PER_HOUR_CONSTRUCTION = 36.5;
 
 /** Hours in one week (recreation building cycle) */
@@ -16,7 +13,6 @@ export const HOURS_PER_WEEK = 168;
 /** Building kinds that can perform prospecting while under construction */
 const PROSPECTING_KINDS = new Set(["Q", "M", "O"]);
 
-/** Category for recreation/other buildings */
 const CATEGORY_OTHER = "other";
 
 /** Patterns in image path that identify recreation buildings */
@@ -123,7 +119,6 @@ export function calculateTotalXpPerHour(buildings) {
 }
 
 /**
- * Calculate hours remaining until next level.
  * @param {number} currentXp - Current experience points
  * @param {number} xpForNextLevel - XP needed for next level
  * @param {number} xpPerHour - Current XP earning rate per hour

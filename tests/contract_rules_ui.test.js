@@ -196,12 +196,8 @@ describe("contract_rules_ui", () => {
   });
 
   it("recovers even if the panel is mid-remount exactly when the async load resolves", async () => {
-    // Reproduces the confirmed real-world bug: the beneficiary gets selected
-    // before the storage read finishes (stale empty-rules render), AND the
-    // widget container happens to be torn down/recreated (contract_ui.js's
-    // observer-driven removeIfPresent()/injectIfNeeded() cycle) at the exact
-    // moment the load resolves, so that specific refresh attempt finds no
-    // panel. The rule must still show up on the next natural refresh.
+    // why: real bug — beneficiary picked before the read finishes while the widget is being
+    // re-injected, so that refresh finds no panel. The rule must appear on the next refresh.
     let resolveSnapshot;
     loadRulesSnapshot.mockReturnValueOnce(
       new Promise((resolve) => {

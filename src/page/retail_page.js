@@ -1,5 +1,7 @@
-import { extractProductIdFromRow, getInfoColumn } from "../utils.js";
+import { parseLocaleNumber } from "../utils.js";
 import {
+  extractProductIdFromRow,
+  getInfoColumn,
   findAncestorWithin,
   findClosestWithin,
   hasAllSelectors,
@@ -93,6 +95,69 @@ export function readRetailRow(row) {
     priceInput,
     quantityInput,
   };
+}
+
+/**
+ * Raw duration text of a retail row ("2h 30m", "13st, 31m"), unparsed. Duration
+ * is shown in parentheses in most layouts; newer layouts put it in its own
+ * element next to a time-of-day ("08:13") that must not be merged in.
+ * @param {Element} row
+ * @returns {string}
+ */
+export function readRetailDurationText(row) {
+  const infoCol = readRetailRow(row)?.infoColumnEl;
+  if (!infoCol) return "";
+
+  const text = infoCol.textContent || "";
+  const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
+  if (paren) return paren[1];
+
+  let durationText = "";
+  const durationPattern = /\d+\s*(?:d|t|h|st|m|s)\b/i;
+  for (const el of infoCol.querySelectorAll(":scope *")) {
+    const elText = el.textContent || "";
+    if (durationPattern.test(elText) && !/\d{1,2}:\d{2}/.test(elText)) {
+      durationText = elText;
+    }
+  }
+  if (durationText) return durationText;
+
+  // Fallback: duration inline without parentheses.
+  return text;
+}
+
+/**
+ * Signed profit per unit: the child div with the tooltip SVG, else a bare "$" amount div.
+ * Negative is shown by minus/parentheses or only by red text.
+ * @param {Element} row
+ * @returns {number} NaN when not found
+ */
+export function readRetailProfitPerUnit(row) {
+  const infoCol = readRetailRow(row)?.infoColumnEl;
+  if (!infoCol) return NaN;
+
+  const childDivs = [...infoCol.querySelectorAll(":scope > div")];
+  const profitDiv =
+    childDivs.find((d) => d.querySelector("svg")) ||
+    childDivs.find((d) => /^\s*[-−]?\s*\$\s*[\d.,]+\s*$/.test(d.textContent));
+  if (!profitDiv) return NaN;
+
+  const text = profitDiv.textContent || "";
+  const match = text.match(/([-−]?)\s*\$\s*([\d.,]+)/);
+  if (!match) return NaN;
+
+  const val = parseLocaleNumber(match[2]);
+  if (!Number.isFinite(val)) return NaN;
+
+  const hasExplicitMinus =
+    match[1].length > 0 || /-\s*\$/.test(text) || /−\s*\$/.test(text) || /\(\s*\$?\s*\d/.test(text);
+  if (hasExplicitMinus) return -Math.abs(val);
+
+  const color = profitDiv.ownerDocument.defaultView?.getComputedStyle(profitDiv).color || "";
+  const rgb = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (rgb && Number(rgb[1]) > 150 && Number(rgb[2]) < 100 && Number(rgb[3]) < 100) return -Math.abs(val);
+
+  return Math.abs(val);
 }
 
 export function observeRetailPage(root = document, onChange) {

@@ -1,6 +1,13 @@
-import { STATE } from "./state.js";
+import { t } from "./i18n.js";
 
-/** Market fee charged on market sales (4%) */
+/**
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+export function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const MARKET_FEE = 0.04;
 
 /** Transport container product ID in SimCompanies */
@@ -21,11 +28,8 @@ function getPreferredDecimalSeparator() {
 }
 
 /**
- * Parse a locale-agnostic number from text.
- *   EN: 1,234.56  (comma = thousands, dot = decimal)
- *   DE: 1.234,56  (dot = thousands, comma = decimal)
- * Heuristic: if both separators exist, the last one is decimal.
- * If only one separator exists, prefer the decimal separator based on URL locale.
+ * "1,234.56" or "1.234,56": with both separators the last is decimal; with one, the page
+ * locale decides.
  * @param {string} raw
  * @returns {number}
  */
@@ -65,31 +69,6 @@ export function parseLocaleNumber(raw) {
   }
 
   return Number(s);
-}
-
-/**
- * Extract product ID from a row containing an encyclopedia resource link.
- * @param {Element} row - DOM element containing the product link
- * @returns {number|null} Product ID or null
- */
-export function extractProductIdFromRow(row) {
-  if (!row) return null;
-  const a = row.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
-  const href = a?.getAttribute("href") || "";
-  const m = href.match(/\/resource\/(\d+)\//);
-  return m ? Number(m[1]) : null;
-}
-
-/**
- * Find the info column (div.right-border containing an h3) within a row.
- * This is the column that holds product name, profit, finishes, etc.
- * @param {Element} row - DOM element of the row
- * @returns {Element|null}
- */
-export function getInfoColumn(row) {
-  if (!row) return null;
-  const cols = row.querySelectorAll("div.right-border");
-  return [...cols].find((c) => c.querySelector("h3")) || null;
 }
 
 /** SVG markup for the standard copy-to-clipboard button icon */
@@ -201,20 +180,25 @@ export function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+const pendingFrameCallbacks = new Set();
+
+/**
+ * Run `callback` on the next animation frame. Repeated calls with the same function before
+ * that frame coalesce into one run; different callbacks never cancel each other.
+ * @param {() => unknown} callback
+ */
 export function scheduleUpdate(callback) {
-  if (STATE.rafPending) return;
-  STATE.rafPending = true;
+  if (typeof callback !== "function" || pendingFrameCallbacks.has(callback)) return;
+  pendingFrameCallbacks.add(callback);
   requestAnimationFrame(() => {
-    STATE.rafPending = false;
-    if (callback) {
-      try {
-        const res = callback();
-        if (res instanceof Promise) {
-          res.catch((err) => console.debug("[SimHelper] Render (async) error:", err));
-        }
-      } catch (err) {
-        console.debug("[SimHelper] Render error:", err);
+    pendingFrameCallbacks.delete(callback);
+    try {
+      const res = callback();
+      if (res instanceof Promise) {
+        res.catch((err) => console.debug("[SimHelper] Render (async) error:", err));
       }
+    } catch (err) {
+      console.debug("[SimHelper] Render error:", err);
     }
   });
 }
@@ -232,26 +216,58 @@ export async function runSafe(fn) {
 }
 
 /**
- * Copy text to clipboard and show brief feedback
+ * Write text to the clipboard. Falls back to a hidden textarea + execCommand when the async
+ * Clipboard API is refused (page not focused, permissions policy).
+ * @param {string} text
+ * @returns {Promise<boolean>} true when the text was copied
  */
-export async function copyToClipboard(text, feedbackEl) {
+export async function writeClipboardText(text) {
   try {
     await navigator.clipboard.writeText(text);
-    if (feedbackEl) {
-      const hadChildElements = feedbackEl.childElementCount > 0;
-      const originalHtml = feedbackEl.innerHTML;
-      const originalText = feedbackEl.textContent;
+    return true;
+  } catch {}
 
-      feedbackEl.textContent = "✓ Copied!";
-      setTimeout(() => {
-        if (hadChildElements) {
-          feedbackEl.innerHTML = originalHtml;
-          return;
-        }
-        feedbackEl.textContent = originalText;
-      }, 1500);
-    }
-  } catch (err) {
-    console.error("Failed to copy:", err);
+  try {
+    const buffer = document.createElement("textarea");
+    buffer.className = "scx-copy-buffer";
+    buffer.setAttribute("readonly", "readonly");
+    buffer.value = text;
+    document.body.appendChild(buffer);
+    buffer.select();
+    buffer.setSelectionRange(0, buffer.value.length);
+    const ok = document.execCommand("copy");
+    buffer.remove();
+    return Boolean(ok);
+  } catch {
+    return false;
   }
+}
+
+/**
+ * Copy text to clipboard and show brief "Copied!" feedback inside `feedbackEl`.
+ * @param {string} text
+ * @param {Element} [feedbackEl]
+ * @returns {Promise<boolean>}
+ */
+export async function copyToClipboard(text, feedbackEl) {
+  const ok = await writeClipboardText(text);
+  if (!ok) {
+    console.warn("[SimHelper] Copy to clipboard failed.");
+    return false;
+  }
+  if (feedbackEl) {
+    const hadChildElements = feedbackEl.childElementCount > 0;
+    const originalHtml = feedbackEl.innerHTML;
+    const originalText = feedbackEl.textContent;
+
+    feedbackEl.textContent = `✓ ${t("copied")}`;
+    setTimeout(() => {
+      if (hadChildElements) {
+        feedbackEl.innerHTML = originalHtml;
+        return;
+      }
+      feedbackEl.textContent = originalText;
+    }, 1500);
+  }
+  return true;
 }

@@ -99,7 +99,7 @@ export function createChatFilterAlertsContent(input) {
         <input id="${COMPANY_INPUT_ID}" class="scx-select scx-width-full" type="text" placeholder="${t("caCompanyPlaceholder")}" />
       </div>
 
-      <button id="${ADD_BUTTON_ID}" class="scx-btn scx-btn-primary scx-width-full" ${alertsCount >= maxCount ? "disabled" : ""}>
+      <button type="button" id="${ADD_BUTTON_ID}" class="scx-btn scx-btn-primary scx-width-full" ${alertsCount >= maxCount ? "disabled" : ""}>
         ${t("caAddAlert")}
       </button>
     </div>
@@ -189,7 +189,7 @@ export function renderChatFilterAlertList(input) {
 
             ${
               alert.lastMatchCompany
-                ? `<div class="scx-margin-top-4"><a href="${companyUrl}" target="_blank" class="scx-chat-message-company">${companyDisplay || escapeHtml(alert.lastMatchCompany)}</a></div>`
+                ? `<div class="scx-margin-top-4"><a href="${companyUrl}" target="_blank" rel="noopener noreferrer" class="scx-chat-message-company">${companyDisplay || escapeHtml(alert.lastMatchCompany)}</a></div>`
                 : ""
             }
 
@@ -201,12 +201,12 @@ export function renderChatFilterAlertList(input) {
           <div class="scx-ca-card-actions">
             ${
               alert.triggered
-                ? `<button class="scx-btn scx-btn-warning scx-ca-btn-reset" data-action="reset">${t("caReset")}</button>`
+                ? `<button type="button" class="scx-btn scx-btn-warning scx-ca-btn-reset" data-action="reset">${t("caReset")}</button>`
                 : alert.active
-                  ? `<button class="scx-btn scx-btn-error scx-ca-btn-stop" data-action="stop">${t("stop")}</button>`
-                  : `<button class="scx-btn scx-btn-success scx-ca-btn-start" data-action="start">${t("caStart")}</button>`
+                  ? `<button type="button" class="scx-btn scx-btn-error scx-ca-btn-stop" data-action="stop">${t("stop")}</button>`
+                  : `<button type="button" class="scx-btn scx-btn-success scx-ca-btn-start" data-action="start">${t("caStart")}</button>`
             }
-            <button class="scx-btn scx-btn-secondary scx-ca-btn-remove" data-action="remove" aria-label="${escapeHtml(t("removeAction"))}">✕</button>
+            <button type="button" class="scx-btn scx-btn-secondary scx-ca-btn-remove" data-action="remove" aria-label="${escapeHtml(t("removeAction"))}">✕</button>
           </div>
         </div>
       `;
@@ -278,7 +278,7 @@ export function showChatFilterAlertNotification(input) {
         <a href="${buildChatRoomMessagesUrl({ name: alert?.roomName })}" target="_blank" rel="noreferrer noopener" class="scx-toast-link scx-ca-toast-link">${escapeHtml(body).slice(0, 140)}</a>
       </div>
     </div>
-    <button class="scx-toast-close">✕</button>
+    <button type="button" class="scx-toast-close">✕</button>
   `;
 
   const dismiss = () => {

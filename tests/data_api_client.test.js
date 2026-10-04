@@ -105,7 +105,9 @@ describe("rate limiting", () => {
 
 describe("retries", () => {
   it("still retries retryable server errors", async () => {
-    global.fetch.mockResolvedValueOnce(mockResponse(503)).mockResolvedValueOnce(mockResponse(200, { body: [1] }));
+    global.fetch
+      .mockResolvedValueOnce(mockResponse(503))
+      .mockResolvedValueOnce(mockResponse(200, { body: [1] }));
 
     await expect(
       request("market", { url: sc("/api/v3/market/0/13/"), retries: 1, retryDelayMs: 0 }),
@@ -146,9 +148,9 @@ describe("rate-limit listeners", () => {
     expect(events[0]).toMatchObject({ group: SIMCOMPANIES_RATE_LIMIT_GROUP, source: "local" });
 
     const later = getRateLimitStatus().blockedUntil + 60_000;
-    expect(applyExternalRateLimit(SIMCOMPANIES_RATE_LIMIT_GROUP, { blockedUntil: later, reason: "429" })).toBe(
-      true,
-    );
+    expect(
+      applyExternalRateLimit(SIMCOMPANIES_RATE_LIMIT_GROUP, { blockedUntil: later, reason: "429" }),
+    ).toBe(true);
     expect(events).toHaveLength(2);
     expect(events[1]).toMatchObject({ source: "external" });
     expect(getRateLimitStatus().blockedUntil).toBe(later);
@@ -165,5 +167,28 @@ describe("rate-limit listeners", () => {
     expect(applyExternalRateLimit(SIMCOMPANIES_RATE_LIMIT_GROUP, { blockedUntil: now - 1 })).toBe(false);
     expect(listener).not.toHaveBeenCalled();
     expect(getRateLimitStatus().blockedUntil).toBe(now + 120_000);
+  });
+});
+
+describe("request() abort handling", () => {
+  it("honours the caller's signal when a timeout is also set", async () => {
+    const { request, _testUtils } = await import("../src/data/apiClient.js");
+    _testUtils.reset();
+    globalThis.fetch = vi.fn(
+      (_url, { signal }) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener("abort", () =>
+            reject(Object.assign(new Error("aborted"), { name: "AbortError" })),
+          );
+        }),
+    );
+    const controller = new AbortController();
+    const pending = request("test", {
+      url: "https://example.test/x",
+      timeoutMs: 60_000,
+      signal: controller.signal,
+    });
+    controller.abort();
+    await expect(pending).rejects.toMatchObject({ code: "ABORTED" });
   });
 });

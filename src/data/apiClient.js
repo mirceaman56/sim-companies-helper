@@ -204,7 +204,9 @@ async function doRequest(domain, spec, attempt = 0) {
         )
       : null;
 
-  const mergedSignal = controller ? controller.signal : signal;
+  // Honour both the caller's signal and the timeout (AbortSignal.any: Chrome 116+).
+  const mergedSignal =
+    controller && signal ? AbortSignal.any([signal, controller.signal]) : controller?.signal || signal;
 
   try {
     const res = await fetch(url, {
@@ -267,33 +269,12 @@ async function doRequest(domain, spec, attempt = 0) {
 }
 
 /**
- * Execute a fetch request with retry, timeout, cooldown, and optional in-flight request coalescing.
- *
- * The returned value depends on `spec.responseType`:
- * - `json` -> parsed JSON payload
- * - `text` -> string body
- * - `blob` -> `Blob`
- * - `arrayBuffer` -> `ArrayBuffer`
- * - `response` -> raw `Response`
- *
- * Error objects thrown by this function always include a `code` field:
- * - `RATE_LIMIT_COOLDOWN`: the domain is still inside a cooldown window after a previous `429`
- * - `TIMEOUT`: the request exceeded `timeoutMs`
- * - `ABORTED`: the request was aborted by a signal
- * - `NETWORK_ERROR`: fetch failed before an HTTP response was received
- * - `HTTP_ERROR`: the response status was not OK and retries were exhausted
- *
+ * Fetch with retry, timeout, shared 429 cooldown and optional coalescing. Thrown errors carry
+ * `code`: RATE_LIMIT_COOLDOWN | TIMEOUT | ABORTED | NETWORK_ERROR | HTTP_ERROR.
  * @param {string} domain Logical request bucket used for rate-limit tracking and coalescing.
  * @param {ApiRequestSpec} spec Request configuration.
  * @returns {Promise<unknown|Response|string|Blob|ArrayBuffer>} Parsed response payload.
- * @throws {ApiClientError} When cooldown, timeout, network, abort, or HTTP failures occur.
- * @example
- * const payload = await request("github", {
- *   url: "https://api.github.com/repos/owner/repo/releases/latest",
- *   responseType: "json",
- *   timeoutMs: 5000,
- *   retries: 1,
- * });
+ * @throws {ApiClientError}
  */
 export async function request(domain, spec) {
   const d = normalizeDomain(domain);

@@ -1,4 +1,3 @@
-// market_ui.js
 // Market alerts orchestration (state + timers + persistence + rendering).
 import { getSectionContent } from "./sidebar.js";
 import { getRealmId } from "./auth.js";
@@ -63,9 +62,6 @@ async function loadAlerts() {
   nextAlertId = snapshot.nextAlertId;
 }
 
-/**
- * Initialize the market alerts panel.
- */
 export async function initMarketAlerts() {
   panelState = null;
   const content = getSectionContent(SECTION_ID);
@@ -125,7 +121,6 @@ export function updateMarketAlertsPanel() {
 }
 
 /**
- * Add a new price alert.
  * @param {HTMLElement|null} container
  */
 function addAlert(container) {
@@ -170,7 +165,6 @@ function addAlert(container) {
 }
 
 /**
- * Start monitoring a specific alert.
  * @param {HTMLElement|null} container
  * @param {number} alertId
  */
@@ -188,7 +182,6 @@ function startAlert(container, alertId) {
 }
 
 /**
- * Stop monitoring a specific alert.
  * @param {HTMLElement|null} container
  * @param {number} alertId
  */
@@ -224,7 +217,6 @@ function resetAlert(container, alertId) {
 }
 
 /**
- * Remove an alert entirely.
  * @param {HTMLElement|null} container
  * @param {number} alertId
  */
@@ -301,7 +293,6 @@ async function checkPrice(container, alert) {
 }
 
 /**
- * Render the list of alerts.
  * @param {HTMLElement|null} container
  */
 function renderAlertListUI(container) {

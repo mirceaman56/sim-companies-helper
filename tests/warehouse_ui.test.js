@@ -196,8 +196,22 @@ describe("warehouse sales message builder", () => {
 
     expect(rows).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ key: "44:1", kind: 44, name: "Sand", quality: 1, amount: 100, unitCost: 0.5 }),
-        expect.objectContaining({ key: "44:2", kind: 44, name: "Sand", quality: 2, amount: 200, unitCost: 0.6 }),
+        expect.objectContaining({
+          key: "44:1",
+          kind: 44,
+          name: "Sand",
+          quality: 1,
+          amount: 100,
+          unitCost: 0.5,
+        }),
+        expect.objectContaining({
+          key: "44:2",
+          kind: 44,
+          name: "Sand",
+          quality: 2,
+          amount: 200,
+          unitCost: 0.6,
+        }),
       ]),
     );
   });
@@ -294,7 +308,9 @@ describe("warehouse sales message builder", () => {
     ]);
 
     expect(document.querySelector(".scx-warehouse-sales-row")).toBeNull();
-    expect(document.querySelector(".scx-warehouse-sales-empty").textContent).toBe("warehouseSalesChooseProducts");
+    expect(document.querySelector(".scx-warehouse-sales-empty").textContent).toBe(
+      "warehouseSalesChooseProducts",
+    );
   });
 
   it("creates the sales product toggle for a localized (pt-BR) product name via the icon slug", async () => {
@@ -341,5 +357,27 @@ describe("warehouse sales message builder", () => {
     ]);
 
     expect(document.getElementById("scx-warehouse-sales-builder")).toBeNull();
+  });
+});
+
+describe("initWarehouseHelper route timing", () => {
+  it("injects market buttons when the inventory renders after the route is active", async () => {
+    const { installChromeStorage } = await import("./helpers/storage_mocks.js");
+    installChromeStorage();
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
+    window.history.pushState({}, "", "/headquarters/warehouse/");
+    // A list from the previous page is still on screen; the inventory is not rendered yet.
+    document.body.innerHTML = '<nav role="list"><a href="/x">menu</a></nav>';
+
+    const { initWarehouseHelper } = await import("../src/warehouse_ui.js");
+    initWarehouseHelper();
+
+    const main = document.createElement("main");
+    main.innerHTML = `<div role="list"><div role="link" aria-label="Apples, 100, $1.50"><img src="/img/apples.png"></div></div>`;
+    document.body.appendChild(main);
+
+    await vi.waitFor(() => expect(document.querySelector("[data-scx-market-wrapper]")).not.toBeNull(), {
+      timeout: 3000,
+    });
   });
 });

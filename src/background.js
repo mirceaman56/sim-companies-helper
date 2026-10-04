@@ -76,7 +76,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   const lastVersion = details.previousVersion || (await getLastVersion());
   if (!lastVersion) return;
 
-  // Every release is announced, patches included. The old build skipped any
-  // update inside the same minor, which silently swallowed bug-fix releases.
+  // Every release is announced, patches included.
   await setWhatsNew({ kind: "changelog", version, lastVersion, show: true });
 });

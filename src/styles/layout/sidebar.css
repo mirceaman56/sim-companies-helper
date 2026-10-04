@@ -43,6 +43,11 @@
   user-select: none;
 }
 
+.scx-section-header:focus-visible {
+  outline: none;
+  box-shadow: var(--scx-focus-ring-brand);
+}
+
 .scx-section.collapsed .scx-section-header {
   border-bottom: none;
   border-radius: 7px;

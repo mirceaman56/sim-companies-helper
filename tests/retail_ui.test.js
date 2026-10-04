@@ -44,7 +44,6 @@ function makeRow({
   h3.textContent = productName;
   infoCol.appendChild(h3);
 
-  // Profit div with SVG icon
   const profitDiv = document.createElement("div");
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   profitDiv.appendChild(svg);
@@ -56,12 +55,10 @@ function makeRow({
 
   row.appendChild(infoCol);
 
-  // Encyclopedia link
   const link = document.createElement("a");
   link.href = `/encyclopedia/1/resource/${productId}/`;
   row.appendChild(link);
 
-  // Price + quantity inputs
   const priceInput = document.createElement("input");
   priceInput.name = "price";
   priceInput.value = price;

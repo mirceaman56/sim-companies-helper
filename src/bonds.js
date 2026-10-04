@@ -1,4 +1,3 @@
-// bonds.js
 // Loads the company's owned and sold bonds once per page load (accounting widget).
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";

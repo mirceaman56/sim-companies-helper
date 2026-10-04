@@ -92,3 +92,26 @@ describe("formatDiscountPct", () => {
     expect(formatDiscountPct(pct)).toBe(expected);
   });
 });
+
+describe("scheduleUpdate", () => {
+  it("coalesces repeated calls of one callback and keeps different callbacks", async () => {
+    const { scheduleUpdate } = await import("../src/utils.js");
+    const frames = [];
+    const raf = vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation((cb) => frames.push(cb));
+    const a = vi.fn();
+    const b = vi.fn();
+
+    scheduleUpdate(a);
+    scheduleUpdate(a);
+    scheduleUpdate(b);
+    frames.forEach((cb) => cb());
+
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
+
+    scheduleUpdate(a);
+    frames.slice(2).forEach((cb) => cb());
+    expect(a).toHaveBeenCalledTimes(2);
+    raf.mockRestore();
+  });
+});

@@ -21,6 +21,16 @@ export function findWarehouseInventoryContainer(root = document) {
   return root?.querySelector?.(INVENTORY_CONTAINER_SELECTOR) || root?.body || null;
 }
 
+/**
+ * The rendered inventory list (the [role="list"] holding item cards), or null while the game
+ * has not rendered any card yet. Unlike findWarehouseInventoryContainer it never falls back.
+ * @param {ParentNode} root
+ * @returns {Element|null}
+ */
+export function findWarehouseInventoryList(root = document) {
+  return root?.querySelector?.(INVENTORY_CARD_SELECTOR)?.closest(INVENTORY_CONTAINER_SELECTOR) || null;
+}
+
 export function findWarehouseInventoryContainers(root = document) {
   return Array.from(root?.querySelectorAll?.(INVENTORY_CONTAINER_SELECTOR) || []);
 }

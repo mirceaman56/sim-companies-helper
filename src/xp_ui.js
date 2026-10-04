@@ -1,4 +1,3 @@
-// xp_ui.js
 // XP calculator chip inside the navbar level bar, with a details popover.
 // Shares the nav-chip component with the accounting widget.
 import { STATE } from "./state.js";

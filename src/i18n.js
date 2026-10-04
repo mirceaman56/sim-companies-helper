@@ -1,7 +1,5 @@
-// i18n.js
 // Lightweight internationalization based on page URL path.
 // Detects /de/ prefix → German, otherwise English (default).
-import { parseLocaleNumber } from "./utils.js";
 import en from "./translations/en.js";
 import de from "./translations/de.js";
 import fr from "./translations/fr.js";
@@ -88,11 +86,3 @@ const HTML_LANG_TAGS = {
 export function getHtmlLang() {
   return HTML_LANG_TAGS[currentLang] || currentLang;
 }
-
-/**
- * Parse a locale-formatted number string into a JS number.
- * Re-exports the shared parseLocaleNumber from utils.js for backward compatibility.
- * @param {string} raw
- * @returns {number}
- */
-export const parseLocalNumber = parseLocaleNumber;

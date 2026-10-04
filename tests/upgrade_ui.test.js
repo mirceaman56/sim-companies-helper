@@ -29,10 +29,7 @@ global.MutationObserver = vi.fn(() => ({
 import { _testUtils } from "../src/upgrade_ui.js";
 const { buildBuyMessage, resolveUpgradeResourcePrices } = _testUtils;
 
-// ---------------------------------------------------------------------------
-// Base resources mirroring the upgrade building modal (no warehouse stock)
-// RC=101(0dec), Bricks=102(1dec), Planks=108(1dec), CU=111(0dec)
-// ---------------------------------------------------------------------------
+// Upgrade modal resources, no warehouse stock: RC=101, Bricks=102, Planks=108, CU=111.
 const BASE_RESOURCES = [
   { recipeId: 101, requiredQty: 140, warehouse: 0, price: 222, decimals: 0 },
   { recipeId: 102, requiredQty: 1925, warehouse: 0, price: 11.4, decimals: 1 },

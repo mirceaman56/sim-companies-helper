@@ -1,4 +1,3 @@
-// sidebar.js
 // Main sidebar container system with collapsible sections that snap together
 import { SIDEBAR_ID } from "./state.js";
 import { escapeHtml } from "./utils.js";
@@ -11,9 +10,6 @@ const SIDEBAR_PREFS_DOMAIN = "sidebar-prefs";
 const SIDEBAR_PREFS_VERSION = 1;
 let sidebarHidden = false;
 
-/**
- * Toggle sidebar visibility and persist the preference.
- */
 export function toggleSidebarVisibility() {
   const el = document.getElementById(SIDEBAR_ID);
   if (!el) return;
@@ -23,7 +19,7 @@ export function toggleSidebarVisibility() {
 
   const tab = el.querySelector(".scx-sidebar-toggle-tab");
   if (tab) {
-    tab.title = sidebarHidden ? `${t("showSidebar")} (Alt+H)` : `${t("hideSidebar")} (Alt+H)`;
+    tab.title = sidebarHidden ? `${t("showSidebar")} (Alt+H)` : `${t("hideSidebar")} (Alt+H)`; // i18n-ignore
     tab.querySelector(".scx-sidebar-toggle-tab-icon").textContent = sidebarHidden ? "◀" : "▶";
   }
 
@@ -31,7 +27,7 @@ export function toggleSidebarVisibility() {
     domain: SIDEBAR_PREFS_DOMAIN,
     version: SIDEBAR_PREFS_VERSION,
     scope: "global",
-    backend: "local",
+    backend: "chrome",
     refreshAuth: false,
     data: { hidden: sidebarHidden },
   });
@@ -55,14 +51,13 @@ export function ensureSidebarContainer() {
   const tab = document.createElement("button");
   tab.className = "scx-sidebar-toggle-tab";
   tab.type = "button";
-  tab.title = `${t("hideSidebar")} (Alt+H)`;
+  tab.title = `${t("hideSidebar")} (Alt+H)`; // i18n-ignore
   tab.innerHTML = `<span class="scx-sidebar-toggle-tab-icon">▶</span>`;
   tab.addEventListener("click", toggleSidebarVisibility);
   el.prepend(tab);
 
   document.documentElement.appendChild(el);
 
-  // Restore persisted hidden state
   _restoreSidebarState(el);
 
   // Keyboard shortcut: Alt+H
@@ -73,6 +68,10 @@ export function ensureSidebarContainer() {
 
 /** @param {KeyboardEvent} e */
 function _onSidebarShortcut(e) {
+  // Alt+H types a character on some layouts (macOS "˙"): leave text fields alone.
+  const target = e.target;
+  const editing = target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName);
+  if (editing) return;
   if (e.altKey && (e.key === "h" || e.key === "H") && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
     toggleSidebarVisibility();
@@ -85,7 +84,7 @@ async function _restoreSidebarState(el) {
       domain: SIDEBAR_PREFS_DOMAIN,
       version: SIDEBAR_PREFS_VERSION,
       scope: "global",
-      backend: "local",
+      backend: "chrome",
       refreshAuth: false,
     });
     if (prefs?.hidden) {
@@ -93,7 +92,7 @@ async function _restoreSidebarState(el) {
       el.classList.add("scx-sidebar-hidden");
       const tab = el.querySelector(".scx-sidebar-toggle-tab");
       if (tab) {
-        tab.title = `${t("showSidebar")} (Alt+H)`;
+        tab.title = `${t("showSidebar")} (Alt+H)`; // i18n-ignore
         tab.querySelector(".scx-sidebar-toggle-tab-icon").textContent = "◀";
       }
     }
@@ -106,10 +105,8 @@ const TITLE_WORD_LENGTH_SM = 14;
 const TITLE_WORD_LENGTH_XS = 18;
 
 /**
- * Pick a title size for the collapsed sidebar width.
- * Titles wrap on spaces, so what overflows is a single long word — German and
- * Czech compounds ("Einzelhandelshelfer", "Führungskräftehelfer") rather than
- * long titles as such.
+ * why: titles wrap on spaces, so only one long word overflows the collapsed width (German /
+ * Czech compounds such as "Einzelhandelshelfer").
  * @param {string} title
  * @returns {string} size class, empty when the base size fits
  */
@@ -133,14 +130,14 @@ export function registerSection(sectionId, title, icon = "◆") {
   section.className = "scx-section collapsed";
   section.dataset.sectionId = sectionId;
   section.innerHTML = `
-    <div class="scx-section-header">
+    <div class="scx-section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scx-section-content-${escapeHtml(sectionId)}">
       <div class="scx-section-title ${getSectionTitleSizeClass(title)}">
         <span class="scx-section-icon">${escapeHtml(icon)}</span>
         <span class="scx-section-title-text" lang="${escapeHtml(getHtmlLang())}">${escapeHtml(title)}</span>
       </div>
-      <div class="scx-section-toggle">▼</div>
+      <div class="scx-section-toggle" aria-hidden="true">▼</div>
     </div>
-    <div class="scx-section-content"></div>
+    <div class="scx-section-content" id="scx-section-content-${escapeHtml(sectionId)}"></div>
   `;
 
   const header = section.querySelector(".scx-section-header");
@@ -149,6 +146,7 @@ export function registerSection(sectionId, title, icon = "◆") {
 
   const toggleCollapse = () => {
     const isCollapsed = section.classList.toggle("collapsed");
+    header.setAttribute("aria-expanded", String(!isCollapsed));
     const sectionData = SECTIONS.get(sectionId);
     if (sectionData) {
       sectionData.isCollapsed = isCollapsed;
@@ -164,6 +162,11 @@ export function registerSection(sectionId, title, icon = "◆") {
   };
 
   header.addEventListener("click", toggleCollapse);
+  header.addEventListener("keydown", (e) => {
+    if (e.target !== header || (e.key !== "Enter" && e.key !== " ")) return;
+    e.preventDefault();
+    toggleCollapse();
+  });
 
   container.appendChild(section);
 
@@ -212,10 +215,10 @@ function ensureSupportCard(container) {
   const card = document.createElement("div");
   card.className = "scx-sidebar-footer-support";
   card.innerHTML = `
-    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-paypal">
+    <button type="button" class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-paypal">
       <span>❤</span> ${t("supportTheDev")}
     </button>
-    <button class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-kofi">
+    <button type="button" class="scx-sidebar-footer-support-btn scx-sidebar-footer-support-kofi">
       <span>☕</span> ${t("supportOnKofi")}
     </button>
   `;
@@ -244,9 +247,6 @@ function ensureFooterButton(container, className, href, innerHtml) {
   container.appendChild(btn);
 }
 
-/**
- * Get the content container for a section
- */
 export function getSectionContent(sectionId) {
   const section = SECTIONS.get(sectionId);
   return section ? section.content : null;

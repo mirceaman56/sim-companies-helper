@@ -53,3 +53,12 @@
 .scx-copy-btn:hover::before {
   opacity: 1;
 }
+
+/* Off-screen textarea used by writeClipboardText() when the Clipboard API is refused. */
+.scx-copy-buffer {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}

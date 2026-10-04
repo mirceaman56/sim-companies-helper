@@ -72,8 +72,9 @@ describe("normalizeEntryText", () => {
     // The person is credited in the structured credits list instead, so
     // leaving the parenthetical here would name them twice.
     expect(
-      normalizeEntryText("fix price Profit Analysis at the produced quality (ty [someone](https://gh/someone)!)")
-        ?.text,
+      normalizeEntryText(
+        "fix price Profit Analysis at the produced quality (ty [someone](https://gh/someone)!)",
+      )?.text,
     ).toBe("Fix price Profit Analysis at the produced quality");
   });
 
@@ -137,7 +138,9 @@ describe("parseReleaseBody", () => {
   });
 
   it("returns nothing for a body that is only a changelog link", () => {
-    expect(parseReleaseBody("**Full Changelog**: https://github.com/o/r/compare/v0.1.2...v0.1.3")).toEqual([]);
+    expect(parseReleaseBody("**Full Changelog**: https://github.com/o/r/compare/v0.1.2...v0.1.3")).toEqual(
+      [],
+    );
   });
 });
 

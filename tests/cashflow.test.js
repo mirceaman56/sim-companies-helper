@@ -1,61 +1,47 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { _testUtils } from "../src/cashflow.js";
-import { STATE } from "../src/state.js";
-
-const {
-  classifyTransaction,
+import {
   aggregatePeriodMetrics,
-  computeSummary,
+  classifyTransaction,
   getPeriodBounds,
   getPreviousPeriodBounds,
   safePctChange,
+} from "../src/finance_calc.js";
+import { STATE } from "../src/state.js";
+import "../src/auth.js"; // registers the storage scope provider
+import { installChromeStorage } from "./helpers/storage_mocks.js";
+
+const {
   normalizeFinancePeriod,
   applyStorageRetention,
   getCurrentFinanceScope,
-  getFinanceStorageKey,
   hydrateFinanceCache,
   resetFinanceRuntime,
   extendCoverageFromRecentBatch,
 } = _testUtils;
 
-function createLocalStorageMock() {
-  const store = new Map();
+let chromeStorage;
 
-  return {
-    get length() {
-      return store.size;
-    },
-    key(index) {
-      return Array.from(store.keys())[index] ?? null;
-    },
-    getItem(key) {
-      const k = String(key);
-      return store.has(k) ? store.get(k) : null;
-    },
-    setItem(key, value) {
-      store.set(String(key), String(value));
-    },
-    removeItem(key) {
-      store.delete(String(key));
-    },
-    clear() {
-      store.clear();
-    },
-  };
-}
+const financeEnvelope = (companyId, realmId, transactions, ts = Date.now()) => ({
+  v: 3,
+  ts,
+  ttlMs: null,
+  scope: { mode: "scoped", scopeKey: `${companyId}-${realmId}`, companyId, realmId },
+  data: {
+    scope: { companyId, realmId },
+    datasets: { transactions, pastFinances: [], outgoingContracts: [] },
+    cache: {},
+    meta: {},
+    ui: {},
+  },
+});
 
 beforeEach(() => {
-  Object.defineProperty(globalThis, "localStorage", {
-    value: createLocalStorageMock(),
-    configurable: true,
-    writable: true,
-  });
-
+  chromeStorage = installChromeStorage();
   STATE.auth.companyId = null;
   STATE.auth.realmId = null;
   resetFinanceRuntime(STATE.cashflow.finance);
-  localStorage.clear();
 });
 
 describe("cashflow core metrics", () => {
@@ -112,18 +98,6 @@ describe("cashflow core metrics", () => {
     expect(metrics.workforce.leadership).toBe(7477);
     expect(metrics.workforce.total).toBe(7477);
     expect(metrics.overhead).toBe(7477);
-  });
-
-  it("keeps research expenses in research bucket for legacy summary", () => {
-    const summary = computeSummary([
-      { money: -1250, category: "r" },
-      { money: -200, category: "e" },
-      { money: -50, category: "other" },
-    ]);
-
-    expect(summary.expenseByType.r).toBe(1250);
-    expect(summary.expenseByType.e).toBe(200);
-    expect(summary.expenseByType.other).toBe(50);
   });
 
   it("computes period and previous comparable windows", () => {
@@ -183,100 +157,47 @@ describe("cashflow core metrics", () => {
     STATE.auth.companyId = 123;
     STATE.auth.realmId = 1;
 
-    const scope = getCurrentFinanceScope();
-    expect(scope.key).toBe("123-1");
-    expect(getFinanceStorageKey(scope.key)).toBe("scx-finance-cache-123-1");
+    expect(getCurrentFinanceScope().key).toBe("123-1");
   });
 
-  it("rehydrates from the new realm cache and drops old realm transactions", () => {
+  it("rehydrates from the new realm cache and drops old realm transactions", async () => {
     const now = new Date().toISOString();
+    chromeStorage.local.items["scx:cashflow-finance:v3:900-0"] = financeEnvelope(900, 0, [
+      { id: 1, datetime: now, money: 1000 },
+    ]);
+    chromeStorage.local.items["scx:cashflow-finance:v3:900-1"] = financeEnvelope(900, 1, []);
 
     STATE.auth.companyId = 900;
     STATE.auth.realmId = 0;
-    localStorage.setItem(
-      "scx-finance-cache-900-0",
-      JSON.stringify({
-        v: 3,
-        ts: Date.parse(now),
-        scope: { companyId: 900, realmId: 0 },
-        datasets: {
-          transactions: [{ id: 1, datetime: now, money: 1000 }],
-          pastFinances: [],
-          outgoingContracts: [],
-        },
-        cache: {},
-        meta: {},
-        ui: {},
-      }),
-    );
-
-    STATE.auth.realmId = 1;
-    localStorage.setItem(
-      "scx-finance-cache-900-1",
-      JSON.stringify({
-        v: 3,
-        ts: Date.parse(now),
-        scope: { companyId: 900, realmId: 1 },
-        datasets: {
-          transactions: [],
-          pastFinances: [],
-          outgoingContracts: [],
-        },
-        cache: {},
-        meta: {},
-        ui: {},
-      }),
-    );
-
-    STATE.auth.realmId = 0;
-    hydrateFinanceCache();
+    await hydrateFinanceCache();
     expect(STATE.cashflow.finance.datasets.transactions).toHaveLength(1);
 
     STATE.auth.realmId = 1;
-    hydrateFinanceCache();
+    await hydrateFinanceCache();
     expect(STATE.cashflow.finance.datasets.transactions).toHaveLength(0);
   });
 
-  it("removes older finance cache payload versions during hydration", () => {
-    const now = "2026-03-29T12:00:00.000Z";
-    localStorage.setItem(
-      "scx-finance-cache-legacy-company-only",
-      JSON.stringify({
-        v: 1,
-        ts: Date.parse(now),
-        datasets: {
-          transactions: [{ id: 99, datetime: now, money: 2500 }],
-          pastFinances: [],
-          outgoingContracts: [],
-        },
-        cache: {},
-        meta: {},
-        ui: {},
-      }),
-    );
+  it("shares one read between concurrent hydrations", async () => {
+    const now = new Date().toISOString();
+    chromeStorage.local.items["scx:cashflow-finance:v3:5-0"] = financeEnvelope(5, 0, [
+      { id: 1, datetime: now, money: 10 },
+    ]);
+    STATE.auth.companyId = 5;
+    STATE.auth.realmId = 0;
 
+    await Promise.all([hydrateFinanceCache(), hydrateFinanceCache()]);
+    expect(STATE.cashflow.finance.datasets.transactions).toHaveLength(1);
+  });
+
+  it("removes cached payloads older than the retention window", async () => {
+    const old = Date.now() - 61 * 24 * 60 * 60 * 1000;
+    chromeStorage.local.items["scx:cashflow-finance:v3:1-1"] = financeEnvelope(1, 1, [], old);
     STATE.auth.companyId = 777;
     STATE.auth.realmId = 1;
-    localStorage.setItem(
-      "scx-finance-cache-777-1",
-      JSON.stringify({
-        v: 3,
-        ts: Date.parse(now),
-        scope: { companyId: 777, realmId: 1 },
-        datasets: {
-          transactions: [],
-          pastFinances: [],
-          outgoingContracts: [],
-        },
-        cache: {},
-        meta: {},
-        ui: {},
-      }),
-    );
 
-    hydrateFinanceCache();
+    await hydrateFinanceCache();
 
-    expect(localStorage.getItem("scx-finance-cache-legacy-company-only")).toBeNull();
+    expect(chromeStorage.local.items["scx:cashflow-finance:v3:1-1"]).toBeUndefined();
   });
 });
 
@@ -287,21 +208,14 @@ describe("coverage floor gap detection", () => {
     const t0 = Date.parse("2026-09-15T12:00:00.000Z");
 
     // First session: recent batch spans the last few hours, ending "now".
-    extendCoverageFromRecentBatch(
-      finance,
-      [{ id: 2, datetime: new Date(t0).toISOString(), money: 100 }],
-      t0,
-    );
+    extendCoverageFromRecentBatch(finance, [{ id: 2, datetime: new Date(t0).toISOString(), money: 100 }], t0);
     expect(finance.cache.coverageFloorMs).toBe(t0);
 
     // Deep pagination earns a much older floor within the same session.
     finance.cache.coverageFloorMs = t0 - 6 * dayMs;
     finance.cache.coverageFloorId = 1;
 
-    // A later routine refresh (minutes later, same session) pulls a recent
-    // window whose oldest entry is newer than the deep floor, but still
-    // reaches back far enough to touch the old top, so no gap: the deep
-    // floor must be preserved, not collapsed back to the shallow window.
+    // A later refresh still touches the old top: no gap, so the deep floor must survive.
     const t1 = t0 + 5 * 60 * 1000;
     extendCoverageFromRecentBatch(
       finance,

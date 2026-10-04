@@ -39,10 +39,8 @@ archive.pipe(output);
 archive.glob("**/*", {
   cwd: DIST_DIR,
   dot: false,
-  ignore: [
-    "**/.DS_Store",
-    "**/__MACOSX/**"
-  ],
+  // Source maps stay local: they double the zip size and are not needed by the store.
+  ignore: ["**/.DS_Store", "**/__MACOSX/**", "**/*.map"],
 });
 
 // ---- finalize ----

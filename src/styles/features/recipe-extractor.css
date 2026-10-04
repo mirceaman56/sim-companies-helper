@@ -75,3 +75,7 @@
   border-radius: var(--scx-border-radius-md);
   padding: var(--scx-spacing-sm);
 }
+
+.scx-recipe-extractor-feedback.is-visible {
+  display: block;
+}

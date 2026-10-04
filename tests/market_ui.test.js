@@ -23,10 +23,16 @@ vi.mock("../src/market.js", () => ({
   getRateLimitStatus: () => ({ blocked: false, remainingMs: 0 }),
 }));
 
-vi.mock("../src/auth.js", () => ({
-  getRealmId: () => 0,
-  loadAuthDataOnce: vi.fn(() => Promise.resolve()),
-}));
+vi.mock("../src/auth.js", async () => {
+  // The real auth module registers the storage scope provider; the mock has to as well.
+  const { setScopeProvider } = await import("../src/data/scope.js");
+  const { STATE } = await import("../src/state.js");
+  setScopeProvider({ getContext: () => STATE.auth, refresh: async () => {} });
+  return {
+    getRealmId: () => 0,
+    loadAuthDataOnce: vi.fn(() => Promise.resolve()),
+  };
+});
 
 // Stub chrome.storage.local for persistence tests
 const storageStore = {};

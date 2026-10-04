@@ -16,8 +16,7 @@ Thanks for contributing.
 
 ```bash
 npm install
-npm run build
-npm test
+npm run verify
 ```
 
 ## Development Workflow
@@ -37,18 +36,14 @@ npm test
 
 ## Testing Expectations
 
-- Run `npm test` before opening a PR.
-- Run targeted tests for touched areas when the suite has focused coverage.
-- If you touch the data platform, run `npm test -- tests/data_scope.test.js tests/data_storage.test.js`.
-- If you touch agent instructions, run `npm run docs:sync-instructions` and `npm run docs:check-instructions`.
+- `npm run verify` must pass before opening a PR (lint, format, repo checks, tests, build). CI runs the same command.
+- Repo checks (`npm run check`) enforce the rules in `AGENTS.md`: module layering, manifest permissions, i18n, styles, markup, instruction-file sync. Their messages say how to fix each problem.
+- If you touch agent instructions or skills, run `npm run docs:sync-instructions`.
 - If you change shipped UI or behavior, verify the built extension manually in Chrome.
 
 ## Repository Rules
 
-- Follow the existing patterns used by nearby files before making structural or UI changes.
-- Keep DOM detection in `src/page/*_page.js` adapters when possible.
-- Keep styling in `src/styles/**`; do not add inline CSS in JavaScript.
-- Reuse shared helpers from `src/utils.js` and the data platform in `src/data/` instead of reimplementing them.
+See `AGENTS.md`: every rule there lists the check that enforces it.
 
 ## Pull Requests
 

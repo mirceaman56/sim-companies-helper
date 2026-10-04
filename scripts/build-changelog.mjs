@@ -1,12 +1,5 @@
-// Builds src/resources/changelog.json, the data the "What's new" panel renders.
-//
-// Two modes:
-//   default   one version, from merged PR labels + titles (what CI runs)
-//   --seed    backfill history from the release notes GitHub already published
-//
-// Entry text is never written by hand: it is the PR title, normalized. The
-// changelog is English only by design — UI chrome around it is localized
-// through t(), but the release entries themselves are not translated.
+// Builds src/resources/changelog.json from merged PR labels + titles (default, what CI runs) or
+// from published release notes (--seed). Entries are PR titles, English only on purpose.
 
 import fs from "node:fs";
 import path from "node:path";

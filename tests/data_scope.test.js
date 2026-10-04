@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { resolveScopeSync } from "../src/data/scope.js";
 import { STATE } from "../src/state.js";
+import "../src/auth.js"; // registers the scope provider
 
 describe("data/scope", () => {
   beforeEach(() => {

@@ -1,5 +1,28 @@
-import { loadAuthDataOnce } from "../auth.js";
-import { STATE } from "../state.js";
+// Storage scope resolution. The data layer does not know where auth lives: the
+// auth module registers a provider at import time (see src/auth.js).
+
+/**
+ * @typedef {Object} ScopeProvider
+ * @property {() => { companyId: unknown, realmId: unknown }} getContext Current company/realm, sync.
+ * @property {() => Promise<void>} refresh Make sure the context is loaded (joins in-flight loads).
+ */
+
+/** @type {ScopeProvider} */
+let provider = {
+  getContext: () => ({ companyId: null, realmId: null }),
+  refresh: async () => {},
+};
+
+/**
+ * Register where scope values come from. Called once by src/auth.js.
+ * @param {ScopeProvider} next
+ */
+export function setScopeProvider(next) {
+  if (typeof next?.getContext !== "function" || typeof next?.refresh !== "function") {
+    throw new TypeError("setScopeProvider: expected { getContext(), refresh() }");
+  }
+  provider = next;
+}
 
 const VALID_SCOPE_MODES = new Set(["scoped", "company", "global"]);
 
@@ -16,8 +39,9 @@ function numericOrNull(value) {
 
 export function resolveScopeSync(scopeMode = "scoped") {
   const mode = normalizeScopeMode(scopeMode);
-  const companyId = numericOrNull(STATE.auth?.companyId);
-  const realmId = numericOrNull(STATE.auth?.realmId);
+  const context = provider.getContext() || {};
+  const companyId = numericOrNull(context.companyId);
+  const realmId = numericOrNull(context.realmId);
 
   if (mode === "global") {
     return {
@@ -52,7 +76,7 @@ export function resolveScopeSync(scopeMode = "scoped") {
 export async function resolveScope(scopeMode = "scoped", { refreshAuth = false } = {}) {
   const mode = normalizeScopeMode(scopeMode);
   if (refreshAuth && mode !== "global") {
-    await loadAuthDataOnce();
+    await provider.refresh();
   }
   return resolveScopeSync(mode);
 }

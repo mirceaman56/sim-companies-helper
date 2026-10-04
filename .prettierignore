@@ -1,3 +1,5 @@
 dist/
 node_modules/
 *.json
+# Captured game HTML: keep byte-for-byte.
+tests/fixtures/

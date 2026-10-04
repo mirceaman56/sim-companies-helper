@@ -1,4 +1,3 @@
-// contract_rules_render.js
 // Rendering helpers for the saved contract rule templates panel.
 
 import { escapeHtml, formatDiscountPct } from "./utils.js";
@@ -149,9 +148,8 @@ function saveForm(t, { noteDraft, noteMaxLength, disabled }) {
 }
 
 /**
- * Render the panel for a selected company: its saved rules (pre-filtered —
- * this module never filters) followed by the save form, or the limit notice
- * once the per-customer cap is reached.
+ * Saved rules of the selected company (already filtered by the caller), then the save form
+ * or the per-customer limit notice.
  * @param {{
  *  container: HTMLElement,
  *  rules: object[],
@@ -207,9 +205,8 @@ export function renderRulesPanel(input) {
 }
 
 /**
- * Render the state shown before a beneficiary is picked: a hint, plus every
- * saved rule for this product labelled with its company, so rules can be found
- * and deleted without first selecting the right company.
+ * Before a beneficiary is picked: a hint plus every saved rule for this product, labelled
+ * with its company, so rules can be deleted without selecting the company first.
  * @param {{
  *  container: HTMLElement,
  *  t: (key: string) => string,

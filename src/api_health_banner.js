@@ -1,4 +1,3 @@
-// api_health_banner.js
 // Sidebar-wide warning shown while the game API is rate limiting the extension:
 // tints the sidebar amber and shows a banner with a countdown to the retry.
 import { SIDEBAR_ID } from "./state.js";

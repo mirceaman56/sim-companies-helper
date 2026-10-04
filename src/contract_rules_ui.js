@@ -1,8 +1,5 @@
-// contract_rules_ui.js
-// Orchestrates the saved contract-rule-templates panel: detects the current
-// product and selected beneficiary company on a contract page, shows saved
-// rules matching both (or a "save current values" prompt), and applies a
-// rule with one click by filling the amount and a freshly recalculated price.
+// Saved contract rules for the current product + beneficiary; applying one fills the amount
+// and a freshly recalculated price.
 import { t } from "./i18n.js";
 import { onAuthDataApplied } from "./auth.js";
 import { formatMoney, normalizeDiscountPct } from "./utils.js";

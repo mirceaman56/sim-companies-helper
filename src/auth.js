@@ -1,11 +1,10 @@
-// auth.js
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
+import { setScopeProvider } from "./data/scope.js";
 
 const authListeners = new Set();
 
 /**
- * Subscribe to successfully applied auth-data loads.
  * @param {(context: { companyId: number|null, realmId: number|null }) => void} listener
  * @returns {() => void} Unsubscribe function.
  */
@@ -69,10 +68,8 @@ async function fetchAndApplyAuthData() {
 export async function loadAuthDataOnce({ force = false } = {}) {
   if (!force && STATE.auth.loaded) return;
 
-  // Join an in-flight load instead of returning a no-op. Callers rely on auth
-  // being resolved once this settles — notably resolveScope(), which fails
-  // closed and silently drops scoped storage reads when companyId/realmId are
-  // still null.
+  // why: join, don't no-op. Callers (resolveScope) need auth resolved when this settles, or
+  // scoped storage reads are silently dropped.
   if (inflightAuthLoad) return inflightAuthLoad;
 
   inflightAuthLoad = fetchAndApplyAuthData().finally(() => {
@@ -81,6 +78,12 @@ export async function loadAuthDataOnce({ force = false } = {}) {
 
   return inflightAuthLoad;
 }
+
+// Storage keys are scoped to the active company/realm; the data layer reads them from here.
+setScopeProvider({
+  getContext: () => STATE.auth,
+  refresh: () => loadAuthDataOnce(),
+});
 
 export function getRealmId() {
   return STATE.auth.realmId ?? 0;

@@ -1,3 +1,5 @@
+// Developer tool for regenerating src/resources/recipes.json. Not wired into the shipped
+// extension, so its copy stays English. i18n-ignore-file
 import { escapeHtml } from "./utils.js";
 
 export const EXTRACTOR_PANEL_ID = "scx-recipe-extractor";
@@ -69,9 +71,9 @@ export function createRecipeExtractorPanelController(input = {}) {
     try {
       await writeClipboard(recipesJson);
       if (feedback) {
-        feedback.style.display = "block";
+        feedback.classList.add("is-visible");
         timeoutFn(() => {
-          feedback.style.display = "none";
+          feedback.classList.remove("is-visible");
         }, 2000);
       }
     } catch {

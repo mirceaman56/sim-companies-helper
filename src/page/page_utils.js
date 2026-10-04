@@ -1,4 +1,3 @@
-// page_utils.js
 // Shared DOM/page adapter utilities.
 
 const DEFAULT_OBSERVER_OPTIONS = {
@@ -26,8 +25,12 @@ export function observeMutations(target, onChange, options = DEFAULT_OBSERVER_OP
   return () => observer.disconnect();
 }
 
+/** target node -> { observer, listeners } for body-level observation with default options. */
+const sharedObservers = new WeakMap();
+
 /**
- * Observe the document body (or custom root) for subtree changes.
+ * Observe the body (or `root`) subtree. Callers with default options share one MutationObserver
+ * per target; a throwing listener does not stop the others.
  * @param {() => void} onChange
  * @param {{ root?: Document | Element, options?: MutationObserverInit }} [input]
  * @returns {() => void}
@@ -35,7 +38,67 @@ export function observeMutations(target, onChange, options = DEFAULT_OBSERVER_OP
 export function observeDocumentBody(onChange, input = {}) {
   const { root = document, options = DEFAULT_OBSERVER_OPTIONS } = input;
   const target = root?.body || root;
-  return observeMutations(target, onChange, options);
+  if (!target || typeof onChange !== "function") return () => {};
+  if (options !== DEFAULT_OBSERVER_OPTIONS) return observeMutations(target, onChange, options);
+
+  let shared = sharedObservers.get(target);
+  if (!shared) {
+    const listeners = new Set();
+    const observer = new MutationObserver(() => {
+      for (const listener of [...listeners]) {
+        try {
+          listener();
+        } catch (error) {
+          console.debug("[SimHelper] DOM listener error:", error);
+        }
+      }
+    });
+    observer.observe(target, DEFAULT_OBSERVER_OPTIONS);
+    shared = { observer, listeners };
+    sharedObservers.set(target, shared);
+  }
+
+  const listener = () => onChange();
+  shared.listeners.add(listener);
+
+  return () => {
+    shared.listeners.delete(listener);
+    if (shared.listeners.size === 0) {
+      shared.observer.disconnect();
+      sharedObservers.delete(target);
+    }
+  };
+}
+
+/**
+ * `onChange(url)` once per SPA URL change. Navigation API events give the fast signal; a 1 s
+ * location check backs them up in case they do not reach the content script's isolated world.
+ * @param {(url: string) => void} onChange
+ * @param {{ win?: Window }} [input]
+ * @returns {() => void}
+ */
+export function onRouteChange(onChange, input = {}) {
+  const { win = window } = input;
+  if (typeof onChange !== "function") return () => {};
+
+  let lastUrl = win.location.href;
+  const check = () => {
+    const url = win.location.href;
+    if (url === lastUrl) return;
+    lastUrl = url;
+    onChange(url);
+  };
+
+  const nav = win.navigation;
+  nav?.addEventListener?.("navigatesuccess", check);
+  nav?.addEventListener?.("currententrychange", check);
+  const intervalId = win.setInterval(check, 1000);
+
+  return () => {
+    nav?.removeEventListener?.("navigatesuccess", check);
+    nav?.removeEventListener?.("currententrychange", check);
+    win.clearInterval(intervalId);
+  };
 }
 
 /**
@@ -177,6 +240,31 @@ export function setReactControlledValue(input, value) {
 
   input.dispatchEvent(new Event("input", { bubbles: true }));
   input.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+/**
+ * Extract product ID from a row containing an encyclopedia resource link.
+ * @param {Element} row - DOM element containing the product link
+ * @returns {number|null} Product ID or null
+ */
+export function extractProductIdFromRow(row) {
+  if (!row) return null;
+  const a = row.querySelector('a[href*="/encyclopedia/"][href*="/resource/"]');
+  const href = a?.getAttribute("href") || "";
+  const m = href.match(/\/resource\/(\d+)\//);
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * Find the info column (div.right-border containing an h3) within a row.
+ * This is the column that holds product name, profit, finishes, etc.
+ * @param {Element} row - DOM element of the row
+ * @returns {Element|null}
+ */
+export function getInfoColumn(row) {
+  if (!row) return null;
+  const cols = row.querySelectorAll("div.right-border");
+  return [...cols].find((c) => c.querySelector("h3")) || null;
 }
 
 export const _testUtils = {

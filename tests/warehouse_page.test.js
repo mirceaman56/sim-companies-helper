@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   extractWarehousePageItems,
+  findWarehouseInventoryList,
   findWarehouseSalesBuilderTarget,
   isWarehouseOverviewPage,
   getOrCreateWarehouseMarketButton,
@@ -59,6 +60,16 @@ describe("warehouse_page adapter", () => {
       },
     ]);
     expect(items.length).toBe(1);
+  });
+
+  it("finds the inventory list only once item cards are rendered", () => {
+    document.body.innerHTML = '<nav role="list"><a href="/x">menu</a></nav>';
+    expect(findWarehouseInventoryList(document)).toBeNull();
+
+    document.body.innerHTML += loadFixture("cards.html");
+    const list = findWarehouseInventoryList(document);
+    expect(list?.getAttribute("role")).toBe("list");
+    expect(list?.tagName).not.toBe("NAV");
   });
 
   it("returns an empty array when no parsable inventory cards exist", () => {

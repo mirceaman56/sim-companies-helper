@@ -3,12 +3,10 @@
   "name": "Sim Companies Helper",
   "version": "1.0.0",
   "description": "Various quality of life improvements for Sim Companies players.",
+  "minimum_chrome_version": "116",
   "permissions": [
-    "storage"
-  ],
-  "host_permissions": [
-    "https://api.github.com/*",
-    "https://github.com/*"
+    "storage",
+    "unlimitedStorage"
   ],
   "background": {
     "service_worker": "background.js",
@@ -32,16 +30,6 @@
         "contentStyle.css"
       ],
       "run_at": "document_idle"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "resources/recipes.json"
-      ],
-      "matches": [
-        "https://www.simcompanies.com/*"
-      ]
     }
   ]
 }

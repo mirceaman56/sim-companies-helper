@@ -1,6 +1,6 @@
 import { stringSimilarity } from "string-similarity-js";
 import hrBlurpData from "./resources/hr_blurp.json";
-import { t } from "./i18n.js";
+import { getLang, t } from "./i18n.js";
 import { getSectionContent, setSectionToggleFn } from "./sidebar.js";
 import { COPY_BUTTON_SVG, escapeHtml, wireCopyButton } from "./utils.js";
 import { isExecutivePath, readExecutiveHRFeedback } from "./page/executive_page.js";
@@ -58,12 +58,17 @@ function findBestMatchingEntry(feedbackText) {
   let bestMatch = null;
   let bestScore = SIMILARITY_THRESHOLD;
 
+  // The game shows the feedback in the page language; English stays as a fallback.
+  const lang = getLang();
   for (const entry of hrBlurpData) {
-    const originalFeedback = entry.en?.originalFeedback || "";
-    const score = calculateSimilarity(feedbackText, originalFeedback);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = entry;
+    const candidates = new Set([entry[lang]?.originalFeedback, entry.en?.originalFeedback]);
+    for (const originalFeedback of candidates) {
+      if (!originalFeedback) continue;
+      const score = calculateSimilarity(feedbackText, originalFeedback);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = entry;
+      }
     }
   }
 
