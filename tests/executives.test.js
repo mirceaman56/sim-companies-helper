@@ -295,6 +295,7 @@ describe("loadExecutivesOnce", () => {
     STATE.executives.loaded = false;
     STATE.executives.loading = false;
     STATE.executives.error = null;
+    STATE.executives.errorAt = 0;
     STATE.executives.items = [];
     STATE.executives.lastRefreshAt = 0;
     requestMock.mockReset();
@@ -303,7 +304,7 @@ describe("loadExecutivesOnce", () => {
   it("fetches executives and updates STATE on success", async () => {
     requestMock.mockResolvedValue({ executives: SAMPLE_EXECUTIVES });
 
-    await loadExecutivesOnce();
+    await expect(loadExecutivesOnce()).resolves.toBe(true);
 
     expect(requestMock).toHaveBeenCalledOnce();
     expect(requestMock.mock.calls[0][0]).toBe("executives");
@@ -336,11 +337,41 @@ describe("loadExecutivesOnce", () => {
   it("sets error state on API failure", async () => {
     requestMock.mockRejectedValue(new Error("network error"));
 
-    await loadExecutivesOnce();
+    await expect(loadExecutivesOnce()).resolves.toBe(false);
 
     expect(STATE.executives.error).toContain("network error");
     expect(STATE.executives.loaded).toBe(false);
     expect(STATE.executives.loading).toBe(false);
+  });
+
+  it("returns false when the load is skipped", async () => {
+    STATE.executives.loaded = true;
+    STATE.executives.lastRefreshAt = Date.now();
+
+    await expect(loadExecutivesOnce()).resolves.toBe(false);
+  });
+
+  it("backs off after a failure instead of retrying on every call", async () => {
+    const err = new Error("RATE_LIMIT_COOLDOWN:300");
+    requestMock.mockRejectedValue(err);
+
+    await loadExecutivesOnce();
+    await expect(loadExecutivesOnce()).resolves.toBe(false);
+    expect(requestMock).toHaveBeenCalledOnce();
+
+    // Retries once the back-off window has passed.
+    STATE.executives.errorAt = Date.now() - 60_000;
+    await loadExecutivesOnce();
+    expect(requestMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores the failure back-off when forced", async () => {
+    requestMock.mockRejectedValueOnce(new Error("network error"));
+    await loadExecutivesOnce();
+
+    requestMock.mockResolvedValue({ executives: SAMPLE_EXECUTIVES });
+    await expect(loadExecutivesOnce({ force: true })).resolves.toBe(true);
+    expect(STATE.executives.error).toBeNull();
   });
 
   it("skips fetch if no companyId is available", async () => {

@@ -123,6 +123,7 @@ export const STATE = {
     loaded: false,
     loading: false,
     error: null,
+    errorAt: 0,
     items: [],
     lastRefreshAt: 0,
     details: {}, // { [executiveId]: { loaded, loading, error, data, lastRefreshAt } }

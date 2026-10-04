@@ -151,7 +151,9 @@ export async function updateProductionPanel() {
   // Kick off executive fetch for training warning (no-op if cached)
   if (!STATE.executives.loaded && !STATE.executives.loading) {
     loadExecutivesOnce()
-      .then(() => updateProductionPanel())
+      .then((loaded) => {
+        if (loaded) updateProductionPanel();
+      })
       .catch(() => {});
   }
 

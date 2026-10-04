@@ -344,9 +344,13 @@ export async function updatePanel() {
     const cacheKey = `${realmId}:${TRANSPORT_RESOURCE_ID}`;
     const cachedContainer = STATE.marketCache.get(cacheKey);
     if (!cachedContainer || Date.now() - cachedContainer.ts > MARKET_CACHE_TTL_MS) {
-      // Trigger fetch (async, update callback is just updatePanel)
-      fetchMarket(realmId, 13)
-        .then(() => updatePanel())
+      // Re-render only once the cache is fresh: under a rate limit fetchMarket
+      // resolves with the stale entry, and re-rendering on that loops forever.
+      fetchMarket(realmId, TRANSPORT_RESOURCE_ID)
+        .then(() => {
+          const fresh = STATE.marketCache.get(cacheKey);
+          if (fresh && Date.now() - fresh.ts <= MARKET_CACHE_TTL_MS) updatePanel();
+        })
         .catch(() => {});
     }
   }
@@ -362,8 +366,12 @@ export async function updatePanel() {
   if (productId != null && realmId != null) {
     const cached = getCachedRetailInfo(productId);
     if (!cached) {
+      // A product missing from retail info stays uncached; re-rendering then
+      // would refetch from cache and re-render again without end.
       fetchRetailInfoForProduct(realmId, productId)
-        .then(() => updatePanel())
+        .then((info) => {
+          if (info) updatePanel();
+        })
         .catch(() => {});
     }
   }
@@ -371,7 +379,9 @@ export async function updatePanel() {
   // Executives — kick off async fetch, re-render on completion to show COO training warning
   if (!STATE.executives.loaded && !STATE.executives.loading) {
     loadExecutivesOnce()
-      .then(() => updatePanel())
+      .then((loaded) => {
+        if (loaded) updatePanel();
+      })
       .catch(() => {});
   }
 

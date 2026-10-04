@@ -3,6 +3,7 @@ import { request } from "./data/apiClient.js";
 import { readExecutivePageIdentity } from "./page/executive_page.js";
 
 const EXECUTIVES_TTL_MS = 5 * 60 * 1000;
+const EXECUTIVES_ERROR_RETRY_MS = 30 * 1000;
 
 export const ROLE_POSITION_MAP = { coo: "o", cfo: "f", cmo: "m", cto: "t" };
 const POSITION_ROLE_MAP = { o: "coo", f: "cfo", m: "cmo", t: "cto" };
@@ -10,16 +11,31 @@ const POSITION_ROLE_MAP = { o: "coo", f: "cfo", m: "cmo", t: "cto" };
 const TRAINING_CODE_TO_SKILL_KEY = { o: "mgmt", f: "acct", m: "comm", t: "tech" };
 const EXECUTIVE_ROLE_KEYS = ["coo", "cfo", "cmo", "cto"];
 
+/**
+ * Load the company executives into STATE.executives.
+ * @returns {Promise<boolean>} true only when this call stored fresh data. Callers
+ * that re-render on completion must check it: re-rendering after a skipped or
+ * failed load calls this again straight away, and while the game API is in
+ * cooldown that fails instantly, so the loop never yields and freezes the tab.
+ */
 export async function loadExecutivesOnce({ force = false } = {}) {
-  if (STATE.executives.loading) return;
+  if (STATE.executives.loading) return false;
   if (!force && STATE.executives.loaded && Date.now() - STATE.executives.lastRefreshAt < EXECUTIVES_TTL_MS)
-    return;
+    return false;
+  // Back off after a failure instead of hammering the API on every render.
+  if (
+    !force &&
+    STATE.executives.error &&
+    Date.now() - Number(STATE.executives.errorAt || 0) < EXECUTIVES_ERROR_RETRY_MS
+  )
+    return false;
 
   const companyId = STATE.auth?.companyId;
-  if (!companyId) return;
+  if (!companyId) return false;
 
   STATE.executives.loading = true;
   STATE.executives.error = null;
+  STATE.executives.errorAt = 0;
 
   try {
     const data = await request("executives", {
@@ -33,8 +49,11 @@ export async function loadExecutivesOnce({ force = false } = {}) {
     STATE.executives.items = Array.isArray(data?.executives) ? data.executives : [];
     STATE.executives.loaded = true;
     STATE.executives.lastRefreshAt = Date.now();
+    return true;
   } catch (e) {
     STATE.executives.error = String(e?.message || e);
+    STATE.executives.errorAt = Date.now();
+    return false;
   } finally {
     STATE.executives.loading = false;
   }

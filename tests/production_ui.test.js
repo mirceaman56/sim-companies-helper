@@ -128,6 +128,33 @@ describe("production_ui busy production sync", () => {
     expect(sectionEl.innerHTML).not.toContain(">active<");
   });
 
+  it("does not re-render in a loop when executives cannot load (issue #163)", async () => {
+    document.body.innerHTML = loadFixture("busy-block.html");
+
+    const { STATE } = await import("../src/state.js");
+    const executives = await import("../src/executives.js");
+    STATE.executives.loaded = false;
+    // Rate-limited: every load is skipped or fails instantly.
+    executives.loadExecutivesOnce.mockResolvedValue(false);
+
+    const { setupProductionRowListeners } = await import("../src/production_ui.js");
+    setupProductionRowListeners();
+
+    vi.advanceTimersByTime(300);
+    await flush();
+    // Listeners from earlier tests share these mocks, so check the counts stop
+    // growing rather than their exact values.
+    const analyzeCalls = analyzeProduction.mock.calls.length;
+    const loadCalls = executives.loadExecutivesOnce.mock.calls.length;
+    expect(analyzeCalls).toBeGreaterThan(0);
+
+    await flush();
+    await flush();
+
+    expect(analyzeProduction).toHaveBeenCalledTimes(analyzeCalls);
+    expect(executives.loadExecutivesOnce).toHaveBeenCalledTimes(loadCalls);
+  });
+
   it("reports the missing cost instead of estimating one", async () => {
     document.body.innerHTML = loadFixture("idle-block-rates.html");
 
