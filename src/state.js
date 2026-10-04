@@ -138,6 +138,15 @@ export const STATE = {
     lastRefreshAt: 0, // ms epoch
   },
 
+  // bonds (accounting widget, loaded once per page load)
+  bonds: {
+    loaded: false,
+    loading: false,
+    error: null,
+    owned: [],
+    sold: [],
+  },
+
   // level info (from auth-data)
   levelInfo: {
     level: null,

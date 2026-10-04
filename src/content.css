@@ -5,6 +5,7 @@
 @import "./styles/layout/sidebar.css";
 @import "./styles/components/copy-button.css";
 @import "./styles/components/toast.css";
+@import "./styles/components/nav-chip.css";
 @import "./styles/features/chat-filter.css";
 @import "./styles/features/sidebar-footer.css";
 @import "./styles/features/api-health.css";
@@ -17,6 +18,5 @@
 @import "./styles/features/market-alerts.css";
 @import "./styles/features/chat-alerts.css";
 @import "./styles/features/finance-dashboard.css";
-@import "./styles/features/xp.css";
 @import "./styles/features/recipe-extractor.css";
 @import "./styles/features/whats-new.css";

@@ -12,6 +12,7 @@ import { initContractHelper } from "./contract_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
 import { initXpWidget } from "./xp_ui.js";
+import { initAccountingWidget } from "./accounting_ui.js";
 import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
 
@@ -59,6 +60,7 @@ export function bootstrapFeatureRegistry() {
   initWarehouseHelper();
   initUpgradeBuyMessage();
   initXpWidget();
+  initAccountingWidget();
   initExecutiveHelper();
 
   // Attach listeners before users can interact with production rows.

@@ -8,6 +8,7 @@ const { callOrder, mockState } = vi.hoisted(() => ({
     inventory: { error: null },
     cashflow: { error: null },
     buildings: { error: null },
+    bonds: { error: null },
   },
 }));
 
@@ -38,6 +39,21 @@ vi.mock("../src/buildings.js", () => ({
 vi.mock("../src/xp_ui.js", () => ({
   updateXpWidget: vi.fn(() => {
     callOrder.push("xp-widget");
+  }),
+}));
+vi.mock("../src/accounting_ui.js", () => ({
+  updateAccountingWidget: vi.fn(() => {
+    callOrder.push("accounting-widget");
+  }),
+}));
+vi.mock("../src/executives.js", () => ({
+  loadExecutivesOnce: vi.fn(async () => {
+    callOrder.push("executives");
+  }),
+}));
+vi.mock("../src/bonds.js", () => ({
+  loadBondsOnce: vi.fn(async () => {
+    callOrder.push("bonds");
   }),
 }));
 vi.mock("../src/market_ui.js", () => ({
@@ -81,6 +97,7 @@ describe("runStartupServices", () => {
     mockState.inventory.error = null;
     mockState.cashflow.error = null;
     mockState.buildings.error = null;
+    mockState.bonds.error = null;
   });
 
   it("runs startup phases in order and wires post-start actions", async () => {
@@ -93,6 +110,9 @@ describe("runStartupServices", () => {
       "cashflow",
       "buildings",
       "xp-widget",
+      "executives",
+      "bonds",
+      "accounting-widget",
       "market-alerts",
       "cashflow-panel",
       "schedule-update",

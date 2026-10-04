@@ -3,7 +3,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { findXpLevelAnchor, readXpNavbarContext } from "../src/page/xp_page.js";
+import {
+  findXpLevelAnchor,
+  findXpLevelTextElement,
+  readXpLevelPercent,
+  readXpNavbarContext,
+} from "../src/page/xp_page.js";
 
 function loadFixture(name) {
   return readFileSync(join(process.cwd(), "tests", "fixtures", "xp", name), "utf8");
@@ -37,5 +42,17 @@ describe("xp_page adapter", () => {
     expect(context).not.toBeNull();
     expect(context.levelAnchor.getAttribute("href")).toContain("/levels/");
     expect(context.hostEl.dataset.testid).toBe("levels-host");
+  });
+
+  it("reads the level text element and percentage", () => {
+    document.body.innerHTML = loadFixture("navbar.html");
+    expect(findXpLevelTextElement(document)?.textContent).toBe("Lv. 20 (82%)");
+    expect(readXpLevelPercent(document)).toBe(82);
+  });
+
+  it("returns null percentage when the label has none", () => {
+    document.body.innerHTML = loadFixture("fallback-navbar.html");
+    expect(readXpLevelPercent(document)).toBeNull();
+    expect(findXpLevelTextElement(document)).toBeNull();
   });
 });

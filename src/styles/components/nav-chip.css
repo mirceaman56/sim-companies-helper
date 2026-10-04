@@ -1,0 +1,302 @@
+/* ── Navbar chips + detail popovers (cash / level bars) ──
+   A chip overlays the right end of a game navbar bar with no layout footprint;
+   clicking it opens a card-style popover anchored under the bar. */
+.scx-navchip-host {
+  position: relative;
+}
+
+/* Wrapper is not positioned: chip + popover anchor to .scx-navchip-host. */
+.scx-navchip-widget {
+  display: contents;
+}
+
+/* Sized to fit inside the ~17px-tall navbar bars. */
+.scx-navchip {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--scx-spacing-xs) / 2);
+  transform: translateY(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--scx-spacing-xs) / 2);
+  margin: 0;
+  padding: 0 var(--scx-spacing-xs);
+  border: none;
+  border-radius: var(--scx-border-radius-full);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.scx-navchip--icon-only .scx-navchip-amount {
+  display: none;
+}
+
+.scx-navchip:focus-visible {
+  outline: none;
+  box-shadow: var(--scx-focus-ring-brand-strong);
+}
+
+.scx-navchip:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.scx-navchip--ok {
+  background: var(--scx-tone-success-bg);
+  color: var(--scx-tone-success-fg);
+}
+
+.scx-navchip--warn {
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-text);
+}
+
+.scx-navchip--info {
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+}
+
+.scx-navchip--loading {
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-muted);
+  cursor: default;
+}
+
+/* Popover — below the bar, right-aligned, above other navbar widgets. */
+.scx-navpop {
+  position: absolute;
+  top: calc(100% + var(--scx-spacing-xs));
+  right: 0;
+  z-index: 10010;
+  box-sizing: border-box;
+  width: 300px;
+  max-width: calc(100vw - var(--scx-spacing-lg));
+  padding: var(--scx-spacing-md);
+  background: var(--scx-bg-primary);
+  border: var(--scx-border-medium);
+  border-radius: var(--scx-border-radius-lg);
+  box-shadow: var(--scx-shadow-popover);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  line-height: 1.4;
+  color: var(--scx-text-primary);
+  text-align: left;
+  cursor: default;
+}
+
+.scx-navpop--align-left {
+  right: auto;
+  left: 0;
+}
+
+.scx-navpop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--scx-spacing-sm);
+  margin-bottom: var(--scx-spacing-sm);
+}
+
+.scx-navpop-head-end {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--scx-spacing-xs);
+}
+
+.scx-navpop-desc {
+  margin: 0 0 var(--scx-spacing-sm);
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+}
+
+.scx-navpop-title {
+  font-size: var(--scx-font-size-base);
+  font-weight: var(--scx-font-weight-bold);
+  text-transform: uppercase;
+  color: var(--scx-text-primary);
+}
+
+.scx-navpop-badge {
+  padding: 1px var(--scx-spacing-sm);
+  border: 1px solid transparent;
+  border-radius: var(--scx-border-radius-full);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  white-space: nowrap;
+}
+
+.scx-navpop-badge--ok {
+  background: var(--scx-tone-success-bg);
+  color: var(--scx-tone-success-fg);
+  border-color: var(--scx-tone-success-border);
+}
+
+.scx-navpop-badge--warn {
+  background: var(--scx-tone-warning-bg);
+  color: var(--scx-tone-warning-text);
+  border-color: var(--scx-tone-warning-border);
+}
+
+.scx-navpop-badge--info {
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  border-color: var(--scx-tone-info-border);
+}
+
+/* Small icon button in the popover header (e.g. refresh). */
+.scx-navpop-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: var(--scx-border-light);
+  border-radius: var(--scx-border-radius-full);
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-secondary);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.scx-navpop-action:hover:not(:disabled) {
+  color: var(--scx-text-primary);
+  background: var(--scx-bg-muted);
+}
+
+.scx-navpop-action:focus-visible {
+  outline: none;
+  box-shadow: var(--scx-focus-ring-brand-strong);
+}
+
+.scx-navpop-action:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Gauge with caption. */
+.scx-navpop-gauge {
+  margin-bottom: var(--scx-spacing-sm);
+}
+
+.scx-navpop-gauge-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--scx-spacing-sm);
+  margin-bottom: var(--scx-spacing-xs);
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-secondary);
+}
+
+.scx-navpop-meter {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border: none;
+  border-radius: var(--scx-border-radius-full);
+  overflow: hidden;
+  appearance: none;
+  background: var(--scx-bg-muted);
+}
+
+.scx-navpop-meter::-webkit-progress-bar {
+  background: var(--scx-bg-muted);
+  border-radius: var(--scx-border-radius-full);
+}
+
+.scx-navpop-meter::-webkit-progress-value {
+  border-radius: var(--scx-border-radius-full);
+}
+
+.scx-navpop-meter--ok::-webkit-progress-value {
+  background: var(--scx-color-success);
+}
+
+.scx-navpop-meter--warn::-webkit-progress-value {
+  background: var(--scx-color-warning);
+}
+
+.scx-navpop-meter--info::-webkit-progress-value {
+  background: var(--scx-color-info);
+}
+
+/* Breakdown lines: sign column + label + right-aligned value. */
+.scx-navpop-lines {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--scx-spacing-xs) / 2);
+  padding: var(--scx-spacing-sm) 0;
+  border-top: var(--scx-border-light);
+}
+
+.scx-navpop-lines:last-child {
+  padding-bottom: 0;
+}
+
+.scx-navpop-line {
+  display: grid;
+  grid-template-columns: 1.5ch 1fr auto;
+  align-items: baseline;
+  column-gap: var(--scx-spacing-xs);
+}
+
+.scx-navpop-sign {
+  color: var(--scx-text-muted);
+  text-align: center;
+}
+
+.scx-navpop-label {
+  color: var(--scx-text-secondary);
+  min-width: 0;
+}
+
+.scx-navpop-sub {
+  display: block;
+  font-size: var(--scx-font-size-xs);
+  color: var(--scx-text-muted);
+}
+
+.scx-navpop-value {
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-primary);
+  white-space: nowrap;
+}
+
+.scx-navpop-line--total {
+  margin-top: calc(var(--scx-spacing-xs) / 2);
+  padding-top: var(--scx-spacing-xs);
+  border-top: var(--scx-border-light);
+}
+
+.scx-navpop-line--total .scx-navpop-label,
+.scx-navpop-line--total .scx-navpop-value {
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-text-primary);
+}
+
+.scx-navpop-line--muted .scx-navpop-label,
+.scx-navpop-line--muted .scx-navpop-value {
+  color: var(--scx-text-muted);
+  font-weight: var(--scx-font-weight-normal);
+}
+
+.scx-navpop-line--ok .scx-navpop-value {
+  color: var(--scx-tone-success-text);
+}
+
+.scx-navpop-line--warn .scx-navpop-value {
+  color: var(--scx-tone-error-text);
+}
+
+.scx-navpop-note {
+  margin-top: var(--scx-spacing-sm);
+  font-size: var(--scx-font-size-xs);
+  font-style: italic;
+  color: var(--scx-text-muted);
+}

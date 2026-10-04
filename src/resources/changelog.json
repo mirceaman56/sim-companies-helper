@@ -1,6 +1,29 @@
 {
-  "generatedAt": "2026-10-04T07:02:03.099Z",
+  "generatedAt": "2026-10-04T11:16:00.993Z",
   "versions": [
+    {
+      "version": "0.29.7",
+      "date": "2026-10-04",
+      "entries": [
+        {
+          "cat": "fix",
+          "pr": 165,
+          "text": "Fix tab freeze when API is rate limited after realm switch"
+        },
+        {
+          "cat": "other",
+          "pr": 166,
+          "text": "Chore/changelog backfill 0.29.6"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "iLuHa91",
+          "role": "reporter",
+          "url": "https://github.com/iLuHa91"
+        }
+      ]
+    },
     {
       "version": "0.29.6",
       "date": "2026-10-03",

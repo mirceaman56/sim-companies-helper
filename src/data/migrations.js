@@ -5,13 +5,13 @@ const MIN_DOMAIN_VERSION = {
   "buildings-cache": 1,
   "market-alerts": 1,
   "whats-new": 1,
-  "xp-widget-visible": 1,
+  "xp-widget-visible": 2,
   "contract-discount": 1,
   "upgrade-discount": 1,
   "upgrade-multiplier": 1,
 };
 
-const LEGACY_GLOBAL_KEYS = ["scx-buildings", "scx-buildings-ts"];
+const LEGACY_GLOBAL_KEYS = ["scx-buildings", "scx-buildings-ts", "scx-xp-widget-visible"];
 
 let migrationsRan = false;
 

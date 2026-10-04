@@ -6,6 +6,9 @@ import { loadCashflowToday } from "./cashflow.js";
 import { loadBuildings, cleanupLegacyBuildingsCache } from "./buildings.js";
 import { initMarketAlerts } from "./market_ui.js";
 import { updateXpWidget } from "./xp_ui.js";
+import { updateAccountingWidget } from "./accounting_ui.js";
+import { loadExecutivesOnce } from "./executives.js";
+import { loadBondsOnce } from "./bonds.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updatePanel as updateRetailPanel, RetailHelper } from "./retail_ui.js";
 import { scheduleUpdate, runSafe } from "./utils.js";
@@ -42,6 +45,13 @@ export async function runStartupServices(options = {}) {
     }
 
     updateXpWidget();
+
+    // Accounting widget inputs: fetched once per page load, no polling.
+    await Promise.all([loadExecutivesOnce(), loadBondsOnce()]);
+    if (state.bonds.error) {
+      warn("[SimHelper] Bonds failed:", state.bonds.error);
+    }
+    updateAccountingWidget();
   } catch (e) {
     error("[SimHelper] Critical initialization failure:", e);
   }

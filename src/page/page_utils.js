@@ -39,6 +39,18 @@ export function observeDocumentBody(onChange, input = {}) {
 }
 
 /**
+ * Last leaf element under `root` whose text contains a digit — the element
+ * that renders the trailing part of a numeric label (e.g. "$1,329,520", "24 (1%)").
+ * @param {Element | null | undefined} root
+ * @returns {Element | null}
+ */
+export function findLastDigitLeaf(root) {
+  if (!isElement(root)) return null;
+  const leaves = [...root.querySelectorAll("*")].filter((el) => el.children.length === 0);
+  return leaves.reverse().find((el) => /\d/.test(el.textContent || "")) || null;
+}
+
+/**
  * Find the closest ancestor that matches a predicate within a bounded depth.
  * @param {EventTarget | null | undefined} target
  * @param {(el: Element) => boolean} predicate
