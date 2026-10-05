@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Soutenir via PayPal",
   supportOnKofi: "Assistance via Ko-fi",
   reportBug: "Signaler un Bug",
+  suggestFeature: "Suggérer une fonctionnalité",
   hideSidebar: "Masquer le panneau",
   showSidebar: "Afficher le panneau",
   ensureProductionQuantity:

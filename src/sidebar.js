@@ -193,20 +193,31 @@ export function ensureFooter() {
   // 1. Combined support card (PayPal + Ko-fi)
   ensureSupportCard(container);
 
-  // 2. Bug Report Button
-  const bugUrl =
-    "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=%5BBug%5D%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
+  // 2. Combined feedback card (bug report + feature request)
+  ensureFeedbackCard(container);
+}
 
-  ensureFooterButton(
-    container,
-    "scx-sidebar-footer-bug",
-    bugUrl,
-    `
-      <div class="scx-sidebar-footer-title">
-         <span class="scx-sidebar-footer-bug-icon">🐛</span> ${t("reportBug")}
-      </div>
-    `,
-  );
+const BUG_REPORT_URL =
+  "https://github.com/mirceaman56/sim-companies-helper/issues/new?title=%5BBUG%5D%20Short%20summary&body=%23%23%20Describe%20the%20bug%0AClear%20description%20of%20the%20problem.%0A%0A%23%23%20Steps%20to%20reproduce%0A1.%20Go%20to%20...%0A2.%20Click%20...%0A3.%20Observe%20error%0A%0A%23%23%20Expected%20behavior%0AWhat%20you%20expected%20to%20happen.%0A%0A%23%23%20Actual%20behavior%0AWhat%20actually%20happened.%0A%0A%23%23%20Code%20location%20(if%20known)%0AFile%3A%20...%0ALine%3A%20...%0A%0A%23%23%20Environment%0A-%20Browser%3A%20...%0A-%20Extension%20version%3A%20...";
+
+// why: most players filing ideas are not developers, so the template asks
+// plain questions instead of user-story / acceptance-criteria jargon.
+const FEATURE_REQUEST_BODY = `## What would you like the extension to do?
+Describe your idea in your own words.
+
+## How would it help you?
+What would it make easier, faster or clearer in the game?
+
+## Where in the game?
+Which page or screen (e.g. warehouse, market, contracts, production, retail).
+
+## Anything else? (optional)
+Screenshots, examples or a rough sketch are welcome.`;
+
+function buildFeatureRequestUrl() {
+  const title = encodeURIComponent("[FEATURE] Short summary of your idea");
+  const body = encodeURIComponent(FEATURE_REQUEST_BODY);
+  return `https://github.com/mirceaman56/sim-companies-helper/issues/new?title=${title}&body=${body}`;
 }
 
 function ensureSupportCard(container) {
@@ -233,18 +244,20 @@ function ensureSupportCard(container) {
   container.appendChild(card);
 }
 
-function ensureFooterButton(container, className, href, innerHtml) {
-  if (container.querySelector(`.${className}`)) return;
+function ensureFeedbackCard(container) {
+  if (container.querySelector(".scx-sidebar-footer-feedback")) return;
 
-  const btn = document.createElement("div");
-  btn.className = className;
-
-  btn.innerHTML = `
-    <a href="${href}" target="_blank" rel="noreferrer" class="scx-sidebar-footer-link">
-      ${innerHtml}
+  const card = document.createElement("div");
+  card.className = "scx-sidebar-footer-feedback";
+  card.innerHTML = `
+    <a href="${BUG_REPORT_URL}" target="_blank" rel="noreferrer" class="scx-sidebar-footer-support-btn scx-sidebar-footer-feedback-link">
+      <span class="scx-sidebar-footer-bug-icon">🐛</span> ${t("reportBug")}
+    </a>
+    <a href="${buildFeatureRequestUrl()}" target="_blank" rel="noreferrer" class="scx-sidebar-footer-support-btn scx-sidebar-footer-feedback-link">
+      <span class="scx-sidebar-footer-feature-icon">💡</span> ${t("suggestFeature")}
     </a>
   `;
-  container.appendChild(btn);
+  container.appendChild(card);
 }
 
 export function getSectionContent(sectionId) {

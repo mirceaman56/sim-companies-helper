@@ -58,6 +58,7 @@ export default {
   supportTheDev: "透過PayPal支持",
   supportOnKofi: "透過 Ko-fi 支持",
   reportBug: "報告錯誤",
+  suggestFeature: "建議新功能",
   hideSidebar: "隱藏側邊欄",
   showSidebar: "顯示側邊欄",
   ensureProductionQuantity: "確保選擇了生產商品並填入其數量",

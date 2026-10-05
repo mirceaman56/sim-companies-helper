@@ -58,6 +58,7 @@ export default {
   supportTheDev: "PayPal ile destek ol",
   supportOnKofi: "Ko-fi aracılığıyla destek",
   reportBug: "Hata Bildir",
+  suggestFeature: "Özellik öner",
   hideSidebar: "Paneli gizle",
   showSidebar: "Paneli göster",
   ensureProductionQuantity: "Bir üretim malının seçildiğinden ve miktarının doldurulduğundan emin olun",

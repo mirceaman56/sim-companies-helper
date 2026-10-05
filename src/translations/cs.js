@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Podpořit přes PayPal",
   supportOnKofi: "Podpora přes Ko-fi",
   reportBug: "Hlásit chybu",
+  suggestFeature: "Navrhnout funkci",
   hideSidebar: "Skrýt panel",
   showSidebar: "Zobrazit panel",
   ensureProductionQuantity: "Ujistěte se, že jste vybrali výrobní zboží a zadali jeho množství",
