@@ -36,6 +36,7 @@ import {
   refreshContractRulesPanel,
 } from "./contract_rules_ui.js";
 import { normalizeFixedPrice, PRICE_MODE_FIXED, PRICE_MODE_PERCENT } from "./contract_rules_state.js";
+import { renderContractTabs, TAB_PRICE, TAB_RULES, wireContractTabs } from "./contract_tabs.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
@@ -341,11 +342,7 @@ function injectIfNeeded() {
   container.id = CONTAINER_ID;
   container.className = "scx-sidebar-footer-contract scx-contract-helper";
 
-  container.innerHTML = `
-    <div class="scx-contract-title">
-      <span class="scx-contract-title-icon">📝</span>
-      <span>${t("contractApplyTooltip")}</span>
-    </div>
+  const priceHtml = `
     <div class="scx-contract-mode" role="group" aria-label="${t("contractPriceModeLabel")}">
       <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_PERCENT}">${t("contractModePercent")}</button>
       <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_FIXED}">${t("contractModeFixed")}</button>
@@ -394,8 +391,13 @@ function injectIfNeeded() {
       <div id="${PROFIT_RESULT_ID}" class="scx-contract-profit-result scx-contract-profit-hidden"></div>
     </div>
   `;
+  container.innerHTML = renderContractTabs(t, { priceHtml, rulesHtml: "" });
+  wireContractTabs(container);
 
-  mountContractRulesPanel(container);
+  mountContractRulesPanel(
+    container.querySelector(`[data-scx-tabpanel="${TAB_RULES}"]`),
+    container.querySelector(`[data-scx-tabpanel="${TAB_PRICE}"]`),
+  );
 
   // Append to sidebar — appears after the existing footer buttons
   sidebar.appendChild(container);

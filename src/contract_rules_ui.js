@@ -37,6 +37,7 @@ import {
 } from "./contract_rules_state.js";
 import { loadRulesSnapshot, saveRulesSnapshot } from "./contract_rules_storage.js";
 import { renderNoCompanySelectedState, renderRulesPanel } from "./contract_rules_render.js";
+import { syncContractTabs } from "./contract_tabs.js";
 
 // Must match the discount input's id in contract_ui.js's widget markup.
 const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
@@ -44,6 +45,7 @@ const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
 export const FIXED_PRICE_INPUT_ID = "scx-contract-fixed-price-input";
 export const PRICE_MODE_SELECTOR = "[data-scx-price-mode]";
 const PANEL_ID = "scx-contract-rules-panel";
+const SAVE_FORM_ID = "scx-contract-rule-save";
 
 let rules = [];
 let nextRuleId = 1;
@@ -118,18 +120,33 @@ export async function initContractRulesState() {
 }
 
 /**
- * Create (or find) the rules sub-panel inside the given widget container.
- * @param {HTMLElement} parentContainer
+ * @param {HTMLElement} parent
+ * @param {string} id
+ * @param {string} className
  * @returns {HTMLElement}
  */
-export function mountContractRulesPanel(parentContainer) {
-  let panel = parentContainer.querySelector(`#${PANEL_ID}`);
-  if (!panel) {
-    panel = document.createElement("div");
-    panel.id = PANEL_ID;
-    panel.className = "scx-contract-rules-panel";
-    parentContainer.appendChild(panel);
+function ensureChild(parent, id, className) {
+  let el = parent.querySelector(`#${id}`);
+  if (!el) {
+    el = document.createElement("div");
+    el.id = id;
+    el.className = className;
+    parent.appendChild(el);
   }
+  return el;
+}
+
+/**
+ * Create (or find) the saved-rules list and the "save current values" form.
+ * The form sits next to the price controls it captures, so it can live in a
+ * different parent than the list.
+ * @param {HTMLElement} listParent
+ * @param {HTMLElement} [saveParent]
+ * @returns {HTMLElement} The list panel.
+ */
+export function mountContractRulesPanel(listParent, saveParent = listParent) {
+  const panel = ensureChild(listParent, PANEL_ID, "scx-contract-rules-panel");
+  ensureChild(saveParent, SAVE_FORM_ID, "scx-contract-rules-save");
   return panel;
 }
 
@@ -239,14 +256,21 @@ function handleRuleAction(action, ruleId) {
   if (action === "remove") void removeRule(ruleId);
 }
 
-function renderState(panel, productId, companyName, canSave) {
+function renderState(panel, saveContainer, productId, companyName, canSave) {
   if (!companyName) {
     // Every rule for this product stays visible (and deletable) before a
     // company is picked, so a saved rule is never out of sight.
+    const productRules = findRulesForProduct(rules, productId);
+    syncContractTabs(document, {
+      contextKey: `${productId}:`,
+      ruleCount: productRules.length,
+      applicableRuleCount: 0,
+    });
     renderNoCompanySelectedState({
       container: panel,
+      saveContainer,
       t,
-      rules: findRulesForProduct(rules, productId),
+      rules: productRules,
       formatMoney,
       status: persistStatus,
       onAction: handleRuleAction,
@@ -254,9 +278,16 @@ function renderState(panel, productId, companyName, canSave) {
     return;
   }
 
+  const companyRules = findRulesForProductAndCompany(rules, productId, companyName);
+  syncContractTabs(document, {
+    contextKey: `${productId}:${companyName}`,
+    ruleCount: companyRules.length,
+    applicableRuleCount: companyRules.length,
+  });
   renderRulesPanel({
     container: panel,
-    rules: findRulesForProductAndCompany(rules, productId, companyName),
+    saveContainer,
+    rules: companyRules,
     t,
     formatMoney,
     maxPerCustomer: CONTRACT_RULE_MAX_PER_CUSTOMER,
@@ -293,7 +324,7 @@ export function refreshContractRulesPanel(root = document) {
   lastRenderedKey = key;
   lastRenderedPanel = panel;
 
-  renderState(panel, productId, companyName, canSave);
+  renderState(panel, root.querySelector(`#${SAVE_FORM_ID}`), productId, companyName, canSave);
 }
 
 export const _testUtils = {

@@ -91,6 +91,32 @@ describe("contract_rules_ui", () => {
     expect(document.querySelector('[data-rule-id="1"]')).not.toBeNull();
   });
 
+  it("renders the save form in its own parent, apart from the rules list", async () => {
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+    const listParent = document.createElement("div");
+    const saveParent = document.createElement("div");
+    document.body.append(listParent, saveParent);
+    mountContractRulesPanel(listParent, saveParent);
+
+    refreshContractRulesPanel(document);
+
+    expect(saveParent.querySelector(".scx-contract-rules-save-btn")).not.toBeNull();
+    expect(listParent.querySelector(".scx-contract-rules-save-btn")).toBeNull();
+    expect(listParent.querySelector(".scx-contract-rules-empty")?.textContent).toBe("contractRuleNoMatch");
+  });
+
+  it("shows the select-company hint where the save form sits before a company is picked", async () => {
+    document.body.innerHTML = loadFixture("beneficiary-not-selected.html");
+    const listParent = document.createElement("div");
+    const saveParent = document.createElement("div");
+    document.body.append(listParent, saveParent);
+    mountContractRulesPanel(listParent, saveParent);
+
+    refreshContractRulesPanel(document);
+
+    expect(saveParent.textContent.trim()).toBe("contractRuleSelectCompanyHint");
+  });
+
   it("shows the save-current prompt when no rule matches the product+company", async () => {
     document.body.innerHTML = loadFixture("beneficiary-selected.html");
     mountPanel();

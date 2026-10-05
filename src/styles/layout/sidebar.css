@@ -1,12 +1,21 @@
 /* ============ Sidebar Container & Sections ============ */
 #scx-sidebar {
   position: fixed;
-  right: 10px;
-  top: 10px;
+  right: 4px;
+  top: 6px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: flex-end;
+  /* Contextual widgets append to the bottom and pushed the column past short
+     viewports. The padding keeps hover shadows and lifts inside the clip box. */
+  box-sizing: border-box;
+  max-height: calc(100vh - 12px);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding: 4px 6px 8px;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
   z-index: 10000;
   font-family: var(--scx-font-family);
   font-size: 12px;
