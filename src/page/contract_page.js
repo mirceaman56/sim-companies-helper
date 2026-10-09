@@ -8,14 +8,40 @@ const ENCYCLOPEDIA_LINK_SELECTOR = 'a[href*="encyclopedia"]';
 const TRANSPORT_IMAGE_SELECTOR = 'img[src*="transport"]';
 const RECIPIENT_LOOKUP_SELECTOR = 'input[name="recipientLookup"]';
 
+/** Markup injected by this extension (navbar chips, popovers, sidebar) must never be parsed as game data. */
+const EXTENSION_MARKUP_SELECTOR = '[id^="scx-"], [class*="scx-"]';
+
+function isExtensionMarkup(element) {
+  return Boolean(element?.closest?.(EXTENSION_MARKUP_SELECTOR));
+}
+
+/** Game "$..." spans inside `container`, excluding extension markup. */
+function currencySpans(container) {
+  return Array.from(container.querySelectorAll("span")).filter(
+    (span) => span.textContent.trim().startsWith("$") && !isExtensionMarkup(span),
+  );
+}
+
+/**
+ * Smallest ancestor of the contract price input that also holds the resource card (encyclopedia
+ * link). Searches are limited to it so links/prices elsewhere on the page (navbar cash, menus)
+ * are never picked up.
+ */
+function findContractScope(root = document) {
+  const boundary = root?.body || root;
+  for (let el = findContractPriceInput(root)?.parentElement || null; el; el = el.parentElement) {
+    if (el.querySelector(ENCYCLOPEDIA_LINK_SELECTOR)) return el;
+    if (el === boundary) break;
+  }
+  return boundary;
+}
+
 function findNearestCurrencyContainer(element, root = document) {
   const boundary = root?.body || root;
 
   for (let ancestor = element?.parentElement || null; ancestor; ancestor = ancestor.parentElement) {
     if (ancestor.tagName === "DIV") {
-      const hasCurrencySpan = Array.from(ancestor.querySelectorAll("span")).some((span) =>
-        span.textContent.trim().startsWith("$"),
-      );
+      const hasCurrencySpan = currencySpans(ancestor).length > 0;
 
       if (hasCurrencySpan) return ancestor;
     }
@@ -49,12 +75,8 @@ export function getContractProductId(root = document) {
   return match ? Number(match[1]) : null;
 }
 
-/**
- * The beneficiary section is always the first <h3>'s next sibling inside the
- * contract form. This is a structural assumption (not text-based, since the
- * game's own UI is localized independently of this extension) that would
- * break if the game reorders the form's sections.
- */
+// why: structural, not text (the game UI is localized): the beneficiary section is the first
+// <h3>'s next sibling in the form. Breaks if the game reorders the form.
 function findBeneficiarySection(root = document) {
   const form = findContractPriceInput(root)?.closest("form");
   return form?.querySelector("h3")?.nextElementSibling || null;
@@ -138,17 +160,16 @@ export function getLowestSellerPrice(root = document) {
 }
 
 export function getSourcingCostPerUnit(root = document) {
-  const encyclopediaLinks = root?.querySelectorAll?.(ENCYCLOPEDIA_LINK_SELECTOR) || [];
+  const scope = findContractScope(root);
+  const encyclopediaLinks = scope?.querySelectorAll?.(ENCYCLOPEDIA_LINK_SELECTOR) || [];
 
   for (const link of encyclopediaLinks) {
-    const container = findNearestCurrencyContainer(link, root);
+    if (isExtensionMarkup(link)) continue;
+    const container = findNearestCurrencyContainer(link, scope);
     if (!container) continue;
 
-    const spans = container.querySelectorAll("span");
-    for (const span of spans) {
+    for (const span of currencySpans(container)) {
       const text = span.textContent.trim();
-      if (!text.startsWith("$")) continue;
-
       const value = parseContractPrice(text.slice(1));
       if (Number.isFinite(value) && value > 0) return value;
     }
@@ -158,7 +179,7 @@ export function getSourcingCostPerUnit(root = document) {
 }
 
 export function getTransportCount(root = document) {
-  const transportImages = root?.querySelectorAll?.(TRANSPORT_IMAGE_SELECTOR) || [];
+  const transportImages = findContractScope(root)?.querySelectorAll?.(TRANSPORT_IMAGE_SELECTOR) || [];
 
   for (const image of transportImages) {
     const container = image.parentElement;

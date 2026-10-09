@@ -1,12 +1,8 @@
 // Pure helpers for building src/resources/changelog.json.
 // Kept free of I/O so tests/changelog_build.test.js can cover them directly.
 
-/**
- * Label -> category id. Mirrors the category blocks in .github/release.yml,
- * which are themselves driven by .github/labeler.yml (branch prefix -> label).
- * Categories are rendered client-side through t(), so the ids stay stable and
- * language-free here.
- */
+// PR label -> category id; mirrors .github/release.yml. Ids are language-free, the client
+// translates them.
 export const CATEGORY_BY_LABEL = {
   bug: "fix",
   fix: "fix",
@@ -67,13 +63,8 @@ export function categoryFromHeading(heading) {
 }
 
 /**
- * Turns a raw PR title (or a GitHub-generated release bullet) into the string
- * players read. Returns null when the line carries no user-facing meaning.
- *
- * Strips, in order: markdown links, raw URLs, "by @user in ...", the trailing
- * PR reference (captured as `pr`), and issue references like "(Fixes #155)" —
- * the old scraper left those in as a naked "(Fixes 155)".
- *
+ * PR title / release bullet -> player-facing text (null when meaningless). Strips links, URLs,
+ * "by @user in ...", the trailing PR ref (returned as `pr`) and "(Fixes #155)".
  * @param {string} raw
  * @returns {{text: string, pr: number|null}|null}
  */
@@ -251,10 +242,8 @@ export function mergeCredits(...lists) {
 }
 
 /**
- * Credits recoverable from a published release body: the "by @user" author on
- * each bullet, the "New Contributors" section, and any @handle the author
- * thanked by hand ("(ty @someone!)"). Used by --seed, where the PR objects are
- * not fetched.
+ * Credits from a release body (--seed has no PR objects): "by @user" authors, "New
+ * Contributors", hand-written thanks ("(ty @someone!)").
  * @param {string} body
  * @param {{includeOwner?: boolean}} [options]
  */

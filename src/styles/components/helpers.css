@@ -118,9 +118,3 @@
   border-radius: var(--scx-border-radius-sm);
   padding: 5px 6px;
 }
-
-.scx-sell-hr {
-  border: none;
-  border-top: var(--scx-border-light);
-  margin: 8px 0;
-}

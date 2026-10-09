@@ -1,21 +1,14 @@
-// production.js
 // Handles recipe data and production cost calculations
 import { fetchMarketPrice } from "./market.js";
 import recipesData from "./resources/recipes.json";
 import { t } from "./i18n.js";
 import { MARKET_FEE, TRANSPORT_RESOURCE_ID } from "./utils.js";
 
-/**
- * Get all recipes
- */
 export function getRecipes() {
   // recipes.json is now a direct array, not wrapped in an object
   return Array.isArray(recipesData) ? recipesData : recipesData.recipes || [];
 }
 
-/**
- * Get a specific recipe by product ID
- */
 export function getRecipeByProductId(productId) {
   const recipes = getRecipes();
   return recipes.find((r) => r.id === productId);
@@ -160,8 +153,7 @@ export async function analyzeProduction(
     product: !marketPriceKnown,
   };
 
-  // Without a real price every break-even and profit figure would be made up
-  // (a $0 price used to show a -100% margin), so those sections are left out.
+  // why: without a real price the break-even/profit figures would be made up, so skip them.
   if (missingPrices.transport) {
     return {
       recipe,
@@ -177,10 +169,8 @@ export async function analyzeProduction(
     };
   }
 
-  // Market needs full transport
   const marketTransportCost = transportNeeded * quantity * effectiveContainerPrice;
 
-  // Contract needs half transport
   const contractTransportCost = (transportNeeded / 2) * quantity * effectiveContainerPrice;
 
   // 4. Calculate Break-even Prices
@@ -210,7 +200,6 @@ export async function analyzeProduction(
     // 5. Profit Analysis (Assuming selling at Market Price)
     const sellRevenue = productMarketPrice * quantity;
 
-    // Market Profit
     const marketRevenueNet = sellRevenue * (1 - MARKET_FEE); // Deduct fee
     const marketProfit = marketRevenueNet - marketTotalCost;
     const marketMargin = marketTotalCost > 0 ? (marketProfit / marketTotalCost) * 100 : 0;

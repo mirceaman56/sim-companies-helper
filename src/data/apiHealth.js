@@ -1,4 +1,3 @@
-// apiHealth.js
 // Shared view of the simcompanies.com rate-limit state for UI modules, persisted
 // in chrome.storage so reloads and other open game tabs see the same cooldown.
 import {

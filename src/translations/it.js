@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Supporta tramite PayPal",
   supportOnKofi: "Supporto tramite Ko-fi",
   reportBug: "Segnala un Bug",
+  suggestFeature: "Suggerisci una funzione",
   hideSidebar: "Nascondi pannello",
   showSidebar: "Mostra pannello",
   ensureProductionQuantity:
@@ -76,12 +77,6 @@ export default {
   breakEvenGt: "Punto di Pareggio >",
   contractSell: "Vendita Contratto",
   halfTransport: "50% trasporto",
-  perUnit: "/unità",
-  cannotCalcProfit: "Impossibile calcolare il profitto - prezzi di mercato mancanti",
-  sellingAnalysis: "Analisi Vendita",
-  grossProceeds: "Ricavi Lordi",
-  marketFee4pct: "Commissione Mercato (4%)",
-  netProceeds: "Ricavi Netti",
   profitMargin: "Margine di Profitto",
   noItemSelected: "Nessun articolo selezionato",
   clickToShowStats: "Fai clic su Quantità o Prezzo per mostrare le statistiche.",
@@ -100,7 +95,6 @@ export default {
   loadingMarketPrices: "Caricamento prezzi mercato...",
   loadingMarketData: "Caricamento dati mercato...",
   marketError: "Errore Mercato",
-  expenses: "Spese",
   total: "Totale",
   retail: "Vedere al dettaglio",
   contracts: "Contratti",
@@ -275,7 +269,6 @@ export default {
   financePeriodCurrent: "Attuale",
   financePeriodDay: "Giorno",
   financePeriodWeek: "Settimana",
-  financePeriodMonth: "Mese",
   financePeriodInfoTitleCurrent: "Periodo: Oggi",
   financePeriodInfoBodyCurrent: "Totali da mezzanotte (ora locale) a ora.",
   financePeriodInfoTitleDay: "Periodo: Giorno",
@@ -428,4 +421,6 @@ export default {
   xpLevelTransition: "Livello {from} → {to}",
   acctExplainer:
     "Costo giornaliero su contanti + obbligazioni oltre il limite, fino al 3%. Le obbligazioni acquistate contano; un CFO migliore o una banca alzano il limite.",
+  copied: "Copiato!",
+  upgradeMultiplier: "Moltiplicatore:",
 };

@@ -1,4 +1,3 @@
-// realm_page.js
 // Reads the active realm from the navbar realm logo. The logo's file path is
 // language-independent; its alt text is translated, so it is not used.
 

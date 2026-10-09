@@ -85,12 +85,12 @@ export function createChatFilterContent({ onAction, onRoomChange, onTabChange, r
         <details class="scx-chat-quality-picker">
           <summary class="scx-chat-quality-summary">
             <span id="${FILTER_QUALITY_LABEL_ID}" class="scx-label">${t("qualityOptional")}</span>
-            <span id="${FILTER_QUALITY_SUMMARY_ID}" class="scx-chip">All</span>
+            <span id="${FILTER_QUALITY_SUMMARY_ID}" class="scx-chip">${t("maAll")}</span>
           </summary>
           <div class="scx-quality-container" id="${FILTER_QUALITY_ID}" aria-labelledby="${FILTER_QUALITY_LABEL_ID}"></div>
         </details>
 
-        <button id="${FILTER_ACTION_ID}" class="scx-btn scx-btn-primary scx-width-full">${t("startSearch")}</button>
+        <button type="button" id="${FILTER_ACTION_ID}" class="scx-btn scx-btn-primary scx-width-full">${t("startSearch")}</button>
       </div>
 
       <div id="${FILTER_STATUS_ID}" class="scx-status"></div>
@@ -277,7 +277,7 @@ export function appendChatResult(container, message, { realmId = 0, recipeIndex 
 
   item.innerHTML = `
     <div class="scx-chat-message-header">
-      <a href="${linkUrl}" class="scx-chat-message-company" target="_blank">${escapeHtml(companyName)}</a>
+      <a href="${linkUrl}" class="scx-chat-message-company" target="_blank" rel="noopener noreferrer">${escapeHtml(companyName)}</a>
       <span>${escapeHtml(timeStr)}</span>
     </div>
     <div class="scx-chat-message-body">${formatChatMessageBody(message?.body, recipeIndex)}</div>

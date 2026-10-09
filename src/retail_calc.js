@@ -1,4 +1,3 @@
-// retail_calc.js
 // Pure calculation and formatting helpers extracted from retail_ui.js
 import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
@@ -96,16 +95,7 @@ export function computeRetailTrends(item) {
 }
 
 /**
- * Compute an opportunity score in the range [-1, 1].
- * Positive = good time to retail; negative = poor conditions.
- *
- * Formula:
- *   score = clamp( priceDelta - satDelta + demandDelta , -1, 1 )
- *
- *   - Rising price (+) increases score
- *   - Rising saturation (+) decreases score (more competition)
- *   - Rising demand (+) increases score
- *
+ * clamp(priceDelta - saturationDelta + demandDelta, -1, 1); positive = good time to retail.
  * @param {{ priceDelta7d: number, satDelta7d: number, demandDelta7d: number }} trends
  * @returns {number}
  */

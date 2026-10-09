@@ -1,8 +1,5 @@
-// accounting_ui.js
-// Accounting-overhead indicator attached to the in-game cash balance in the navbar.
-// A small status chip sits inside the cash bar (check while cash + bonds stay
-// under the free threshold, warning with the estimated daily fee once accounting
-// overhead kicks in). Clicking it opens a breakdown popover.
+// Accounting-overhead chip inside the navbar cash bar: OK under the free threshold, the
+// estimated daily fee above it. Click opens a breakdown popover.
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import { escapeHtml, formatMoney } from "./utils.js";

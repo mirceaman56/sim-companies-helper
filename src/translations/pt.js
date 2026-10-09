@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Apoiar via PayPal",
   supportOnKofi: "Suporte via Ko-fi",
   reportBug: "Reportar um Bug",
+  suggestFeature: "Sugerir uma funcionalidade",
   hideSidebar: "Ocultar painel",
   showSidebar: "Mostrar painel",
   ensureProductionQuantity:
@@ -76,12 +77,6 @@ export default {
   breakEvenGt: "Ponto de Equilíbrio >",
   contractSell: "Venda por Contrato",
   halfTransport: "50% transporte",
-  perUnit: "/unidade",
-  cannotCalcProfit: "Não é possível calcular o lucro - preços de mercado ausentes",
-  sellingAnalysis: "Análise de Venda",
-  grossProceeds: "Receita Bruta",
-  marketFee4pct: "Taxa de Mercado (4%)",
-  netProceeds: "Receita Líquida",
   profitMargin: "Margem de Lucro",
   noItemSelected: "Nenhum item selecionado",
   clickToShowStats: "Clique em Quantidade ou Preço para mostrar as estatísticas.",
@@ -100,7 +95,6 @@ export default {
   loadingMarketPrices: "Carregando preços de mercado...",
   loadingMarketData: "Carregando dados de mercado...",
   marketError: "Erro de Mercado",
-  expenses: "Despesas",
   total: "Total",
   retail: "Varejo",
   contracts: "Contratos",
@@ -275,7 +269,6 @@ export default {
   financePeriodCurrent: "Atual",
   financePeriodDay: "Dia",
   financePeriodWeek: "Semana",
-  financePeriodMonth: "Mês",
   financePeriodInfoTitleCurrent: "Período: Hoje",
   financePeriodInfoBodyCurrent: "Totais desde a meia-noite (horário local) até agora.",
   financePeriodInfoTitleDay: "Período: Dia",
@@ -428,4 +421,6 @@ export default {
   xpLevelTransition: "Nível {from} → {to}",
   acctExplainer:
     "Taxa diária sobre caixa + títulos acima do limite, até 3%. Títulos comprados contam; um CFO melhor ou um banco aumentam o limite.",
+  copied: "Copiado!",
+  upgradeMultiplier: "Multiplicador:",
 };

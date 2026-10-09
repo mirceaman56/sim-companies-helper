@@ -1,4 +1,5 @@
 import { getSectionContent } from "./sidebar.js";
+import { startVisiblePoller } from "./scheduler.js";
 import { STATE } from "./state.js";
 import { t } from "./i18n.js";
 import {
@@ -77,7 +78,7 @@ let isSearching = false;
 let searchController = null;
 let panelState = null;
 let lastSearchSummary = null;
-let roomRefreshIntervalId = null;
+let stopRoomRefresh = null;
 
 const timers = createAlertTimers({
   checkIntervalMs: CHAT_ALERT_CHECK_INTERVAL_MS,
@@ -136,11 +137,12 @@ async function refreshChatRooms(container) {
 }
 
 function startRoomRefresh(container) {
-  if (roomRefreshIntervalId !== null) return;
+  if (stopRoomRefresh) return;
 
-  roomRefreshIntervalId = setInterval(() => {
-    void refreshChatRooms(container);
-  }, CHAT_ROOMS_REFRESH_INTERVAL_MS);
+  stopRoomRefresh = startVisiblePoller({
+    intervalMs: CHAT_ROOMS_REFRESH_INTERVAL_MS,
+    run: () => refreshChatRooms(container),
+  });
 }
 
 function getCurrentFilters(container) {
@@ -220,7 +222,7 @@ function formatSearchTabAsText(container) {
     }`,
   );
   lines.push(
-    `${t("quality")}: ${filters.selectedQualities.length > 0 ? filters.selectedQualities.join(", ") : t("maAll")}`,
+    `${t("maQuality")}: ${filters.selectedQualities.length > 0 ? filters.selectedQualities.join(", ") : t("maAll")}`,
   );
 
   if (lastSearchSummary) {

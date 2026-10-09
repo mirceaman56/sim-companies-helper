@@ -1,8 +1,8 @@
-// content_startup.js
-// Startup loading phases for content bootstrap.
+// why: auth first (every /me/ call and storage scope needs it), then independent loads in
+// parallel so a slow finance pagination never delays the navbar chips.
 import { loadAuthDataOnce } from "./auth.js";
 import { loadInventoryOnce } from "./warehouse.js";
-import { loadCashflowToday } from "./cashflow.js";
+import { loadFinanceData } from "./cashflow.js";
 import { loadBuildings, cleanupLegacyBuildingsCache } from "./buildings.js";
 import { initMarketAlerts } from "./market_ui.js";
 import { updateXpWidget } from "./xp_ui.js";
@@ -11,55 +11,46 @@ import { loadExecutivesOnce } from "./executives.js";
 import { loadBondsOnce } from "./bonds.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
 import { updatePanel as updateRetailPanel, RetailHelper } from "./retail_ui.js";
-import { scheduleUpdate, runSafe } from "./utils.js";
+import { scheduleUpdate } from "./utils.js";
 import { STATE } from "./state.js";
 
 /**
- * Run startup loading and post-load wiring.
+ * Run startup loading and post-load wiring. Never throws: every phase logs its own failure.
  * @param {{state?: typeof STATE, warn?: typeof console.warn, error?: typeof console.error}} [options]
  */
 export async function runStartupServices(options = {}) {
   const { state = STATE, warn = console.warn, error = console.error } = options;
 
-  try {
-    await loadAuthDataOnce();
-    if (state.auth.error) {
-      warn("[SimHelper] Auth failed:", state.auth.error);
+  /** Run one phase; report its STATE error (soft failure) or exception (hard failure). */
+  const phase = async (label, fn, stateKey) => {
+    try {
+      await fn();
+      if (stateKey && state[stateKey]?.error) warn(`[SimHelper] ${label} failed:`, state[stateKey].error);
+    } catch (e) {
+      error(`[SimHelper] ${label} crashed:`, e);
     }
+  };
 
-    await cleanupLegacyBuildingsCache();
+  await phase("Auth", loadAuthDataOnce, "auth");
+  await phase("Buildings cache cleanup", cleanupLegacyBuildingsCache);
 
-    await loadInventoryOnce();
-    if (state.inventory.error) {
-      warn("[SimHelper] Inventory failed:", state.inventory.error);
-    }
+  const buildings = phase("Buildings", loadBuildings, "buildings").then(updateXpWidget);
+  const accountingInputs = Promise.all([
+    buildings,
+    phase("Executives", loadExecutivesOnce, "executives"),
+    phase("Bonds", loadBondsOnce, "bonds"),
+  ]).then(updateAccountingWidget);
 
-    await loadCashflowToday();
-    if (state.cashflow.error) {
-      warn("[SimHelper] Cashflow failed:", state.cashflow.error);
-    }
+  await Promise.all([
+    phase("Inventory", loadInventoryOnce, "inventory"),
+    phase("Cashflow", () => loadFinanceData(), "cashflow").then(updateCashflowPanel),
+    buildings,
+    accountingInputs,
+    phase("Market alerts", initMarketAlerts),
+  ]);
 
-    await loadBuildings();
-    if (state.buildings.error) {
-      warn("[SimHelper] Buildings failed:", state.buildings.error);
-    }
-
-    updateXpWidget();
-
-    // Accounting widget inputs: fetched once per page load, no polling.
-    await Promise.all([loadExecutivesOnce(), loadBondsOnce()]);
-    if (state.bonds.error) {
-      warn("[SimHelper] Bonds failed:", state.bonds.error);
-    }
-    updateAccountingWidget();
-  } catch (e) {
-    error("[SimHelper] Critical initialization failure:", e);
-  }
-
-  await initMarketAlerts();
-
-  updateCashflowPanel();
-
-  scheduleUpdate(() => updateRetailPanel());
-  RetailHelper.autoSelectFirstRow(() => runSafe(updateRetailPanel));
+  // Retail needs inventory + executives, both settled above.
+  const renderRetailSoon = () => scheduleUpdate(updateRetailPanel);
+  renderRetailSoon();
+  RetailHelper.autoSelectFirstRow(renderRetailSoon);
 }

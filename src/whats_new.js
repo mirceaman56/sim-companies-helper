@@ -1,12 +1,5 @@
-// whats_new.js
-// Pure logic for the "What's new" panel.
-//
-// The changelog itself is built at release time by scripts/build-changelog.mjs
-// and bundled as src/resources/changelog.json, so nothing here touches the
-// network: no GitHub rate limit, no markdown scraping, works offline.
-//
-// Entries are English only by design. The panel's own chrome (section title,
-// category headings, credit labels) still goes through t().
+// why: the changelog is built at release time (scripts/build-changelog.mjs) and bundled, so no
+// network. Entries are English on purpose; panel labels still use t().
 
 import changelog from "./resources/changelog.json";
 

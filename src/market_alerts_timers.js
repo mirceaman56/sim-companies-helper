@@ -1,4 +1,3 @@
-// market_alerts_timers.js
 // Timer orchestration for market alerts.
 
 /**

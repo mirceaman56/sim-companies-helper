@@ -1,6 +1,6 @@
 .scx-sidebar-footer-contract,
 .scx-sidebar-footer-support,
-.scx-sidebar-footer-bug {
+.scx-sidebar-footer-feedback {
   display: flex;
   flex-direction: column;
   width: 180px;
@@ -12,8 +12,7 @@
   box-sizing: border-box;
 }
 
-.scx-sidebar-footer-contract:hover,
-.scx-sidebar-footer-bug:hover {
+.scx-sidebar-footer-contract:hover {
   background: var(--scx-bg-secondary);
   border-color: var(--scx-border-medium);
 }
@@ -37,27 +36,23 @@
   text-align: center;
 }
 
-.scx-sidebar-footer-link {
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 4px;
+/* why: the game styles every <a> on hover/visit (color, underline); links must
+   look exactly like the support <button>s, which only change background. */
+.scx-sidebar-footer-feedback-link,
+.scx-sidebar-footer-feedback-link:visited,
+.scx-sidebar-footer-feedback-link:hover,
+.scx-sidebar-footer-feedback-link:focus {
   color: var(--scx-text-secondary);
-  gap: 2px;
-}
-
-.scx-sidebar-footer-title {
-  font-size: 11px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  text-decoration: none;
 }
 
 .scx-sidebar-footer-bug-icon {
   color: var(--scx-color-orange);
+  font-size: 12px;
+}
+
+.scx-sidebar-footer-feature-icon {
+  color: var(--scx-color-warning);
   font-size: 12px;
 }
 

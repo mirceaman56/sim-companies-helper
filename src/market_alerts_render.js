@@ -1,4 +1,3 @@
-// market_alerts_render.js
 // Rendering and notification helpers for market alerts.
 
 /**
@@ -66,7 +65,7 @@ export function createAlertsContent(input) {
         <input id="scx-ma-price" type="number" step="0.01" min="0" placeholder="${t("maTargetPricePlaceholder")}"
                name="scx-ma-price" class="scx-select scx-width-full" />
       </div>
-      <button id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full" ${alertsCount >= maxCount ? "disabled" : ""}>
+      <button type="button" id="scx-ma-add" class="scx-btn scx-btn-primary scx-width-full" ${alertsCount >= maxCount ? "disabled" : ""}>
         ${t("maAddAlert")}
       </button>
     </div>
@@ -158,7 +157,7 @@ export function renderAlertList(input) {
         <div class="scx-ma-card-header">
           <div>
             <a href="https://www.simcompanies.com/market/resource/${alert.productId}/"
-               target="_blank" class="scx-ma-product-link">
+               target="_blank" rel="noopener noreferrer" class="scx-ma-product-link">
               ${escapeHtml(alert.productName)}
             </a>
             <span class="scx-ma-quality-badge">${qualityDisplay}</span>
@@ -187,12 +186,12 @@ export function renderAlertList(input) {
         <div class="scx-ma-card-actions">
           ${
             alert.triggered
-              ? `<button class="scx-btn scx-btn-warning scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
+              ? `<button type="button" class="scx-btn scx-btn-warning scx-ma-btn-reset" data-action="reset">${t("maReset")}</button>`
               : alert.active
-                ? `<button class="scx-btn scx-btn-error scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
-                : `<button class="scx-btn scx-btn-success scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
+                ? `<button type="button" class="scx-btn scx-btn-error scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
+                : `<button type="button" class="scx-btn scx-btn-success scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
           }
-          <button class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
+          <button type="button" class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
         </div>
       </div>
     `;
@@ -278,7 +277,7 @@ export function showNotification(input) {
     <div class="scx-toast-body">
       <div class="scx-toast-title">
         <a href="https://www.simcompanies.com/market/resource/${alert.productId}/"
-           target="_blank" class="scx-toast-link">
+           target="_blank" rel="noopener noreferrer" class="scx-toast-link">
           ${escapeHtml(alert.productName)} Q${alert.quality}
         </a>
       </div>
@@ -286,7 +285,7 @@ export function showNotification(input) {
         ${t("maPrice")} ${formatMoney(price, { decimals: 3 })} ≤ ${formatMoney(alert.targetPrice, { decimals: 3 })}
       </div>
     </div>
-    <button class="scx-toast-close">✕</button>
+    <button type="button" class="scx-toast-close">✕</button>
   `;
 
   const dismiss = () => {

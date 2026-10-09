@@ -140,3 +140,77 @@ describe("page_utils", () => {
     expect(events).toEqual(["input", "change"]);
   });
 });
+
+describe("observeDocumentBody (shared observer)", () => {
+  it("shares one observer between listeners and isolates failures", async () => {
+    const { observeDocumentBody } = await import("../src/page/page_utils.js");
+    const Original = globalThis.MutationObserver;
+    let created = 0;
+    globalThis.MutationObserver = class extends Original {
+      constructor(callback) {
+        super(callback);
+        created += 1;
+      }
+    };
+    const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
+    const root = document.implementation.createHTMLDocument("t");
+    const second = vi.fn();
+
+    const stopA = observeDocumentBody(
+      () => {
+        throw new Error("boom");
+      },
+      { root },
+    );
+    const stopB = observeDocumentBody(second, { root });
+    expect(created).toBe(1);
+
+    root.body.appendChild(root.createElement("div"));
+    await Promise.resolve();
+    expect(second).toHaveBeenCalledTimes(1);
+
+    stopA();
+    stopB();
+    root.body.appendChild(root.createElement("div"));
+    await Promise.resolve();
+    expect(second).toHaveBeenCalledTimes(1);
+
+    globalThis.MutationObserver = Original;
+    debug.mockRestore();
+  });
+});
+
+describe("onRouteChange", () => {
+  it("reports URL changes from Navigation API events", async () => {
+    const { onRouteChange } = await import("../src/page/page_utils.js");
+    const navigation = new EventTarget();
+    const win = { location: { href: "https://x.test/a" }, navigation, setInterval, clearInterval };
+    const seen = [];
+
+    const stop = onRouteChange((url) => seen.push(url), { win });
+    navigation.dispatchEvent(new Event("navigatesuccess")); // same URL: ignored
+    win.location.href = "https://x.test/b";
+    navigation.dispatchEvent(new Event("currententrychange"));
+    navigation.dispatchEvent(new Event("navigatesuccess")); // duplicate event: ignored
+    stop();
+    win.location.href = "https://x.test/c";
+    navigation.dispatchEvent(new Event("navigatesuccess"));
+
+    expect(seen).toEqual(["https://x.test/b"]);
+  });
+
+  it("falls back to polling without the Navigation API", async () => {
+    vi.useFakeTimers();
+    const { onRouteChange } = await import("../src/page/page_utils.js");
+    const win = { location: { href: "https://x.test/a" }, setInterval, clearInterval };
+    const seen = [];
+
+    const stop = onRouteChange((url) => seen.push(url), { win });
+    win.location.href = "https://x.test/b";
+    vi.advanceTimersByTime(1000);
+    stop();
+    vi.useRealTimers();
+
+    expect(seen).toEqual(["https://x.test/b"]);
+  });
+});

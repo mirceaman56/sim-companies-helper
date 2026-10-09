@@ -1,4 +1,3 @@
-// production_calc.js
 // Pure calculation and formatting helpers extracted from production_ui.js
 import { formatMoney } from "./utils.js";
 import { t } from "./i18n.js";

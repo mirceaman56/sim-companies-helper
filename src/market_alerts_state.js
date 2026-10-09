@@ -1,4 +1,3 @@
-// market_alerts_state.js
 // State transitions and normalization for market alerts.
 
 /**
@@ -111,7 +110,6 @@ export function removeAlertState(alerts, alertId) {
 }
 
 /**
- * Apply pricing check outcome to alert state.
  * @param {MarketAlert} alert
  * @param {number|null} price
  * @param {number} checkedAt

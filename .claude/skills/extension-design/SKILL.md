@@ -1,6 +1,6 @@
 ---
 name: extension-design
-description: is offers design guardrails helps with colors, typography alert styles, panels etc.
+description: Design-system guardrails for extension UI (tokens, colors, typography, buttons, alerts, chips, panels, sidebar). Use before adding or changing any markup or CSS.
 ---
 
 # Sim Companies Helper — Project Skill
@@ -55,13 +55,14 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 
 ### Buttons
 - Always use `.scx-btn` + a variant class
-- Variants: `.scx-btn-primary` (brand green), `.scx-btn-success` (alias for primary), `.scx-btn-secondary` (muted), `.scx-btn-ghost` (outlined brand), `.scx-btn-error`, `.scx-btn-warning`, `.scx-btn-info`
-- Sizes: `.scx-btn-sm` (11px / 4px 10px), `.scx-btn-lg` (13px / 10px 20px), `.scx-btn-full` (width 100%)
+- Variants: `.scx-btn-primary` (brand green), `.scx-btn-success` (alias for primary), `.scx-btn-secondary` (muted), `.scx-btn-error`, `.scx-btn-warning`, `.scx-btn-info`
+- Size: `.scx-btn-sm` (11px / 4px 10px). There is no large/full-width variant; add one to `primitives.css` (and list it here) if a design needs it.
 - Never style buttons inline
 - Focus rings use `var(--scx-focus-ring-brand)` / `-brand-strong` / `-error` / `-error-strong`. Don't write hand-rolled `oklch(...)` ring shadows.
 
 ### Alerts
 - Use `.scx-alert` + `.scx-alert-{success|error|warning|info}` for status messages
+- Parts: `.scx-alert-icon`, `.scx-alert-title`, `.scx-alert-desc`
 - Structure: `<div class="scx-alert scx-alert-warning"><span class="scx-alert-icon">…</span><div><div class="scx-alert-title">…</div><div class="scx-alert-desc">…</div></div></div>`
 
 ### Chips
@@ -108,10 +109,10 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 
 ## Code conventions
 
-- **CSS:** BEM-lite with `scx-` prefix. One file per feature in `src/styles/features/`. Never write styles inline in JS unless generating dynamic values.
+- **CSS:** BEM-lite with `scx-` prefix. One file per feature in `src/styles/features/`. No inline styles in JS; a measured value may be handed to CSS only as a `--scx-*` custom property (`el.style.setProperty("--scx-…", value)`). ESLint enforces this.
 - **JS:** Vanilla ES modules, no framework. DOM manipulation via `document.createElement` / `innerHTML`. Each feature has a `*_ui.js` (rendering) and optionally a `*_calc.js` (logic).
 - **i18n:** All user-facing strings must go through `src/i18n.js`. Add new keys to all translation files in `src/translations/`.
-- **No external dependencies** beyond what's already in the project.
+- **No runtime dependencies** beyond what's already in the project.
 
 ---
 
@@ -123,7 +124,7 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 | JS function | camelCase | `renderProductionPanel()` |
 | JS file | snake_case | `production_ui.js` |
 | CSS file | kebab-case | `production.css` |
-| Translation key | dot-path | `production.costPerUnit` |
+| Translation key | camelCase, feature prefix | `financeTxIncome` |
 
 ---
 
@@ -135,8 +136,8 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 - Trust the token system for dark mode. Feature CSS should **not** need its own `@media (prefers-color-scheme: dark)` block; if you reach for one, you're probably hardcoding a color or referencing a light-mode-only token instead of an adaptive one.
 - Keep sidebar panels narrow (max `350px`) — they overlay the game UI.
 - Use `var(--scx-border-light)` etc. as the **full border shorthand** (`border:` or `border-top:`) — never as a color inside another shorthand like `2px solid var(--scx-border-light)`.
-- Prefer semantic utility classes (`.scx-text-muted`, `.scx-text-xs`, `.scx-text-sm`) over numeric/legacy ones. The legacy `.scx-font-8/9/10` and `.scx-color-999/333` classes have been retired.
-- Clean-up unused CSS classes and tokens as you work on related features. If you see a class in the CSS that isn't used in any JS or HTML, delete it. If you see a token that's not used anywhere, delete it.
+- Prefer semantic utility classes (`.scx-text-muted`, `.scx-text-xs`, `.scx-text-sm`). The old numeric font-size/color utility classes are retired; do not recreate them.
+- Run `npm run check:styles`. It fails on raw colors outside `tokens.css`, partials missing from `src/content.css`, inline `style="…"` markup, and `.scx-*` classes no JS references (classes documented in this file are design-system API and may stay unused). Every class this file names must exist in CSS.
 
 ## What to never do
 
@@ -144,7 +145,7 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 - Do not use `!important` except for `.scx-input-error` (existing exception) and `.scx-hidden`.
 - Do not hardcode pixel sizes for spacing or radius — always use tokens.
 - Do not hardcode oklch/hex/hsl color values in feature CSS — always reference a token.
-- Do not introduce npm packages or build-step dependencies.
+- Do not introduce runtime npm packages. Dev tooling is fine when `npm run verify` needs it.
 - Do not modify `public/manifest.json` permissions without flagging it explicitly.
 - Do not add inline `style=""` attributes for anything the design system already covers.
 - Do not use border tokens as a color value inside a custom shorthand; they already include `width style`.

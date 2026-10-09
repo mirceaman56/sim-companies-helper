@@ -65,7 +65,9 @@ describe("apiHealth", () => {
     await initApiHealthSync();
     global.fetch.mockResolvedValueOnce(mockResponse(429));
 
-    await expect(request("market", { url: "https://www.simcompanies.com/api/v3/market/0/13/" })).rejects.toBeTruthy();
+    await expect(
+      request("market", { url: "https://www.simcompanies.com/api/v3/market/0/13/" }),
+    ).rejects.toBeTruthy();
 
     await vi.waitFor(() => expect(chrome.storage.local.set).toHaveBeenCalled());
     const stored = chrome.store[STORAGE_KEY];
@@ -96,7 +98,11 @@ describe("apiHealth", () => {
     onApiHealthChange(listener);
 
     apiHealthTestUtils.onStorageChanged(
-      { [STORAGE_KEY]: { newValue: { data: { blockedUntil: Date.now() + 120_000, reason: "challenge", hits: 2 } } } },
+      {
+        [STORAGE_KEY]: {
+          newValue: { data: { blockedUntil: Date.now() + 120_000, reason: "challenge", hits: 2 } },
+        },
+      },
       "local",
     );
 

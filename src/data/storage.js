@@ -3,7 +3,7 @@ import { resolveScope } from "./scope.js";
 const DEFAULT_PREFIX = "scx";
 
 /**
- * @typedef {"scoped"|"company"|"realm"|"global"} StorageScopeMode
+ * @typedef {"scoped"|"company"|"global"} StorageScopeMode
  */
 
 /**
@@ -11,9 +11,10 @@ const DEFAULT_PREFIX = "scx";
  * @property {string} domain Logical feature namespace, for example `market-alerts`.
  * @property {number} version Version segment used in the generated storage key.
  * @property {StorageScopeMode} [scope="scoped"] Scope mode resolved through `resolveScope()`.
- * @property {"local"|"chrome"|"sync"} [backend="local"] Storage backend. `chrome` is
+ * @property {"chrome"|"sync"} [backend="chrome"] Storage backend. `chrome` is
  *   chrome.storage.local (this device only); `sync` is chrome.storage.sync (follows the
- *   user's browser profile across devices, 8KB per item).
+ *   user's browser profile across devices, 8KB per item). The page's own localStorage
+ *   ("local") is only readable through getRaw/removeRaw, for migrating legacy keys.
  * @property {string} [prefix="scx"] Storage key prefix.
  * @property {boolean} [refreshAuth=true] Refresh auth-derived scope values before resolving the key.
  */
@@ -97,11 +98,6 @@ function chromeArea(backend) {
   return hasChromeStorage() ? chrome.storage.local : null;
 }
 
-function toStorageRaw(backend, value) {
-  if (backend === "chrome" || backend === "sync") return value;
-  return JSON.stringify(value);
-}
-
 function isEnvelopeValid(envelope) {
   return Boolean(envelope && typeof envelope === "object" && Number.isFinite(Number(envelope.v)));
 }
@@ -125,6 +121,14 @@ function normalizeBackend(backend) {
   return backend === "chrome" || backend === "sync" ? backend : "local";
 }
 
+/** Envelope reads/writes go to chrome.storage only; page localStorage is legacy, raw access only. */
+function envelopeBackend(backend) {
+  if (backend === "local") {
+    throw new Error('storage: backend "local" (page localStorage) is legacy. Use "chrome" or "sync".');
+  }
+  return backend === "sync" ? "sync" : "chrome";
+}
+
 function normalizePrefix(prefix) {
   const p = String(prefix || DEFAULT_PREFIX).trim();
   return p.length > 0 ? p : DEFAULT_PREFIX;
@@ -141,75 +145,39 @@ export function buildStorageKey({ domain, version, scopeKey, prefix = DEFAULT_PR
   return `${normalizePrefix(prefix)}:${normalizeDomain(domain)}:v${Number(version)}:${scopeKey}`;
 }
 
+// MV3 chrome.storage areas return promises (Chrome 88+).
 async function chromeGet(keys, backend = "chrome") {
   const api = chromeArea(backend);
   if (!api) return {};
-
   try {
-    const result = api.get(keys);
-    if (result && typeof result.then === "function") {
-      return result;
-    }
-  } catch {}
-
-  return new Promise((resolve) => {
-    try {
-      api.get(keys, (items) => resolve(items || {}));
-    } catch {
-      resolve({});
-    }
-  });
+    return (await api.get(keys)) || {};
+  } catch {
+    return {};
+  }
 }
 
 async function chromeSet(items, backend = "chrome") {
   const api = chromeArea(backend);
   if (!api) return false;
-
-  let result;
   try {
-    result = api.set(items);
+    await api.set(items);
+    return true;
   } catch {
-    return new Promise((resolve) => {
-      try {
-        api.set(items, () => resolve(true));
-      } catch {
-        resolve(false);
-      }
-    });
-  }
-
-  if (result && typeof result.then === "function") {
     // A rejected write (chrome.storage.sync over quota, sync disabled) must
     // surface as `false` so callers can fall back instead of losing data.
-    try {
-      await result;
-    } catch {
-      return false;
-    }
+    return false;
   }
-  return true;
 }
 
 async function chromeRemove(keys, backend = "chrome") {
   const api = chromeArea(backend);
   if (!api) return false;
-
   try {
-    const result = api.remove(keys);
-    if (result && typeof result.then === "function") {
-      await result;
-      return true;
-    }
+    await api.remove(keys);
     return true;
-  } catch {}
-
-  return new Promise((resolve) => {
-    try {
-      api.remove(keys, () => resolve(true));
-    } catch {
-      resolve(false);
-    }
-  });
+  } catch {
+    return false;
+  }
 }
 
 export async function getRaw(backend, key) {
@@ -225,51 +193,6 @@ export async function getRaw(backend, key) {
 
   const data = await chromeGet(key, b);
   return data?.[key] ?? null;
-}
-
-function localGetItemSync(key) {
-  if (!hasLocalStorage()) return null;
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function localSetItemSync(key, value) {
-  if (!hasLocalStorage()) return false;
-  try {
-    localStorage.setItem(key, String(value));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function localRemoveItemSync(key) {
-  if (!hasLocalStorage()) return false;
-  try {
-    localStorage.removeItem(key);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function localListByPrefixSync(prefix = "") {
-  if (!hasLocalStorage()) return [];
-  const out = [];
-  const p = String(prefix || "");
-  try {
-    for (let i = 0; i < localStorage.length; i += 1) {
-      const key = localStorage.key(i);
-      if (!key || (p && !key.startsWith(p))) continue;
-      out.push({ key, value: localStorage.getItem(key) });
-    }
-  } catch {
-    return [];
-  }
-  return out;
 }
 
 export async function setRaw(backend, key, value) {
@@ -304,7 +227,7 @@ export async function removeRaw(backend, key) {
   return chromeRemove(key, b);
 }
 
-export async function listByPrefix({ backend = "local", prefix = "" } = {}) {
+export async function listByPrefix({ backend = "chrome", prefix = "" } = {}) {
   const b = normalizeBackend(backend);
   const p = String(prefix || "");
 
@@ -330,34 +253,21 @@ export async function listByPrefix({ backend = "local", prefix = "" } = {}) {
 }
 
 /**
- * Read a versioned, scope-aware storage value.
- *
- * Scope examples:
- * - Use `scope: "global"` for browser-wide preferences shared across companies.
- * - Use `scope: "scoped"` for company-and-realm-specific data.
- * - Use `scope: "company"` or `scope: "realm"` when data should follow only one side of the account context.
- *
- * Expired envelopes, version mismatches, and scope mismatches are treated as cache misses and cleaned up automatically.
- *
+ * Read a versioned envelope. Scope: "global" (browser-wide), "scoped" (company + realm) or
+ * "company". Expired, outdated or foreign-scope envelopes are misses and get removed.
  * @param {StorageReadOptions} [options={}]
- * @returns {Promise<unknown|null>} Stored data or `null` when no valid envelope exists.
- * @example
- * const alerts = await get({
- *   domain: "market-alerts",
- *   version: 2,
- *   scope: "scoped",
- *   backend: "chrome",
- * });
+ * @returns {Promise<unknown|null>}
  */
 export async function get({
   domain,
   version,
   scope = "scoped",
-  backend = "local",
+  backend: requestedBackend = "chrome",
   prefix = DEFAULT_PREFIX,
   ttlMs = null,
   refreshAuth = true,
 } = {}) {
+  const backend = envelopeBackend(requestedBackend);
   const scopeInfo = await resolveScope(scope, { refreshAuth });
   if (!scopeInfo.hasScope || !scopeInfo.scopeKey) return null;
 
@@ -406,7 +316,7 @@ export async function get({
  *   domain: "upgrade-discount",
  *   version: 1,
  *   scope: "global",
- *   backend: "local",
+ *   backend: "chrome",
  *   data: 2.5,
  * });
  */
@@ -414,12 +324,13 @@ export async function set({
   domain,
   version,
   scope = "scoped",
-  backend = "local",
+  backend: requestedBackend = "chrome",
   prefix = DEFAULT_PREFIX,
   ttlMs = null,
   refreshAuth = true,
   data,
 } = {}) {
+  const backend = envelopeBackend(requestedBackend);
   const scopeInfo = await resolveScope(scope, { refreshAuth });
   if (!scopeInfo.hasScope || !scopeInfo.scopeKey) return false;
 
@@ -438,7 +349,7 @@ export async function set({
     data,
   };
 
-  return setRaw(backend, key, toStorageRaw(normalizeBackend(backend), envelope));
+  return setRaw(backend, key, envelope);
 }
 
 /**
@@ -458,10 +369,11 @@ export async function remove({
   domain,
   version,
   scope = "scoped",
-  backend = "local",
+  backend: requestedBackend = "chrome",
   prefix = DEFAULT_PREFIX,
   refreshAuth = true,
 } = {}) {
+  const backend = envelopeBackend(requestedBackend);
   const scopeInfo = await resolveScope(scope, { refreshAuth });
   if (!scopeInfo.hasScope || !scopeInfo.scopeKey) return false;
 
@@ -499,13 +411,14 @@ export async function migrate({
   domain,
   version,
   scope = "scoped",
-  backend = "local",
+  backend: requestedBackend = "chrome",
   prefix = DEFAULT_PREFIX,
   ttlMs = null,
   refreshAuth = true,
   readLegacy,
   cleanupLegacy = true,
 } = {}) {
+  const backend = envelopeBackend(requestedBackend);
   const existing = await get({
     domain,
     version,
@@ -595,10 +508,4 @@ export const storage = {
   getRaw,
   setRaw,
   removeRaw,
-  localSync: {
-    getItem: localGetItemSync,
-    setItem: localSetItemSync,
-    removeItem: localRemoveItemSync,
-    listByPrefix: localListByPrefixSync,
-  },
 };

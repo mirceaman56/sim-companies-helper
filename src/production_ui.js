@@ -1,4 +1,3 @@
-// production_ui.js
 // Renders production helper section in the sidebar
 import { formatMoney, escapeHtml, COPY_BUTTON_SVG, wireCopyButton, TRANSPORT_RESOURCE_ID } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
@@ -61,9 +60,6 @@ async function updateForRow(row) {
   await updateProductionPanel();
 }
 
-/**
- * Handle production row interaction (click or focus)
- */
 function handleProductionInteraction(e) {
   const target = e.target;
   if (!(target instanceof Element)) return;
@@ -81,9 +77,6 @@ function handleProductionInteraction(e) {
   }
 }
 
-/**
- * Setup event listeners for production rows
- */
 export function setupProductionRowListeners() {
   // Listen for clicks/focus anywhere
   document.addEventListener("focusin", handleProductionInteraction, true);
@@ -139,9 +132,6 @@ function scheduleProductionSync() {
   syncTimeout = setTimeout(() => syncProductionBlock(), 200);
 }
 
-/**
- * Update the production helper panel
- */
 export async function updateProductionPanel() {
   const contentEl = getSectionContent(SECTION_ID);
   if (!contentEl) {
@@ -182,9 +172,6 @@ export async function updateProductionPanel() {
   await renderProductAnalysis(contentEl, recipe);
 }
 
-/**
- * Render the product analysis UI
- */
 async function renderProductAnalysis(contentEl, recipe) {
   // Fetch prices if not cached
   if (!pricesCache) {
@@ -242,13 +229,9 @@ async function renderProductAnalysis(contentEl, recipe) {
     return;
   }
 
-  // Render analysis UI
   renderAnalysisUI(contentEl, recipe, analysis);
 }
 
-/**
- * Render the full analysis UI
- */
 function renderAnalysisUI(contentEl, recipe, analysis) {
   const { productionCost, breakEvenAnalysis, profitAnalysis, marketPrice, quality } = analysis;
   const qualityBadge = quality > 0 ? `<span class="scx-chip">Q${quality}</span>` : "";
@@ -265,7 +248,6 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
     execWarningHTML = warningItems ? `<div class="scx-production-warnings">${warningItems}</div>` : "";
   }
 
-  // Extract building level from the page
   const buildingLevel = extractProductionBuildingLevel(document);
   const upgradeMultiplier = buildingLevel ? calculateUpgradeMultiplier(buildingLevel) : null;
   const upgradedProduction = upgradeMultiplier ? currentQuantity * upgradeMultiplier : null;
@@ -289,7 +271,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
     <div class="scx-panel scx-production-panel">
       <div class="scx-flex-spaced scx-margin-bottom-6">
         <div class="scx-prod-title">${escapeHtml(recipe.name)}</div>
-        <button class="scx-copy-btn" data-copy-action="production" data-tooltip="${t("copyText")}">
+        <button type="button" class="scx-copy-btn" data-copy-action="production" data-tooltip="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>
@@ -409,7 +391,6 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
     </div>
   `;
 
-  // Wire up copy button
   wireCopyButton(contentEl, () =>
     formatProductionAsText(
       recipe,

@@ -1,4 +1,3 @@
-// contract_rules_state.js
 // State transitions and normalization for saved contract rule templates.
 
 export const PRICE_MODE_PERCENT = "percent";

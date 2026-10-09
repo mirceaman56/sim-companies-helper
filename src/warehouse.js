@@ -1,10 +1,6 @@
 import { STATE } from "./state.js";
 import { request } from "./data/apiClient.js";
 
-/**
- * Loads inventory data once per session
- */
-
 export async function loadInventoryOnce() {
   if (!STATE.inventory) return; // safety
   if (STATE.inventory.loaded || STATE.inventory.loading) return;

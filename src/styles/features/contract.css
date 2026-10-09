@@ -22,17 +22,65 @@
   box-shadow: var(--scx-shadow-md);
 }
 
-.scx-contract-title {
+/* Labels wrap: both are long in most locales and the widget is 180px wide. */
+.scx-contract-tabs {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: var(--scx-font-size-sm);
-  font-weight: var(--scx-font-weight-semibold);
-  color: var(--scx-text-secondary);
+  gap: 2px;
+  border-bottom: var(--scx-border-medium-light);
 }
 
-.scx-contract-title-icon {
-  font-size: var(--scx-font-size-base);
+.scx-contract-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: -1px;
+  padding: 4px 4px 5px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--scx-text-muted);
+  font-family: inherit;
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-semibold);
+  line-height: 1.3;
+  white-space: normal;
+  text-align: center;
+  cursor: pointer;
+}
+
+.scx-contract-tab:hover {
+  color: var(--scx-text-primary);
+}
+
+.scx-contract-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--scx-focus-ring-brand);
+}
+
+.scx-contract-tab-active {
+  border-bottom-color: var(--scx-color-info);
+  color: var(--scx-tone-info-text);
+}
+
+.scx-contract-tab-badge {
+  display: inline-block;
+  min-width: 14px;
+  margin-left: 2px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  font-size: var(--scx-font-size-xs);
+  line-height: 1.4;
+}
+
+.scx-contract-tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scx-contract-tabpanel[hidden] {
+  display: none;
 }
 
 /* Segmented "% under market" / "fixed price" switch. Labels wrap because both
@@ -196,14 +244,17 @@
   opacity: 0.8;
 }
 
-.scx-contract-rules-panel {
+.scx-contract-rules-panel,
+.scx-contract-rules-save {
   width: 100%;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: var(--scx-border-light);
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.scx-contract-rules-save {
+  padding-top: 8px;
+  border-top: var(--scx-border-light);
 }
 
 .scx-contract-rules-head {

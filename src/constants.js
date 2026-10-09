@@ -1,26 +1,20 @@
-// constants.js
 // Centralized timing and limit constants
 
-// Market API
 export const MARKET_CACHE_TTL_MS = 60_000; // 1 minute
-export const RATE_LIMIT_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+// Rate-limit cooldown lives in src/data/apiClient.js (DEFAULT_RATE_LIMIT_COOLDOWN_MS).
 export const MARKET_ERROR_RETRY_MS = 30_000; // back-off after a failed market fetch
 
-// Market alerts
 export const ALERT_CHECK_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 export const ALERT_TIMER_REFRESH_MS = 10_000; // 10 seconds
 export const ALERT_MAX_COUNT = 2;
 export const TOAST_DISMISS_MS = 15_000; // 15 seconds
 
-// Cashflow
 export const CASHFLOW_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
-// Chat filter
 export const CHAT_SEARCH_TARGET_COUNT = 500;
 export const CHAT_SEARCH_CUTOFF_HOURS = 8;
 export const CHAT_ROOMS_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
-// Chat alerts
 export const CHAT_ALERT_CHECK_INTERVAL_MS = 120_000; // 2 minutes
 export const CHAT_ALERT_TIMER_REFRESH_MS = 10_000; // 10 seconds
 export const CHAT_ALERT_MAX_COUNT = 2;
@@ -30,7 +24,6 @@ export const CHAT_ALERT_MAX_PAGES = 30;
 // Buildings (XP calculator)
 export const BUILDINGS_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
-// Contract rules
 export const CONTRACT_RULE_MAX_COUNT = 50;
 export const CONTRACT_RULE_MAX_PER_CUSTOMER = 5;
 export const CONTRACT_RULE_NOTE_MAX_LENGTH = 40;

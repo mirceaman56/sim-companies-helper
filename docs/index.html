@@ -30,6 +30,25 @@
         grid-template-columns: 1fr;
       }
     }
+    /* Phones: nested card paddings left screenshots ~150px wide; !important beats the inline styles */
+    @media (max-width: 600px) {
+      .container {
+        margin: 16px auto;
+        padding: 0 12px;
+      }
+      .main-content {
+        padding: 20px 16px;
+      }
+      .main-content > div[style] {
+        padding: 16px !important;
+      }
+      .main-content > div[style] > div[style] {
+        padding: 8px !important;
+      }
+      img[data-lightbox] {
+        padding: 6px !important;
+      }
+    }
 
     .main-content {
       background: #fff;
@@ -306,7 +325,7 @@
       </p>
 
       <div class="btn-group">
-        <a href="https://chromewebstore.google.com/detail/sim-companies-helper/kpodpgcmkpjidokiejlkkoiaceameaan?authuser=2&hl=en" target="_blank" class="btn-primary">Install from Chrome Web Store</a>
+        <a href="https://chromewebstore.google.com/detail/sim-companies-helper/kpodpgcmkpjidokiejlkkoiaceameaan" target="_blank" class="btn-primary">Install from Chrome Web Store</a>
         <a href="https://github.com/mirceaman56/sim-companies-helper/releases" class="btn-secondary">Early Release (Manual Setup)</a>
       </div>
       
@@ -343,13 +362,6 @@
           back to the closest available quality if needed. All calculations use your weighted average quality across units, ensuring 
           accurate comparisons for mixed-quality inventory.
         </p>
-        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
-          <img src="./screenshots/Production.png" 
-               alt="Warehouse price comparison feature" 
-               data-lightbox="./screenshots/Production.png"
-               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
-               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Warehouse with market price buttons];'">
-        </div>
       </div>
 
       <!-- Feature 2: Smart Retail Analysis -->
@@ -396,30 +408,28 @@
           instantly and compares against market sale profitability. Set your desired discount percentage and automatically populate 
           competitive pricing. Never send an unprofitable contract again—every deal is backed by numbers.
         </p>
+        <p style="color: #555; line-height: 1.8;">
+          Sending the same contract to the same customer every day? Save it as a rule (quantity, discount and an optional note)
+          for that product and company. Next time, one click on <strong>Apply</strong> fills in the quantity and a freshly
+          recalculated price. Rules follow you across devices when Chrome sync is on.
+        </p>
         <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
-          <img src="./screenshots/Contract.png" 
+          <img src="./screenshots/Contracts.png" 
                alt="Contract assistant" 
-               data-lightbox="./screenshots/Contract.png"
-               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
-               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Contract pricing helper];'">
+               data-lightbox="./screenshots/Contracts.png"
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;">
         </div>
       </div>
 
       <!-- Feature 4: Cashflow Dashboard -->
       <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #9b59b6;">
-        <h3 style="margin-top: 0;">Cashflow Dashboard</h3>
+        <h3 style="margin-top: 0;">Financials Dashboard</h3>
         <p style="color: #555; line-height: 1.8;">
-          Know exactly where your money is going. The cashflow insights page breaks down your daily income and expenses by 
-          category—see how much you're spending on each operation type and where your revenue comes from. Compare today against 
-          yesterday to track trends and spot opportunities. Understanding your financial rhythm is key to strategic planning.
+          Know exactly where your money is going. Switch between <strong>Current</strong>, <strong>Day</strong> and
+          <strong>Week</strong> views to see key numbers at a glance, a profit &amp; loss breakdown, cash movement, ratios and
+          what drives them, recent transactions, your sales mix, inventory and production value, and workforce cost. Built-in
+          alerts point out what needs attention, so you can spot trends and plan ahead.
         </p>
-        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
-          <img src="./screenshots/Financials.png" 
-               alt="Cashflow dashboard" 
-               data-lightbox="./screenshots/Financials.png"
-               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
-               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Cashflow breakdown];'">
-        </div>
       </div>
 
       <!-- Feature 5: Skill Breakdown -->
@@ -428,7 +438,8 @@
         <p style="color: #555; line-height: 1.8;">
           Get detailed insights into executive candidate capabilities. The extension analyzes each candidate's skills with 
           comprehensive breakdown showing organic skill levels versus training potential. Understand which competencies are 
-          naturally high and which can be developed through training to make informed recruitment decisions.
+          naturally high and which can be developed through training to make informed recruitment decisions. A daily
+          organic-growth timer also shows which of your executives are eligible to grow, labeled by role.
         </p>
         <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
           <img src="./screenshots/Executives_1.png" 
@@ -458,27 +469,30 @@
 
       <!-- Feature 6: Chat Search -->
       <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #16a085;">
-        <h3 style="margin-top: 0;">Quick Chat Search</h3>
+        <h3 style="margin-top: 0;">Chat Search &amp; Alerts</h3>
         <p style="color: #555; line-height: 1.8;">
           Finding the right trade partner in chat shouldn't be like finding a needle in a haystack. Filter the sales chat for 
-          specific products to quickly identify who's buying or selling what you need. Perfect for negotiating bulk deals or 
-          finding niche buyers for your premium products.
+          specific products and quality to quickly identify who's buying or selling what you need, across the chat rooms you
+          have joined. Perfect for negotiating bulk deals or finding niche buyers for your premium products.
+        </p>
+        <p style="color: #555; line-height: 1.8;">
+          Don't want to keep watching the chat? Set up to two chat alerts with any words you care about, and the extension tells
+          you when a matching message shows up in the rooms you picked.
         </p>
         <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
           <img src="./screenshots/Chat_Filter.png" 
                alt="Chat search feature" 
                data-lightbox="./screenshots/Chat_Filter.png"
-               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
-               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Chat with search filter];'">
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;">
         </div>
       </div>
 
       <!-- Feature 7: Market Price Notifications -->
       <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #e67e22;">
-        <h3 style="margin-top: 0;">Market Price Notifications</h3>
+        <h3 style="margin-top: 0;">Market Price Alerts</h3>
         <p style="color: #555; line-height: 1.8;">
           Never miss a deal again. Set target prices for any product and quality level, and the extension will monitor the market 
-          in the background. When prices drop to or below your target, you'll get an instant browser notification so you can act 
+          in the background. When prices drop to or below your target, a notification pops up inside the game so you can act 
           fast. Track up to two alerts at a time—each one shows the target price, current market price, and when it was last 
           checked. Whether you're waiting for cheap raw materials or hunting for bargain supplies, Market Alerts keeps you informed 
           without constantly refreshing the marketplace.
@@ -487,8 +501,7 @@
           <img src="./screenshots/MP_notification.png" 
                alt="Market price notification alerts" 
                data-lightbox="./screenshots/MP_notification.png"
-               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;" 
-               onerror="this.style.background='#e9ecef'; this.textContent='[Screenshot: Market price alerts with browser notification];'">
+               style="max-width: 100%; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;">
         </div>
       </div>
 
@@ -510,10 +523,42 @@
         </div>
       </div>
 
+      <!-- Feature 9: XP Estimate -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #2980b9;">
+        <h3 style="margin-top: 0;">XP Estimate</h3>
+        <p style="color: #555; line-height: 1.8;">
+          How long until your next level? A small chip next to the level bar at the top of the game shows your XP per hour.
+          Click it for the details: XP still needed, estimated time to the next level, and how much comes from operating
+          versus prospecting buildings. Data refreshes every 6 hours, or on demand with the refresh button.
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/XP.png" 
+               alt="XP estimate popover" 
+               data-lightbox="./screenshots/XP.png"
+               style="width: 100%; max-width: 377px; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;">
+        </div>
+      </div>
+
+      <!-- Feature 10: Accounting Overhead -->
+      <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #8e44ad;">
+        <h3 style="margin-top: 0;">Accounting Overhead</h3>
+        <p style="color: #555; line-height: 1.8;">
+          Holding a lot of cash comes with accounting fees. A chip next to your cash at the top of the game shows a
+          ✓ with how much room you have left before fees start, or a ⚠ with the estimated daily fee once you go over the
+          limit. Click it to see how the limit is worked out (cash, net bonds, your executives, CFO skill and bank level).
+        </p>
+        <div style="background: white; border-radius: 8px; padding: 20px; margin-top: 15px; text-align: center;">
+          <img src="./screenshots/Accounting.png" 
+               alt="Accounting overhead popover" 
+               data-lightbox="./screenshots/Accounting.png"
+               style="width: 100%; max-width: 420px; height: auto; border-radius: 8px; background: #eee; padding: 20px; box-sizing: border-box; cursor: zoom-in;">
+        </div>
+      </div>
+
       <h2>Privacy & Security</h2>
       <p>
-        <strong>All your data stays in your browser.</strong> The Sim Companies Helper extension doesn't send any data to external servers 
-        or collect usage information. We only access the data you see in Sim Companies to provide instant insights. No tracking, 
+        <strong>Your data stays with you.</strong> The Sim Companies Helper extension doesn't send any data to our servers (there
+        are none) or collect usage information. Saved contract rules use Chrome sync, so they follow your own Google account. We only access the data you see in Sim Companies to provide instant insights. No tracking, 
         no analytics, no surprises—just pure functionality.
       </p>
     </div>

@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Apoyar vía PayPal",
   supportOnKofi: "Soporte vía Ko-fi",
   reportBug: "Reportar un Error",
+  suggestFeature: "Sugerir una función",
   hideSidebar: "Ocultar panel",
   showSidebar: "Mostrar panel",
   ensureProductionQuantity:
@@ -76,12 +77,6 @@ export default {
   breakEvenGt: "Punto de Equilibrio >",
   contractSell: "Venta por Contrato",
   halfTransport: "50% transporte",
-  perUnit: "/unidad",
-  cannotCalcProfit: "No se puede calcular la ganancia - faltan precios de mercado",
-  sellingAnalysis: "Análisis de Venta",
-  grossProceeds: "Ingresos Brutos",
-  marketFee4pct: "Tarifa de Mercado (4%)",
-  netProceeds: "Ingresos Netos",
   profitMargin: "Margen de Ganancia",
   noItemSelected: "Ningún artículo seleccionado",
   clickToShowStats: "Haga clic en Cantidad o Precio para mostrar estadísticas.",
@@ -100,7 +95,6 @@ export default {
   loadingMarketPrices: "Cargando precios de mercado...",
   loadingMarketData: "Cargando datos de mercado...",
   marketError: "Error de Mercado",
-  expenses: "Gastos",
   total: "Total",
   retail: "Venta Minorista",
   contracts: "Contratos",
@@ -277,7 +271,6 @@ export default {
   financePeriodCurrent: "Actual",
   financePeriodDay: "Día",
   financePeriodWeek: "Semana",
-  financePeriodMonth: "Mes",
   financePeriodInfoTitleCurrent: "Período: Hoy",
   financePeriodInfoBodyCurrent: "Totales desde la medianoche (hora local) hasta ahora.",
   financePeriodInfoTitleDay: "Período: Día",
@@ -432,4 +425,6 @@ export default {
   xpLevelTransition: "Nivel {from} → {to}",
   acctExplainer:
     "Tasa diaria sobre efectivo + bonos por encima del límite, hasta el 3 %. Los bonos comprados cuentan; un mejor CFO o un banco sube el límite.",
+  copied: "¡Copiado!",
+  upgradeMultiplier: "Multiplicador:",
 };

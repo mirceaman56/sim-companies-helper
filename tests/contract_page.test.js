@@ -24,6 +24,7 @@ function loadFixture(name) {
 describe("contract_page adapter", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
+    window.history.pushState({}, "", "/"); // English number format unless a test switches locale
   });
 
   it("detects contract pages from structural selectors", () => {
@@ -62,6 +63,20 @@ describe("contract_page adapter", () => {
 
   it("extracts sourcing unit cost from the current resource card markup", () => {
     document.body.innerHTML = loadFixture("page-current.html");
+
+    expect(getSourcingCostPerUnit(document)).toBe(11.38);
+  });
+
+  it("ignores encyclopedia links and cash outside the contract card (navbar, extension popovers)", () => {
+    // Regression: the navbar cash (and the accounting chip popover listing it) sat next to an
+    // earlier encyclopedia link, so sourcing came out as the cash balance (1,957 x $1,296,040).
+    const navbar = `
+      <nav><div>
+        <a href="/encyclopedia/1/">Encyclopedia</a>
+        <div><span>$1,296,040</span></div>
+        <div id="scx-acct-widget"><div class="scx-navpop"><span>$1,296,040</span></div></div>
+      </div></nav>`;
+    document.body.innerHTML = navbar + loadFixture("page-current.html");
 
     expect(getSourcingCostPerUnit(document)).toBe(11.38);
   });

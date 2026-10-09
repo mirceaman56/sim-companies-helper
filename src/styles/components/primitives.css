@@ -144,13 +144,6 @@
   border-color: var(--scx-text-info-dark);
 }
 
-/* Input focus ring — consistent with buttons */
-.scx-input:focus {
-  outline: none;
-  border-color: var(--scx-brand);
-  box-shadow: var(--scx-focus-ring-brand);
-}
-
 /* Section Panel & Component Styles */
 .scx-panel {
   display: flex;

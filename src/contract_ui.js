@@ -1,4 +1,3 @@
-// contract_ui.js
 // Adds a discount widget in the sidebar on contract pages.
 // Reads the lowest seller price from the exchange orders section
 // and fills the price input with (lowestPrice - X%).
@@ -37,6 +36,7 @@ import {
   refreshContractRulesPanel,
 } from "./contract_rules_ui.js";
 import { normalizeFixedPrice, PRICE_MODE_FIXED, PRICE_MODE_PERCENT } from "./contract_rules_state.js";
+import { renderContractTabs, TAB_PRICE, TAB_RULES, wireContractTabs } from "./contract_tabs.js";
 
 const CONTAINER_ID = "scx-contract-helper";
 const DISCOUNT_INPUT_ID = "scx-contract-discount-input";
@@ -53,12 +53,8 @@ let fixedPrice = null;
 let amountListenerAttached = false;
 let stopObservingBody = null;
 
-/**
- * Typing into the amount input changes only the value property, which produces
- * no DOM mutation — the observer below never sees it. The rules panel gates its
- * save button on that amount, so it needs this to notice the value became
- * valid. Delegated on the document because React remounts the input itself.
- */
+// why: typing changes only the input's value (no DOM mutation), so the observer misses it;
+// the rules panel needs it to enable saving. Delegated because React remounts the input.
 function attachAmountInputListener() {
   if (amountListenerAttached) return;
   amountListenerAttached = true;
@@ -68,12 +64,6 @@ function attachAmountInputListener() {
   });
 }
 
-/**
- * Initialise the contract helper.
- * Should be called once from content.js.
- * Sets up a MutationObserver so the widget is injected whenever
- * the contract page is rendered (React SPA – DOM can change).
- */
 export function initContractHelper() {
   void hydrateDiscountPreference();
   attachAmountInputListener();
@@ -109,7 +99,7 @@ async function hydrateDiscountPreference() {
     domain: STORAGE_DOMAIN,
     version: STORAGE_VERSION,
     scope: "global",
-    backend: "local",
+    backend: "chrome",
     refreshAuth: false,
     readLegacy: async ({ getRaw, removeRaw }) => {
       const legacy = await getRaw("local", STORAGE_KEY);
@@ -262,13 +252,7 @@ function renderResult(resultDiv, html) {
   resultDiv.classList.remove("scx-contract-profit-hidden");
 }
 
-/**
- * Calculate and display profit breakdown in the sidebar widget.
- * Profit = Revenue − Sourcing − Transport
- *   Revenue  = amount × price
- *   Sourcing = amount × sourcing_cost_per_unit
- *   Transport = transport_count × transport_market_price
- */
+// Profit = amount × price − amount × sourcing cost − transport units × transport market price
 async function calculateAndDisplayProfit() {
   const resultDiv = document.getElementById(PROFIT_RESULT_ID);
   const calcBtn = document.getElementById(CALC_BUTTON_ID);
@@ -358,11 +342,7 @@ function injectIfNeeded() {
   container.id = CONTAINER_ID;
   container.className = "scx-sidebar-footer-contract scx-contract-helper";
 
-  container.innerHTML = `
-    <div class="scx-contract-title">
-      <span class="scx-contract-title-icon">📝</span>
-      <span>${t("contractApplyTooltip")}</span>
-    </div>
+  const priceHtml = `
     <div class="scx-contract-mode" role="group" aria-label="${t("contractPriceModeLabel")}">
       <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_PERCENT}">${t("contractModePercent")}</button>
       <button type="button" class="scx-btn scx-contract-mode-btn" data-mode="${PRICE_MODE_FIXED}">${t("contractModeFixed")}</button>
@@ -400,19 +380,24 @@ function injectIfNeeded() {
           value="${fixedPrice ?? ""}"
         />
       </div>
-      <button id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-btn scx-btn-info scx-contract-apply-btn">
+      <button type="button" id="${APPLY_BUTTON_ID}" title="${t("contractApplyTooltip")}" class="scx-btn scx-btn-info scx-contract-apply-btn">
         ${t("contractApplyBtn")}${discountPct}%
       </button>
     </div>
     <div class="scx-contract-profit-panel">
-      <button id="${CALC_BUTTON_ID}" class="scx-btn scx-btn-success scx-contract-calc-btn">
+      <button type="button" id="${CALC_BUTTON_ID}" class="scx-btn scx-btn-success scx-contract-calc-btn">
         💰 ${t("contractCalcProfit")}
       </button>
       <div id="${PROFIT_RESULT_ID}" class="scx-contract-profit-result scx-contract-profit-hidden"></div>
     </div>
   `;
+  container.innerHTML = renderContractTabs(t, { priceHtml, rulesHtml: "" });
+  wireContractTabs(container);
 
-  mountContractRulesPanel(container);
+  mountContractRulesPanel(
+    container.querySelector(`[data-scx-tabpanel="${TAB_RULES}"]`),
+    container.querySelector(`[data-scx-tabpanel="${TAB_PRICE}"]`),
+  );
 
   // Append to sidebar — appears after the existing footer buttons
   sidebar.appendChild(container);
@@ -436,7 +421,7 @@ function injectIfNeeded() {
       domain: STORAGE_DOMAIN,
       version: STORAGE_VERSION,
       scope: "global",
-      backend: "local",
+      backend: "chrome",
       refreshAuth: false,
       data: discountPct,
     });

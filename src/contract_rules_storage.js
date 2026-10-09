@@ -1,10 +1,6 @@
-// contract_rules_storage.js
-// Persistence bridge for saved contract rule templates.
-//
-// Rules live in chrome.storage.sync so they follow the user across devices.
-// Sync can refuse a write (8KB per-item quota, sync turned off), so every save
-// that sync rejects lands in chrome.storage.local instead. That local copy only
-// exists while it is newer than the synced one, and wins on the next load.
+// why: rules live in chrome.storage.sync to follow the user across devices. A write sync
+// refuses (8KB quota, sync off) goes to chrome.storage.local, which wins on the next load
+// and is dropped once a sync write succeeds.
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
 import { storage } from "./data/storage.js";
@@ -64,7 +60,6 @@ async function writeSnapshot(storageApi, data) {
 }
 
 /**
- * Save current rules snapshot.
  * @param {{rules: object[], nextRuleId: number, state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} input
  * @returns {Promise<{saved: boolean, synced: boolean}>}
  */
@@ -81,7 +76,6 @@ export async function saveRulesSnapshot(input) {
 }
 
 /**
- * Load rules snapshot.
  * @param {{state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} [input]
  * @returns {Promise<{rules: object[], nextRuleId: number, synced: boolean} | null>} Null when
  *   nothing is stored. Rejects when the account is unknown, which is not the same as empty.

@@ -1,4 +1,3 @@
-// retail_ui.js
 import { STATE } from "./state.js";
 import {
   formatMoney,
@@ -29,6 +28,8 @@ import {
   findFirstRetailRow,
   findRetailRowFromTarget,
   isRetailSellInput,
+  readRetailDurationText,
+  readRetailProfitPerUnit,
   readRetailRow,
 } from "./page/retail_page.js";
 import {
@@ -52,73 +53,10 @@ export const RetailHelper = (() => {
   const parseMoney = parseLocaleNumber;
 
   function extractFinishSeconds(row) {
-    const infoCol = readRetailRow(row)?.infoColumnEl;
-    if (!infoCol) return NaN;
-
-    // Duration is always in parentheses like (11h, 7m) or (13st, 31m) — language-agnostic
-    const text = infoCol.textContent || "";
-    const paren = text.match(/\(([^)]*\d+\s*(?:st|[dhmst])[^)]*)\)/);
-    if (paren) return parseDurationToSeconds(paren[1]);
-
-    // Try to locate a dedicated duration element (e.g., "51m, 16s") to avoid
-    // concatenation with time-of-day strings like "08:13"
-    let durationText = "";
-    const durationPattern = /\d+\s*(?:d|t|h|st|m|s)\b/i;
-    for (const el of infoCol.querySelectorAll(":scope *")) {
-      const t = el.textContent || "";
-      if (durationPattern.test(t) && !/\d{1,2}:\d{2}/.test(t)) {
-        durationText = t;
-      }
-    }
-    if (durationText) return parseDurationToSeconds(durationText);
-
-    // Fallback: game may display duration inline without parentheses
-    return parseDurationToSeconds(text);
+    return parseDurationToSeconds(readRetailDurationText(row));
   }
 
-  function extractProfitPerUnit(row) {
-    const infoCol = readRetailRow(row)?.infoColumnEl;
-    if (!infoCol) return NaN;
-
-    // The profit div is the one containing an SVG (question-mark icon) — language-agnostic
-    const childDivs = [...infoCol.querySelectorAll(":scope > div")];
-    let profitDiv = childDivs.find((d) => d.querySelector("svg"));
-
-    // Fallback: if the game no longer renders an SVG tooltip, find a div whose
-    // entire text content is a bare dollar amount (no label text before it),
-    // e.g. "$0.30" or "−$1,234.56" but NOT "Average price: $8.67"
-    if (!profitDiv) {
-      profitDiv = childDivs.find((d) => /^\s*[-−]?\s*\$\s*[\d.,]+\s*$/.test(d.textContent));
-    }
-
-    if (!profitDiv) return NaN;
-
-    const text = profitDiv.textContent || "";
-    // Extract dollar value — supports both EN ($1,234.56) and DE ($1.234,56)
-    const match = text.match(/([-−]?)\s*\$\s*([\d.,]+)/);
-    if (!match) return NaN;
-
-    const val = parseMoney(match[2]);
-    if (!isFinite(val)) return NaN;
-
-    // explicit minus formats
-    const hasExplicitMinus =
-      match[1].length > 0 || /-\s*\$/.test(text) || /−\s*\$/.test(text) || /\(\s*\$?\s*\d/.test(text);
-
-    if (hasExplicitMinus) return -Math.abs(val);
-
-    // implicit negative by red-ish text
-    const color = getComputedStyle(profitDiv).color;
-    const mm = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-    if (mm) {
-      const r = Number(mm[1]),
-        g = Number(mm[2]),
-        b = Number(mm[3]);
-      if (r > 150 && g < 100 && b < 100) return -Math.abs(val);
-    }
-
-    return Math.abs(val);
-  }
+  const extractProfitPerUnit = (row) => readRetailProfitPerUnit(row);
 
   const extractProductId = (row) => readRetailRow(row)?.productId ?? null;
 
@@ -199,7 +137,7 @@ export const RetailHelper = (() => {
 
       const ms = STATE.marketState;
 
-      // if your market module stores productId in marketState, this prevents stale display:
+      // Avoid showing another product's market data while it loads.
       if (ms?.productId != null && productId != null && ms.productId !== productId) {
         return { status: t("loading"), cheapestPrice: "—", cheapestQty: "—", youVs: "—", note: "" };
       }
@@ -412,7 +350,6 @@ export async function updatePanel() {
           const recipe = getRecipeByProductId(productId);
           const transportUnits = recipe?.transport || 0;
 
-          // Avg Cost (from inventory)
           const avgCost = inv.totalCost / inv.amount || 0;
 
           // Market Sells
@@ -597,7 +534,7 @@ export async function updatePanel() {
         <div class="scx-retail-product-name">
           ${productName}
         </div>
-        <button class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}">
+        <button type="button" class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>
@@ -619,7 +556,6 @@ export async function updatePanel() {
     </div>
   `;
 
-  // Wire up copy button
   wireCopyButton(contentEl, () =>
     formatRetailAsText(retailRow.productName, metrics, productId, realmId, marketAnalysisData),
   );

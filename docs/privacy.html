@@ -62,7 +62,7 @@
 
       <div class="card">
         <h1>Privacy Policy</h1>
-        <p><strong>Last Updated:</strong> February 1, 2026</p>
+        <p><strong>Last Updated:</strong> October 5, 2026</p>
 
         <h2>1. Overview</h2>
         <p>
@@ -89,10 +89,12 @@
           calculation data is kept in temporary browser memory and is discarded when you close the tab or
           reload the page. Some user preferences and saved alerts are stored locally in your browser using
           extension storage so features like price alerts, discounts, and message settings persist across
-          sessions. This data stays on your device and is never transmitted to us. <br /><br />
-          To display a user-friendly "What's New" message after an install or update, the Extension may fetch
-          public release notes from GitHub. No personal data is sent to GitHub beyond standard browser network
-          requests.
+          sessions. This data is never transmitted to us. <br /><br />
+          Saved contract rules are stored with Chrome sync storage (<code>chrome.storage.sync</code>), so they
+          follow you to other browsers where you are signed in to Chrome with the same Google account. Chrome
+          handles this sync under Google's privacy policy; we have no access to it. If Chrome sync is off, the
+          rules stay on this device only. <br /><br />
+          The "What's New" release notes are bundled inside the Extension; nothing is downloaded to show them.
         </p>
 
         <h2>4. Permissions</h2>

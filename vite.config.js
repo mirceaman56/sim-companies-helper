@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
-import { copyFileSync, mkdirSync } from "fs";
 
+// Two builds share dist/: `--mode content` (content script + CSS, clears dist) runs first,
+// then `--mode background` (service worker) appends. Source maps stay in dist/ for local
+// debugging; scripts/pack-extension.mjs leaves them out of the store zip.
 export default defineConfig(({ mode }) => {
-  const target = mode === "background" ? "background" : "content";
-  const isContent = target === "content";
+  const isContent = mode !== "background";
 
   return {
     test: {
@@ -14,7 +15,8 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       emptyOutDir: isContent,
       sourcemap: true,
-      minify: false,
+      minify: true,
+      target: "chrome116", // keep in sync with minimum_chrome_version in public/manifest.json
       rollupOptions: {
         input: isContent
           ? {
@@ -30,22 +32,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    plugins: isContent
-      ? [
-          {
-            name: "copy-recipes",
-            apply: "build",
-            enforce: "post",
-            generateBundle() {
-              mkdirSync(resolve(__dirname, "dist"), { recursive: true });
-              mkdirSync(resolve(__dirname, "dist/resources"), { recursive: true });
-              copyFileSync(
-                resolve(__dirname, "src/resources/recipes.json"),
-                resolve(__dirname, "dist/resources/recipes.json"),
-              );
-            },
-          },
-        ]
-      : [],
   };
 });

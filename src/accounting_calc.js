@@ -1,8 +1,5 @@
-// accounting_calc.js
-// Pure accounting-overhead math. Mirrors the game's own client logic:
-//   Accounting base = (Bonds owned - Bonds sold) + Cash - Executives' lift
-// Fees are charged daily on the base above the $3M free threshold, using
-// marginal (tax-style) brackets.
+// Mirrors the game's client logic: base = net bonds + cash - executives' lift; the daily fee
+// applies marginal brackets to the base above the $3M free threshold.
 
 export const ACCOUNTING_FREE_THRESHOLD = 3_000_000;
 export const BOND_UNIT_VALUE = 5_000;
@@ -197,7 +194,6 @@ export function getMarginalRate(base) {
 }
 
 /**
- * Full accounting summary.
  * @param {{ cash: number, netBonds?: number, lift?: number }} input
  */
 export function buildAccountingSummary({ cash, netBonds = 0, lift = 0 }) {

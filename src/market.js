@@ -1,7 +1,6 @@
-// market.js
 import { STATE } from "./state.js";
 import { getRealmId } from "./auth.js";
-import { RATE_LIMIT_COOLDOWN_MS, MARKET_CACHE_TTL_MS, MARKET_ERROR_RETRY_MS } from "./constants.js";
+import { MARKET_CACHE_TTL_MS, MARKET_ERROR_RETRY_MS } from "./constants.js";
 import { request, getRateLimitStatus as getApiRateLimitStatus } from "./data/apiClient.js";
 
 /**
@@ -51,7 +50,6 @@ export async function fetchMarket(realmId, productId) {
       coalesceKey: cacheKey,
       retries: 1,
       retryDelayMs: 300,
-      rateLimitCooldownMs: RATE_LIMIT_COOLDOWN_MS,
     });
 
     STATE.marketCache.set(cacheKey, { ts: now, data });
@@ -68,7 +66,6 @@ export async function fetchMarketPrice(realmId, productId, quality = 0) {
     const data = await fetchMarket(realmId, productId);
     if (!Array.isArray(data) || data.length === 0) return null;
 
-    // Find exact quality match
     const exactMatch = data.find((item) => Number.isFinite(item.quality) && item.quality === quality);
     if (exactMatch && Number.isFinite(exactMatch.price)) {
       return exactMatch.price;

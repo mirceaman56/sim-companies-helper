@@ -1,4 +1,3 @@
-// nav_chip.js
 // Shared markup + behavior for navbar status chips (cash, level) and their
 // detail popovers. Styling lives in src/styles/components/nav-chip.css.
 import { escapeHtml } from "./utils.js";

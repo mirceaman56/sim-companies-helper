@@ -1,5 +1,5 @@
-import { parseLocaleNumber, extractProductIdFromRow } from "../utils.js";
-import { findAncestorWithin } from "./page_utils.js";
+import { parseLocaleNumber } from "../utils.js";
+import { extractProductIdFromRow, findAncestorWithin } from "./page_utils.js";
 
 const AMOUNT_INPUT_SELECTOR = 'input[name="amount"]';
 const RESOURCE_LINK_SELECTOR = 'a[href*="/encyclopedia/"][href*="/resource/"]';
@@ -180,15 +180,8 @@ export function getProductionQuantity(row) {
   return value > 0 ? value : 1;
 }
 
-/**
- * Classify one stat value by shape instead of by its label:
- *  - a clock value ("7:44 PM")      -> ignored
- *  - "%"                            -> abundance
- *  - money + a per-hour rate        -> wages per hour
- *  - money                          -> a cost cell, with every amount it holds
- *  - a per-hour rate                -> output per hour
- *  - plain digits                   -> current stock
- */
+// why: labels are localized, so classify by shape: clock → ignore, "%" → abundance,
+// money + per-hour → wages/h, money → cost cell, per-hour → output/h, digits → stock.
 function classifyStatValue(text) {
   const raw = String(text || "").trim();
   if (!/\d/.test(raw)) return null;
@@ -213,14 +206,8 @@ function classifyStatValue(text) {
   return isRate ? { kind: "productionPerHour", value } : { kind: "stock", value };
 }
 
-/**
- * Pick the cost of one produced unit out of the cost cells.
- *
- * The cell that also carries the warehouse comparison holds two amounts (the
- * order's unit cost first, the stocked average second). Otherwise the list is
- * ordered total labor cost, then unit cost. A single cost cell is ambiguous, so
- * nothing is reported rather than guessing.
- */
+// why: a cell with the warehouse comparison holds [unit cost, stocked average]; otherwise cells
+// are [total labor, unit cost]. A single cell is ambiguous, so report nothing.
 function resolveUnitCost(costCells) {
   const paired = costCells.find((cell) => cell.values.length >= 2);
   if (paired) {
@@ -293,12 +280,7 @@ function getBusyValueIndex(cell) {
   return Number.isFinite(index) ? index : Number.MAX_SAFE_INTEGER;
 }
 
-/**
- * Classify a running-order value cell without reading its label:
- *  - "%" suffix -> percent (abundance)
- *  - a currency mark -> money
- *  - digits only -> plain number (quantity / quality)
- */
+// Running-order cell by shape: "%" → abundance, currency → money, digits → quantity/quality.
 function classifyBusyValue(text) {
   const raw = String(text || "").trim();
   if (!/\d/.test(raw)) return null;
@@ -348,10 +330,8 @@ function pickBusyQuantityEntry(numbers, unitCost, sourcingValue) {
 }
 
 /**
- * Product name from the block heading.
- * The setup heading reads "<product><nested quality markers>", the running
- * order heading reads "<static word><nested product>", so the two take the
- * opposite part of the same element.
+ * why: setup heading is "<product><nested quality>", running order is "<word><nested product>",
+ * so each reads the opposite part of the element.
  * @param {Element | null | undefined} block
  * @param {{ fromNested?: boolean }} [input]
  */

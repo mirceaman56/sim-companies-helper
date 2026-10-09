@@ -1,4 +1,3 @@
-// contract_rules_render.js
 // Rendering helpers for the saved contract rule templates panel.
 
 import { escapeHtml, formatDiscountPct } from "./utils.js";
@@ -149,11 +148,11 @@ function saveForm(t, { noteDraft, noteMaxLength, disabled }) {
 }
 
 /**
- * Render the panel for a selected company: its saved rules (pre-filtered —
- * this module never filters) followed by the save form, or the limit notice
- * once the per-customer cap is reached.
+ * Saved rules of the selected company (already filtered by the caller), then the save form
+ * or the per-customer limit notice.
  * @param {{
  *  container: HTMLElement,
+ *  saveContainer?: HTMLElement|null,
  *  rules: object[],
  *  t: (key: string) => string,
  *  formatMoney: (v: number, opts?: object) => string,
@@ -170,6 +169,7 @@ function saveForm(t, { noteDraft, noteMaxLength, disabled }) {
 export function renderRulesPanel(input) {
   const {
     container,
+    saveContainer = null,
     rules,
     t,
     formatMoney,
@@ -192,26 +192,33 @@ export function renderRulesPanel(input) {
       ? `<div class="scx-contract-rules-empty">${t("contractRuleLimitReached")}</div>`
       : saveForm(t, { noteDraft, noteMaxLength, disabled });
 
-  container.innerHTML = panelShell(
+  const shellHtml = panelShell(
     t,
-    `${statusBanner(t, status)}${listHtml}${footerHtml}`,
+    `${statusBanner(t, status)}${listHtml}`,
     `${rules.length}/${maxPerCustomer}`,
   );
+  if (saveContainer) {
+    container.innerHTML = shellHtml;
+    saveContainer.innerHTML = footerHtml;
+  } else {
+    container.innerHTML = `${shellHtml}${footerHtml}`;
+  }
 
   wireRuleActions(container, onAction);
 
-  container.querySelector(".scx-contract-rules-save-btn")?.addEventListener("click", onSaveCurrent);
-  container
+  const formRoot = saveContainer ?? container;
+  formRoot.querySelector(".scx-contract-rules-save-btn")?.addEventListener("click", onSaveCurrent);
+  formRoot
     .querySelector(`#${NOTE_INPUT_ID}`)
     ?.addEventListener("input", (e) => onNoteInput?.(e.target.value));
 }
 
 /**
- * Render the state shown before a beneficiary is picked: a hint, plus every
- * saved rule for this product labelled with its company, so rules can be found
- * and deleted without first selecting the right company.
+ * Before a beneficiary is picked: a hint plus every saved rule for this product, labelled
+ * with its company, so rules can be deleted without selecting the company first.
  * @param {{
  *  container: HTMLElement,
+ *  saveContainer?: HTMLElement|null,
  *  t: (key: string) => string,
  *  rules?: object[],
  *  formatMoney?: (v: number, opts?: object) => string,
@@ -220,7 +227,15 @@ export function renderRulesPanel(input) {
  * }} input
  */
 export function renderNoCompanySelectedState(input) {
-  const { container, t, rules = [], formatMoney, status = "synced", onAction = () => {} } = input;
+  const {
+    container,
+    saveContainer = null,
+    t,
+    rules = [],
+    formatMoney,
+    status = "synced",
+    onAction = () => {},
+  } = input;
 
   const listHtml =
     rules.length > 0
@@ -233,6 +248,11 @@ export function renderNoCompanySelectedState(input) {
     t,
     `${statusBanner(t, status)}<div class="scx-contract-rules-empty">${t("contractRuleSelectCompanyHint")}</div>${listHtml}`,
   );
+
+  // The save form needs a company; say so where the form normally sits.
+  if (saveContainer) {
+    saveContainer.innerHTML = `<div class="scx-contract-rules-empty">${t("contractRuleSelectCompanyHint")}</div>`;
+  }
 
   wireRuleActions(container, onAction);
 }

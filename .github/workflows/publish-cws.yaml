@@ -3,6 +3,9 @@ name: Publish to Chrome Web Store
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,20 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: "24"
-          cache: "npm"
-
-      - name: Install
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Pack ZIP
-        run: npm run pack
+      # Publish exactly the zip attached to the GitHub release for the manifest version,
+      # so the store gets the verified build that already ships its changelog.
+      - name: Download release zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./public/manifest.json').version")
+          gh release download "v$VERSION" --pattern "sim-companies-extension-chrome.zip"
 
       # MobileFirstLLC/cws-publish is unmaintained (node16 runtime), so the
       # Chrome Web Store API is driven directly by fregante's CLI instead.
@@ -35,7 +32,7 @@ jobs:
           CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
-        run: npx --yes chrome-webstore-upload-cli@4 upload --source sim-companies-extension-chrome.zip
+        run: npx --yes chrome-webstore-upload-cli@4.0.1 upload --source sim-companies-extension-chrome.zip
 
       - name: Submit for Review
         env:
@@ -44,4 +41,4 @@ jobs:
           CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
-        run: npx --yes chrome-webstore-upload-cli@4 publish
+        run: npx --yes chrome-webstore-upload-cli@4.0.1 publish

@@ -91,6 +91,32 @@ describe("contract_rules_ui", () => {
     expect(document.querySelector('[data-rule-id="1"]')).not.toBeNull();
   });
 
+  it("renders the save form in its own parent, apart from the rules list", async () => {
+    document.body.innerHTML = loadFixture("beneficiary-selected.html");
+    const listParent = document.createElement("div");
+    const saveParent = document.createElement("div");
+    document.body.append(listParent, saveParent);
+    mountContractRulesPanel(listParent, saveParent);
+
+    refreshContractRulesPanel(document);
+
+    expect(saveParent.querySelector(".scx-contract-rules-save-btn")).not.toBeNull();
+    expect(listParent.querySelector(".scx-contract-rules-save-btn")).toBeNull();
+    expect(listParent.querySelector(".scx-contract-rules-empty")?.textContent).toBe("contractRuleNoMatch");
+  });
+
+  it("shows the select-company hint where the save form sits before a company is picked", async () => {
+    document.body.innerHTML = loadFixture("beneficiary-not-selected.html");
+    const listParent = document.createElement("div");
+    const saveParent = document.createElement("div");
+    document.body.append(listParent, saveParent);
+    mountContractRulesPanel(listParent, saveParent);
+
+    refreshContractRulesPanel(document);
+
+    expect(saveParent.textContent.trim()).toBe("contractRuleSelectCompanyHint");
+  });
+
   it("shows the save-current prompt when no rule matches the product+company", async () => {
     document.body.innerHTML = loadFixture("beneficiary-selected.html");
     mountPanel();
@@ -196,12 +222,8 @@ describe("contract_rules_ui", () => {
   });
 
   it("recovers even if the panel is mid-remount exactly when the async load resolves", async () => {
-    // Reproduces the confirmed real-world bug: the beneficiary gets selected
-    // before the storage read finishes (stale empty-rules render), AND the
-    // widget container happens to be torn down/recreated (contract_ui.js's
-    // observer-driven removeIfPresent()/injectIfNeeded() cycle) at the exact
-    // moment the load resolves, so that specific refresh attempt finds no
-    // panel. The rule must still show up on the next natural refresh.
+    // why: real bug — beneficiary picked before the read finishes while the widget is being
+    // re-injected, so that refresh finds no panel. The rule must appear on the next refresh.
     let resolveSnapshot;
     loadRulesSnapshot.mockReturnValueOnce(
       new Promise((resolve) => {

@@ -202,7 +202,9 @@ describe("contract_ui discount input", () => {
     expect(fixedBtn.getAttribute("aria-pressed")).toBe("true");
     expect(percentBtn.getAttribute("aria-pressed")).toBe("false");
     expect(container.querySelector(".scx-contract-fixed-field").classList.contains("scx-hidden")).toBe(false);
-    expect(container.querySelector(".scx-contract-percent-field").classList.contains("scx-hidden")).toBe(true);
+    expect(container.querySelector(".scx-contract-percent-field").classList.contains("scx-hidden")).toBe(
+      true,
+    );
     expect(document.querySelector('label[for="scx-contract-fixed-price-input"]')).not.toBeNull();
 
     const fixedInput = document.getElementById("scx-contract-fixed-price-input");

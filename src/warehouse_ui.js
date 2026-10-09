@@ -1,5 +1,4 @@
 /**
- * warehouse_ui.js
  * Adds on-demand market price comparison buttons to inventory items.
  */
 
@@ -8,11 +7,12 @@ import { getRealmId } from "./auth.js";
 import { COPY_BUTTON_SVG, escapeHtml, formatMoney, wireCopyButton } from "./utils.js";
 import { t } from "./i18n.js";
 import { storage } from "./data/storage.js";
-import { observeMutations } from "./page/page_utils.js";
+import { observeMutations, onRouteChange, waitForStructuralValue } from "./page/page_utils.js";
 import {
   extractWarehousePageItems,
   findWarehouseSalesBuilderTarget,
   findWarehouseInventoryContainer,
+  findWarehouseInventoryList,
   getOrCreateWarehouseMarketButton,
   isWarehouseOverviewPage,
   isWarehousePage,
@@ -24,12 +24,23 @@ import {
   fetchWarehouseStockRows,
   WAREHOUSE_INVENTORY_CACHE_TTL_MS,
 } from "./warehouse_inventory_service.js";
+import {
+  compactQuantity,
+  calculateMarginPrice,
+  getRowPrice,
+  hasManualPriceOverride,
+  buildSellMessageLine,
+  buildSalesMessage,
+  getSelectedProductRows,
+  normalizeRowKey,
+} from "./warehouse_sales_calc.js";
 
 const SALES_BUILDER_ID = "scx-warehouse-sales-builder";
 const SALES_BUILDER_COPY_ID = "scx-warehouse-sales-copy";
 const SALES_BUILDER_STORAGE_DOMAIN = "warehouse-sales-builder";
 const SALES_BUILDER_STORAGE_VERSION = 1;
 const DEFAULT_MARGIN_PCT = 5;
+const WAREHOUSE_RENDER_TIMEOUT_MS = 15_000;
 
 const BUTTON_STATE_IDLE = "idle";
 const BUTTON_STATE_LOADING = "loading";
@@ -49,10 +60,6 @@ let suppressWarehouseObserverUntil = 0;
 let injectInFlight = false;
 let injectQueued = false;
 
-function normalizeRowKey(row) {
-  return row?.key || `${row?.kind}:${row?.quality}`;
-}
-
 function buildSalesFieldId(prefix, key) {
   return `${prefix}-${String(key || "")
     .toLowerCase()
@@ -68,79 +75,12 @@ function isWarehouseObserverSuppressed() {
   return Date.now() < suppressWarehouseObserverUntil;
 }
 
-function compactQuantity(value) {
-  const amount = Number(value || 0);
-  if (!Number.isFinite(amount)) return "0";
-
-  const abs = Math.abs(amount);
-  const units = [
-    { value: 1_000_000_000, suffix: "B" },
-    { value: 1_000_000, suffix: "M" },
-    { value: 1_000, suffix: "K" },
-  ];
-
-  for (const unit of units) {
-    if (abs >= unit.value) {
-      const scaled = amount / unit.value;
-      const rounded = Number.isInteger(scaled) ? scaled.toFixed(0) : scaled.toFixed(1).replace(/\.0$/, "");
-      return `${rounded}${unit.suffix}`;
-    }
-  }
-
-  return Math.round(amount).toLocaleString("en-US");
-}
-
-function calculateMarginPrice(unitCost, marginPct) {
-  const cost = Number(unitCost || 0);
-  const margin = Number(marginPct || 0);
-  if (!Number.isFinite(cost) || cost <= 0) return 0;
-  return cost * (1 + margin / 100);
-}
-
-function normalizePriceInput(value) {
-  const raw = String(value ?? "")
-    .trim()
-    .replace(/[$,\s]/g, "");
-  if (!raw) return null;
-  const price = Number(raw);
-  return Number.isFinite(price) && price >= 0 ? price : null;
-}
-
-function getRowPrice(row, settings = salesBuilderSettings) {
-  const key = normalizeRowKey(row);
-  const manualPrice = normalizePriceInput(settings.manualPrices?.[key]);
-  if (manualPrice !== null) return manualPrice;
-  return calculateMarginPrice(row.unitCost, settings.marginPct);
-}
-
-function hasManualPriceOverride(row, settings = salesBuilderSettings) {
-  const key = normalizeRowKey(row);
-  return normalizePriceInput(settings.manualPrices?.[key]) !== null;
-}
-
-function buildSellMessageLine(row, settings = salesBuilderSettings) {
-  const price = getRowPrice(row, settings);
-  if (!Number.isFinite(price) || price <= 0) return "";
-
-  const quality = Math.round(Number(row.quality || 0));
-  return `sell ${compactQuantity(row.amount)} :re-${row.kind}: Q${quality} @ ${formatMoney(price, { decimals: 2 })}`;
-}
-
-function buildSalesMessage(rows, settings = salesBuilderSettings) {
-  const selectedKeys = new Set(settings.selectedKeys || []);
-  return (Array.isArray(rows) ? rows : [])
-    .filter((row) => selectedKeys.has(normalizeRowKey(row)))
-    .map((row) => buildSellMessageLine(row, settings))
-    .filter(Boolean)
-    .join("\n");
-}
-
 async function hydrateSalesBuilderSettings() {
   const data = await storage.get({
     domain: SALES_BUILDER_STORAGE_DOMAIN,
     version: SALES_BUILDER_STORAGE_VERSION,
     scope: "global",
-    backend: "local",
+    backend: "chrome",
     refreshAuth: false,
   });
 
@@ -167,7 +107,7 @@ function persistSalesBuilderSettings() {
     domain: SALES_BUILDER_STORAGE_DOMAIN,
     version: SALES_BUILDER_STORAGE_VERSION,
     scope: "global",
-    backend: "local",
+    backend: "chrome",
     refreshAuth: false,
     data: {
       marginPct: salesBuilderSettings.marginPct,
@@ -259,11 +199,6 @@ async function handleMarketButtonClick(button, item) {
   }
 }
 
-function getSelectedProductRows(rows, settings = salesBuilderSettings) {
-  const productIds = new Set((settings.productIds || []).map(Number));
-  return (Array.isArray(rows) ? rows : []).filter((row) => productIds.has(Number(row.kind)));
-}
-
 function renderSalesBuilderRows(rows, allRows) {
   const selectedKeys = new Set(salesBuilderSettings.selectedKeys || []);
 
@@ -294,9 +229,9 @@ function renderSalesBuilderRows(rows, allRows) {
             const selectInputId = buildSalesFieldId("scx-warehouse-sales-select", key);
             const selected = selectedKeys.has(key) ? " checked" : "";
             const manualValue = salesBuilderSettings.manualPrices[key] ?? "";
-            const price = getRowPrice(row);
-            const messagePreview = buildSellMessageLine(row);
-            const showReset = hasManualPriceOverride(row);
+            const price = getRowPrice(row, salesBuilderSettings);
+            const messagePreview = buildSellMessageLine(row, salesBuilderSettings);
+            const showReset = hasManualPriceOverride(row, salesBuilderSettings);
 
             return `
               <label class="scx-warehouse-sales-row" data-row-key="${escapeHtml(key)}">
@@ -350,7 +285,7 @@ function renderSalesBuilderRows(rows, allRows) {
 }
 
 function updateSalesBuilderCopyState(container, rows) {
-  const message = buildSalesMessage(rows);
+  const message = buildSalesMessage(rows, salesBuilderSettings);
   const copyButton = container.querySelector(`#${SALES_BUILDER_COPY_ID}`);
   const output = container.querySelector("[data-sales-output]");
 
@@ -363,7 +298,7 @@ function updateSalesBuilderCopyState(container, rows) {
 }
 
 function attachSalesBuilderHandlers(container, rows) {
-  wireCopyButton(container, () => buildSalesMessage(rows));
+  wireCopyButton(container, () => buildSalesMessage(rows, salesBuilderSettings));
 
   container.addEventListener("click", (event) => {
     const target = event.target;
@@ -447,7 +382,7 @@ async function renderSalesBuilder(existingRows = null) {
 
   salesBuilderRowsCache = rows;
   rows.sort((a, b) => String(a.name).localeCompare(String(b.name)) || Number(a.quality) - Number(b.quality));
-  const visibleRows = getSelectedProductRows(rows);
+  const visibleRows = getSelectedProductRows(rows, salesBuilderSettings);
 
   suppressWarehouseObserver();
   document.getElementById(SALES_BUILDER_ID)?.remove();
@@ -635,7 +570,7 @@ export function initWarehouseHelper() {
 
   let observerActive = false;
   let stopInventoryObserver = null;
-  let urlCheckInterval = null;
+  let stopRouteWatch = null;
   let debounceTimer = null;
 
   function debouncedInject() {
@@ -647,17 +582,28 @@ export function initWarehouseHelper() {
     }, 500);
   }
 
-  function startObserver() {
+  let observerGeneration = 0;
+
+  // The game renders the inventory after the route changes, so wait for the cards before
+  // binding: observing a list that is not (yet) the warehouse list never fires again.
+  async function startObserver() {
     if (observerActive) return;
     observerActive = true;
+    const generation = ++observerGeneration;
 
-    const inventoryContainer = findWarehouseInventoryContainer(document);
-    stopInventoryObserver = observeMutations(inventoryContainer, debouncedInject, {
-      childList: true,
-      subtree: true,
-      attributes: false,
-      characterData: false,
+    const inventoryList = await waitForStructuralValue({
+      target: document.body,
+      readValue: () => findWarehouseInventoryList(document),
+      isReady: Boolean,
+      timeoutMs: WAREHOUSE_RENDER_TIMEOUT_MS,
     });
+    if (generation !== observerGeneration) return; // left or re-entered the page meanwhile
+
+    stopInventoryObserver = observeMutations(
+      inventoryList || findWarehouseInventoryContainer(document),
+      debouncedInject,
+      { childList: true, subtree: true, attributes: false, characterData: false },
+    );
 
     void queueInjectMarketButtons();
   }
@@ -671,33 +617,26 @@ export function initWarehouseHelper() {
       stopInventoryObserver();
       stopInventoryObserver = null;
     }
+    observerGeneration += 1;
     observerActive = false;
   }
 
   function monitorNavigation() {
-    let lastUrl = window.location.href;
-
-    urlCheckInterval = setInterval(() => {
-      const currentUrl = window.location.href;
-      if (currentUrl === lastUrl) return;
-      lastUrl = currentUrl;
-
-      if (isWarehousePage(window.location.pathname)) {
-        startObserver();
-      } else if (observerActive) {
-        stopObserver();
-      }
-    }, 1000);
+    stopRouteWatch = onRouteChange(() => {
+      // Every warehouse route renders a fresh list: always rebind.
+      stopObserver();
+      if (isWarehousePage(window.location.pathname)) void startObserver();
+    });
   }
 
   window.addEventListener("beforeunload", () => {
-    if (urlCheckInterval) clearInterval(urlCheckInterval);
+    stopRouteWatch?.();
     stopObserver();
   });
 
   monitorNavigation();
   if (isWarehousePage(window.location.pathname)) {
-    startObserver();
+    void startObserver();
   }
 }
 

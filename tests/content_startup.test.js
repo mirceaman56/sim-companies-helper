@@ -24,7 +24,7 @@ vi.mock("../src/warehouse.js", () => ({
   }),
 }));
 vi.mock("../src/cashflow.js", () => ({
-  loadCashflowToday: vi.fn(async () => {
+  loadFinanceData: vi.fn(async () => {
     callOrder.push("cashflow");
   }),
 }));
@@ -100,27 +100,38 @@ describe("runStartupServices", () => {
     mockState.bonds.error = null;
   });
 
-  it("runs startup phases in order and wires post-start actions", async () => {
+  it("loads auth first, renders each widget after its own data, and wires retail last", async () => {
     await runStartupServices({ state: mockState, warn: vi.fn(), error: vi.fn() });
 
-    expect(callOrder).toEqual([
-      "auth",
-      "cleanup-buildings-cache",
-      "inventory",
-      "cashflow",
-      "buildings",
-      "xp-widget",
-      "executives",
-      "bonds",
-      "accounting-widget",
-      "market-alerts",
-      "cashflow-panel",
+    const at = (step) => callOrder.indexOf(step);
+    expect(callOrder.slice(0, 2)).toEqual(["auth", "cleanup-buildings-cache"]);
+    expect(at("xp-widget")).toBeGreaterThan(at("buildings"));
+    expect(at("cashflow-panel")).toBeGreaterThan(at("cashflow"));
+    for (const input of ["buildings", "executives", "bonds"]) {
+      expect(at("accounting-widget")).toBeGreaterThan(at(input));
+    }
+    for (const step of ["inventory", "market-alerts", "accounting-widget", "cashflow-panel"]) {
+      expect(at("schedule-update")).toBeGreaterThan(at(step));
+    }
+    expect(callOrder.slice(-5)).toEqual([
       "schedule-update",
       "retail-panel",
       "retail-autoselect",
-      "run-safe",
+      "schedule-update",
       "retail-panel",
     ]);
+  });
+
+  it("keeps going when one load throws", async () => {
+    const error = vi.fn();
+    const { loadInventoryOnce } = await import("../src/warehouse.js");
+    loadInventoryOnce.mockRejectedValueOnce(new Error("boom"));
+
+    await runStartupServices({ state: mockState, warn: vi.fn(), error });
+
+    expect(error).toHaveBeenCalledWith("[SimHelper] Inventory crashed:", expect.any(Error));
+    expect(callOrder).toContain("accounting-widget");
+    expect(callOrder).toContain("retail-autoselect");
   });
 
   it("continues with market alerts + post-load actions after initialization error", async () => {

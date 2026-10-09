@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Über PayPal unterstützen",
   supportOnKofi: "Unterstützung über Ko-Fi",
   reportBug: "Fehler melden",
+  suggestFeature: "Funktion vorschlagen",
   hideSidebar: "Seitenleiste ausblenden",
   showSidebar: "Seitenleiste einblenden",
   ensureProductionQuantity:
@@ -76,12 +77,6 @@ export default {
   breakEvenGt: "Break Even >",
   contractSell: "Vertragsverkauf",
   halfTransport: "50% Transport",
-  perUnit: "/Einheit",
-  cannotCalcProfit: "Gewinn kann nicht berechnet werden – Marktpreise fehlen",
-  sellingAnalysis: "Verkaufsanalyse",
-  grossProceeds: "Bruttoerlös",
-  marketFee4pct: "Marktgebühr (4%)",
-  netProceeds: "Nettoerlös",
   profitMargin: "Gewinnmarge",
   noItemSelected: "Kein Artikel ausgewählt",
   clickToShowStats: "Klicke auf Menge oder Preis, um Statistiken anzuzeigen.",
@@ -100,7 +95,6 @@ export default {
   loadingMarketPrices: "Lade Marktpreise...",
   loadingMarketData: "Lade Marktdaten...",
   marketError: "Marktfehler",
-  expenses: "Ausgaben",
   total: "Gesamt",
   retail: "Einzelhandel",
   contracts: "Verträge",
@@ -276,7 +270,6 @@ export default {
   financePeriodCurrent: "Aktuell",
   financePeriodDay: "Tag",
   financePeriodWeek: "Woche",
-  financePeriodMonth: "Monat",
   financePeriodInfoTitleCurrent: "Zeitraum: Heute",
   financePeriodInfoBodyCurrent: "Summen seit Mitternacht (lokale Zeit) bis jetzt.",
   financePeriodInfoTitleDay: "Zeitraum: Tag",
@@ -428,4 +421,6 @@ export default {
   xpLevelTransition: "Level {from} → {to}",
   acctExplainer:
     "Tägliche Gebühr auf Bargeld + Anleihen über dem Limit, bis zu 3 %. Gekaufte Anleihen zählen mit; ein besserer CFO oder eine Bank hebt das Limit an.",
+  copied: "Kopiert!",
+  upgradeMultiplier: "Multiplikator:",
 };

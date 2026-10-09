@@ -1,18 +1,32 @@
-// cashflow_ui.js
 import { loadFinanceData, setFinancePeriod, setFinanceUiMode } from "./cashflow.js";
 import { STATE } from "./state.js";
-import { formatMoney, escapeHtml, COPY_BUTTON_SVG } from "./utils.js";
+import { escapeHtml, COPY_BUTTON_SVG, writeClipboardText } from "./utils.js";
 import { getSectionContent } from "./sidebar.js";
 import { t } from "./i18n.js";
 import { renderStateBlock } from "./ui_state.js";
+import {
+  PERIOD_OPTIONS,
+  formatRefreshTime,
+  formatPct,
+  periodInfoTooltip,
+  statusToneClass,
+} from "./cashflow_format.js";
+import {
+  renderKpiStrip,
+  renderAlerts,
+  renderPnl,
+  renderCashMovement,
+  renderBalanceSheet,
+  renderRatios,
+  renderDrivers,
+  renderSalesMix,
+  renderInventoryProduction,
+  renderWorkforce,
+  renderTransactionTable,
+} from "./cashflow_render.js";
+import { formatFinanceAsText, buildVisibleFinanceAsText } from "./cashflow_text.js";
 
 const SECTION_ID = "cashflow-section";
-
-const PERIOD_OPTIONS = [
-  { id: "current", labelKey: "financePeriodCurrent" },
-  { id: "day", labelKey: "financePeriodDay" },
-  { id: "week", labelKey: "financePeriodWeek" },
-];
 
 const TRANSACTION_ROW_LIMIT = 20;
 
@@ -22,158 +36,6 @@ const uiState = {
   copyStatus: null,
   copyStatusTimer: null,
 };
-
-function formatRefreshTime(ms) {
-  if (!ms) return t("never");
-  const ago = Math.floor((Date.now() - ms) / 1000);
-  if (ago < 60) return `${ago}${t("sAgo")}`;
-  if (ago < 3600) return `${Math.floor(ago / 60)}${t("mAgo")}`;
-  return `${Math.floor(ago / 3600)}${t("hAgo")}`;
-}
-
-function formatPct(value, decimals = 1) {
-  if (!Number.isFinite(value)) return "—";
-  const sign = value > 0 ? "+" : "";
-  return `${sign}${value.toFixed(decimals)}%`;
-}
-
-function formatRatio(value) {
-  if (!Number.isFinite(value)) return "—";
-  return value.toFixed(2);
-}
-
-function metricLabel(metricId) {
-  const map = {
-    revenue: "financeKpiRevenue",
-    grossProfit: "financeKpiGrossProfit",
-    operatingProfit: "financeKpiOperatingProfit",
-    netProfit: "financeKpiNetProfit",
-    cashChange: "financeKpiCashChange",
-    cashBalance: "financeKpiCashBalance",
-    accountsReceivable: "financeKpiAr",
-    inventory: "financeKpiInventory",
-  };
-
-  return t(map[metricId] || metricId);
-}
-
-function metricTooltip(metricId) {
-  const map = {
-    revenue: "financeTooltipRevenue",
-    grossProfit: "financeTooltipGrossProfit",
-    operatingProfit: "financeTooltipOperatingProfit",
-    netProfit: "financeTooltipNetProfit",
-    cashChange: "financeTooltipCashChange",
-    cashBalance: "financeTooltipCashBalance",
-    accountsReceivable: "financeTooltipAr",
-    inventory: "financeTooltipInventory",
-  };
-
-  return t(map[metricId] || "");
-}
-
-function ratioLabel(ratioId) {
-  const map = {
-    grossMargin: "financeRatioGrossMargin",
-    operatingMargin: "financeRatioOperatingMargin",
-    netMargin: "financeRatioNetMargin",
-    currentRatio: "financeRatioCurrent",
-    cashToInventory: "financeRatioCashInventory",
-    debtToAssets: "financeRatioDebtAssets",
-  };
-
-  return t(map[ratioId] || ratioId);
-}
-
-function ratioTooltip(ratioId) {
-  const map = {
-    grossMargin: "financeTooltipGrossMargin",
-    operatingMargin: "financeTooltipOperatingMargin",
-    netMargin: "financeTooltipNetMargin",
-    currentRatio: "financeTooltipCurrentRatio",
-    cashToInventory: "financeTooltipCashInventory",
-    debtToAssets: "financeTooltipDebtAssets",
-  };
-
-  return t(map[ratioId] || "");
-}
-
-function periodInfoTooltip(period) {
-  const map = {
-    current: ["financePeriodInfoTitleCurrent", "financePeriodInfoBodyCurrent"],
-    day: ["financePeriodInfoTitleDay", "financePeriodInfoBodyDay"],
-    week: ["financePeriodInfoTitleWeek", "financePeriodInfoBodyWeek"],
-  };
-  const [titleKey, bodyKey] = map[period] || map.current;
-  return `${t(titleKey)}: ${t(bodyKey)}`;
-}
-
-function severityLabel(severity) {
-  if (severity === "danger") return t("financeSeverityDanger");
-  if (severity === "warn") return t("financeSeverityWarn");
-  return t("financeSeverityInfo");
-}
-
-function severityClass(severity) {
-  if (severity === "danger") return "scx-tone-surface scx-tone-error";
-  if (severity === "warn") return "scx-tone-surface scx-tone-warning";
-  return "scx-tone-surface scx-tone-info";
-}
-
-function statusToneClass(type) {
-  if (type === "ok") return "scx-tone-surface scx-tone-success";
-  if (type === "warn") return "scx-tone-surface scx-tone-warning";
-  if (type === "error") return "scx-tone-surface scx-tone-error";
-  return "scx-tone-surface scx-tone-info";
-}
-
-function deltaClass(delta) {
-  if (!Number.isFinite(delta) || delta === 0) return "";
-  return delta > 0 ? "scx-fin-pos" : "scx-fin-neg";
-}
-
-function formatMetricValue(metric) {
-  if (metric.id === "cashBalance" || metric.id === "accountsReceivable" || metric.id === "inventory") {
-    return Number.isFinite(metric.current) ? formatMoney(metric.current) : "—";
-  }
-
-  return Number.isFinite(metric.current) ? formatMoney(metric.current) : "—";
-}
-
-function formatMetricDelta(metric) {
-  if (!Number.isFinite(metric.delta)) return t("financeNoComparison");
-  const sign = metric.delta > 0 ? "+" : "";
-  const pct = Number.isFinite(metric.pct) ? ` (${formatPct(metric.pct)})` : "";
-  return `${sign}${formatMoney(metric.delta)}${pct}`;
-}
-
-function formatFinanceAsText(finance) {
-  const derived = finance?.derived;
-  if (!derived || !Array.isArray(derived.kpis)) return "";
-
-  const lines = [];
-  lines.push(
-    `${t("financialsHelper")} (${t("financePeriodLabel")} ${t(`financePeriod${capitalize(finance.selectedPeriod)}`)})`,
-  );
-  lines.push("");
-
-  for (const metric of derived.kpis) {
-    lines.push(`${metricLabel(metric.id)}: ${formatMetricValue(metric)} | ${formatMetricDelta(metric)}`);
-  }
-
-  lines.push("");
-  lines.push(`${t("financeSectionPnl")}:`);
-  lines.push(`  ${t("financeKpiRevenue")}: ${formatMoney(derived.pnl?.revenue?.current || 0)}`);
-  lines.push(`  ${t("financePnlDirectCosts")}: ${formatMoney(derived.pnl?.directCosts?.current || 0)}`);
-  lines.push(`  ${t("financeKpiGrossProfit")}: ${formatMoney(derived.pnl?.grossProfit?.current || 0)}`);
-  lines.push(`  ${t("financePnlOverhead")}: ${formatMoney(derived.pnl?.overhead?.current || 0)}`);
-  lines.push(
-    `  ${t("financeKpiOperatingProfit")}: ${formatMoney(derived.pnl?.operatingProfit?.current || 0)}`,
-  );
-  lines.push(`  ${t("financeKpiNetProfit")}: ${formatMoney(derived.pnl?.netProfit?.current || 0)}`);
-
-  return lines.join("\n");
-}
 
 function setCopyStatus(type, message) {
   uiState.copyStatus = { type, message };
@@ -186,172 +48,6 @@ function setCopyStatus(type, message) {
     uiState.copyStatus = null;
     updateCashflowPanel();
   }, 2200);
-}
-
-function formatKpiLine(metric) {
-  return `${metricLabel(metric.id)}: ${formatMetricValue(metric)} | ${formatMetricDelta(metric)}`;
-}
-
-function buildVisibleFinanceAsText(finance) {
-  const derived = finance?.derived;
-  if (!derived || !Array.isArray(derived.kpis)) return "";
-
-  const mode = finance?.uiMode || "compact";
-  const lines = [];
-
-  lines.push(
-    `${t("financialsHelper")} | ${t("financePeriodLabel")}: ${t(`financePeriod${capitalize(finance.selectedPeriod)}`)} | ${mode === "expanded" ? t("financeExpand") : t("financeCompact")}`,
-  );
-  lines.push(`${t("latest")}: ${formatRefreshTime(finance?.meta?.lastRefreshAt)}`);
-  lines.push("");
-  for (const metric of derived.kpis) {
-    lines.push(`- ${formatKpiLine(metric)}`);
-  }
-
-  lines.push("");
-  lines.push(t("financeSectionAlerts"));
-  const alerts = Array.isArray(derived.alerts) ? derived.alerts : [];
-  if (alerts.length === 0) {
-    lines.push(`- ${t("financeNoAlerts")}`);
-  } else {
-    for (const alert of alerts) {
-      lines.push(`- ${severityLabel(alert.severity)}: ${t(`financeAlert${capitalize(alert.id)}`)}`);
-    }
-  }
-
-  if (mode !== "expanded") {
-    return lines.join("\n");
-  }
-
-  const pnl = derived.pnl || {};
-  lines.push("");
-  lines.push(t("financeSectionPnl"));
-  lines.push(`- ${t("financeKpiRevenue")}: ${formatMoney(pnl?.revenue?.current || 0)}`);
-  lines.push(`- ${t("financePnlDirectCosts")}: ${formatMoney(pnl?.directCosts?.current || 0)}`);
-  lines.push(`- ${t("financeKpiGrossProfit")}: ${formatMoney(pnl?.grossProfit?.current || 0)}`);
-  lines.push(`- ${t("financePnlOverhead")}: ${formatMoney(pnl?.overhead?.current || 0)}`);
-  lines.push(`- ${t("financeKpiOperatingProfit")}: ${formatMoney(pnl?.operatingProfit?.current || 0)}`);
-  lines.push(`- ${t("financeKpiNetProfit")}: ${formatMoney(pnl?.netProfit?.current || 0)}`);
-
-  const cm = derived.cashMovement || {};
-  lines.push("");
-  lines.push(t("financeSectionCashMovement"));
-  lines.push(`- ${t("financeInflows")}: ${formatMoney(cm?.inflows?.current || 0)}`);
-  lines.push(`- ${t("financeOutflows")}: ${formatMoney(cm?.outflows?.current || 0)}`);
-  lines.push(`- ${t("financeKpiCashChange")}: ${formatMoney(cm?.netChange?.current || 0)}`);
-  lines.push(
-    `- ${t("financeOpeningCash")}: ${Number.isFinite(cm?.openingCash) ? formatMoney(cm.openingCash) : "—"}`,
-  );
-  lines.push(
-    `- ${t("financeClosingCash")}: ${Number.isFinite(cm?.closingCash) ? formatMoney(cm.closingCash) : "—"}`,
-  );
-
-  const bs = derived.balanceSheet?.latest;
-  if (bs) {
-    lines.push("");
-    lines.push(t("financeSectionBalanceSheet"));
-    lines.push(
-      `- ${t("financeTotalAssets")}: ${formatMoney(Number(bs.currentAssets || 0) + Number(bs.nonCurrentAssets || 0))}`,
-    );
-    lines.push(`- ${t("financeCurrentAssets")}: ${formatMoney(Number(bs.currentAssets || 0))}`);
-    lines.push(`- ${t("financeNonCurrentAssets")}: ${formatMoney(Number(bs.nonCurrentAssets || 0))}`);
-    lines.push(`- ${t("financeCashReceivables")}: ${formatMoney(Number(bs.cashAndReceivables || 0))}`);
-    lines.push(`- ${t("financeKpiInventory")}: ${formatMoney(Number(bs.inventory || 0))}`);
-    lines.push(`- ${t("financeLiabilities")}: ${formatMoney(Math.abs(Number(bs.liabilities || 0)))}`);
-  }
-
-  const ratios = Array.isArray(derived.ratios) ? derived.ratios : [];
-  if (ratios.length > 0) {
-    lines.push("");
-    lines.push(t("financeSectionRatios"));
-    for (const ratio of ratios) {
-      const value = ratio.id.includes("Margin") ? formatPct(ratio.value) : formatRatio(ratio.value);
-      lines.push(`- ${ratioLabel(ratio.id)}: ${value}`);
-    }
-  }
-
-  const drivers = derived.drivers || {};
-  lines.push("");
-  lines.push(t("financeSectionDrivers"));
-  lines.push(t("financeTopIncomeDrivers"));
-  for (const x of drivers.income || []) {
-    lines.push(`- ${x.label}: ${formatMoney(x.income)}`);
-  }
-  lines.push(t("financeTopExpenseDrivers"));
-  for (const x of drivers.expenses || []) {
-    lines.push(`- ${x.label}: ${formatMoney(x.expense)}`);
-  }
-  lines.push(t("financeLargestChanges"));
-  for (const x of drivers.changes || []) {
-    lines.push(`- ${x.label}: ${formatMoney(x.delta)}`);
-  }
-
-  const mix = Array.isArray(derived.salesMix) ? derived.salesMix : [];
-  lines.push("");
-  lines.push(t("financeSectionSalesMix"));
-  for (const x of mix) {
-    lines.push(`- ${x.name}: ${formatMoney(x.revenue)} (${formatPct(x.share, 1)})`);
-  }
-
-  const ip = derived.inventoryProduction || {};
-  lines.push("");
-  lines.push(t("financeSectionInventoryProduction"));
-  lines.push(
-    `- ${t("financeKpiInventory")}: ${Number.isFinite(ip.inventoryValue) ? formatMoney(ip.inventoryValue) : "—"}`,
-  );
-  lines.push(`- ${t("financeProductionSpend")}: ${formatMoney(ip.productionSpend || 0)}`);
-  lines.push(
-    `- ${t("financeProductionVolume")}: ${Number.isFinite(ip.productionVolume) ? ip.productionVolume : "—"}`,
-  );
-  lines.push(
-    `- ${t("financeOutgoingContracts")}: ${Number.isFinite(ip.outgoingContractsCount) ? ip.outgoingContractsCount : 0}`,
-  );
-  lines.push(`- ${t("financeOutgoingContractsValue")}: ${formatMoney(ip.outgoingContractsValue || 0)}`);
-
-  const wf = derived.workforce || {};
-  lines.push("");
-  lines.push(t("financeSectionWorkforce"));
-  lines.push(`- ${t("wages")}: ${formatMoney(wf.wages || 0)}`);
-  lines.push(`- ${t("financeTraining")}: ${formatMoney(wf.training || 0)}`);
-  lines.push(`- ${t("accounting")}: ${formatMoney(wf.accounting || 0)}`);
-  lines.push(`- ${t("financeLeadershipCost")}: ${formatMoney(wf.leadership || 0)}`);
-  lines.push(`- ${t("financeTotalWorkforce")}: ${formatMoney(wf.total || 0)}`);
-
-  const txRows = filteredTransactionsForTable(finance);
-  lines.push("");
-  lines.push(
-    `${t("financeSectionTransactions")} (${t("financeTxFilterLabel")}: ${t(`financeTx${capitalize(uiState.txFilter)}`)})`,
-  );
-  for (const tx of txRows) {
-    const timeStr = Number.isFinite(tx?._dtMs) ? new Date(tx._dtMs).toLocaleString() : "—";
-    lines.push(
-      `- [${timeStr}] ${tx?.category || ""} | ${tx?.description || tx?.descriptionKey || ""} | ${formatMoney(Number(tx?.money || 0))}`,
-    );
-  }
-
-  return lines.join("\n");
-}
-
-async function copyTextRobust(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {}
-
-  try {
-    const ta = document.createElement("textarea");
-    ta.className = "scx-fin-copy-buffer";
-    ta.setAttribute("readonly", "readonly");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    ta.setSelectionRange(0, ta.value.length);
-    const ok = document.execCommand("copy");
-    ta.remove();
-    return Boolean(ok);
-  } catch {
-    return false;
-  }
 }
 
 function statusMessages(finance) {
@@ -393,11 +89,6 @@ function statusMessages(finance) {
   }
 
   return out;
-}
-
-function capitalize(s) {
-  if (!s) return "";
-  return `${s[0].toUpperCase()}${s.slice(1)}`;
 }
 
 function getTransactionsForDrilldown(finance) {
@@ -465,344 +156,6 @@ function filteredTransactionsForTable(finance) {
   return rows.slice(0, TRANSACTION_ROW_LIMIT);
 }
 
-function renderKpiStrip(kpis) {
-  if (!Array.isArray(kpis) || kpis.length === 0) {
-    return `<div class="scx-muted">${t("noCashflowData")}</div>`;
-  }
-
-  return `
-    <div class="scx-fin-kpi-strip">
-      ${kpis
-        .map((metric) => {
-          const exactness =
-            metric.exactness === "exact"
-              ? t("financeExact")
-              : metric.exactness === "estimated"
-                ? t("financeEstimated")
-                : t("financeDerived");
-
-          return `
-            <button
-              class="scx-fin-kpi-card"
-              data-fin-drill="kpi:${metric.id}"
-              title="${escapeHtml(metricTooltip(metric.id))}">
-              <div class="scx-fin-kpi-title">${escapeHtml(metricLabel(metric.id))}</div>
-              <div class="scx-fin-kpi-value">${escapeHtml(formatMetricValue(metric))}</div>
-              <div class="scx-fin-kpi-delta ${deltaClass(metric.delta)}">${escapeHtml(formatMetricDelta(metric))}</div>
-              <div class="scx-fin-kpi-tag">${escapeHtml(exactness)}</div>
-            </button>
-          `;
-        })
-        .join("")}
-    </div>
-  `;
-}
-
-function renderAlerts(alerts, compact = false) {
-  const rows = Array.isArray(alerts) ? alerts : [];
-  if (rows.length === 0) {
-    return `<div class="scx-fin-empty">${t("financeNoAlerts")}</div>`;
-  }
-
-  const subset = compact ? rows.slice(0, 2) : rows;
-
-  return `
-    <div class="scx-fin-alert-list">
-      ${subset
-        .map(
-          (a) => `
-            <div class="scx-alert-card ${severityClass(a.severity)}">
-              <span class="scx-fin-alert-severity">${escapeHtml(severityLabel(a.severity))}</span>
-              <span class="scx-fin-alert-message">${escapeHtml(t(`financeAlert${capitalize(a.id)}`))}</span>
-            </div>
-          `,
-        )
-        .join("")}
-    </div>
-  `;
-}
-
-function renderPnl(derived) {
-  const pnl = derived?.pnl;
-  if (!pnl) return "";
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionPnl")}</div>
-      </div>
-      <div class="scx-fin-waterfall">
-        ${renderWaterfallRow(t("financeKpiRevenue"), pnl.revenue)}
-        ${renderWaterfallRow(t("financePnlDirectCosts"), pnl.directCosts, true)}
-        ${renderWaterfallRow(t("financeKpiGrossProfit"), pnl.grossProfit)}
-        ${renderWaterfallRow(t("financePnlOverhead"), pnl.overhead, true)}
-        ${renderWaterfallRow(t("financeKpiOperatingProfit"), pnl.operatingProfit)}
-        ${renderWaterfallRow(t("financePnlNonOperating"), pnl.nonOperating)}
-        ${renderWaterfallRow(t("financeKpiNetProfit"), pnl.netProfit)}
-      </div>
-      <div class="scx-fin-pnl-breakdown">
-        <div>
-          <div class="scx-fin-subhead">${t("financeSalesChannels")}</div>
-          ${renderSmallPair(t("retail"), pnl.revenueByChannel?.retail)}
-          ${renderSmallPair(t("contracts"), pnl.revenueByChannel?.contracts)}
-          ${renderSmallPair(t("marketLabel"), pnl.revenueByChannel?.market)}
-          ${renderSmallPair(t("other"), pnl.revenueByChannel?.other)}
-        </div>
-        <div>
-          <div class="scx-fin-subhead">${t("financeCostBuckets")}</div>
-          ${renderSmallPair(t("production"), pnl.expensesByBucket?.production)}
-          ${renderSmallPair(t("marketBuy"), pnl.expensesByBucket?.marketBuy)}
-          ${renderSmallPair(t("financeInboundContracts"), pnl.expensesByBucket?.inboundContracts)}
-          ${renderSmallPair(t("wages"), pnl.expensesByBucket?.wages)}
-          ${renderSmallPair(t("fees"), pnl.expensesByBucket?.fees)}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderWaterfallRow(label, metric, forceNegative = false) {
-  const curr = Number(metric?.current || 0);
-  const shown = forceNegative ? -Math.abs(curr) : curr;
-  const delta = Number(metric?.delta || 0);
-
-  return `
-    <div class="scx-fin-waterfall-row">
-      <span class="scx-fin-waterfall-label">${escapeHtml(label)}</span>
-      <div class="scx-fin-waterfall-metrics">
-        <span class="scx-fin-waterfall-value">${formatMoney(shown)}</span>
-        <span class="scx-fin-waterfall-delta ${deltaClass(delta)}">${escapeHtml(formatMetricDelta(metric || {}))}</span>
-      </div>
-    </div>
-  `;
-}
-
-function formatNumberValue(value) {
-  if (!Number.isFinite(value)) return "—";
-
-  const fractional = Math.abs(value % 1) > 0.000001;
-  return new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: fractional ? 2 : 0,
-  }).format(value);
-}
-
-function renderSmallPair(label, value, format = "money") {
-  const shown =
-    format === "number" ? formatNumberValue(value) : Number.isFinite(value) ? formatMoney(value) : "—";
-
-  return `
-    <div class="scx-fin-mini-row">
-      <span class="scx-text-muted">${escapeHtml(label)}</span>
-      <span class="scx-fin-mini-value">${shown}</span>
-    </div>
-  `;
-}
-
-function renderCashMovement(derived) {
-  const cm = derived?.cashMovement;
-  if (!cm) return "";
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionCashMovement")}</div>
-      </div>
-      <div class="scx-fin-cash-layout">
-        <div class="scx-fin-waterfall">
-          ${renderWaterfallRow(t("financeInflows"), cm.inflows)}
-          ${renderWaterfallRow(t("financeOutflows"), cm.outflows, true)}
-          ${renderWaterfallRow(t("financeKpiCashChange"), cm.netChange)}
-        </div>
-        <div class="scx-fin-cash-balances">
-          <div class="scx-fin-mini-row">
-            <span class="scx-text-muted">${t("financeOpeningCash")}</span>
-            <span class="scx-fin-mini-value">${Number.isFinite(cm.openingCash) ? formatMoney(cm.openingCash) : "—"}</span>
-          </div>
-          <div class="scx-fin-mini-row">
-            <span class="scx-text-muted">${t("financeClosingCash")}</span>
-            <span class="scx-fin-mini-value">${Number.isFinite(cm.closingCash) ? formatMoney(cm.closingCash) : "—"}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderBalanceSheet(derived) {
-  const bs = derived?.balanceSheet;
-  if (!bs?.latest) {
-    return `
-      <div class="scx-panel scx-fin-section-card">
-        <div class="scx-panel-head">
-          <div class="scx-panel-title">${t("financeSectionBalanceSheet")}</div>
-        </div>
-        <div class="scx-fin-empty">${t("financeNoBalanceData")}</div>
-      </div>
-    `;
-  }
-
-  const latest = bs.latest;
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionBalanceSheet")}</div>
-        <span class="scx-chip">${escapeHtml(String(latest?.date || "").slice(0, 10))}</span>
-      </div>
-      <div class="scx-fin-grid-2">
-        ${renderSmallPair(t("financeTotalAssets"), Number(latest.currentAssets || 0) + Number(latest.nonCurrentAssets || 0))}
-        ${renderSmallPair(t("financeTotalEquity"), Number(latest.total || 0))}
-        ${renderSmallPair(t("financeCurrentAssets"), Number(latest.currentAssets || 0))}
-        ${renderSmallPair(t("financeNonCurrentAssets"), Number(latest.nonCurrentAssets || 0))}
-        ${renderSmallPair(t("financeCashReceivables"), Number(latest.cashAndReceivables || 0))}
-        ${renderSmallPair(t("financeKpiInventory"), Number(latest.inventory || 0))}
-        ${renderSmallPair(t("financeLiabilities"), Math.abs(Number(latest.liabilities || 0)))}
-        ${renderSmallPair(t("financeBuildings"), Number(latest.buildings || 0))}
-        ${renderSmallPair(t("financePatents"), Number(latest.patents || 0))}
-        ${renderSmallPair(t("financeRank"), Number(latest.rank || 0), "number")}
-      </div>
-    </div>
-  `;
-}
-
-function renderRatios(derived) {
-  const ratios = Array.isArray(derived?.ratios) ? derived.ratios : [];
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionRatios")}</div>
-      </div>
-      <div class="scx-fin-grid-2">
-        ${ratios
-          .map(
-            (r) => `
-              <div class="scx-fin-ratio" title="${escapeHtml(ratioTooltip(r.id))}">
-                <div class="scx-fin-ratio-label">${escapeHtml(ratioLabel(r.id))}</div>
-                <div class="scx-fin-ratio-value">${r.id.includes("Margin") ? formatPct(r.value) : formatRatio(r.value)}</div>
-              </div>
-            `,
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderDrivers(derived) {
-  const d = derived?.drivers;
-  if (!d) return "";
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionDrivers")}</div>
-      </div>
-      <div class="scx-fin-drivers-stack">
-        <div class="scx-fin-driver-group">
-          <div class="scx-fin-subhead">${t("financeTopIncomeDrivers")}</div>
-          ${(d.income || []).map((x) => renderDriverButton(x, "income")).join("") || `<div class="scx-fin-empty">${t("financeNoData")}</div>`}
-        </div>
-        <div class="scx-fin-driver-group">
-          <div class="scx-fin-subhead">${t("financeTopExpenseDrivers")}</div>
-          ${(d.expenses || []).map((x) => renderDriverButton(x, "expense")).join("") || `<div class="scx-fin-empty">${t("financeNoData")}</div>`}
-        </div>
-      </div>
-      <div class="scx-fin-subhead scx-margin-top-4">${t("financeLargestChanges")}</div>
-      <div class="scx-fin-change-list">
-        ${(d.changes || [])
-          .map(
-            (c) => `
-              <div class="scx-fin-change-row">
-                <span class="scx-fin-change-label">${escapeHtml(c.label)}</span>
-                <span class="scx-fin-change-value ${deltaClass(c.delta)}">${formatMoney(c.delta)}</span>
-              </div>
-            `,
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderDriverButton(driver, type) {
-  const amount = type === "income" ? driver.income : driver.expense;
-  return `
-    <button class="scx-fin-driver-row" data-fin-drill="driver:${escapeHtml(driver.key)}">
-      <span class="scx-fin-driver-label">${escapeHtml(driver.label)}</span>
-      <span class="scx-fin-driver-value">${formatMoney(amount)}</span>
-    </button>
-  `;
-}
-
-function renderSalesMix(derived) {
-  const rows = Array.isArray(derived?.salesMix) ? derived.salesMix : [];
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionSalesMix")}</div>
-      </div>
-      <div class="scx-fin-mix-list">
-        ${
-          rows
-            .map(
-              (row) => `
-              <div class="scx-fin-mix-row">
-                <span class="scx-fin-mix-name">${escapeHtml(row.name)}</span>
-                <span class="scx-fin-mix-share">${formatPct(row.share, 1)}</span>
-                <span class="scx-fin-mix-value">${formatMoney(row.revenue)}</span>
-              </div>
-            `,
-            )
-            .join("") || `<div class="scx-fin-empty">${t("financeNoData")}</div>`
-        }
-      </div>
-    </div>
-  `;
-}
-
-function renderInventoryProduction(derived) {
-  const ip = derived?.inventoryProduction;
-  if (!ip) return "";
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionInventoryProduction")}</div>
-      </div>
-      <div class="scx-fin-grid-2">
-        ${renderSmallPair(t("financeKpiInventory"), ip.inventoryValue)}
-        ${renderSmallPair(t("financeProductionSpend"), ip.productionSpend)}
-        ${renderSmallPair(t("financeProductionVolume"), ip.productionVolume, "number")}
-        ${renderSmallPair(t("financeProductionRuns"), ip.productionTxCount, "number")}
-        ${renderSmallPair(t("financeOutgoingContracts"), ip.outgoingContractsCount, "number")}
-        ${renderSmallPair(t("financeOutgoingContractsValue"), ip.outgoingContractsValue)}
-      </div>
-    </div>
-  `;
-}
-
-function renderWorkforce(derived) {
-  const wf = derived?.workforce;
-  if (!wf) return "";
-
-  return `
-    <div class="scx-panel scx-fin-section-card">
-      <div class="scx-panel-head">
-        <div class="scx-panel-title">${t("financeSectionWorkforce")}</div>
-      </div>
-      <div class="scx-fin-grid-2">
-        ${renderSmallPair(t("wages"), wf.wages)}
-        ${renderSmallPair(t("financeTraining"), wf.training)}
-        ${renderSmallPair(t("accounting"), wf.accounting)}
-        ${renderSmallPair(t("financeLeadershipCost"), wf.leadership)}
-        ${renderSmallPair(t("financeTotalWorkforce"), wf.total)}
-        ${renderSmallPair(t("delta"), wf.totalDelta)}
-      </div>
-    </div>
-  `;
-}
-
 function renderDrilldown(finance) {
   if (!uiState.drilldown) return "";
 
@@ -815,7 +168,7 @@ function renderDrilldown(finance) {
     <div class="scx-panel scx-fin-section-card scx-fin-drilldown-card">
       <div class="scx-panel-head">
         <div class="scx-panel-title">${title}</div>
-        <button class="scx-btn scx-fin-clear-btn" data-fin-action="clearDrilldown">${t("financeClearDrilldown")}</button>
+        <button type="button" class="scx-btn scx-fin-clear-btn" data-fin-action="clearDrilldown">${t("financeClearDrilldown")}</button>
       </div>
       ${renderTransactionTable(rows, true)}
     </div>
@@ -840,46 +193,6 @@ function renderTransactions(finance) {
         </div>
       </div>
       ${renderTransactionTable(rows, false)}
-    </div>
-  `;
-}
-
-function renderTransactionTable(rows, compact) {
-  const list = Array.isArray(rows) ? rows : [];
-  if (list.length === 0) {
-    return `<div class="scx-fin-empty">${t("financeNoTransactions")}</div>`;
-  }
-
-  return `
-    <div class="scx-fin-tx-table-wrap ${compact ? "scx-fin-tx-table-wrap-compact" : ""}">
-      <table class="scx-fin-tx-table">
-        <thead>
-          <tr>
-            <th>${t("financeTxTime")}</th>
-            <th>${t("financeTxType")}</th>
-            <th>${t("financeTxDescription")}</th>
-            <th class="scx-text-right">${t("financeTxAmount")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${list
-            .map((tx) => {
-              const money = Number(tx?.money || 0);
-              const cls = money >= 0 ? "scx-fin-pos" : "scx-fin-neg";
-              const dt = Number.isFinite(tx?._dtMs) ? new Date(tx._dtMs) : null;
-              const timeStr = dt ? dt.toLocaleString() : "—";
-              return `
-                <tr>
-                  <td>${escapeHtml(timeStr)}</td>
-                  <td>${escapeHtml(String(tx?.category || ""))}</td>
-                  <td>${escapeHtml(String(tx?.description || tx?.descriptionKey || ""))}</td>
-                  <td class="scx-text-right scx-mono ${cls}">${formatMoney(money)}</td>
-                </tr>
-              `;
-            })
-            .join("")}
-        </tbody>
-      </table>
     </div>
   `;
 }
@@ -933,7 +246,7 @@ function renderHeader(finance) {
       <div class="scx-fin-header-row">
         <div class="scx-panel-title">${t("financialsHelper")}</div>
         <div class="scx-fin-inline-actions">
-          <button class="scx-copy-btn" data-fin-action="copy" data-tooltip="${t("financeCopyVisible")}">
+          <button type="button" class="scx-copy-btn" data-fin-action="copy" data-tooltip="${t("financeCopyVisible")}">
             ${COPY_BUTTON_SVG}
           </button>
         </div>
@@ -952,8 +265,8 @@ function renderHeader(finance) {
           data-tooltip="${escapeHtml(periodInfoTooltip(period))}"
           >i</span
         >
-        <button class="scx-btn scx-fin-refresh-btn" data-fin-action="refresh">${t("financeRefresh")}</button>
-        <button class="scx-btn scx-fin-mode-btn" data-fin-action="toggleMode">
+        <button type="button" class="scx-btn scx-fin-refresh-btn" data-fin-action="refresh">${t("financeRefresh")}</button>
+        <button type="button" class="scx-btn scx-fin-mode-btn" data-fin-action="toggleMode">
           ${mode === "compact" ? t("financeExpand") : t("financeCompact")}
         </button>
       </div>
@@ -993,7 +306,6 @@ function bindEvents(contentEl) {
       const pending = loadFinanceData({
         period: STATE.cashflow.finance.selectedPeriod,
         force: true,
-        reason: "manual",
       });
       updateCashflowPanel();
       await pending;
@@ -1007,7 +319,6 @@ function bindEvents(contentEl) {
       const pending = loadFinanceData({
         period: STATE.cashflow.finance.selectedPeriod,
         force: false,
-        reason: "mode-toggle",
       });
       updateCashflowPanel();
       await pending;
@@ -1016,8 +327,12 @@ function bindEvents(contentEl) {
     }
 
     if (action === "copy") {
-      const text = buildVisibleFinanceAsText(STATE.cashflow.finance);
-      const ok = await copyTextRobust(text);
+      const finance = STATE.cashflow.finance;
+      const text = buildVisibleFinanceAsText(finance, {
+        txRows: filteredTransactionsForTable(finance),
+        txFilter: uiState.txFilter,
+      });
+      const ok = await writeClipboardText(text);
       setCopyStatus(ok ? "ok" : "error", ok ? t("financeCopySuccess") : t("financeCopyFailed"));
       updateCashflowPanel();
       return;
@@ -1040,7 +355,7 @@ function bindEvents(contentEl) {
       const period = e.target.value;
       setFinancePeriod(period);
       uiState.drilldown = null;
-      const pending = loadFinanceData({ period, force: false, reason: "period-change" });
+      const pending = loadFinanceData({ period, force: false });
       updateCashflowPanel();
       await pending;
       updateCashflowPanel();

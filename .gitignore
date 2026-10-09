@@ -1,13 +1,17 @@
+# Build output
 dist/
-extension/
-release.zip
+sim-companies-extension-chrome.zip
+coverage/
+
+# Dependencies / local tooling
 node_modules/
+.venv/
 .DS_Store
-STORE_LISTING.md
-.github/skills/*
-.github/copilot-instructions.md
-agents.md
-CLAUDE.md
+
+# Local-only notes and captures
 specs/*
-.token
 dom/*
+.github/skills/*
+
+# Secrets (CWS refresh token from scripts/get-refresh-token.mjs)
+.token

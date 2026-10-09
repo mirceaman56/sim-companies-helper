@@ -9,9 +9,7 @@ import http from "http";
 const [, , clientId, clientSecret] = process.argv;
 
 if (!clientId || !clientSecret) {
-  console.error(
-    "Usage: node scripts/get-refresh-token.mjs <CLIENT_ID> <CLIENT_SECRET>"
-  );
+  console.error("Usage: node scripts/get-refresh-token.mjs <CLIENT_ID> <CLIENT_SECRET>");
   process.exit(1);
 }
 
@@ -78,7 +76,7 @@ const server = http.createServer((req, res) => {
           console.error("\n❌ Failed:", json);
         }
       });
-    }
+    },
   );
 
   tokenReq.write(body);

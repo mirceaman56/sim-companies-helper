@@ -1,3 +1,4 @@
+import { wait } from "./utils.js";
 import { CHAT_SEARCH_CUTOFF_HOURS, CHAT_SEARCH_TARGET_COUNT } from "./constants.js";
 import { buildChatApiBaseUrl, DEFAULT_CHAT_ROOM_DB_LETTER } from "./chat_rooms.js";
 
@@ -5,10 +6,6 @@ export const CHAT_API_BASE_URL = buildChatApiBaseUrl(DEFAULT_CHAT_ROOM_DB_LETTER
 const BUY_REGEX = /\b(buy\w*)\b/i;
 const SELL_REGEX = /\b(sell\w*)\b/i;
 const DEFAULT_MAX_PAGES = 50;
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function escapeRegex(raw) {
   return String(raw).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -82,8 +79,7 @@ export function collectChatSearchPage(
 }
 
 /**
- * Iterate chat API pages for a recent window and let callers process each page.
- * Stops when messages older than cutoff are encountered or max pages are reached.
+ * Iterate chat API pages for a recent window; stops at the cutoff or max pages.
  *
  * @param {{
  *  requestMessages: (url: string, signal?: AbortSignal) => Promise<any[]>,

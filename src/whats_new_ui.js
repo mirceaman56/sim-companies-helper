@@ -1,8 +1,5 @@
-// whats_new_ui.js
-// Two surfaces for the same bundled changelog:
-//   - a summary toast, shown once after an update
-//   - a sidebar section, available at any time so a dismissed or missed toast
-//     is no longer the only chance to read what changed
+// Bundled changelog as a one-time toast after an update, plus a sidebar section for anyone
+// who missed the toast.
 
 import { escapeHtml } from "./utils.js";
 import { t } from "./i18n.js";
@@ -230,7 +227,7 @@ function showWhatsNewToast({ titleText, summaryText, actionLabel }) {
       <div class="scx-toast-message">${escapeHtml(summaryText)}</div>
       <button type="button" class="scx-btn scx-btn-info scx-whats-new-action">${escapeHtml(actionLabel)}</button>
     </div>
-    <button class="scx-toast-close" aria-label="${escapeHtml(t("whatsNewDismiss"))}">✕</button>
+    <button type="button" class="scx-toast-close" aria-label="${escapeHtml(t("whatsNewDismiss"))}">✕</button>
   `;
 
   toast.querySelector(".scx-toast-close").addEventListener("click", () => dismissToast(toast));
@@ -245,11 +242,8 @@ function showWhatsNewToast({ titleText, summaryText, actionLabel }) {
   return toast;
 }
 
-/**
- * Registers the panel's update function and shows the post-update toast once.
- * The "shown" flag is written only after the toast is in the DOM, so a page
- * navigation mid-load no longer costs the player the announcement.
- */
+// why: the "shown" flag is written only once the toast is in the DOM, so navigating mid-load
+// does not lose the announcement.
 export async function initWhatsNew() {
   setSectionUpdateFn(SECTION_ID, updateWhatsNewPanel);
 

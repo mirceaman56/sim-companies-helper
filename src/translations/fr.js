@@ -58,6 +58,7 @@ export default {
   supportTheDev: "Soutenir via PayPal",
   supportOnKofi: "Assistance via Ko-fi",
   reportBug: "Signaler un Bug",
+  suggestFeature: "Suggérer une fonctionnalité",
   hideSidebar: "Masquer le panneau",
   showSidebar: "Afficher le panneau",
   ensureProductionQuantity:
@@ -76,12 +77,6 @@ export default {
   breakEvenGt: "Point d'Équilibre >",
   contractSell: "Vente par Contrat",
   halfTransport: "50% transports",
-  perUnit: "/unité",
-  cannotCalcProfit: "Impossible de calculer le bénéfice - prix du marché manquants",
-  sellingAnalysis: "Analyse de Vente",
-  grossProceeds: "Produit Brut",
-  marketFee4pct: "Frais de Marché (4%)",
-  netProceeds: "Produit Net",
   profitMargin: "Marge Bénéficiaire",
   noItemSelected: "Aucun article sélectionné",
   clickToShowStats: "Cliquez sur la Quantité ou le Prix pour afficher les statistiques.",
@@ -100,7 +95,6 @@ export default {
   loadingMarketPrices: "Chargement des prix du marché...",
   loadingMarketData: "Chargement des données du marché...",
   marketError: "Erreur Marché",
-  expenses: "Dépenses",
   total: "Total",
   retail: "Vente au Détail",
   contracts: "Contrats",
@@ -277,7 +271,6 @@ export default {
   financePeriodCurrent: "Actuel",
   financePeriodDay: "Jour",
   financePeriodWeek: "Semaine",
-  financePeriodMonth: "Mois",
   financePeriodInfoTitleCurrent: "Période : Aujourd'hui",
   financePeriodInfoBodyCurrent: "Totaux depuis minuit (heure locale) jusqu'à maintenant.",
   financePeriodInfoTitleDay: "Période : Jour",
@@ -432,4 +425,6 @@ export default {
   xpLevelTransition: "Niveau {from} → {to}",
   acctExplainer:
     "Frais quotidiens sur trésorerie + obligations au-delà du seuil, jusqu'à 3 %. Les obligations achetées comptent ; un meilleur CFO ou une banque relève le seuil.",
+  copied: "Copié !",
+  upgradeMultiplier: "Multiplicateur :",
 };

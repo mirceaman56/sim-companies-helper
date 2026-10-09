@@ -8,10 +8,6 @@
   border-radius: var(--scx-border-radius-sm);
 }
 
-.scx-card-center {
-  text-align: center;
-}
-
 .scx-card-value {
   font-size: var(--scx-font-size-md);
   font-weight: var(--scx-font-weight-bold);

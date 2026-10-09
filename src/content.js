@@ -1,4 +1,3 @@
-// content.js
 // Thin composition root for content startup.
 import { initializeDataPlatform, initApiHealthSync } from "./data/index.js";
 import { initAuthContextSync } from "./auth_sync.js";
@@ -13,9 +12,11 @@ async function init() {
   await initApiHealthSync();
   initAuthContextSync();
   bootstrapFeatureRegistry();
+  setupRetailInteractionListeners();
   await runStartupServices();
+  startRecurringRefreshServices();
 }
 
-init();
-setupRetailInteractionListeners();
-startRecurringRefreshServices();
+init().catch((error) => {
+  console.error("[SimHelper] Startup failed:", error);
+});

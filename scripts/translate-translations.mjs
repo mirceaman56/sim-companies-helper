@@ -303,7 +303,10 @@ async function processLocale({ locale, englishTranslations, englishKeys, options
   const keysToTranslate = [];
 
   for (const key of englishKeys) {
-    const englishValue = typeof englishTranslations[key] === "string" ? englishTranslations[key] : String(englishTranslations[key] ?? "");
+    const englishValue =
+      typeof englishTranslations[key] === "string"
+        ? englishTranslations[key]
+        : String(englishTranslations[key] ?? "");
     const localeValue = outputTranslations[key];
 
     if (shouldTranslate({ englishValue, localeValue, translateAll: options.translateAll })) {
@@ -315,7 +318,10 @@ async function processLocale({ locale, englishTranslations, englishKeys, options
   const copiedNoApi = [];
 
   for (const key of keysToTranslate) {
-    const sourceText = typeof englishTranslations[key] === "string" ? englishTranslations[key] : String(englishTranslations[key] ?? "");
+    const sourceText =
+      typeof englishTranslations[key] === "string"
+        ? englishTranslations[key]
+        : String(englishTranslations[key] ?? "");
 
     if (shouldSkipApiTranslation(sourceText)) {
       outputTranslations[key] = sourceText;
@@ -343,12 +349,17 @@ async function processLocale({ locale, englishTranslations, englishKeys, options
 
   for (const key of englishKeys) {
     if (!(key in outputTranslations)) {
-      const sourceText = typeof englishTranslations[key] === "string" ? englishTranslations[key] : String(englishTranslations[key] ?? "");
+      const sourceText =
+        typeof englishTranslations[key] === "string"
+          ? englishTranslations[key]
+          : String(englishTranslations[key] ?? "");
       outputTranslations[key] = sourceText;
     }
   }
 
-  const extraKeys = Object.keys(outputTranslations).filter((key) => !Object.prototype.hasOwnProperty.call(englishTranslations, key));
+  const extraKeys = Object.keys(outputTranslations).filter(
+    (key) => !Object.prototype.hasOwnProperty.call(englishTranslations, key),
+  );
   if (options.prune) {
     for (const key of extraKeys) {
       delete outputTranslations[key];
@@ -422,12 +433,12 @@ async function main() {
     totalWritten += result.wrote ? 1 : 0;
 
     console.log(
-      `[i18n] ${result.locale}: candidates=${result.keysToTranslate}, translated=${result.translatedCount}, copiedNoApi=${result.copiedNoApiCount}, pruned=${result.prunedCount}, fileUpdated=${result.wrote}`
+      `[i18n] ${result.locale}: candidates=${result.keysToTranslate}, translated=${result.translatedCount}, copiedNoApi=${result.copiedNoApiCount}, pruned=${result.prunedCount}, fileUpdated=${result.wrote}`,
     );
   }
 
   console.log(
-    `[i18n] Done. candidates=${totalCandidates}, translated=${totalTranslated}, copiedNoApi=${totalCopied}, pruned=${totalPruned}, filesUpdated=${totalWritten}`
+    `[i18n] Done. candidates=${totalCandidates}, translated=${totalTranslated}, copiedNoApi=${totalCopied}, pruned=${totalPruned}, filesUpdated=${totalWritten}`,
   );
 }
 

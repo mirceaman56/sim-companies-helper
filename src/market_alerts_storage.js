@@ -1,4 +1,3 @@
-// market_alerts_storage.js
 // Persistence bridge for market alerts.
 import { loadAuthDataOnce } from "./auth.js";
 import { STATE } from "./state.js";
@@ -29,7 +28,6 @@ async function ensureAuth(state, ensureAuthFn) {
 }
 
 /**
- * Save current alert snapshot.
  * @param {{alerts: object[], nextAlertId: number, state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} input
  */
 export async function saveAlertsSnapshot(input) {
@@ -51,7 +49,6 @@ export async function saveAlertsSnapshot(input) {
 }
 
 /**
- * Load alert snapshot.
  * @param {{state?: object, storageApi?: object, ensureAuthFn?: () => Promise<void>}} [input]
  * @returns {Promise<{alerts: object[], nextAlertId: number} | null>}
  */

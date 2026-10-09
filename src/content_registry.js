@@ -1,5 +1,5 @@
-// content_registry.js
-// Sidebar bootstrap + feature registration wiring.
+// Adding a feature = one FEATURES entry. `section.update` renders the panel on expand; `init`
+// runs once. Initializers are isolated: one throwing never stops the others.
 import { ensureSidebarContainer, ensureFooter, registerSection, setSectionUpdateFn } from "./sidebar.js";
 import { t } from "./i18n.js";
 import { updateCashflowPanel } from "./cashflow_ui.js";
@@ -17,56 +17,106 @@ import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
 
 /**
- * @typedef {{id: string, titleKey: string, icon: string}} SidebarSection
+ * @typedef {{ id: string, titleKey: string, icon: string, update?: () => unknown }} SidebarSection
+ * @typedef {{ id: string, section?: SidebarSection, init?: () => unknown }} Feature
  */
 
-/** @type {SidebarSection[]} */
-const SIDEBAR_SECTIONS = [
-  { id: "production-section", titleKey: "productionHelper", icon: "⚙️" },
-  { id: "retail-section", titleKey: "retailHelper", icon: "🏪" },
-  { id: "cashflow-section", titleKey: "financialsHelper", icon: "💲" },
-  { id: "market-alerts-section", titleKey: "marketAlerts", icon: "🔔" },
-  { id: "chat-section", titleKey: "chatFilter", icon: "💬" },
-  { id: "executive-section", titleKey: "executiveHelper", icon: "👔" },
-  { id: "whats-new-section", titleKey: "whatsNewSectionTitle", icon: "✨" },
+/** Sidebar order = array order. @type {Feature[]} */
+const FEATURES = [
+  {
+    id: "production",
+    section: {
+      id: "production-section",
+      titleKey: "productionHelper",
+      icon: "⚙️",
+      update: updateProductionPanel,
+    },
+    // Attach listeners before users can interact with production rows.
+    init: setupProductionRowListeners,
+  },
+  {
+    id: "retail",
+    section: { id: "retail-section", titleKey: "retailHelper", icon: "🏪", update: updateRetailPanel },
+  },
+  {
+    id: "cashflow",
+    section: {
+      id: "cashflow-section",
+      titleKey: "financialsHelper",
+      icon: "💲",
+      update: updateCashflowPanel,
+    },
+  },
+  {
+    id: "market-alerts",
+    section: {
+      id: "market-alerts-section",
+      titleKey: "marketAlerts",
+      icon: "🔔",
+      update: updateMarketAlertsPanel,
+    },
+  },
+  {
+    id: "chat",
+    section: { id: "chat-section", titleKey: "chatFilter", icon: "💬", update: updateChatFilterPanel },
+    init: initChatFilter,
+  },
+  {
+    id: "executive",
+    section: {
+      id: "executive-section",
+      titleKey: "executiveHelper",
+      icon: "👔",
+      update: updateExecutivePanel,
+    },
+    init: initExecutiveHelper,
+  },
+  {
+    id: "whats-new",
+    // initWhatsNew registers its own update fn and shows the post-update toast once.
+    section: { id: "whats-new-section", titleKey: "whatsNewSectionTitle", icon: "✨" },
+    init: initWhatsNew,
+  },
+  { id: "contract", init: initContractHelper },
+  { id: "warehouse", init: initWarehouseHelper },
+  { id: "upgrade", init: initUpgradeBuyMessage },
+  { id: "xp-widget", init: initXpWidget },
+  { id: "accounting-widget", init: initAccountingWidget },
 ];
+
+function runIsolated(id, fn) {
+  try {
+    const result = fn();
+    if (result && typeof result.catch === "function") {
+      result.catch((error) => console.error(`[SimHelper] Feature "${id}" init failed:`, error));
+    }
+  } catch (error) {
+    console.error(`[SimHelper] Feature "${id}" init failed:`, error);
+  }
+}
 
 /**
  * Bootstrap sidebar shell + feature registrations.
+ * @param {Feature[]} [features]
  */
-export function bootstrapFeatureRegistry() {
+export function bootstrapFeatureRegistry(features = FEATURES) {
   ensureSidebarContainer();
-  initApiHealthBanner();
+  runIsolated("api-health-banner", initApiHealthBanner);
 
-  for (const section of SIDEBAR_SECTIONS) {
-    registerSection(section.id, t(section.titleKey), section.icon);
+  for (const { section } of features) {
+    if (section) registerSection(section.id, t(section.titleKey), section.icon);
   }
-
   ensureFooter();
 
-  setSectionUpdateFn("cashflow-section", updateCashflowPanel);
-  setSectionUpdateFn("production-section", updateProductionPanel);
-  setSectionUpdateFn("retail-section", updateRetailPanel);
-  setSectionUpdateFn("executive-section", updateExecutivePanel);
-  setSectionUpdateFn("market-alerts-section", updateMarketAlertsPanel);
-  setSectionUpdateFn("chat-section", updateChatFilterPanel);
-
-  // Registers the panel's update fn and shows the post-update toast once.
-  void initWhatsNew();
-
-  // Static one-time feature initializers.
-  initChatFilter();
-  initContractHelper();
-  initWarehouseHelper();
-  initUpgradeBuyMessage();
-  initXpWidget();
-  initAccountingWidget();
-  initExecutiveHelper();
-
-  // Attach listeners before users can interact with production rows.
-  setupProductionRowListeners();
+  for (const { section } of features) {
+    if (section?.update) setSectionUpdateFn(section.id, section.update);
+  }
+  for (const { id, init } of features) {
+    if (init) runIsolated(id, init);
+  }
 }
 
 export const _testUtils = {
-  SIDEBAR_SECTIONS,
+  FEATURES,
+  SIDEBAR_SECTIONS: FEATURES.filter((f) => f.section).map((f) => f.section),
 };

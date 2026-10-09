@@ -35,10 +35,10 @@ describe("recipe extractor panel controller", () => {
 
     expect(writeClipboard).toHaveBeenCalledTimes(1);
     const feedback = document.getElementById("scx-copy-feedback");
-    expect(feedback?.style.display).toBe("block");
+    expect(feedback?.classList.contains("is-visible")).toBe(true);
 
     vi.advanceTimersByTime(2000);
-    expect(feedback?.style.display).toBe("none");
+    expect(feedback?.classList.contains("is-visible")).toBe(false);
     vi.useRealTimers();
   });
 

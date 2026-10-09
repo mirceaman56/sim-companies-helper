@@ -1,10 +1,6 @@
-// auth_sync.js
-// Keeps auth-data (company + realm) current without polling the API. The /me/
-// endpoints always answer for the company the game has active, so cached data
-// must be scoped to it — but auth only needs re-fetching when that company
-// actually changes:
-// - in this tab: the navbar realm logo changes (one company per realm), or
-// - in another tab: it loaded auth for a different company.
+// why: /me/ endpoints answer for the active company, so cached data is scoped to it. Auth is
+// re-fetched only when that company changes: the navbar realm logo changes in this tab, or
+// another tab reports a different company.
 import { STATE } from "./state.js";
 import { loadAuthDataOnce, onAuthDataApplied } from "./auth.js";
 import { storage } from "./data/storage.js";
