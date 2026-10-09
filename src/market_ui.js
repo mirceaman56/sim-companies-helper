@@ -1,6 +1,6 @@
 // Market alerts orchestration (state + timers + persistence + rendering).
 import { getSectionContent } from "./sidebar.js";
-import { getRealmId } from "./auth.js";
+import { onAuthDataApplied } from "./auth.js";
 import { STATE } from "./state.js";
 import { fetchMarketPrice, fetchMarket, getRateLimitStatus } from "./market.js";
 import { formatMoney, escapeHtml } from "./utils.js";
@@ -41,6 +41,10 @@ let alerts = [];
 let nextAlertId = 1;
 let alertsContainer = null;
 let panelState = null;
+// Company/realm the in-memory alerts belong to. The game switches realm without a page
+// reload, so alerts, their timers and their saves must follow auth, not outlive it.
+let loadedContext = null;
+let authListenerAttached = false;
 
 const timers = createAlertTimers({
   checkIntervalMs: ALERT_CHECK_INTERVAL_MS,
@@ -51,15 +55,72 @@ const scheduleRenderAlertList = createRenderScheduler(() => {
   renderAlertListUI(alertsContainer);
 });
 
+function readAuthContext() {
+  return { companyId: STATE.auth.companyId ?? null, realmId: STATE.auth.realmId ?? null };
+}
+
+function isLoadedContext(context) {
+  return (
+    loadedContext !== null &&
+    context.companyId === loadedContext.companyId &&
+    context.realmId === loadedContext.realmId
+  );
+}
+
 async function saveAlerts() {
+  // why: after a realm switch the scoped key points at the new realm; saving the old
+  // realm's alerts there is what copied them across realms.
+  if (!isLoadedContext(readAuthContext())) return;
   await saveAlertsSnapshot({ alerts, nextAlertId });
 }
 
 async function loadAlerts() {
+  alerts = [];
+  nextAlertId = 1;
   const snapshot = await loadAlertsSnapshot();
+  loadedContext = readAuthContext();
   if (!snapshot) return;
   alerts = snapshot.alerts;
   nextAlertId = snapshot.nextAlertId;
+}
+
+function stopAllAlertIntervals() {
+  alerts.forEach((alert) => timers.stopAlertInterval(alert));
+}
+
+function restartActiveAlerts() {
+  const restartCandidates = alerts.filter((alert) => alert.active && !alert.triggered);
+  restartCandidates.forEach((alert) => {
+    alert.active = false;
+  });
+
+  timers.stagger(restartCandidates, (alert) => {
+    if (alerts.includes(alert)) startAlert(alertsContainer, alert.id);
+  });
+}
+
+async function loadAlertsOrShowError() {
+  try {
+    await loadAlerts();
+  } catch (error) {
+    const message = error instanceof Error && error.message ? error.message : t("genericError");
+    panelState = {
+      type: "error",
+      message: `${t("genericError")}: ${message}`,
+    };
+    alerts = [];
+    nextAlertId = 1;
+  }
+}
+
+async function handleAuthContext(context) {
+  if (loadedContext === null || isLoadedContext(context)) return;
+
+  stopAllAlertIntervals();
+  panelState = null;
+  await loadAlertsOrShowError();
+  renderAlertListUI(alertsContainer);
+  restartActiveAlerts();
 }
 
 export async function initMarketAlerts() {
@@ -73,17 +134,13 @@ export async function initMarketAlerts() {
     });
   }
 
-  try {
-    await loadAlerts();
-  } catch (error) {
-    const message = error instanceof Error && error.message ? error.message : t("genericError");
-    panelState = {
-      type: "error",
-      message: `${t("genericError")}: ${message}`,
-    };
-    alerts = [];
-    nextAlertId = 1;
+  if (!authListenerAttached) {
+    authListenerAttached = true;
+    onAuthDataApplied((context) => void handleAuthContext(context));
   }
+
+  stopAllAlertIntervals();
+  await loadAlertsOrShowError();
 
   if (content) {
     content.innerHTML = "";
@@ -103,14 +160,7 @@ export async function initMarketAlerts() {
     });
   }
 
-  const restartCandidates = alerts.filter((alert) => alert.active && !alert.triggered);
-  restartCandidates.forEach((alert) => {
-    alert.active = false;
-  });
-
-  timers.stagger(restartCandidates, (alert) => {
-    startAlert(alertsContainer, alert.id);
-  });
+  restartActiveAlerts();
 }
 
 /**
@@ -244,7 +294,11 @@ async function checkPrice(container, alert) {
     return;
   }
 
-  const realmId = getRealmId();
+  // why: check the market of the realm the alert belongs to, and drop results that land
+  // after a realm switch replaced the alert list.
+  const context = loadedContext;
+  if (!alerts.includes(alert)) return;
+  const realmId = context ? context.realmId : STATE.auth.realmId;
 
   try {
     let price = null;
@@ -261,6 +315,8 @@ async function checkPrice(container, alert) {
     } else {
       price = await fetchMarketPrice(realmId, alert.productId, alert.quality);
     }
+
+    if (context !== loadedContext || !alerts.includes(alert)) return;
 
     const result = applyPriceCheckState(alert, price, Date.now());
 
@@ -336,5 +392,7 @@ export const _testUtils = {
   removeAlert,
   saveAlerts,
   loadAlerts,
+  handleAuthContext,
+  checkPrice,
   storageKey: () => storageKeyForRealm(STATE.auth.realmId),
 };

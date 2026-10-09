@@ -49,6 +49,8 @@ global.chrome = {
 };
 
 import { _testUtils } from "../src/market_ui.js";
+import { STATE } from "../src/state.js";
+import { fetchMarket } from "../src/market.js";
 import { storageKeyForRealm } from "../src/market_alerts_storage.js";
 
 function makeContainer() {
@@ -212,6 +214,7 @@ describe("alert persistence", () => {
   });
 
   it("saveAlerts writes to chrome.storage.local with realm-scoped key", async () => {
+    await _testUtils.loadAlerts();
     const container = makeContainer();
     _testUtils.addAlert(container);
     await _testUtils.saveAlerts();
@@ -276,5 +279,81 @@ describe("alert persistence", () => {
 
     await _testUtils.loadAlerts();
     expect(_testUtils.getNextAlertId()).toBe(11);
+  });
+});
+
+describe("realm switch", () => {
+  const MAGNATES = { companyId: 999, realmId: 0 };
+  const ENTREPRENEURS = { companyId: 555, realmId: 1 };
+
+  function storedAlert(id, productName) {
+    return {
+      id,
+      productId: 1,
+      productName,
+      quality: "all",
+      targetPrice: 5,
+      active: true,
+      triggered: false,
+      lastPrice: null,
+      lastCheck: null,
+    };
+  }
+
+  function storedKeys() {
+    return Object.keys(storageStore).filter((k) => k.startsWith("scx:market-alerts:v1:"));
+  }
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    Object.keys(storageStore).forEach((k) => delete storageStore[k]);
+    Object.assign(STATE.auth, MAGNATES);
+    storageStore[storageKeyForRealm(0)] = { alerts: [storedAlert(1, "Clay")], nextAlertId: 2 };
+    await _testUtils.loadAlerts();
+  });
+
+  afterEach(() => {
+    Object.assign(STATE.auth, MAGNATES);
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it("does not save the previous realm's alerts into the new realm", async () => {
+    await _testUtils.saveAlerts();
+    const magnatesKeys = storedKeys();
+    expect(magnatesKeys).toHaveLength(1);
+
+    Object.assign(STATE.auth, ENTREPRENEURS);
+    await _testUtils.saveAlerts();
+
+    expect(storedKeys()).toEqual(magnatesKeys);
+  });
+
+  it("reloads the new realm's alerts when auth switches realm", async () => {
+    Object.assign(STATE.auth, ENTREPRENEURS);
+    await _testUtils.handleAuthContext(ENTREPRENEURS);
+
+    expect(_testUtils.getAlerts()).toEqual([]);
+  });
+
+  it("checks the market of the realm the alerts were loaded for", async () => {
+    const [alert] = _testUtils.getAlerts();
+    Object.assign(STATE.auth, ENTREPRENEURS);
+
+    await _testUtils.checkPrice(null, alert);
+
+    expect(fetchMarket).toHaveBeenCalledWith(0, 1);
+  });
+
+  it("drops a price check that resolves after a realm switch", async () => {
+    const [alert] = _testUtils.getAlerts();
+    const pending = _testUtils.checkPrice(null, alert);
+
+    Object.assign(STATE.auth, ENTREPRENEURS);
+    await _testUtils.handleAuthContext(ENTREPRENEURS);
+    await pending;
+
+    expect(alert.triggered).toBe(false);
+    expect(storedKeys().some((k) => k.endsWith(":555-1"))).toBe(false);
   });
 });
