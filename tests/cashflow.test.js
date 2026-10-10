@@ -147,6 +147,26 @@ describe("cashflow core metrics", () => {
     expect(finance.cache.transactionsFetchedUntilMs).toBe(newTxMs);
   });
 
+  it("keeps transactions for 15 days but past finances for 60", () => {
+    const now = Date.parse("2026-03-29T12:00:00.000Z");
+    const txMs = Date.parse("2026-03-10T00:00:00.000Z");
+
+    const finance = {
+      datasets: {
+        transactions: [{ id: 1, _dtMs: txMs, money: 10 }],
+        pastFinances: [{ date: "2026-03-10 01:00:00.000000+00:00" }],
+      },
+      cache: { oldestPulled: true, transactionsFetchedUntilMs: 0, coverageFloorMs: txMs, coverageFloorId: 1 },
+    };
+
+    applyStorageRetention(finance, { now });
+
+    expect(finance.datasets.transactions).toHaveLength(0);
+    expect(finance.datasets.pastFinances).toHaveLength(1);
+    expect(finance.cache.coverageFloorMs).toBe(now - 15 * 24 * 60 * 60 * 1000);
+    expect(finance.cache.coverageFloorId).toBeNull();
+  });
+
   it("returns null pct when previous value is zero and current is non-zero", () => {
     expect(safePctChange(10, 0)).toBeNull();
     expect(safePctChange(0, 0)).toBe(0);

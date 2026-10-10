@@ -5,9 +5,7 @@ import path from "node:path";
 import { ROOT, createReporter } from "./lib/source-files.mjs";
 
 const FILE = "public/manifest.json";
-// unlimitedStorage: the finance cache keeps 60 days of transactions per company/realm in
-// chrome.storage.local, which can outgrow the default 10 MB quota. It shows no install warning.
-const ALLOWED_PERMISSIONS = ["storage", "unlimitedStorage"];
+const ALLOWED_PERMISSIONS = ["storage"];
 const ALLOWED_HOST_PERMISSIONS = [];
 const ALLOWED_CONTENT_MATCHES = ["https://www.simcompanies.com/*"];
 

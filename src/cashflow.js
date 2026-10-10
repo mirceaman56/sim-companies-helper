@@ -27,6 +27,9 @@ const CASHFLOW_IDLE_TTL_MS = 5 * 60 * 1000;
 const PAST_FINANCES_TTL_MS = 30 * 60 * 1000;
 const OUTGOING_CONTRACTS_TTL_MS = 10 * 60 * 1000;
 const STORAGE_RETENTION_MS = 60 * 24 * 60 * 60 * 1000; // 60 days
+// why: the widest view is "week" vs the previous week (14 days); one spare day. Keeping more
+// can outgrow the 10 MB chrome.storage.local quota for busy companies.
+const TRANSACTION_RETENTION_MS = 15 * 24 * 60 * 60 * 1000;
 const CASHFLOW_STORAGE_DOMAIN = "cashflow-finance";
 
 const MAX_PAGINATION_PAGES_PER_RUN = 120;
@@ -158,10 +161,11 @@ function applyStorageRetention(finance, { now = nowMs() } = {}) {
   if (!finance?.datasets) return;
 
   const cutoff = now - STORAGE_RETENTION_MS;
+  const txCutoff = now - TRANSACTION_RETENTION_MS;
 
   const transactions = Array.isArray(finance.datasets.transactions) ? finance.datasets.transactions : [];
   const txBefore = transactions.length;
-  finance.datasets.transactions = transactions.filter((tx) => Number(tx?._dtMs) >= cutoff);
+  finance.datasets.transactions = transactions.filter((tx) => Number(tx?._dtMs) >= txCutoff);
   const txAfter = finance.datasets.transactions.length;
 
   const past = Array.isArray(finance.datasets.pastFinances) ? finance.datasets.pastFinances : [];
@@ -174,8 +178,8 @@ function applyStorageRetention(finance, { now = nowMs() } = {}) {
   const oldest = getOldestTransactionMs(finance.datasets.transactions);
   finance.cache.transactionsFetchedUntilMs = Number.isFinite(oldest) ? oldest : 0;
 
-  if (Number(finance.cache.coverageFloorMs || 0) > 0 && finance.cache.coverageFloorMs < cutoff) {
-    finance.cache.coverageFloorMs = cutoff;
+  if (Number(finance.cache.coverageFloorMs || 0) > 0 && finance.cache.coverageFloorMs < txCutoff) {
+    finance.cache.coverageFloorMs = txCutoff;
     finance.cache.coverageFloorId = null;
   }
 }

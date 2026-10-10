@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Sim Companies Helper",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Various quality of life improvements for Sim Companies players.",
   "minimum_chrome_version": "116",
   "permissions": [
-    "storage",
-    "unlimitedStorage"
+    "storage"
   ],
   "background": {
     "service_worker": "background.js",
