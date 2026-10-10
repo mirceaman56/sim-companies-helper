@@ -1,6 +1,59 @@
 {
-  "generatedAt": "2026-10-04T11:16:00.993Z",
+  "generatedAt": "2026-10-10T06:31:42.154Z",
   "versions": [
+    {
+      "version": "1.0.2",
+      "date": "2026-10-10",
+      "entries": [
+        {
+          "cat": "feature",
+          "text": "New What's New notes explain each update in plain words"
+        },
+        {
+          "cat": "feature",
+          "text": "Contract helper now has separate Price and Saved rules tabs"
+        },
+        {
+          "cat": "feature",
+          "text": "New Suggest a Feature button at the bottom of the sidebar"
+        },
+        {
+          "cat": "fix",
+          "text": "Market alerts now stay in the realm they were created in"
+        },
+        {
+          "cat": "fix",
+          "text": "Alt+H no longer hides the sidebar while you type in chat or price fields"
+        },
+        {
+          "cat": "fix",
+          "text": "More labels are translated in Chat filter and copy buttons"
+        },
+        {
+          "cat": "other",
+          "text": "Faster, lighter extension: sections load as data arrives, hidden tabs stop refreshing"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "eneri81",
+          "role": "reporter",
+          "url": "https://github.com/eneri81"
+        }
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-10-04",
+      "entries": [
+        {
+          "cat": "feature",
+          "pr": 167,
+          "text": "New accounting chip in the navbar warns you before accounting fees kick in"
+        }
+      ],
+      "credits": []
+    },
     {
       "version": "0.29.7",
       "date": "2026-10-04",
