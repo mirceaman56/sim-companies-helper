@@ -170,9 +170,21 @@
   border-bottom-right-radius: 8px;
 }
 
+/* ============ Top Bar (feature controls + toggle tab) ============ */
+/* As wide as a collapsed section, so top-bar controls line up with the section column. */
+.scx-sidebar-topbar {
+  align-self: flex-end;
+  box-sizing: border-box;
+  width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--scx-spacing-sm);
+}
+
 /* ============ Sidebar Toggle Tab ============ */
 .scx-sidebar-toggle-tab {
-  align-self: flex-end;
+  flex: 0 0 auto;
   width: 36px;
   height: 36px;
   display: flex;
@@ -202,7 +214,13 @@
 }
 
 /* ============ Hidden State ============ */
-/* Hide every direct child except the toggle tab itself */
-#scx-sidebar.scx-sidebar-hidden > :not(.scx-sidebar-toggle-tab) {
+/* Hide everything except the toggle tab itself */
+#scx-sidebar.scx-sidebar-hidden > :not(.scx-sidebar-topbar),
+#scx-sidebar.scx-sidebar-hidden .scx-sidebar-topbar > :not(.scx-sidebar-toggle-tab) {
   display: none;
+}
+
+/* Shrink to the tab so the empty bar does not block clicks on the game below it. */
+#scx-sidebar.scx-sidebar-hidden .scx-sidebar-topbar {
+  width: auto;
 }

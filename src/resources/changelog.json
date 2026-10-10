@@ -1,6 +1,46 @@
 {
-  "generatedAt": "2026-10-10T06:31:42.154Z",
+  "generatedAt": "2026-10-10T13:30:00.000Z",
   "versions": [
+    {
+      "version": "1.1.0",
+      "date": "2026-10-10",
+      "entries": [
+        {
+          "cat": "feature",
+          "text": "New Accessibility switch: big map labels with colorblind-safe colors and shapes"
+        },
+        {
+          "cat": "feature",
+          "text": "Idle buildings stand out on the map with a clear IDLE badge"
+        },
+        {
+          "cat": "feature",
+          "text": "Give any building a nickname and its own map color from the new left panel"
+        },
+        {
+          "cat": "feature",
+          "text": "High contrast Production screens, also on when your system asks for high contrast"
+        },
+        {
+          "cat": "other",
+          "text": "Sidebar is easier to read and to use with a keyboard or screen reader"
+        }
+      ]
+    },
+    {
+      "version": "1.0.3",
+      "date": "2026-10-10",
+      "entries": [
+        {
+          "cat": "other",
+          "text": "The extension now asks for one less browser permission"
+        },
+        {
+          "cat": "other",
+          "text": "Financials keeps two weeks of transactions, so it takes less space in your browser"
+        }
+      ]
+    },
     {
       "version": "1.0.2",
       "date": "2026-10-10",

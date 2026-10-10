@@ -413,6 +413,7 @@ async function renderSalesBuilder(existingRows = null) {
         id="${SALES_BUILDER_COPY_ID}"
         class="scx-copy-btn scx-warehouse-sales-copy-btn"
         data-tooltip="${t("warehouseSalesCopyTooltip")}"
+        aria-label="${t("warehouseSalesCopyTooltip")}"
         type="button"
       >${COPY_BUTTON_SVG}</button>
     </div>

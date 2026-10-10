@@ -90,7 +90,7 @@ function createPanelHeaderHTML() {
     <div class="scx-flex-spaced scx-margin-bottom-6">
       <div class="scx-panel-title">${t("executiveHelper")}</div>
       <div class="scx-executive-actions">
-        <button class="scx-copy-btn" data-copy-action="executive" data-tooltip="${t("copyText")}" type="button">
+        <button class="scx-copy-btn" data-copy-action="executive" data-tooltip="${t("copyText")}" aria-label="${t("copyText")}" type="button">
           ${COPY_BUTTON_SVG}
         </button>
       </div>

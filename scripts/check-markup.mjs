@@ -47,6 +47,25 @@ for (const abs of listFiles(SRC, [".js"])) {
           '<button> needs type="button" (the default "submit" can submit game forms).',
         );
       }
+      if (tag === "button" && has("data-tooltip") && !has("aria-label")) {
+        reporter.report(
+          file,
+          line,
+          "data-tooltip is CSS-only; repeat its text in aria-label= for screen readers.",
+        );
+      } else if (tag === "button" && !has("aria-label") && !has("aria-labelledby") && !has("title")) {
+        const close = text.indexOf("</button>", m.index);
+        const inner = close === -1 ? "" : text.slice(m.index + m[0].length, close);
+        // \u0000 marks a template expression, which may render translated text.
+        const visible = inner.replace(/<[^>]*>/g, " ").replace(/&[#\w]+;/g, " ");
+        if (close !== -1 && !/[\p{L}\p{N}\u0000]/u.test(visible)) {
+          reporter.report(
+            file,
+            line,
+            "icon-only <button> needs aria-label= (screen readers announce nothing).",
+          );
+        }
+      }
       if (tag === "a" && /target\s*=\s*["']_blank/i.test(attrs) && !has("rel")) {
         reporter.report(file, line, '<a target="_blank"> needs rel="noopener noreferrer".');
       }

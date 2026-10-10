@@ -30,6 +30,7 @@ import {
   getSectionTitleSizeClass,
   setSectionToggleFn,
   toggleSidebarVisibility,
+  addSidebarTopbarControl,
   _testUtils,
 } from "../src/sidebar.js";
 
@@ -59,9 +60,27 @@ describe("sidebar toggle tab", () => {
     expect(tab.tagName).toBe("BUTTON");
   });
 
-  it("toggle tab is the first child of the sidebar", () => {
+  it("toggle tab sits in the top bar, the first child of the sidebar", () => {
     const container = ensureSidebarContainer();
-    expect(container.firstElementChild.classList.contains("scx-sidebar-toggle-tab")).toBe(true);
+    const topbar = container.firstElementChild;
+    expect(topbar.classList.contains("scx-sidebar-topbar")).toBe(true);
+    expect(topbar.lastElementChild.classList.contains("scx-sidebar-toggle-tab")).toBe(true);
+  });
+
+  it("hiding mirrors a class on <html> so the left sidebar hides too", () => {
+    ensureSidebarContainer();
+    toggleSidebarVisibility();
+    expect(document.documentElement.classList.contains("scx-sidebars-hidden")).toBe(true);
+    toggleSidebarVisibility();
+    expect(document.documentElement.classList.contains("scx-sidebars-hidden")).toBe(false);
+  });
+
+  it("top bar controls go left of the toggle tab", () => {
+    const control = document.createElement("button");
+    control.className = "scx-test-control";
+    const topbar = addSidebarTopbarControl(control);
+    expect(topbar.firstElementChild).toBe(control);
+    expect(topbar.lastElementChild.classList.contains("scx-sidebar-toggle-tab")).toBe(true);
   });
 
   it("toggle tab shows hide tooltip by default", () => {

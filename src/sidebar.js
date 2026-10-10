@@ -9,6 +9,8 @@ const SECTIONS = new Map(); // sectionId -> { title, element, isCollapsed, updat
 const SIDEBAR_PREFS_DOMAIN = "sidebar-prefs";
 const SIDEBAR_PREFS_VERSION = 1;
 let sidebarHidden = false;
+// On <html> so the left sidebar hides together with this one.
+const SIDEBARS_HIDDEN_CLASS = "scx-sidebars-hidden";
 
 export function toggleSidebarVisibility() {
   const el = document.getElementById(SIDEBAR_ID);
@@ -16,6 +18,7 @@ export function toggleSidebarVisibility() {
 
   sidebarHidden = !sidebarHidden;
   el.classList.toggle("scx-sidebar-hidden", sidebarHidden);
+  document.documentElement.classList.toggle(SIDEBARS_HIDDEN_CLASS, sidebarHidden);
 
   const tab = el.querySelector(".scx-sidebar-toggle-tab");
   if (tab) {
@@ -54,7 +57,12 @@ export function ensureSidebarContainer() {
   tab.title = `${t("hideSidebar")} (Alt+H)`; // i18n-ignore
   tab.innerHTML = `<span class="scx-sidebar-toggle-tab-icon">▶</span>`;
   tab.addEventListener("click", toggleSidebarVisibility);
-  el.prepend(tab);
+
+  // The top bar stays visible when the sidebar is hidden; features add controls to it.
+  const topbar = document.createElement("div");
+  topbar.className = "scx-sidebar-topbar";
+  topbar.appendChild(tab);
+  el.prepend(topbar);
 
   document.documentElement.appendChild(el);
 
@@ -90,6 +98,7 @@ async function _restoreSidebarState(el) {
     if (prefs?.hidden) {
       sidebarHidden = true;
       el.classList.add("scx-sidebar-hidden");
+      document.documentElement.classList.add(SIDEBARS_HIDDEN_CLASS);
       const tab = el.querySelector(".scx-sidebar-toggle-tab");
       if (tab) {
         tab.title = `${t("showSidebar")} (Alt+H)`; // i18n-ignore
@@ -99,6 +108,17 @@ async function _restoreSidebarState(el) {
   } catch {
     // Silently ignore — default to visible
   }
+}
+
+/**
+ * Put a control in the top bar, left of the hide/show tab.
+ * @param {HTMLElement} control
+ * @returns {HTMLElement | null} the top bar
+ */
+export function addSidebarTopbarControl(control) {
+  const topbar = ensureSidebarContainer().querySelector(".scx-sidebar-topbar");
+  topbar?.prepend(control);
+  return topbar;
 }
 
 const TITLE_WORD_LENGTH_SM = 14;

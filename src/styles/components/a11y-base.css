@@ -1,0 +1,19 @@
+/* Always on, independent of the accessibility toggle: these only touch extension UI.
+   :where() keeps specificity at zero so a component's own focus style still wins. */
+:where(#scx-sidebar *, [class^="scx-"], [class*=" scx-"], [id^="scx-"]):focus-visible {
+  outline: 2px solid var(--scx-focus-outline);
+  outline-offset: 2px;
+}
+
+/* why: the OS asked for less motion. !important is the only way to beat every component
+   transition at once, and the rule only ever shortens motion, never restyles anything. */
+@media (prefers-reduced-motion: reduce) {
+  :where(#scx-sidebar *, [class^="scx-"], [class*=" scx-"], [id^="scx-"]),
+  :where(#scx-sidebar *, [class^="scx-"], [class*=" scx-"], [id^="scx-"])::before,
+  :where(#scx-sidebar *, [class^="scx-"], [class*=" scx-"], [id^="scx-"])::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

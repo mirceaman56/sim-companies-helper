@@ -15,6 +15,7 @@ import { initXpWidget } from "./xp_ui.js";
 import { initAccountingWidget } from "./accounting_ui.js";
 import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
+import { initAccessibility } from "./accessibility_ui.js";
 
 /**
  * @typedef {{ id: string, titleKey: string, icon: string, update?: () => unknown }} SidebarSection
@@ -77,6 +78,8 @@ const FEATURES = [
     section: { id: "whats-new-section", titleKey: "whatsNewSectionTitle", icon: "✨" },
     init: initWhatsNew,
   },
+  // Top-bar switch; map tags and game high contrast only while it is on (or the OS asks).
+  { id: "accessibility", init: initAccessibility },
   { id: "contract", init: initContractHelper },
   { id: "warehouse", init: initWarehouseHelper },
   { id: "upgrade", init: initUpgradeBuyMessage },

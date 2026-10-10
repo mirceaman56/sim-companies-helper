@@ -534,7 +534,7 @@ export async function updatePanel() {
         <div class="scx-retail-product-name">
           ${productName}
         </div>
-        <button type="button" class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}">
+        <button type="button" class="scx-copy-btn" data-copy-action="retail" data-tooltip="${t("copyText")}" aria-label="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>

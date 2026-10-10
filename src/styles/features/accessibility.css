@@ -1,0 +1,316 @@
+/* ============ Top-bar switch ============ */
+/* Fills the top bar left of the hide tab; long translations wrap instead of being cut. */
+.scx-a11y-switch {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--scx-spacing-sm);
+  min-height: 36px;
+  padding: 0 var(--scx-spacing-sm);
+  text-align: left;
+  background: var(--scx-shell-section-header-bg);
+  border: var(--scx-shell-section-border);
+  border-radius: var(--scx-border-radius-md);
+  box-shadow: var(--scx-shell-section-shadow);
+  color: var(--scx-shell-section-title);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+  cursor: pointer;
+}
+
+.scx-a11y-switch:hover {
+  box-shadow: var(--scx-shadow-lg);
+}
+
+.scx-a11y-switch-text {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.scx-a11y-switch-track {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: var(--scx-border-dark-gray);
+  border-radius: var(--scx-border-radius-full);
+  background: var(--scx-bg-dark-hover);
+}
+
+.scx-a11y-switch-knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--scx-border-radius-full);
+  background: var(--scx-shell-section-title);
+  transition: transform 0.15s ease;
+}
+
+.scx-a11y-switch[aria-checked="true"] .scx-a11y-switch-track {
+  background: var(--scx-brand);
+}
+
+.scx-a11y-switch[aria-checked="true"] .scx-a11y-switch-knob {
+  transform: translateX(12px);
+}
+
+/* ============ Left sidebar ============ */
+/* No overflow clipping here: help text uses the floating tooltip anyway. */
+.scx-left-sidebar {
+  position: fixed;
+  top: 6px;
+  left: 4px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-sm);
+  width: 200px;
+  max-height: calc(100vh - 12px);
+  box-sizing: border-box;
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-base);
+}
+
+/* Alt+H / the hide tab hides both sidebars. */
+html.scx-sidebars-hidden .scx-left-sidebar {
+  display: none;
+}
+
+.scx-a11y-panel {
+  gap: var(--scx-spacing-sm);
+  padding: var(--scx-spacing-md);
+  border: var(--scx-shell-section-border);
+  box-shadow: var(--scx-shell-section-shadow);
+  color: var(--scx-text-primary);
+}
+
+.scx-a11y-panel .scx-panel-head {
+  margin-bottom: 0;
+}
+
+.scx-a11y-panel-hint {
+  margin: 0;
+  font-size: var(--scx-font-size-sm);
+  line-height: 1.4;
+  color: var(--scx-text-secondary);
+}
+
+/* ============ Building label editor (building pages) ============ */
+.scx-a11y-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-xs);
+}
+
+.scx-a11y-editor-heading {
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-bold);
+  color: var(--scx-text-primary);
+}
+
+.scx-a11y-editor-label {
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+  color: var(--scx-text-secondary);
+}
+
+.scx-a11y-editor-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--scx-spacing-xs) var(--scx-spacing-sm);
+  border: 1px solid var(--scx-input-border);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-input-bg);
+  color: var(--scx-input-text);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-base);
+}
+
+.scx-a11y-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--scx-spacing-sm);
+  padding: var(--scx-spacing-xs);
+}
+
+.scx-a11y-swatch {
+  position: relative;
+  height: 28px;
+  border: var(--scx-a11y-hc-border);
+  border-radius: var(--scx-border-radius-sm);
+  font-size: var(--scx-font-size-lg);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.scx-a11y-swatch:hover {
+  transform: translateY(-1px);
+}
+
+.scx-a11y-swatch-auto {
+  grid-column: 1 / -1;
+  background: var(--scx-bg-secondary);
+  color: var(--scx-text-primary);
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-semibold);
+}
+
+/* Selected: a ring with a gap (visible on light and dark swatches), a lift and a check mark,
+   so the choice never depends on seeing color. */
+.scx-a11y-swatch[aria-pressed="true"] {
+  z-index: 1;
+  transform: scale(1.08);
+  box-shadow:
+    0 0 0 2px var(--scx-bg-primary),
+    0 0 0 5px var(--scx-text-primary);
+}
+
+.scx-a11y-swatch[aria-pressed="true"]::after {
+  content: "✓";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--scx-border-radius-full);
+  background: var(--scx-text-primary);
+  color: var(--scx-bg-primary);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-bold);
+  line-height: 16px;
+  text-align: center;
+}
+
+/* ============ Palette (tags + swatches) ============ */
+.scx-a11y-color-0 {
+  background: var(--scx-a11y-cat-0);
+  color: var(--scx-a11y-cat-0-text);
+}
+.scx-a11y-color-1 {
+  background: var(--scx-a11y-cat-1);
+  color: var(--scx-a11y-cat-1-text);
+}
+.scx-a11y-color-2 {
+  background: var(--scx-a11y-cat-2);
+  color: var(--scx-a11y-cat-2-text);
+}
+.scx-a11y-color-3 {
+  background: var(--scx-a11y-cat-3);
+  color: var(--scx-a11y-cat-3-text);
+}
+.scx-a11y-color-4 {
+  background: var(--scx-a11y-cat-4);
+  color: var(--scx-a11y-cat-4-text);
+}
+.scx-a11y-color-5 {
+  background: var(--scx-a11y-cat-5);
+  color: var(--scx-a11y-cat-5-text);
+}
+.scx-a11y-color-6 {
+  background: var(--scx-a11y-cat-6);
+  color: var(--scx-a11y-cat-6-text);
+}
+.scx-a11y-color-7 {
+  background: var(--scx-a11y-cat-7);
+  color: var(--scx-a11y-cat-7-text);
+}
+
+/* ============ Map tags (switch on) ============ */
+.scx-a11y-tag {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--scx-spacing-xs);
+  margin-top: var(--scx-spacing-xs);
+  padding: var(--scx-spacing-xs) var(--scx-spacing-sm);
+  border: var(--scx-a11y-hc-border);
+  border-radius: var(--scx-border-radius-sm);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-lg);
+  font-weight: var(--scx-font-weight-bold);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.scx-a11y-tag-plain {
+  background: var(--scx-a11y-hc-bg);
+  color: var(--scx-a11y-hc-text);
+}
+
+.scx-a11y-tag-idle {
+  padding: 0 var(--scx-spacing-xs);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-a11y-idle-bg);
+  color: var(--scx-a11y-idle-text);
+  letter-spacing: 0.5px;
+}
+
+/* The game's own countdown / name chip: bigger, darker, framed. Pure CSS, so timer ticks
+   cost nothing extra. */
+html.scx-a11y-on [data-scx-a11y-status] {
+  background: var(--scx-a11y-hc-bg);
+  color: var(--scx-a11y-hc-text);
+  border: var(--scx-a11y-hc-border);
+  font-size: var(--scx-font-size-xl);
+  font-weight: var(--scx-font-weight-bold);
+}
+
+html.scx-a11y-on [data-scx-a11y-status="idle"] {
+  outline: 3px dashed var(--scx-a11y-hc-outline);
+  outline-offset: 2px;
+}
+
+/* ============ High contrast for game production screens ============ */
+/* Switch on, or the OS asks for more contrast. Attributes are set by accessibility_contrast.js. */
+html.scx-a11y-contrast [data-scx-a11y-card] {
+  background: var(--scx-a11y-hc-bg);
+  color: var(--scx-a11y-hc-text);
+  border: var(--scx-a11y-hc-border);
+  backdrop-filter: none;
+  opacity: 1;
+}
+
+html.scx-a11y-contrast [data-scx-a11y-card] :is(h3, h4, p, span, div, td, dt, dd, label, small) {
+  color: var(--scx-a11y-hc-text);
+  opacity: 1;
+}
+
+html.scx-a11y-contrast [data-scx-a11y-card] :is(input, select) {
+  background: var(--scx-a11y-hc-bg);
+  color: var(--scx-a11y-hc-text);
+  border: var(--scx-a11y-hc-border);
+}
+
+html.scx-a11y-contrast [data-scx-a11y-card] :is(a, button, input, select):focus-visible {
+  outline: 3px solid var(--scx-a11y-hc-outline);
+  outline-offset: 2px;
+}
+
+html.scx-a11y-contrast [data-scx-a11y-tile] {
+  position: relative;
+  background: var(--scx-a11y-hc-bg);
+  border: var(--scx-a11y-hc-border);
+}
+
+html.scx-a11y-contrast [data-scx-a11y-tile="stock"] {
+  background: var(--scx-a11y-hc-stock-bg);
+}
+
+/* Product names sit on a solid strip above the artwork instead of over it. */
+html.scx-a11y-contrast [data-scx-a11y-tile] > span:not([aria-hidden]) {
+  position: relative;
+  z-index: 1;
+  background: var(--scx-a11y-hc-bg);
+  color: var(--scx-a11y-hc-text);
+}
+
+html.scx-a11y-contrast [data-scx-a11y-tile]:hover {
+  outline: 3px solid var(--scx-a11y-hc-outline);
+  outline-offset: -3px;
+}

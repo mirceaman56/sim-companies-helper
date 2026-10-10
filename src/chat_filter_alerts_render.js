@@ -260,6 +260,9 @@ export function showChatFilterAlertNotification(input) {
   if (!toastContainer) {
     toastContainer = documentRef.createElement("div");
     toastContainer.id = "scx-toast-container";
+    // A live region announces alerts to screen readers; it must exist before the toast lands.
+    toastContainer.setAttribute("role", "status");
+    toastContainer.setAttribute("aria-live", "polite");
     documentRef.documentElement.appendChild(toastContainer);
   }
 
@@ -278,7 +281,7 @@ export function showChatFilterAlertNotification(input) {
         <a href="${buildChatRoomMessagesUrl({ name: alert?.roomName })}" target="_blank" rel="noreferrer noopener" class="scx-toast-link scx-ca-toast-link">${escapeHtml(body).slice(0, 140)}</a>
       </div>
     </div>
-    <button type="button" class="scx-toast-close">✕</button>
+    <button type="button" class="scx-toast-close" aria-label="${escapeHtml(t("closeAction"))}">✕</button>
   `;
 
   const dismiss = () => {

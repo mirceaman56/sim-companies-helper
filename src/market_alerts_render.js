@@ -191,7 +191,7 @@ export function renderAlertList(input) {
                 ? `<button type="button" class="scx-btn scx-btn-error scx-ma-btn-stop" data-action="stop">${t("stop")}</button>`
                 : `<button type="button" class="scx-btn scx-btn-success scx-ma-btn-start" data-action="start">${t("maStart")}</button>`
           }
-          <button type="button" class="scx-btn scx-ma-btn-remove" data-action="remove">✕</button>
+          <button type="button" class="scx-btn scx-ma-btn-remove" data-action="remove" aria-label="${escapeHtml(t("removeAction"))}">✕</button>
         </div>
       </div>
     `;
@@ -267,6 +267,9 @@ export function showNotification(input) {
   if (!toastContainer) {
     toastContainer = documentRef.createElement("div");
     toastContainer.id = "scx-toast-container";
+    // A live region announces alerts to screen readers; it must exist before the toast lands.
+    toastContainer.setAttribute("role", "status");
+    toastContainer.setAttribute("aria-live", "polite");
     documentRef.documentElement.appendChild(toastContainer);
   }
 
@@ -285,7 +288,7 @@ export function showNotification(input) {
         ${t("maPrice")} ${formatMoney(price, { decimals: 3 })} ≤ ${formatMoney(alert.targetPrice, { decimals: 3 })}
       </div>
     </div>
-    <button type="button" class="scx-toast-close">✕</button>
+    <button type="button" class="scx-toast-close" aria-label="${escapeHtml(t("closeAction"))}">✕</button>
   `;
 
   const dismiss = () => {

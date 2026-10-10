@@ -301,6 +301,7 @@ function injectIfNeeded() {
         class="scx-copy-btn scx-upgrade-copy-btn"
         id="scx-upgrade-copy-btn"
         data-tooltip="${t("upgradeCopyTooltip")}"
+        aria-label="${t("upgradeCopyTooltip")}"
       >${COPY_BUTTON_SVG}</button>
     </div>
   `;

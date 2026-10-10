@@ -271,7 +271,7 @@ function renderAnalysisUI(contentEl, recipe, analysis) {
     <div class="scx-panel scx-production-panel">
       <div class="scx-flex-spaced scx-margin-bottom-6">
         <div class="scx-prod-title">${escapeHtml(recipe.name)}</div>
-        <button type="button" class="scx-copy-btn" data-copy-action="production" data-tooltip="${t("copyText")}">
+        <button type="button" class="scx-copy-btn" data-copy-action="production" data-tooltip="${t("copyText")}" aria-label="${t("copyText")}">
           ${COPY_BUTTON_SVG}
         </button>
       </div>

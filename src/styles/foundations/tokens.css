@@ -73,11 +73,11 @@
   /* Text */
   --scx-text-primary: oklch(15% 0.005 240);
   --scx-text-secondary: oklch(40% 0.01 240);
-  --scx-text-muted: oklch(60% 0.01 240);
+  --scx-text-muted: oklch(52% 0.01 240);
   --scx-text-success: oklch(52% 0.17 145);
   --scx-text-success-dark: oklch(35% 0.14 145);
   --scx-text-error: oklch(50% 0.2 25);
-  --scx-text-warning: oklch(62% 0.17 70);
+  --scx-text-warning: oklch(52% 0.15 70);
   --scx-text-warning-alt: oklch(42% 0.16 68);
   --scx-text-info: oklch(52% 0.18 240);
   --scx-text-info-dark: oklch(35% 0.15 240);
@@ -139,6 +139,7 @@
   --scx-focus-ring-brand-strong: 0 0 0 3px oklch(56% 0.17 145 / 0.2);
   --scx-focus-ring-error: 0 0 0 3px oklch(50% 0.2 25 / 0.15);
   --scx-focus-ring-error-strong: 0 0 0 3px oklch(50% 0.2 25 / 0.2);
+  --scx-focus-outline: oklch(45% 0.15 145);
 
   /* Spacing */
   --scx-spacing-xs: 4px;
@@ -194,6 +195,32 @@
   --scx-color-orange-dark: oklch(50% 0.18 48);
   --scx-color-orange: oklch(62% 0.17 70);
   --scx-color-error-dark: oklch(43% 0.2 25);
+  /* Accessibility mode: Okabe-Ito colorblind-safe categories, each with its own text color.
+     Not theme dependent: they sit on the game's own (always light) screens. */
+  --scx-a11y-cat-0: oklch(75.3% 0.158 76.8);
+  --scx-a11y-cat-0-text: oklch(15% 0 0);
+  --scx-a11y-cat-1: oklch(73.5% 0.117 236.2);
+  --scx-a11y-cat-1-text: oklch(15% 0 0);
+  --scx-a11y-cat-2: oklch(62% 0.13 165.5);
+  --scx-a11y-cat-2-text: oklch(15% 0 0);
+  --scx-a11y-cat-3: oklch(90.2% 0.172 105);
+  --scx-a11y-cat-3-text: oklch(15% 0 0);
+  --scx-a11y-cat-4: oklch(53.2% 0.131 244);
+  --scx-a11y-cat-4-text: oklch(100% 0 0);
+  --scx-a11y-cat-5: oklch(62.1% 0.17 47.5);
+  --scx-a11y-cat-5-text: oklch(15% 0 0);
+  --scx-a11y-cat-6: oklch(67.9% 0.118 346.3);
+  --scx-a11y-cat-6-text: oklch(15% 0 0);
+  --scx-a11y-cat-7: oklch(20% 0 0);
+  --scx-a11y-cat-7-text: oklch(100% 0 0);
+  /* High-contrast overrides for game screens */
+  --scx-a11y-hc-bg: oklch(100% 0 0);
+  --scx-a11y-hc-text: oklch(15% 0 0);
+  --scx-a11y-hc-border: 2px solid oklch(25% 0 0);
+  --scx-a11y-hc-outline: oklch(15% 0 0);
+  --scx-a11y-hc-stock-bg: oklch(92% 0.07 145);
+  --scx-a11y-idle-bg: oklch(15% 0 0);
+  --scx-a11y-idle-text: oklch(100% 0 0);
 }
 
 /* ── Dark mode overrides ── */
@@ -232,7 +259,7 @@
 
     --scx-text-primary: oklch(92% 0.005 240);
     --scx-text-secondary: oklch(68% 0.01 240);
-    --scx-text-muted: oklch(48% 0.01 240);
+    --scx-text-muted: oklch(60% 0.01 240);
     --scx-text-success: oklch(62% 0.17 145);
     --scx-text-success-dark: oklch(78% 0.12 145);
     --scx-text-error: oklch(62% 0.2 25);
@@ -291,5 +318,6 @@
     --scx-focus-ring-brand-strong: 0 0 0 3px oklch(62% 0.18 145 / 0.35);
     --scx-focus-ring-error: 0 0 0 3px oklch(62% 0.2 25 / 0.3);
     --scx-focus-ring-error-strong: 0 0 0 3px oklch(62% 0.2 25 / 0.35);
+    --scx-focus-outline: oklch(75% 0.15 145);
   }
 }
