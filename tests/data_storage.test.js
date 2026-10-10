@@ -157,4 +157,22 @@ describe("data/storage", () => {
       expect(ok).toBe(false);
     });
   });
+  it("watchGlobal reports writes to the sync area only when asked for it", async () => {
+    const seen = { chrome: [], sync: [] };
+    const options = { domain: "a11y-test", version: 1 };
+    storage.watchGlobal(options, (data) => seen.chrome.push(data));
+    storage.watchGlobal({ ...options, backend: "sync" }, (data) => seen.sync.push(data));
+
+    await set({ ...options, scope: "global", backend: "sync", refreshAuth: false, data: { enabled: true } });
+    await set({
+      ...options,
+      scope: "global",
+      backend: "chrome",
+      refreshAuth: false,
+      data: { enabled: false },
+    });
+
+    expect(seen.sync).toEqual([{ enabled: true }]);
+    expect(seen.chrome).toEqual([{ enabled: false }]);
+  });
 });

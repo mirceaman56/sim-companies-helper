@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { contrastRatio, parseColor } from "../scripts/lib/color.mjs";
 import { extractLiterals, lineOf, stripComments } from "../scripts/lib/source-files.mjs";
 
 describe("scripts/lib/source-files", () => {
@@ -81,5 +82,68 @@ describe("scripts/check-comments.mjs", () => {
     expect(out).toContain("4 prose lines");
     expect(out).toContain("commented-out code");
     expect(out).toContain("change history");
+  });
+});
+
+describe("scripts/lib/color.mjs", () => {
+  it("matches the WCAG reference values for black and white", () => {
+    expect(contrastRatio("oklch(100% 0 0)", "oklch(0% 0 0)")).toBeCloseTo(21, 1);
+    expect(contrastRatio("#ffffff", "#ffffff")).toBeCloseTo(1, 5);
+    expect(contrastRatio("#767676", "#ffffff")).toBeCloseTo(4.54, 1);
+  });
+
+  it("agrees between hex and the equivalent oklch", () => {
+    // Okabe-Ito blue, #0072B2
+    expect(contrastRatio("oklch(53.2% 0.131 244)", "#ffffff")).toBeCloseTo(
+      contrastRatio("#0072b2", "#ffffff"),
+      1,
+    );
+  });
+
+  it("refuses translucent or unknown colors instead of guessing", () => {
+    expect(contrastRatio("oklch(50% 0.1 240 / 0.5)", "#ffffff")).toBeNull();
+    expect(contrastRatio("var(--x)", "#ffffff")).toBeNull();
+    expect(parseColor("oklch(50% 0.1 240 / 50%)").alpha).toBe(0.5);
+  });
+});
+
+describe("scripts/check-markup.mjs", () => {
+  async function runOn(source) {
+    const { mkdtempSync, mkdirSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join, resolve } = await import("node:path");
+    const { spawnSync } = await import("node:child_process");
+    const dir = mkdtempSync(join(tmpdir(), "scx-markup-"));
+    mkdirSync(join(dir, "src"));
+    writeFileSync(join(dir, "src", "sample.js"), source);
+    const res = spawnSync(process.execPath, [resolve("scripts/check-markup.mjs")], {
+      cwd: dir,
+      encoding: "utf8",
+    });
+    return { ok: res.status === 0, out: res.stdout + res.stderr };
+  }
+
+  it("flags icon-only and tooltip-only buttons without aria-label", async () => {
+    const { ok, out } = await runOn(
+      [
+        'const a = `<button type="button" class="x">✕</button>`;',
+        'const b = `<button type="button" data-tooltip="${t("copy")}">${ICON}</button>`;',
+      ].join("\n"),
+    );
+    expect(ok).toBe(false);
+    expect(out).toContain("icon-only <button>");
+    expect(out).toContain("data-tooltip is CSS-only");
+  });
+
+  it("accepts buttons with text or an aria-label", async () => {
+    const { ok, out } = await runOn(
+      [
+        'const a = `<button type="button">${t("save")}</button>`;',
+        'const b = `<button type="button" aria-label="${t("close")}">✕</button>`;',
+        'const c = `<button type="button">Save</button>`;',
+      ].join("\n"),
+    );
+    expect(out).toContain("OK");
+    expect(ok).toBe(true);
   });
 });

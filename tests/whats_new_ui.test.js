@@ -86,6 +86,18 @@ describe("what's new panel", () => {
     expect(versions[0].textContent).toContain("Contract discounts accept any value");
   });
 
+  it("versions scroll in a keyboard-focusable region; the release notes link stays outside it", () => {
+    updateWhatsNewPanel();
+
+    const list = document.querySelector(".scx-whats-new-list");
+    expect(list.getAttribute("role")).toBe("region");
+    expect(list.getAttribute("tabindex")).toBe("0");
+    expect(list.getAttribute("aria-label")).toBe("whatsNewSectionTitle");
+    expect(list.querySelectorAll(".scx-whats-new-version")).toHaveLength(2);
+    expect(list.querySelector(".scx-whats-new-link")).toBeNull();
+    expect(document.querySelector(".scx-whats-new-panel > .scx-whats-new-link")).not.toBeNull();
+  });
+
   it("badges only the versions the player has not seen", () => {
     _testUtils.setUnseen(["0.29.2"]);
     updateWhatsNewPanel();

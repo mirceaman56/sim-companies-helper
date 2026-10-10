@@ -5,6 +5,20 @@
   font-size: var(--scx-font-size-sm);
 }
 
+/* Long histories scroll inside the section; the release-notes link below stays visible.
+   Focusable so keyboard users can scroll it with the arrow keys. */
+.scx-whats-new-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scx-spacing-md);
+  max-height: min(360px, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+  padding-right: var(--scx-spacing-xs);
+}
+
 .scx-whats-new-empty {
   padding: var(--scx-spacing-sm) 0;
   font-size: var(--scx-font-size-xs);

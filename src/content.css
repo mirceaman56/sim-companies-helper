@@ -6,6 +6,8 @@
 @import "./styles/components/copy-button.css";
 @import "./styles/components/toast.css";
 @import "./styles/components/nav-chip.css";
+@import "./styles/components/a11y-base.css";
+@import "./styles/components/floating-tooltip.css";
 @import "./styles/features/chat-filter.css";
 @import "./styles/features/sidebar-footer.css";
 @import "./styles/features/api-health.css";
@@ -20,3 +22,4 @@
 @import "./styles/features/finance-dashboard.css";
 @import "./styles/features/recipe-extractor.css";
 @import "./styles/features/whats-new.css";
+@import "./styles/features/accessibility.css";

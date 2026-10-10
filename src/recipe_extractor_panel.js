@@ -13,7 +13,7 @@ function createPanelMarkup(recipesJson, count) {
   return `
     <div class="scx-recipe-extractor-head">
       <strong class="scx-recipe-extractor-title">📋 Recipes (${count})</strong>
-      <button id="${CLOSE_BUTTON_ID}" class="scx-recipe-extractor-close" type="button">×</button>
+      <button id="${CLOSE_BUTTON_ID}" class="scx-recipe-extractor-close" type="button" aria-label="Close">×</button>
     </div>
 
     <textarea id="${OUTPUT_ID}" class="scx-recipe-extractor-output" readonly>${escapeHtml(recipesJson)}</textarea>

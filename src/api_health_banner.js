@@ -66,7 +66,8 @@ function createBanner(sidebar) {
     </div>
   `;
 
-  const tab = sidebar.querySelector(".scx-sidebar-toggle-tab");
+  const tab =
+    sidebar.querySelector(".scx-sidebar-topbar") || sidebar.querySelector(".scx-sidebar-toggle-tab");
   if (tab) {
     tab.after(banner);
   } else {

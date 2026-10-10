@@ -1,0 +1,65 @@
+/* Round "i" help icon. Pair with data-scx-tooltip + the same text in aria-label. */
+.scx-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--scx-border-radius-full);
+  background: var(--scx-tone-info-bg);
+  color: var(--scx-tone-info-text);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-xs);
+  font-weight: var(--scx-font-weight-bold);
+  cursor: help;
+}
+
+/* One fixed tooltip on <html> (floating_tooltip.js), so it can overlap the game outside any
+   sidebar instead of being clipped by the sidebar's scroll box. */
+.scx-floating-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100001;
+  width: max-content;
+  max-width: 280px;
+  padding: var(--scx-spacing-sm) var(--scx-spacing-md);
+  border-radius: var(--scx-border-radius-sm);
+  background: var(--scx-bg-tooltip);
+  box-shadow: var(--scx-shadow-popover-dark);
+  color: var(--scx-color-white);
+  font-family: var(--scx-font-family);
+  font-size: var(--scx-font-size-sm);
+  font-weight: var(--scx-font-weight-normal);
+  line-height: 1.4;
+  white-space: pre-line;
+  transform: translate(var(--scx-tooltip-x, 0), var(--scx-tooltip-y, 0));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.scx-floating-tooltip.scx-floating-tooltip-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.scx-floating-tooltip::before {
+  content: "";
+  position: absolute;
+  left: var(--scx-tooltip-arrow-x, 50%);
+  border: 5px solid transparent;
+  transform: translateX(-50%);
+}
+
+.scx-floating-tooltip[data-placement="below"]::before {
+  bottom: 100%;
+  border-bottom-color: var(--scx-bg-tooltip);
+}
+
+.scx-floating-tooltip[data-placement="above"]::before {
+  top: 100%;
+  border-top-color: var(--scx-bg-tooltip);
+}

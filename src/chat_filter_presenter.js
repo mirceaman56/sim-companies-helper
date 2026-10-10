@@ -57,7 +57,7 @@ export function createChatFilterContent({ onAction, onRoomChange, onTabChange, r
         <button class="scx-btn scx-btn-secondary scx-btn-sm scx-chat-tab is-active" type="button" data-tab="${SEARCH_TAB}">${t("searchTab")}</button>
         <button class="scx-btn scx-btn-secondary scx-btn-sm scx-chat-tab" type="button" data-tab="${ALERTS_TAB}">${t("alertsTab")}</button>
       </div>
-      <button class="scx-copy-btn" data-copy-action="chat-filter" data-tooltip="${t("copyText")}" type="button">
+      <button class="scx-copy-btn" data-copy-action="chat-filter" data-tooltip="${t("copyText")}" aria-label="${t("copyText")}" type="button">
         ${COPY_BUTTON_SVG}
       </button>
     </div>

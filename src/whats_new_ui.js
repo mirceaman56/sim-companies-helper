@@ -81,6 +81,8 @@ function ensureToastContainer() {
   if (el) return el;
   el = document.createElement("div");
   el.id = TOAST_CONTAINER_ID;
+  el.setAttribute("role", "status");
+  el.setAttribute("aria-live", "polite");
   document.documentElement.appendChild(el);
   return el;
 }
@@ -194,7 +196,9 @@ export function updateWhatsNewPanel() {
 
   content.innerHTML = `
     <div class="scx-whats-new-panel">
-      ${blocks}
+      <div class="scx-whats-new-list" role="region" tabindex="0" aria-label="${escapeHtml(t("whatsNewSectionTitle"))}">
+        ${blocks}
+      </div>
       <a
         href="${escapeHtml(releasePageUrl(latest))}"
         target="_blank"

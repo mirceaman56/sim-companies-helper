@@ -463,14 +463,14 @@ export async function migrate({
 }
 
 /**
- * Watch a global chrome.storage value for writes from any tab or the background
- * worker. Only the chrome backend broadcasts changes across tabs.
+ * Watch a global chrome.storage value (local or sync area) for writes from any tab or the
+ * background worker. Page localStorage does not broadcast across tabs.
  *
- * @param {{ domain: string, version: number, prefix?: string }} options
+ * @param {{ domain: string, version: number, prefix?: string, backend?: "chrome"|"sync" }} options
  * @param {(data: unknown) => void} listener Receives the new data value, or null when removed.
  * @returns {() => void} Unsubscribe function.
  */
-export function watchGlobal({ domain, version, prefix = DEFAULT_PREFIX } = {}, listener) {
+export function watchGlobal({ domain, version, prefix = DEFAULT_PREFIX, backend = "chrome" } = {}, listener) {
   if (typeof listener !== "function") return () => {};
 
   let events = null;
@@ -483,7 +483,7 @@ export function watchGlobal({ domain, version, prefix = DEFAULT_PREFIX } = {}, l
 
   const key = buildStorageKey({ domain, version, scopeKey: "global", prefix });
   const handler = (changes, areaName) => {
-    if (areaName !== "local") return;
+    if (areaName !== (envelopeBackend(backend) === "sync" ? "sync" : "local")) return;
     const change = changes?.[key];
     if (!change) return;
     listener(parseJson(change.newValue)?.data ?? null);

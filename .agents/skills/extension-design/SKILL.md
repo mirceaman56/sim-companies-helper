@@ -91,6 +91,21 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 - `.scx-panel-head` — flex row with space-between for title + actions
 - `.scx-panel-title` — 12px uppercase, font-weight 900, `scx-text-primary`
 
+### Accessibility (a11y-base.css, features/accessibility.css)
+- Always on: every focusable extension element gets a visible `var(--scx-focus-outline)` ring; `prefers-reduced-motion` shortens all extension motion. Don't remove focus outlines without a replacement ring.
+- Status must never rely on color alone: pair color with text or an icon.
+- Text tokens are contrast-checked (`check:styles`, WCAG AA 4.5:1 in light and dark). Add a new text/background token pair to `CONTRAST_PAIRS` in `scripts/check-styles.mjs`.
+- Toggle-gated (`html.scx-a11y-on` / `html.scx-a11y-contrast`): game screens are restyled only through `data-scx-a11y-*` attributes that an adapter-driven module sets — never game class names in CSS.
+- Colorblind palette: `.scx-a11y-color-{0..7}` (Okabe-Ito, each with its own text color token `--scx-a11y-cat-N-text`) plus a shape per slot.
+
+### Info icon + floating tooltip (floating-tooltip.css, floating_tooltip.js)
+- `.scx-info-icon` — round "i" help icon: `<span class="scx-info-icon" role="img" tabindex="0" aria-label="…" data-scx-tooltip="…">i</span>` (same text in both attributes).
+- Any element with `data-scx-tooltip` shows one shared fixed tooltip (`#scx-floating-tooltip`) on hover/focus, positioned by JS and never clipped by a sidebar's scroll box. Call `installFloatingTooltips()` once from the feature init. `\n` in the text starts a new line.
+- Prefer it over `::after` tooltips for anything inside a sidebar.
+
+### Left sidebar (left_sidebar.js)
+- `#scx-left-sidebar` is created on demand by `mountLeftSidebarPanel(panel)` and removed when its last panel goes (`removeLeftSidebarPanel(id)`). Panels use `.scx-panel`. It hides together with the right sidebar (`html.scx-sidebars-hidden`).
+
 ### Toast notifications (toast.css)
 - `#scx-toast-container` — fixed top-center, z-index 100000
 - `.scx-toast` → add `.scx-toast-visible` to show, `.scx-toast-exit` to dismiss
@@ -142,7 +157,7 @@ All CSS class names are prefixed with **`scx-`** to avoid collisions with the ho
 ## What to never do
 
 - Do not add new colors outside the token system.
-- Do not use `!important` except for `.scx-input-error` (existing exception) and `.scx-hidden`.
+- Do not use `!important` except for `.scx-input-error` (existing exception), `.scx-hidden`, and the `prefers-reduced-motion` reset in `components/a11y-base.css`.
 - Do not hardcode pixel sizes for spacing or radius — always use tokens.
 - Do not hardcode oklch/hex/hsl color values in feature CSS — always reference a token.
 - Do not introduce runtime npm packages. Dev tooling is fine when `npm run verify` needs it.

@@ -246,7 +246,7 @@ function renderHeader(finance) {
       <div class="scx-fin-header-row">
         <div class="scx-panel-title">${t("financialsHelper")}</div>
         <div class="scx-fin-inline-actions">
-          <button type="button" class="scx-copy-btn" data-fin-action="copy" data-tooltip="${t("financeCopyVisible")}">
+          <button type="button" class="scx-copy-btn" data-fin-action="copy" data-tooltip="${t("financeCopyVisible")}" aria-label="${t("financeCopyVisible")}">
             ${COPY_BUTTON_SVG}
           </button>
         </div>
