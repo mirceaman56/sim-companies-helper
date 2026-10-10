@@ -8,12 +8,7 @@
         {
           "cat": "fix",
           "pr": 165,
-          "text": "Fix tab freeze when API is rate limited after realm switch"
-        },
-        {
-          "cat": "other",
-          "pr": 166,
-          "text": "Chore/changelog backfill 0.29.6"
+          "text": "Game tab no longer freezes after switching realms"
         }
       ],
       "credits": [
@@ -73,7 +68,7 @@
         {
           "cat": "feature",
           "pr": 159,
-          "text": "Updated the change log updates"
+          "text": "What's New now thanks players who report issues or suggest ideas"
         }
       ],
       "credits": []
@@ -115,7 +110,7 @@
         {
           "cat": "feature",
           "pr": 154,
-          "text": "New api limit warning and api call optimisations"
+          "text": "Warning when the game limits data requests, and fewer requests overall"
         }
       ],
       "credits": []
@@ -132,7 +127,7 @@
         {
           "cat": "feature",
           "pr": null,
-          "text": "Small performance optimisation and loading race condition fix"
+          "text": "Sidebar loads faster and more reliably"
         }
       ],
       "credits": [

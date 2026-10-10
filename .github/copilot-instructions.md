@@ -38,6 +38,7 @@ Rules without a check are marked "review". Do not weaken a check to make a chang
 | `fetch` / `localStorage` / `chrome.storage` only inside `src/data/`.                                                                                                                                                                                                                    | `check:architecture`                                                  |
 | Game DOM selectors only inside `src/page/*_page.js`.                                                                                                                                                                                                                                    | `check:architecture`                                                  |
 | Manifest permissions stay minimal (`storage`, `unlimitedStorage`; no host permissions, no web-accessible resources). Changing them means editing the allowlist in `scripts/check-manifest.mjs` and calling it out in the PR.                                                            | `check:manifest`                                                      |
+| Changelog entries: under a version ≤ the manifest version, newest first, ≤ 100 chars, player wording (no PR/issue refs, code, dev jargon).                                                                                                                                              | `check:changelog`                                                     |
 | Every page adapter has `tests/<name>_page.test.js` and ≥2 HTML fixtures in `tests/fixtures/<name>/`.                                                                                                                                                                                    | `tests/page_adapter_contract_coverage.test.js`                        |
 | Comments explain _why_ (a decision, game quirk, workaround), never _what_. Max 3 prose lines; a block starting with `why:` may use 8. No comments restating the name below, no file-name headers, no commented-out code, no change history (git has it), no TODO/FIXME (open an issue). | `check:comments`, ESLint `no-warning-comments`                        |
 | No `eval` / `new Function`.                                                                                                                                                                                                                                                             | ESLint                                                                |
@@ -120,11 +121,16 @@ function injectIfNeeded(ctx) {
 
 - `npm run build`: content build (clears `dist/`), then background build (appends). Minified, target `chrome116` (must equal `minimum_chrome_version`; `check:manifest` verifies).
 - `npm run pack`: `sim-companies-extension-chrome.zip` from `dist/` without source maps.
-- Release workflow (push to `main`): verify → audit → build changelog → build → pack → GitHub release `v<manifest version>`. Store publish (manual workflow) uploads that release zip.
+- Release workflow (push to `main`): verify → audit → build → pack → GitHub release `v<manifest version>`. Store publish (manual workflow) uploads that release zip.
 
 ## Changelog / "What's New"
 
-Generated, never hand-written, English only on purpose. Details: `changelog` skill.
+`src/resources/changelog.json` is written by agents with the `changelog` skill, never by CI. English only, written for non-technical players.
+
+- After any user-visible change, **always ask the user** whether to add it to the changelog, proposing the entry text. Write only on yes.
+- Entries go under the version in `public/manifest.json`. If that version is already tagged, ask the user to bump it first (`version-update` skill).
+- Retrospective backfill from git history: `changelog` skill, "Retrospective mode".
+- `check:changelog` enforces shape, order, length and plain wording.
 
 ## Instruction files
 

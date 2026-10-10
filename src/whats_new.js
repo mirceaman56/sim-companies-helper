@@ -1,4 +1,4 @@
-// why: the changelog is built at release time (scripts/build-changelog.mjs) and bundled, so no
+// why: the changelog is agent-written (changelog skill) and bundled, so no
 // network. Entries are English on purpose; panel labels still use t().
 
 import changelog from "./resources/changelog.json";
@@ -79,8 +79,8 @@ export function pickEntryText(entry) {
 
 /**
  * People to thank for a version, split by role so the panel can label them.
- * Built at release time from PR authors and the authors of the issues those
- * PRs close, so nobody has to be listed by hand.
+ * Written with each entry from PR authors and the authors of the issues
+ * those PRs close.
  * @param {{credits?: Array}} version
  * @returns {{contributors: Array, reporters: Array}}
  */
