@@ -269,9 +269,69 @@ export function readProductionStats(row) {
     stockUnitCost,
     laborCostTotal,
     laborCostPerUnit,
+    wagesPerHour,
+    productionPerHour,
     abundancePct: single.abundance ?? null,
     currentStock: single.stock ?? null,
   };
+}
+
+/**
+ * Exact building level from the page header, where the building name heading is followed by a
+ * short "<label> <number>" chip ("LEVEL 12", "STUFE 12").
+ * @param {ParentNode} [root]
+ * @returns {number|null}
+ */
+export function readBuildingLevel(root = document) {
+  for (const heading of root?.querySelectorAll?.("h3") || []) {
+    const chip = heading.nextElementSibling;
+    if (!chip || chip.children.length > 0) continue;
+    const match = (chip.textContent || "").trim().match(/^\D{0,20}?(\d{1,3})$/u);
+    const level = match ? Number(match[1]) : NaN;
+    if (level >= 1 && level <= 1000) return level;
+  }
+  return null;
+}
+
+/**
+ * Building-wide wages per hour from the page header, shown whether the building is busy or
+ * idle. It is the only money-per-hour value outside the setup form's stat list.
+ * @param {ParentNode} [root]
+ * @returns {number|null}
+ */
+export function readBuildingWagesPerHour(root = document) {
+  for (const span of root?.querySelectorAll?.("span") || []) {
+    if (span.children.length > 0 || span.closest("dl")) continue;
+    const text = (span.textContent || "").trim();
+    if (!RATE_PATTERN.test(text)) continue;
+    const money = readMoneyValues(text);
+    if (money.length === 1 && money[0] > 0) return money[0];
+  }
+  return null;
+}
+
+/**
+ * Output and wages per hour of every product the building page offers to produce. The setup
+ * forms only render while the building is idle, so a busy building yields an empty list.
+ * @param {ParentNode} [root]
+ * @returns {{ productId: number, unitsPerHour: number|null, wagesPerHour: number|null }[]}
+ */
+export function readBuildingProductRates(root = document) {
+  const rows = new Set();
+  for (const input of root?.querySelectorAll?.(AMOUNT_INPUT_SELECTOR) || []) {
+    const row = findProductionRowFromTarget(input);
+    if (row && !isBusyProductionBlock(row)) rows.add(row);
+  }
+
+  const rates = [];
+  for (const row of rows) {
+    const productId = Number(extractProductIdFromRow(row));
+    const stats = readProductionStats(row);
+    if (!productId || !stats) continue;
+    if (stats.productionPerHour === null && stats.wagesPerHour === null) continue;
+    rates.push({ productId, unitsPerHour: stats.productionPerHour, wagesPerHour: stats.wagesPerHour });
+  }
+  return rates;
 }
 
 function getBusyValueIndex(cell) {
