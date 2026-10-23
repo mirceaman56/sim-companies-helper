@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it, expect } from "vitest";
-import { findRealmLogo, readActiveRealmId } from "../src/page/realm_page.js";
+import { findRealmLogo, readActiveRealmId, readRealmLogoAsset } from "../src/page/realm_page.js";
 
 function loadFixture(relPath) {
   const html = readFileSync(join(process.cwd(), "tests", "fixtures", relPath), "utf8");
@@ -19,6 +19,12 @@ describe("realm page adapter", () => {
   it("reads Entrepreneurs from the logo path even when the alt text is translated", () => {
     const doc = loadFixture("realm/entrepreneurs-navbar-localized.html");
     expect(readActiveRealmId(doc)).toBe(1);
+  });
+
+  it("reads Challenge from the navbar realm logo", () => {
+    const doc = loadFixture("realm/challenge-navbar.html");
+    expect(readActiveRealmId(doc)).toBe(2);
+    expect(readRealmLogoAsset(doc)).toBe("challenge");
   });
 
   it("returns null when the page has no realm logo", () => {
@@ -38,5 +44,10 @@ describe("realm page adapter", () => {
       "text/html",
     );
     expect(readActiveRealmId(doc)).toBeNull();
+    expect(readRealmLogoAsset(doc)).toBe("unknown");
+  });
+
+  it("has no logo asset on pages without a realm logo", () => {
+    expect(readRealmLogoAsset(loadFixture("realm/no-realm-logo.html"))).toBeNull();
   });
 });
