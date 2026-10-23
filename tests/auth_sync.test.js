@@ -13,7 +13,12 @@ const { STORAGE_KEY } = _testUtils;
 const authPayload = (companyId, realmId) => ({ authCompany: { companyId, realmId } });
 
 function pageForRealm(realmId) {
-  const asset = { 0: "Magnates_140.png", 1: "Entrepeneurs_140.png" }[realmId];
+  const asset = {
+    0: "Magnates_140.png",
+    1: "Entrepeneurs_140.png",
+    2: "Challenge_140.png",
+    unknown: "Future_140.png",
+  }[realmId];
   const html = asset ? `<img src="/static/images/realms/${asset}">` : "<div></div>";
   return new DOMParser().parseFromString(html, "text/html");
 }
@@ -122,6 +127,44 @@ describe("ensureAuthContextCurrent", () => {
     expect(request).toHaveBeenCalledTimes(1);
   });
 
+  it("follows a switch to the Challenge realm and back in the same tab", async () => {
+    await loadAuthAs(5, 0);
+    await ensureAuthContextCurrent(pageForRealm(0));
+    request.mockClear();
+
+    request.mockResolvedValueOnce(authPayload(7, 2));
+    await ensureAuthContextCurrent(pageForRealm(2));
+    expect(STATE.auth).toMatchObject({ companyId: 7, realmId: 2 });
+
+    request.mockResolvedValueOnce(authPayload(5, 0));
+    await ensureAuthContextCurrent(pageForRealm(0));
+
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(STATE.auth).toMatchObject({ companyId: 5, realmId: 0 });
+  });
+
+  it("refetches once when the page switches to a realm the adapter does not know", async () => {
+    await loadAuthAs(5, 0);
+    await ensureAuthContextCurrent(pageForRealm(0));
+    request.mockClear();
+
+    request.mockResolvedValueOnce(authPayload(8, 3));
+    await ensureAuthContextCurrent(pageForRealm("unknown"));
+    await ensureAuthContextCurrent(pageForRealm("unknown"));
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(STATE.auth).toMatchObject({ companyId: 8, realmId: 3 });
+  });
+
+  it("trusts fresh auth when the first page seen shows an unknown realm", async () => {
+    await loadAuthAs(8, 3);
+    request.mockClear();
+
+    await ensureAuthContextCurrent(pageForRealm("unknown"));
+
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it("makes no call on pages without a realm logo", async () => {
     await loadAuthAs(5, 0);
     request.mockClear();
@@ -156,6 +199,21 @@ describe("initAuthContextSync", () => {
 
     expect(request).toHaveBeenCalledTimes(1);
     expect(chrome.storage.local.set).not.toHaveBeenCalled();
+  });
+
+  it("refetches when the navbar realm logo changes without a page reload", async () => {
+    document.body.innerHTML = '<img src="/static/images/realms/Magnates_140.png">';
+    initAuthContextSync();
+    await loadAuthAs(5, 0);
+    await ensureAuthContextCurrent();
+    request.mockClear();
+
+    request.mockResolvedValueOnce(authPayload(7, 2));
+    document.body.innerHTML = '<img src="/static/images/realms/Challenge_140.png">';
+
+    await vi.waitFor(() => expect(STATE.auth.realmId).toBe(2));
+    expect(request).toHaveBeenCalledTimes(1);
+    document.body.innerHTML = "";
   });
 
   it("ignores reports that match the current company", async () => {
