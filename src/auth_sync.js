@@ -4,7 +4,7 @@
 import { STATE } from "./state.js";
 import { loadAuthDataOnce, onAuthDataApplied } from "./auth.js";
 import { storage } from "./data/storage.js";
-import { readActiveRealmId } from "./page/realm_page.js";
+import { observeRealmLogo, readActiveRealmId, readRealmLogoAsset } from "./page/realm_page.js";
 
 const CONTEXT_STORAGE = {
   domain: "auth-context",
@@ -14,7 +14,7 @@ const CONTEXT_STORAGE = {
   refreshAuth: false,
 };
 
-let lastSeenPageRealmId = null;
+let lastSeenRealmAsset = null;
 let broadcastRefresh = null;
 let stopSync = null;
 
@@ -32,17 +32,32 @@ export async function ensureAuthContextCurrent(root = document) {
     await loadAuthDataOnce();
   }
 
-  const pageRealmId = readActiveRealmId(root);
-  if (pageRealmId === null) return;
+  const realmAsset = readRealmLogoAsset(root);
+  if (realmAsset === null) return;
 
   // Act on a change of the page realm, not on a mismatch: if the server still
   // reports another realm after one refresh, refetching again would not help.
-  const pageRealmChanged = pageRealmId !== lastSeenPageRealmId;
-  lastSeenPageRealmId = pageRealmId;
+  const firstSight = lastSeenRealmAsset === null;
+  const pageRealmChanged = realmAsset !== lastSeenRealmAsset;
+  lastSeenRealmAsset = realmAsset;
+  if (!pageRealmChanged || !STATE.auth.loaded) return;
 
-  if (pageRealmChanged && STATE.auth.loaded && pageRealmId !== STATE.auth.realmId) {
+  // why: a realm the adapter does not map yet has no id to compare, so any switch to or
+  // from it refetches. On first sight auth is fresh from this page load, so it is trusted.
+  const pageRealmId = readActiveRealmId(root);
+  const unknownSwitch = pageRealmId === null && !firstSight;
+  if (unknownSwitch || (pageRealmId !== null && pageRealmId !== STATE.auth.realmId)) {
     await loadAuthDataOnce({ force: true });
   }
+}
+
+function watchPageRealm() {
+  // The game switches realm without a page reload; follow the navbar logo so scoped
+  // storage and realm API calls move with it instead of waiting for the cashflow poller.
+  return observeRealmLogo(document, () => {
+    if (!STATE.auth.loaded || STATE.auth.loading) return;
+    void ensureAuthContextCurrent();
+  });
 }
 
 function publishContext(context) {
@@ -70,9 +85,11 @@ export function initAuthContextSync() {
 
   const stopPublishing = onAuthDataApplied(publishContext);
   const stopWatching = storage.watchGlobal(CONTEXT_STORAGE, onContextReported);
+  const stopRealmWatch = watchPageRealm();
   stopSync = () => {
     stopPublishing();
     stopWatching();
+    stopRealmWatch();
   };
 }
 
@@ -85,7 +102,7 @@ export const _testUtils = {
   reset() {
     stopSync?.();
     stopSync = null;
-    lastSeenPageRealmId = null;
+    lastSeenRealmAsset = null;
     broadcastRefresh = null;
   },
 };
