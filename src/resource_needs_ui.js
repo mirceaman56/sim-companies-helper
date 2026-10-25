@@ -2,32 +2,35 @@ import { mountLeftSidebarPanel } from "./left_sidebar.js";
 import { installFloatingTooltips } from "./floating_tooltip.js";
 import { onAuthDataApplied } from "./auth.js";
 import { readMoneyBalance } from "./page/money_page.js";
-import { getRecipeByProductId, getRecipes } from "./production.js";
+import { getRecipeByProductId } from "./production.js";
 import { t } from "./i18n.js";
 import { escapeHtml } from "./utils.js";
 import { onRateLimitChange } from "./data/apiClient.js";
 import {
   DEFAULT_PERIOD,
   aggregateNeeds,
-  mergeCapturedRates,
+  clampQuality,
   compareCash,
   compareWithStock,
   cooldownRemainingMs,
   indexingGap,
   isCheckedByDefault,
+  mergeCapturedRates,
   parsePeriodHours,
+  resolveProduct,
   resolveRates,
-  sumStockByKind,
 } from "./resource_needs_calc.js";
 import {
-  fetchPlannerData,
-  fetchShortfallPrices,
+  fetchPrices,
+  fetchStock,
+  gameRateLimitRemainingMs,
+  loadCapturedRates,
   loadLastRunAt,
+  loadPlannerBuildings,
   loadPlannerSettings,
   loadSnapshot,
-  loadCapturedRates,
   saveCapturedRates,
-  gameRateLimitRemainingMs,
+  saveLastRunAt,
   savePlannerSettings,
   saveSnapshot,
 } from "./resource_needs.js";
@@ -45,27 +48,29 @@ import {
   renderBuildingList,
   renderResults,
   renderShell,
+  runButtonLabel,
 } from "./resource_needs_render.js";
 import { startRateCapture } from "./resource_needs_capture.js";
-import { logGroupEnd, logGroupStart, logStep, logWarn } from "./resource_needs_log.js";
 
 const SAVE_DELAY_MS = 400;
 
 /** @type {import("./resource_needs.js").PlannerSettings} */
 let settings = { expanded: false, defaultPeriod: "", buildings: {} };
+/** @type {import("./resource_needs_calc.js").PlannerBuilding[]|null} */
+let buildings = null;
+let buildingsLoading = false;
+let buildingsError = "";
 /** @type {import("./resource_needs.js").PlannerSnapshot|null} */
 let snapshot = null;
 let lastRunAt = 0;
 /** @type {Record<string, import("./resource_needs_calc.js").CapturedRates>} */
 let capturedRates = {};
 let running = false;
+/** @type {import("./resource_needs.js").PriceProgress|null} */
+let progress = null;
 let cooldownTimer = /** @type {ReturnType<typeof setInterval>|null} */ (null);
 let saveTimer = /** @type {ReturnType<typeof setTimeout>|null} */ (null);
 let runError = "";
-
-const sortedRecipes = getRecipes()
-  .map((r) => ({ id: Number(r.id), name: String(r.name) }))
-  .sort((a, b) => a.name.localeCompare(b.name));
 
 /** @param {number} productId */
 function productName(productId) {
@@ -89,22 +94,27 @@ function scheduleSave() {
   }, SAVE_DELAY_MS);
 }
 
+/** @param {any} error */
+function errorText(error) {
+  return error?.code === "RATE_LIMIT_COOLDOWN"
+    ? fill(t("needsRateLimited"), { time: formatCountdown(gameRateLimitRemainingMs()) })
+    : t("needsFailed");
+}
+
 function buildRows() {
-  return (snapshot?.buildings ?? []).map((building) => {
+  return (buildings ?? []).map((building) => {
     const pref = prefFor(building.id);
-    const checked = pref.checked ?? isCheckedByDefault(building);
-    const productId = pref.productId !== undefined ? pref.productId : building.productId;
+    const productId = resolveProduct(building, pref.productId);
     const captured = capturedRates[building.id];
-    const rates = resolveRates(building, captured, pref, productId ?? null);
+    const rates = resolveRates(captured, productId);
     return {
       building,
-      checked,
-      productId: productId ?? null,
+      checked: pref.checked ?? isCheckedByDefault(building),
+      productId,
+      quality: clampQuality(pref.quality),
       period: pref.period ?? "",
-      pref,
       rates,
-      gap: indexingGap(rates, productId ?? null, captured),
-      offers: captured?.offers ?? null,
+      gap: indexingGap(rates, productId, captured),
       captured: captured ?? null,
     };
   });
@@ -122,6 +132,7 @@ function computeModel() {
       return {
         buildingId: row.building.id,
         productId: row.productId,
+        quality: row.quality,
         hours: hours ?? 0,
         unitsPerHour: row.rates.unitsPerHour,
         wagesPerHour: row.rates.wagesPerHour,
@@ -129,8 +140,7 @@ function computeModel() {
     });
 
   const needs = aggregateNeeds(plans, getRecipeByProductId);
-  const prices = new Map(Object.entries(snapshot?.prices ?? {}).map(([k, v]) => [Number(k), v]));
-  const stockCompare = compareWithStock(needs.inputs, sumStockByKind(snapshot?.stock ?? []), prices);
+  const stockCompare = compareWithStock(needs.inputs, snapshot?.stock ?? [], snapshot?.prices ?? {});
   const cash = compareCash(needs.wages, stockCompare.buyTotal, readMoneyBalance(document));
   const notIndexed = rows.filter((row) => row.checked && row.gap);
   return { plans, needs, stockCompare, cash, notIndexed, invalidPeriodCount };
@@ -144,7 +154,9 @@ function renderResultsOnly() {
     return;
   }
   if (!snapshot) {
-    results.innerHTML = `<p class="scx-needs-hint">${escapeHtml(t("needsEmpty"))}</p>`;
+    results.innerHTML = buildings?.length
+      ? `<p class="scx-needs-hint">${escapeHtml(t("needsEmpty"))}</p>`
+      : "";
     return;
   }
   const model = computeModel();
@@ -157,9 +169,11 @@ function renderResultsOnly() {
 function renderAll() {
   const list = document.getElementById(LIST_ID);
   if (!list) return;
-  list.innerHTML = snapshot
-    ? renderBuildingList(buildRows(), sortedRecipes, defaultPeriodText(), productName)
-    : "";
+  if (buildingsError)
+    list.innerHTML = `<div class="scx-state scx-state-error">${escapeHtml(buildingsError)}</div>`;
+  else if (buildings) list.innerHTML = renderBuildingList(buildRows(), defaultPeriodText(), productName);
+  else
+    list.innerHTML = buildingsLoading ? `<p class="scx-needs-hint">${escapeHtml(t("needsLoading"))}</p>` : "";
   renderResultsOnly();
 }
 
@@ -170,9 +184,10 @@ function updateCooldownUi() {
   const own = cooldownRemainingMs(lastRunAt);
   const game = gameRateLimitRemainingMs();
   const remaining = Math.max(own, game);
-  button.disabled = running || remaining > 0;
-  if (running) status.textContent = t("needsLoading");
-  else if (game > own) status.textContent = fill(t("needsRateLimited"), { time: formatCountdown(game) });
+  button.disabled = running || remaining > 0 || !buildings?.length;
+  button.textContent = runButtonLabel(running ? progress : null);
+  if (game > 0) status.textContent = fill(t("needsRateLimited"), { time: formatCountdown(game) });
+  else if (running) status.textContent = progress ? "" : t("needsLoadingStock");
   else if (own > 0) status.textContent = fill(t("needsCooldown"), { time: formatCountdown(own) });
   else status.textContent = "";
 
@@ -183,42 +198,51 @@ function updateCooldownUi() {
   }
 }
 
+async function ensureBuildings() {
+  if (buildings || buildingsLoading) return;
+  buildingsLoading = true;
+  buildingsError = "";
+  renderAll();
+  try {
+    buildings = await loadPlannerBuildings();
+  } catch (error) {
+    buildingsError = errorText(error);
+  } finally {
+    buildingsLoading = false;
+    renderAll();
+    updateCooldownUi();
+  }
+}
+
 async function runCalculation() {
   // why: another tab may have used the shared cooldown since this panel last looked.
   lastRunAt = await loadLastRunAt();
-  if (running || cooldownRemainingMs(lastRunAt) > 0 || gameRateLimitRemainingMs() > 0) {
+  if (running || !buildings?.length || cooldownRemainingMs(lastRunAt) > 0 || gameRateLimitRemainingMs() > 0) {
     updateCooldownUi();
     return;
   }
   running = true;
+  progress = null;
   runError = "";
+  // why: the cooldown starts on the click, not on success, so failed runs cannot be spammed.
+  lastRunAt = Date.now();
+  await saveLastRunAt(lastRunAt);
   updateCooldownUi();
-  logGroupStart(`Calculate @ ${new Date().toISOString()}`);
   try {
-    logStep("settings", structuredClone(settings));
-    const next = await fetchPlannerData();
-    snapshot = next;
-    const model = computeModel();
-    logStep("plans", model.plans);
-    logStep("input needs", Object.fromEntries(model.needs.inputs));
-    logStep("incomplete", model.needs.incomplete);
-    const missingIds = model.stockCompare.rows.filter((row) => row.missing > 0).map((row) => row.productId);
-    snapshot = { ...next, prices: await fetchShortfallPrices(missingIds) };
-    const finalModel = computeModel();
-    logStep("stock compare", finalModel.stockCompare);
-    logStep("cash", finalModel.cash);
+    const stock = await fetchStock();
+    snapshot = { fetchedAt: Date.now(), stock, prices: {} };
+    const missing = computeModel().stockCompare.rows.filter((row) => row.missing > 0);
+    const result = await fetchPrices(missing, (next) => {
+      progress = next;
+      updateCooldownUi();
+    });
+    snapshot = { ...snapshot, prices: result.prices };
     await saveSnapshot(snapshot);
   } catch (error) {
-    const err = /** @type {any} */ (error);
-    logWarn("calculation failed", { code: err?.code, message: err?.message });
-    const limited = err?.code === "RATE_LIMIT_COOLDOWN" || err?.rateLimited;
-    runError = limited
-      ? fill(t("needsRateLimited"), { time: formatCountdown(gameRateLimitRemainingMs()) })
-      : t("needsFailed");
+    runError = errorText(error);
   } finally {
-    logGroupEnd();
     running = false;
-    lastRunAt = await loadLastRunAt();
+    progress = null;
     updateCooldownUi();
     renderAll();
   }
@@ -244,18 +268,26 @@ function onFieldChange(event) {
   const pref = { ...prefFor(id) };
   if (field === "checked") pref.checked = /** @type {HTMLInputElement} */ (target).checked;
   else if (field === "productId") pref.productId = target.value ? Number(target.value) : null;
+  else if (field === "quality") pref.quality = clampQuality(target.value);
   else if (field === "period") pref.period = target.value;
-  else if (field === "unitsPerHour" || field === "wagesPerHour") {
-    const n = Number(target.value);
-    pref[field] = target.value && Number.isFinite(n) && n > 0 ? n : null;
-  }
   settings.buildings = { ...settings.buildings, [id]: pref };
   scheduleSave();
 
-  row.classList.toggle("scx-needs-row-off", pref.checked === false);
-  // A new product changes which game rates apply, so the row's hints must be rebuilt.
-  if (field === "productId" && event.type === "change") renderAll();
-  else renderResultsOnly();
+  // A new product or a re-enabled row changes the rates line and indexing hint.
+  if (event.type === "change" && (field === "productId" || field === "checked")) renderAll();
+  else {
+    row.classList.toggle("scx-needs-row-off", pref.checked === false);
+    renderResultsOnly();
+  }
+}
+
+/** @param {MouseEvent} event */
+function onPickProduct(event) {
+  const button = /** @type {Element} */ (event.target).closest?.("[data-pick-product]");
+  if (!button) return;
+  const select = document.getElementById(`scx-needs-product-${button.getAttribute("data-pick-product")}`);
+  select?.scrollIntoView({ block: "center", behavior: "smooth" });
+  select?.focus();
 }
 
 function toggleExpanded() {
@@ -264,7 +296,7 @@ function toggleExpanded() {
   document.getElementById(BODY_ID)?.classList.toggle("scx-hidden", !settings.expanded);
   document.getElementById(PANEL_ID)?.classList.toggle("scx-needs-expanded", settings.expanded);
   scheduleSave();
-  if (settings.expanded) renderResultsOnly();
+  if (settings.expanded) ensureBuildings();
 }
 
 function createPanel() {
@@ -275,6 +307,7 @@ function createPanel() {
   panel.innerHTML = renderShell(settings);
   panel.querySelector(`#${TOGGLE_ID}`)?.addEventListener("click", toggleExpanded);
   panel.querySelector(`#${RUN_ID}`)?.addEventListener("click", runCalculation);
+  panel.addEventListener("click", onPickProduct);
   panel.addEventListener("input", onFieldChange);
   panel.addEventListener("change", onFieldChange);
   return panel;
@@ -287,10 +320,13 @@ async function loadAndRender() {
     loadLastRunAt(),
     loadCapturedRates(),
   ]);
+  buildings = null;
+  buildingsError = "";
   document.getElementById(PANEL_ID)?.remove();
   mountLeftSidebarPanel(createPanel());
   renderAll();
   updateCooldownUi();
+  if (settings.expanded) await ensureBuildings();
 }
 
 /**
@@ -302,10 +338,7 @@ async function onBuildingRates(buildingId, reading) {
     ...capturedRates,
     [buildingId]: mergeCapturedRates(capturedRates[buildingId], reading),
   };
-  const saved = await saveCapturedRates(capturedRates);
-  logStep(`building ${buildingId} remembered (saved: ${saved})`, capturedRates[buildingId]);
-  const known = snapshot?.buildings.some((b) => String(b.id) === buildingId);
-  if (!known) logWarn(`building ${buildingId} is not in the last Calculate list; press Calculate to show it`);
+  await saveCapturedRates(capturedRates);
   renderAll();
 }
 
@@ -313,16 +346,14 @@ export async function initResourceNeeds() {
   installFloatingTooltips();
   // Reading building pages must not wait on storage: a failed load would silently disable it.
   startRateCapture((buildingId, reading) => {
-    onBuildingRates(buildingId, reading).catch((error) => logWarn("saving building page failed", error));
+    onBuildingRates(buildingId, reading).catch((error) =>
+      console.warn("[SimHelper] saving building page failed", error),
+    );
   });
   try {
     await loadAndRender();
-    logStep("panel ready", {
-      buildings: snapshot?.buildings.length ?? 0,
-      remembered: Object.keys(capturedRates),
-    });
   } catch (error) {
-    logWarn("panel load failed", error);
+    console.warn("[SimHelper] resources-needed panel failed to load", error);
   }
   // Settings, snapshot and cooldown are stored per company and realm.
   onAuthDataApplied(() => loadAndRender());

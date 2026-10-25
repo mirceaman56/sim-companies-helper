@@ -446,7 +446,7 @@ export default {
   a11yEditorHint: "Apri un edificio per dargli un soprannome o un colore proprio.",
   needsTitle: "Risorse necessarie",
   needsHelp:
-    "Pianifica le prossime produzioni: seleziona gli edifici, imposta la durata e confronta salari e materiali necessari con contanti e magazzino.\n48h per una durata o 20:15 per un orario di fine. Ogni edificio può avere il suo tempo.\nIndicizzazione: il pianificatore legge livello, salari e produzione oraria dalla pagina dell'edificio mentre giochi. Apri ogni edificio una volta (clicca sul nome) e la pagina di un prodotto una volta per la sua produzione. Per questo non viene inviato nulla al gioco.\nVa ripetuto solo dopo l'ampliamento di un edificio.\nI dati di gioco vengono caricati solo quando premi Calcola.",
+    "Pianifica le prossime produzioni: scegli cosa produce ogni edificio e con quale qualità, imposta la durata e confronta salari e materie prime necessari con contanti e magazzino.\nUsa 48h per una durata o 20:15 per un orario di fine. Ogni edificio può avere il suo tempo.\nLe materie prime possono avere una qualità in meno del prodotto: Q5 richiede Q4 o superiore.\nIndicizzazione: il pianificatore legge livello, salari e produzione oraria dalla pagina dell'edificio mentre giochi. Apri ogni edificio una volta (clicca sul nome) e la pagina di un prodotto una volta per la sua produzione. Va rifatto solo dopo un potenziamento.\nMagazzino e prezzi di mercato si caricano solo quando premi Calcola.",
   needsDefaultPeriod: "Durata",
   needsCalculate: "Calcola",
   needsPeriodHint:
@@ -458,11 +458,10 @@ export default {
   needsBuildingLabel: "{name} L{level}",
   needsProduct: "Prodotto",
   needsBuildingPeriod: "Durata",
-  needsAdjust: "Regola valori",
-  needsUnitsPerHour: "Unità/h",
-  needsWagesPerHour: "Salari/h",
   needsIncomplete:
-    "{count} edificio/i hanno ancora bisogno di dati dal gioco. Apri ciascuno qui sotto o inseriscili in Regola valori.",
+    "{count} edificio/i hanno ancora bisogno di dati dal gioco e sono esclusi. Apri ciascuno qui sotto.",
+  needsNoProduct:
+    "{count} edificio/i non hanno un prodotto scelto e sono esclusi. Scegline uno nella lista qui sotto.",
   needsInvalidPeriod: "{count} edificio/i hanno un tempo non riconosciuto.",
   needsUnpriced: "{count} articolo/i mancante/i senza prezzo di mercato: ricalcola più tardi.",
   needsCashUnknown: "Contanti sconosciuti",
@@ -478,8 +477,13 @@ export default {
   needsCash: "Contanti",
   needsCashGap: "Mancano",
   needsFetchedAt: "Dati di gioco delle {time}",
-  needsEmpty: "Premi Calcola per caricare i tuoi edifici.",
+  needsEmpty: "Scegli cosa produce ogni edificio, poi premi Calcola.",
   needsLoading: "Caricamento dati di gioco…",
+  needsQuality: "Qualità",
+  needsQualityOption: "Q{quality}",
+  needsQualityMin: "Q{quality}+",
+  needsLoadingStock: "Controllo del magazzino…",
+  needsPricesProgress: "Prezzi {done}/{total}",
   needsCooldown:
     "Di nuovo disponibile tra {time}. Limitato a una volta al minuto per non sovraccaricare i server del gioco.",
   needsRateLimited: "Il gioco sta limitando le richieste. Riprova tra {time}.",

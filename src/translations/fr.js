@@ -450,7 +450,7 @@ export default {
   a11yEditorHint: "Ouvrez un bâtiment pour lui donner un surnom ou sa propre couleur.",
   needsTitle: "Ressources nécessaires",
   needsHelp:
-    "Planifiez vos prochaines productions : cochez les bâtiments, fixez leur durée et comparez salaires et intrants nécessaires avec votre trésorerie et votre entrepôt.\n48h pour une durée ou 20:15 pour une heure de fin. Chaque bâtiment peut avoir sa propre durée.\nIndexation : le planificateur lit le niveau, les salaires et la production par heure sur la page du bâtiment pendant que vous jouez. Ouvrez chaque bâtiment une fois (cliquez sur son nom), et la page d'un produit une fois pour sa production. Rien n'est envoyé au jeu pour cela.\nÀ refaire seulement après l'agrandissement d'un bâtiment.\nLes données du jeu ne sont chargées que lorsque vous appuyez sur Calculer.",
+    "Planifiez vos prochaines productions : choisissez ce que fabrique chaque bâtiment et à quelle qualité, réglez la durée, puis comparez les salaires et intrants nécessaires avec votre argent et votre entrepôt.\n48h pour une durée ou 20:15 pour une heure de fin. Chaque bâtiment peut avoir sa propre durée.\nLes intrants peuvent être d'une qualité en dessous du produit : Q5 demande Q4 ou mieux.\nIndexation : le planificateur lit le niveau, les salaires et la production par heure sur la page du bâtiment pendant que vous jouez. Ouvrez chaque bâtiment une fois (cliquez sur son nom) et la page d'un produit une fois pour sa production. À refaire seulement après une amélioration.\nL'entrepôt et les prix du marché ne se chargent que lorsque vous appuyez sur Calculer.",
   needsDefaultPeriod: "Durée",
   needsCalculate: "Calculer",
   needsPeriodHint:
@@ -462,11 +462,9 @@ export default {
   needsBuildingLabel: "{name} N{level}",
   needsProduct: "Produit",
   needsBuildingPeriod: "Durée",
-  needsAdjust: "Ajuster les taux",
-  needsUnitsPerHour: "Unités/h",
-  needsWagesPerHour: "Salaires/h",
   needsIncomplete:
-    "{count} bâtiment(s) ont encore besoin de chiffres du jeu. Ouvrez chacun ci-dessous ou saisissez-les sous Ajuster les taux.",
+    "{count} bâtiment(s) attendent encore des chiffres du jeu et ne sont pas comptés. Ouvrez chacun ci-dessous.",
+  needsNoProduct: "{count} bâtiment(s) sans produit choisi, non comptés. Choisissez-en un ci-dessous.",
   needsInvalidPeriod: "{count} bâtiment(s) ont une durée non comprise.",
   needsUnpriced: "{count} article(s) manquant(s) sans prix de marché : recalculez plus tard.",
   needsCashUnknown: "Trésorerie inconnue",
@@ -482,8 +480,13 @@ export default {
   needsCash: "Trésorerie",
   needsCashGap: "Manque",
   needsFetchedAt: "Données du jeu de {time}",
-  needsEmpty: "Appuyez sur Calculer pour charger vos bâtiments.",
+  needsEmpty: "Choisissez ce que fabrique chaque bâtiment, puis appuyez sur Calculer.",
   needsLoading: "Chargement des données du jeu…",
+  needsQuality: "Qualité",
+  needsQualityOption: "Q{quality}",
+  needsQualityMin: "Q{quality}+",
+  needsLoadingStock: "Vérification de l'entrepôt…",
+  needsPricesProgress: "Prix {done}/{total}",
   needsCooldown:
     "Disponible à nouveau dans {time}. Limité à une fois par minute pour ne pas surcharger les serveurs du jeu.",
   needsRateLimited: "Le jeu limite les requêtes en ce moment. Réessayez dans {time}.",

@@ -446,7 +446,7 @@ export default {
   a11yEditorHint: "Öffne ein Gebäude, um ihm einen Spitznamen oder eine eigene Farbe zu geben.",
   needsTitle: "Benötigte Ressourcen",
   needsHelp:
-    "Plane deine nächsten Produktionen: Gebäude anhaken, Laufzeit festlegen und die nötigen Löhne und Rohstoffe mit Bargeld und Lager vergleichen.\n48h für eine Dauer oder 20:15 für eine Endzeit. Jedes Gebäude kann eine eigene Zeit haben.\nErfassen: Der Planer liest Stufe, Löhne und Produktion pro Stunde von der Gebäudeseite, während du spielst. Öffne jedes Gebäude einmal (Namen anklicken) und für die Produktion einmal die Seite des Produkts. Dafür wird nichts an das Spiel gesendet.\nNur nach einem Ausbau musst du das wiederholen.\nSpieldaten werden nur geladen, wenn du auf Berechnen drückst.",
+    "Plane deine nächsten Produktionen: Wähle, was jedes Gebäude in welcher Qualität herstellt, lege die Laufzeit fest und vergleiche die nötigen Löhne und Rohstoffe mit Bargeld und Lager.\n48h für eine Dauer oder 20:15 für eine Endzeit. Jedes Gebäude kann eine eigene Zeit haben.\nRohstoffe dürfen eine Qualität unter dem Produkt liegen: Q5 braucht Q4 oder besser.\nErfassen: Der Planer liest Stufe, Löhne und Produktion pro Stunde von der Gebäudeseite, während du spielst. Öffne jedes Gebäude einmal (Namen anklicken) und für die Produktion einmal die Seite des Produkts. Nur nach einem Ausbau musst du das wiederholen.\nLager und Marktpreise werden nur geladen, wenn du auf Berechnen drückst.",
   needsDefaultPeriod: "Laufzeit",
   needsCalculate: "Berechnen",
   needsPeriodHint: "48h = Dauer, 20:15 = Endzeit. Leere Gebäudezeit nutzt diese.",
@@ -457,11 +457,10 @@ export default {
   needsBuildingLabel: "{name} St.{level}",
   needsProduct: "Produkt",
   needsBuildingPeriod: "Laufzeit",
-  needsAdjust: "Raten anpassen",
-  needsUnitsPerHour: "Einheiten/h",
-  needsWagesPerHour: "Löhne/h",
   needsIncomplete:
-    "{count} Gebäude brauchen noch Zahlen aus dem Spiel. Öffne jedes unten oder trage sie unter Raten anpassen ein.",
+    "{count} Gebäude brauchen noch Zahlen aus dem Spiel und werden nicht mitgerechnet. Öffne jedes unten.",
+  needsNoProduct:
+    "{count} Gebäude haben kein Produkt gewählt und werden nicht mitgerechnet. Wähle eines in der Liste unten.",
   needsInvalidPeriod: "{count} Gebäude haben eine unverständliche Zeit.",
   needsUnpriced: "{count} fehlende Artikel haben noch keinen Marktpreis: später erneut berechnen.",
   needsCashUnknown: "Bargeld unbekannt",
@@ -477,8 +476,13 @@ export default {
   needsCash: "Bargeld",
   needsCashGap: "Es fehlen",
   needsFetchedAt: "Spieldaten von {time}",
-  needsEmpty: "Drücke Berechnen, um deine Gebäude zu laden.",
+  needsEmpty: "Wähle, was jedes Gebäude herstellt, und drücke dann Berechnen.",
   needsLoading: "Spieldaten werden geladen…",
+  needsQuality: "Qualität",
+  needsQualityOption: "Q{quality}",
+  needsQualityMin: "Q{quality}+",
+  needsLoadingStock: "Lager wird geprüft…",
+  needsPricesProgress: "Preise {done}/{total}",
   needsCooldown:
     "Wieder verfügbar in {time}. Nur einmal pro Minute möglich, damit die Spielserver nicht mit Anfragen überflutet werden.",
   needsRateLimited: "Das Spiel begrenzt gerade Anfragen. Versuche es in {time} erneut.",

@@ -442,7 +442,7 @@ export default {
   a11yEditorHint: "建物を開くと、ニックネームや独自の色を設定できます。",
   needsTitle: "必要な資源",
   needsHelp:
-    "次の生産を計画：建物を選び、稼働時間を設定し、必要な賃金と原材料を現金・倉庫と比較します。\n期間は48h、終了時刻は20:15のように入力。建物ごとに時間を変えられます。\nインデックス：プレイ中に建物ページからレベル・賃金・時間あたり生産量を読み取ります。各建物を一度開き（名前をクリック）、生産量のために製品ページを一度開いてください。このためにゲームへ何も送信しません。\n建物を拡張したときだけやり直す必要があります。\nゲームデータは「計算」を押したときだけ読み込みます。",
+    "次の生産を計画：各建物で作る製品と品質を選び、稼働時間を設定し、必要な賃金と原材料を現金・倉庫と比較します。\n期間は48h、終了時刻は20:15のように入力。建物ごとに時間を変えられます。\n原材料は製品より1つ低い品質で構いません：Q5にはQ4以上が必要です。\nインデックス：プレイ中に建物ページからレベル・賃金・時間あたり生産量を読み取ります。各建物を一度開き（名前をクリック）、生産量のために製品ページを一度開いてください。建物を拡張したときだけやり直す必要があります。\n倉庫と市場価格は「計算」を押したときだけ読み込みます。",
   needsDefaultPeriod: "稼働時間",
   needsCalculate: "計算",
   needsPeriodHint: "48h = 期間、20:15 = 終了時刻。建物の時間が空欄ならこれを使用。",
@@ -453,11 +453,10 @@ export default {
   needsBuildingLabel: "{name} Lv{level}",
   needsProduct: "製品",
   needsBuildingPeriod: "稼働時間",
-  needsAdjust: "レートを調整",
-  needsUnitsPerHour: "個/時",
-  needsWagesPerHour: "賃金/時",
   needsIncomplete:
-    "{count} 件の建物にゲームからの数値がまだ必要です。下のリンクから開くか、「レートを調整」で入力してください。",
+    "{count} 件の建物にゲームからの数値がまだ必要なため、計算から除外されています。下のリンクから開いてください。",
+  needsNoProduct:
+    "{count} 件の建物で製品が選ばれていないため、計算から除外されています。下の一覧で選んでください。",
   needsInvalidPeriod: "{count} 件の建物の時間を解釈できません。",
   needsUnpriced: "不足品 {count} 件にまだ市場価格がありません：後で再計算してください。",
   needsCashUnknown: "現金不明",
@@ -473,8 +472,13 @@ export default {
   needsCash: "現金",
   needsCashGap: "不足額",
   needsFetchedAt: "{time} 時点のゲームデータ",
-  needsEmpty: "「計算」を押して建物を読み込みます。",
+  needsEmpty: "各建物で作る製品を選び、「計算」を押してください。",
   needsLoading: "ゲームデータを読み込み中…",
+  needsQuality: "品質",
+  needsQualityOption: "Q{quality}",
+  needsQualityMin: "Q{quality}+",
+  needsLoadingStock: "倉庫を確認中…",
+  needsPricesProgress: "価格 {done}/{total}",
   needsCooldown:
     "{time} 後に再度使用できます。ゲームサーバーにリクエストが殺到しないよう、1分に1回までです。",
   needsRateLimited: "ゲームが現在リクエストを制限しています。{time} 後にもう一度お試しください。",

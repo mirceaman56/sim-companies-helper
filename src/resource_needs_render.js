@@ -1,5 +1,6 @@
 import { escapeHtml, formatMoney } from "./utils.js";
 import { t } from "./i18n.js";
+import { MAX_QUALITY, productsForBuilding } from "./resource_needs_calc.js";
 
 export const PANEL_ID = "scx-needs-panel";
 export const TOGGLE_ID = "scx-needs-toggle";
@@ -34,6 +35,16 @@ function formatClock(ms) {
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
+/** @param {number} quality */
+export function qualityLabel(quality) {
+  return fill(t("needsQualityOption"), { quality });
+}
+
+/** @param {{ done: number, total: number }|null} progress */
+export function runButtonLabel(progress) {
+  return progress ? fill(t("needsPricesProgress"), progress) : t("needsCalculate");
+}
+
 /** @param {number} ms */
 export function formatCountdown(ms) {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -59,12 +70,12 @@ export function renderShell(settings) {
         <input class="scx-needs-input" id="${PERIOD_ID}" name="${PERIOD_ID}" type="text" autocomplete="off"
           placeholder="24h" value="${escapeHtml(settings.defaultPeriod)}">
         <button type="button" class="scx-btn scx-btn-primary scx-btn-sm" id="${RUN_ID}">
-          ${escapeHtml(t("needsCalculate"))}</button>
+          ${escapeHtml(runButtonLabel(null))}</button>
       </div>
       <div class="scx-needs-hint">${escapeHtml(t("needsPeriodHint"))}</div>
       <div class="scx-status" id="${COOLDOWN_ID}" role="status"></div>
-      <div class="scx-needs-list" id="${LIST_ID}"></div>
       <div class="scx-needs-results" id="${RESULTS_ID}" aria-live="polite"></div>
+      <div class="scx-needs-list" id="${LIST_ID}"></div>
     </div>
   `;
 }
@@ -82,20 +93,33 @@ function renderStatusBadge(building) {
 }
 
 /**
- * @param {{ id: number, name: string }[]} recipes sorted for display
+ * @param {string} kind building letter
  * @param {number|null} selected
+ * @param {(productId: number) => string} productName
  */
-function renderProductOptions(recipes, selected) {
-  const empty = `<option value="">${escapeHtml(t("needsPickProduct"))}</option>`;
+function renderProductOptions(kind, selected, productName) {
+  const products = productsForBuilding(kind)
+    .map((id) => ({ id, name: productName(id) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const empty = selected ? "" : `<option value="">${escapeHtml(t("needsPickProduct"))}</option>`;
   return (
     empty +
-    recipes
+    products
       .map(
-        (r) =>
-          `<option value="${r.id}"${r.id === selected ? " selected" : ""}>${escapeHtml(r.name)}</option>`,
+        (p) =>
+          `<option value="${p.id}"${p.id === selected ? " selected" : ""}>${escapeHtml(p.name)}</option>`,
       )
       .join("")
   );
+}
+
+/** @param {number} selected */
+function renderQualityOptions(selected) {
+  let out = "";
+  for (let q = 0; q <= MAX_QUALITY; q += 1) {
+    out += `<option value="${q}"${q === selected ? " selected" : ""}>${escapeHtml(qualityLabel(q))}</option>`;
+  }
+  return out;
 }
 
 /**
@@ -122,27 +146,14 @@ function perHour(value, money) {
  */
 function renderReadRates(row) {
   const { rates, captured } = row;
-  const units = perHour(rates.unitsPerHour, false);
   const text = fill(t("needsRowRates"), {
     wages: perHour(rates.wagesPerHour, true),
-    units: rates.unitsSource === "run" ? `~${units}` : units,
+    units: perHour(rates.unitsPerHour, false),
   });
   const read = captured?.at
     ? fill(t("needsRowReadAt"), { time: formatClock(captured.at) })
     : t("needsRowNotRead");
   return `<div class="scx-needs-sub scx-mono">${escapeHtml(text)} · ${escapeHtml(read)}</div>`;
-}
-
-/**
- * Once the building page was seen, only the products it offers are listed.
- * @param {{ id: number, name: string }[]} recipes
- * @param {number[]|null} offers
- * @param {number|null} selected
- */
-function offeredRecipes(recipes, offers, selected) {
-  if (!offers?.length) return recipes;
-  const allowed = new Set([...offers, selected]);
-  return recipes.filter((r) => allowed.has(r.id));
 }
 
 /**
@@ -174,32 +185,22 @@ function renderIndexLink(row, productName) {
     : `<span class="scx-needs-gap">${body}</span>`;
 }
 
-/** @param {number|null} value */
-function rateValue(value) {
-  return Number.isFinite(value) && value > 0 ? String(Math.round(value)) : "";
-}
-
 /**
  * @param {{ building: import("./resource_needs_calc.js").PlannerBuilding, checked: boolean,
- *   productId: number|null, period: string, pref: import("./resource_needs_calc.js").BuildingPref,
+ *   productId: number|null, quality: number, period: string,
  *   rates: ReturnType<typeof import("./resource_needs_calc.js").resolveRates>,
- *   gap: "building"|"product"|"units"|"wages"|null, offers: number[]|null,
+ *   gap: "building"|"product"|"units"|"wages"|null,
  *   captured: import("./resource_needs_calc.js").CapturedRates|null }[]} rows
- * @param {{ id: number, name: string }[]} recipes
  * @param {string} defaultPeriod
  * @param {(productId: number) => string} productName
  */
-export function renderBuildingList(rows, recipes, defaultPeriod, productName) {
+export function renderBuildingList(rows, defaultPeriod, productName) {
   if (rows.length === 0) return `<p class="scx-needs-hint">${escapeHtml(t("needsNoBuildings"))}</p>`;
   return rows
     .map((row) => {
-      const { building, checked, productId, period, pref, rates, offers } = row;
+      const { building, checked, productId, quality, period } = row;
       const id = building.id;
       const label = buildingLabel(building, row.captured);
-      const unitsHint =
-        rates.unitsSource && rates.unitsSource !== "override" ? rateValue(rates.unitsPerHour) : "";
-      const wagesHint =
-        rates.wagesSource && rates.wagesSource !== "override" ? rateValue(rates.wagesPerHour) : "";
       return `
         <div class="scx-needs-row${checked ? "" : " scx-needs-row-off"}" data-building-id="${id}">
           <div class="scx-needs-row-head">
@@ -214,25 +215,15 @@ export function renderBuildingList(rows, recipes, defaultPeriod, productName) {
           <div class="scx-needs-row-fields">
             <label class="scx-visually-hidden" for="scx-needs-product-${id}">${escapeHtml(t("needsProduct"))}</label>
             <select class="scx-select scx-needs-product" id="scx-needs-product-${id}" name="scx-needs-product-${id}"
-              data-field="productId">${renderProductOptions(offeredRecipes(recipes, offers, productId), productId)}</select>
+              data-field="productId">${renderProductOptions(building.kind, productId, productName)}</select>
+            <label class="scx-visually-hidden" for="scx-needs-quality-${id}">${escapeHtml(t("needsQuality"))}</label>
+            <select class="scx-select scx-needs-quality" id="scx-needs-quality-${id}" name="scx-needs-quality-${id}"
+              data-field="quality">${renderQualityOptions(quality)}</select>
             <label class="scx-visually-hidden" for="scx-needs-period-${id}">${escapeHtml(t("needsBuildingPeriod"))}</label>
             <input class="scx-needs-input scx-needs-period" id="scx-needs-period-${id}" name="scx-needs-period-${id}"
               type="text" autocomplete="off" data-field="period" placeholder="${escapeHtml(defaultPeriod)}"
               value="${escapeHtml(period)}">
           </div>
-          <details class="scx-needs-adjust">
-            <summary>${escapeHtml(t("needsAdjust"))}</summary>
-            <div class="scx-needs-adjust-grid">
-              <label class="scx-needs-label" for="scx-needs-units-${id}">${escapeHtml(t("needsUnitsPerHour"))}</label>
-              <input class="scx-needs-input" id="scx-needs-units-${id}" name="scx-needs-units-${id}" type="number"
-                min="0" step="any" data-field="unitsPerHour" placeholder="${escapeHtml(unitsHint)}"
-                value="${escapeHtml(rateValue(pref.unitsPerHour ?? null))}">
-              <label class="scx-needs-label" for="scx-needs-wages-${id}">${escapeHtml(t("needsWagesPerHour"))}</label>
-              <input class="scx-needs-input" id="scx-needs-wages-${id}" name="scx-needs-wages-${id}" type="number"
-                min="0" step="any" data-field="wagesPerHour" placeholder="${escapeHtml(wagesHint)}"
-                value="${escapeHtml(rateValue(pref.wagesPerHour ?? null))}">
-            </div>
-          </details>
         </div>`;
     })
     .join("");
@@ -271,7 +262,11 @@ export function renderResults(model, productName) {
           <tbody>${missingRows
             .map(
               (row) => `<tr>
-                <td>${escapeHtml(productName(row.productId))}
+                <td>${escapeHtml(productName(row.productId))}${
+                  row.quality > 0
+                    ? ` <span class="scx-badge">${escapeHtml(fill(t("needsQualityMin"), { quality: row.quality }))}</span>`
+                    : ""
+                }
                   <div class="scx-needs-sub">${escapeHtml(
                     fill(t("needsNeedHave"), { need: formatQty(row.need), have: formatQty(row.have) }),
                   )}</div></td>
@@ -298,26 +293,39 @@ export function renderResults(model, productName) {
     ${table}
     ${renderNotIndexed(model.notIndexed)}
     ${warnings.map((w) => `<p class="scx-needs-warning">⚠ ${escapeHtml(w)}</p>`).join("")}
-    <div class="scx-status">${escapeHtml(fill(t("needsFetchedAt"), { time: formatClock(model.fetchedAt) }))}</div>
+    ${model.fetchedAt ? `<div class="scx-status">${escapeHtml(fill(t("needsFetchedAt"), { time: formatClock(model.fetchedAt) }))}</div>` : ""}
   `;
 }
 
 /**
+ * Buildings without a product have nothing to open in the game: the fix is the planner's own
+ * dropdown, so they get a button that jumps there instead of a game link.
  * @param {{ building: { id: number, name: string, size: number }, productId: number|null,
  *   gap: string|null, captured: { size: number|null }|null }[]} rows
  */
 function renderNotIndexed(rows) {
-  if (rows.length === 0) return "";
-  const items = rows
+  const needGame = rows.filter((row) => row.gap !== "product");
+  const noProduct = rows.filter((row) => row.gap === "product");
+  const gameItems = needGame
     .map((row) => {
       const label = escapeHtml(buildingLabel(row.building, row.captured));
       const href = indexLinkHref(row);
       return `<li>${href ? `<a href="${escapeHtml(href)}">${label}</a>` : label}</li>`;
     })
     .join("");
-  return `
+  const productItems = noProduct
+    .map((row) => {
+      const label = escapeHtml(buildingLabel(row.building, row.captured));
+      return `<li><button type="button" class="scx-needs-pick" data-pick-product="${row.building.id}">${label}</button></li>`;
+    })
+    .join("");
+  const group = (/** @type {string} */ text, /** @type {string} */ items) => `
     <div class="scx-needs-not-indexed">
-      <p class="scx-needs-warning">⚠ ${escapeHtml(fill(t("needsIncomplete"), { count: rows.length }))}</p>
+      <p class="scx-needs-warning">⚠ ${escapeHtml(text)}</p>
       <ul class="scx-needs-not-indexed-list">${items}</ul>
     </div>`;
+  return (
+    (needGame.length ? group(fill(t("needsIncomplete"), { count: needGame.length }), gameItems) : "") +
+    (noProduct.length ? group(fill(t("needsNoProduct"), { count: noProduct.length }), productItems) : "")
+  );
 }

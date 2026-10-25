@@ -81,7 +81,7 @@ const FEATURES = [
   },
   // Top-bar switch; map tags and game high contrast only while it is on (or the OS asks).
   { id: "accessibility", init: initAccessibility },
-  // Left-sidebar planner; game data is fetched only when the player presses Calculate.
+  // Left-sidebar planner; stock and prices are fetched only when the player presses Calculate.
   { id: "resource-needs", init: initResourceNeeds },
   { id: "contract", init: initContractHelper },
   { id: "warehouse", init: initWarehouseHelper },

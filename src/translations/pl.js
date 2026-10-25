@@ -446,7 +446,7 @@ export default {
   a11yEditorHint: "Otwórz budynek, aby nadać mu pseudonim lub własny kolor.",
   needsTitle: "Potrzebne zasoby",
   needsHelp:
-    "Zaplanuj kolejne produkcje: zaznacz budynki, ustaw czas pracy i porównaj potrzebne pensje oraz surowce z gotówką i magazynem.\n48h dla czasu trwania lub 20:15 dla godziny końca. Każdy budynek może mieć własny czas.\nIndeksowanie: planer odczytuje poziom, pensje i produkcję na godzinę ze strony budynku, gdy grasz. Otwórz każdy budynek raz (kliknij nazwę), a stronę produktu raz, aby poznać jego produkcję. Nic nie jest w tym celu wysyłane do gry.\nPowtórz to tylko po rozbudowie budynku.\nDane gry są pobierane tylko po naciśnięciu Oblicz.",
+    "Zaplanuj kolejne produkcje: wybierz, co i w jakiej jakości produkuje każdy budynek, ustaw czas pracy i porównaj potrzebne płace oraz surowce z gotówką i magazynem.\nWpisz 48h jako czas trwania lub 20:15 jako godzinę zakończenia. Każdy budynek może mieć własny czas.\nSurowce mogą mieć jakość o jeden niższą niż produkt: Q5 wymaga Q4 lub lepszej.\nIndeksowanie: planer odczytuje poziom, płace i produkcję na godzinę ze strony budynku podczas gry. Otwórz każdy budynek raz (kliknij nazwę), a stronę produktu raz dla jego produkcji. Powtórz tylko po rozbudowie.\nMagazyn i ceny rynkowe ładują się tylko po naciśnięciu Oblicz.",
   needsDefaultPeriod: "Czas pracy",
   needsCalculate: "Oblicz",
   needsPeriodHint: "48h = czas trwania, 20:15 = godzina końca. Pusty czas budynku użyje tego.",
@@ -457,11 +457,10 @@ export default {
   needsBuildingLabel: "{name} P{level}",
   needsProduct: "Produkt",
   needsBuildingPeriod: "Czas pracy",
-  needsAdjust: "Dostosuj stawki",
-  needsUnitsPerHour: "Jednostki/h",
-  needsWagesPerHour: "Pensje/h",
   needsIncomplete:
-    "{count} budynk(ów) wciąż potrzebuje danych z gry. Otwórz każdy poniżej lub wpisz je w Dostosuj stawki.",
+    "{count} budynek/budynki nadal potrzebują danych z gry i są pominięte. Otwórz każdy poniżej.",
+  needsNoProduct:
+    "{count} budynek/budynki nie mają wybranego produktu i są pominięte. Wybierz go na liście poniżej.",
   needsInvalidPeriod: "{count} budynk(ów) ma niezrozumiały czas.",
   needsUnpriced: "{count} brakując(ych) pozycji nie ma jeszcze ceny rynkowej: oblicz ponownie później.",
   needsCashUnknown: "Gotówka nieznana",
@@ -477,8 +476,13 @@ export default {
   needsCash: "Gotówka",
   needsCashGap: "Brakuje",
   needsFetchedAt: "Dane gry z {time}",
-  needsEmpty: "Naciśnij Oblicz, aby wczytać budynki.",
+  needsEmpty: "Wybierz, co produkuje każdy budynek, a potem naciśnij Oblicz.",
   needsLoading: "Wczytywanie danych gry…",
+  needsQuality: "Jakość",
+  needsQualityOption: "Q{quality}",
+  needsQualityMin: "Q{quality}+",
+  needsLoadingStock: "Sprawdzanie magazynu…",
+  needsPricesProgress: "Ceny {done}/{total}",
   needsCooldown:
     "Ponownie dostępne za {time}. Ograniczone do raz na minutę, aby nie zalewać serwerów gry zapytaniami.",
   needsRateLimited: "Gra obecnie ogranicza zapytania. Spróbuj ponownie za {time}.",

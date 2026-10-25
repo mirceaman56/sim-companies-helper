@@ -2,17 +2,21 @@ import { describe, expect, it } from "vitest";
 import {
   RESOURCE_NEEDS_COOLDOWN_MS,
   aggregateNeeds,
-  indexingGap,
-  mergeCapturedRates,
+  allocateStock,
+  cheapestAtQuality,
   compareCash,
   compareWithStock,
   cooldownRemainingMs,
+  indexingGap,
+  inputQualityFor,
   isCheckedByDefault,
+  mergeCapturedRates,
   normalizeBuilding,
   parsePeriodHours,
+  productsForBuilding,
+  resolveProduct,
   resolveRates,
   selectProductionBuildings,
-  sumStockByKind,
 } from "../src/resource_needs_calc.js";
 
 const NOW = new Date(2026, 9, 13, 18, 0, 0).getTime();
@@ -62,10 +66,11 @@ describe("parsePeriodHours", () => {
 });
 
 describe("buildings", () => {
-  it("keeps production buildings only and reads their state", () => {
-    const list = selectProductionBuildings([quarry, upgrading, seasonal]);
+  it("keeps production buildings the product list knows and reads their state", () => {
+    const unknownKind = { id: 3, kind: "?", category: "production", name: "Mystery", size: 1, busy: null };
+    const list = selectProductionBuildings([quarry, upgrading, seasonal, unknownKind]);
     expect(list.map((b) => b.id)).toEqual([54429942, 57799836]);
-    expect(list[0]).toMatchObject({ status: "producing", productId: 44, runUnitsPerHour: 10000 });
+    expect(list[0]).toMatchObject({ kind: "Q", status: "producing", productId: 44 });
     expect(list[0].freeAt).toBe(Date.parse(quarry.busy.started) + 86400 * 1000);
     expect(list[1]).toMatchObject({ status: "upgrading", productId: null });
   });
@@ -77,14 +82,29 @@ describe("buildings", () => {
   });
 });
 
+describe("products per building", () => {
+  it("lists what each building letter can make", () => {
+    expect(productsForBuilding("Q")).toEqual([44, 104, 105]);
+    expect(productsForBuilding("E")).toEqual([1]);
+    expect(productsForBuilding("?")).toEqual([]);
+  });
+
+  it("keeps a saved product only when the building can make it", () => {
+    const building = normalizeBuilding(quarry);
+    expect(resolveProduct(building, 104)).toBe(104);
+    expect(resolveProduct(building, 1)).toBe(44);
+    expect(resolveProduct(building, null)).toBe(44);
+    expect(resolveProduct(normalizeBuilding({ id: 9, kind: "E", category: "production" }), null)).toBe(1);
+    expect(resolveProduct(normalizeBuilding(upgrading), null)).toBeNull();
+  });
+});
+
 describe("resolveRates", () => {
-  const building = normalizeBuilding(quarry);
   const captured = mergeCapturedRates(
     null,
     {
       level: 16,
       wagesPerHour: null,
-      offers: [],
       rates: [
         { productId: 44, unitsPerHour: 24000, wagesPerHour: 6000 },
         { productId: 45, unitsPerHour: 5000, wagesPerHour: 6000 },
@@ -93,50 +113,27 @@ describe("resolveRates", () => {
     NOW,
   );
 
-  it("uses building page rates as read", () => {
-    expect(resolveRates(building, captured, {}, 44)).toEqual({
-      unitsPerHour: 24000,
-      unitsSource: "page",
-      wagesPerHour: 6000,
-      wagesSource: "page",
-    });
-  });
-
-  it("lets overrides win", () => {
-    expect(resolveRates(building, captured, { unitsPerHour: 500, wagesPerHour: 100 }, 44)).toMatchObject({
-      unitsPerHour: 500,
-      unitsSource: "override",
-      wagesPerHour: 100,
-      wagesSource: "override",
-    });
-  });
-
-  it("falls back to the running order for units and keeps building wages for any product", () => {
-    expect(resolveRates(building, null, {}, 44)).toMatchObject({ unitsPerHour: 10000, unitsSource: "run" });
-    expect(resolveRates(building, captured, {}, 3)).toMatchObject({
-      unitsPerHour: null,
-      wagesPerHour: 6000,
-      wagesSource: "page",
-    });
-    expect(resolveRates(building, null, {}, 3)).toMatchObject({ unitsPerHour: null, wagesPerHour: null });
+  it("uses building page rates as read and building wages for any product", () => {
+    expect(resolveRates(captured, 44)).toEqual({ unitsPerHour: 24000, wagesPerHour: 6000 });
+    expect(resolveRates(captured, 3)).toEqual({ unitsPerHour: null, wagesPerHour: 6000 });
+    expect(resolveRates(null, 44)).toEqual({ unitsPerHour: null, wagesPerHour: null });
   });
 });
 
 describe("mergeCapturedRates", () => {
-  const reading = (level, wagesPerHour, offers, rates) => ({ level, wagesPerHour, offers, rates });
+  const reading = (level, wagesPerHour, rates) => ({ level, wagesPerHour, rates });
 
   it("keeps products seen earlier and takes header level and wages from any visit", () => {
     const first = mergeCapturedRates(
       null,
-      reading(12, null, [16, 17], [{ productId: 16, unitsPerHour: 900, wagesPerHour: 8000 }]),
+      reading(12, null, [{ productId: 16, unitsPerHour: 900, wagesPerHour: 8000 }]),
       NOW,
     );
-    const second = mergeCapturedRates(first, reading(12, 8290, [], []), NOW);
+    const second = mergeCapturedRates(first, reading(12, 8290, []), NOW);
     expect(second).toEqual({
       size: 12,
       at: NOW,
       wagesPerHour: 8290,
-      offers: [16, 17],
       products: { 16: { unitsPerHour: 900, wagesPerHour: 8000 } },
     });
   });
@@ -144,33 +141,48 @@ describe("mergeCapturedRates", () => {
   it("scales what it remembered when the page shows a new level", () => {
     const before = mergeCapturedRates(
       null,
-      reading(10, 1000, [], [{ productId: 16, unitsPerHour: 100, wagesPerHour: 1000 }]),
+      reading(10, 1000, [{ productId: 16, unitsPerHour: 100, wagesPerHour: 1000 }]),
       NOW,
     );
-    const after = mergeCapturedRates(before, reading(12, null, [], []), NOW);
+    const after = mergeCapturedRates(before, reading(12, null, []), NOW);
     expect(after.size).toBe(12);
     expect(after.wagesPerHour).toBe(1200);
     expect(after.products[16]).toEqual({ unitsPerHour: 120, wagesPerHour: 1200 });
-    expect(mergeCapturedRates(before, reading(null, null, [], []), NOW).wagesPerHour).toBe(1000);
+    expect(mergeCapturedRates(before, reading(null, null, []), NOW).wagesPerHour).toBe(1000);
   });
 });
 
 describe("indexingGap", () => {
-  const rates = (unitsSource, wagesSource) => ({
-    unitsPerHour: 1,
-    unitsSource,
-    wagesPerHour: 1,
-    wagesSource,
-  });
-  const seen = { size: 12, at: NOW, wagesPerHour: 1, offers: null, products: {} };
+  const seen = { size: 12, at: NOW, wagesPerHour: 1, products: {} };
 
-  it("names what is still missing, treating run estimates as missing", () => {
-    expect(indexingGap(rates("page", "page"), 16, null)).toBe("building");
-    expect(indexingGap(rates("page", "page"), 16, seen)).toBeNull();
-    expect(indexingGap(rates("override", "page"), 16, seen)).toBeNull();
-    expect(indexingGap(rates("run", "page"), 16, seen)).toBe("units");
-    expect(indexingGap(rates("page", null), 16, seen)).toBe("wages");
-    expect(indexingGap(rates("page", "page"), null, seen)).toBe("product");
+  it("names what is still missing", () => {
+    expect(indexingGap({ unitsPerHour: 1, wagesPerHour: 1 }, 16, null)).toBe("building");
+    expect(indexingGap({ unitsPerHour: 1, wagesPerHour: 1 }, 16, seen)).toBeNull();
+    expect(indexingGap({ unitsPerHour: null, wagesPerHour: 1 }, 16, seen)).toBe("units");
+    expect(indexingGap({ unitsPerHour: 1, wagesPerHour: null }, 16, seen)).toBe("wages");
+    expect(indexingGap({ unitsPerHour: 1, wagesPerHour: 1 }, null, seen)).toBe("product");
+  });
+});
+
+describe("quality", () => {
+  it("lets inputs be one quality below the output", () => {
+    expect(inputQualityFor(0)).toBe(0);
+    expect(inputQualityFor(1)).toBe(0);
+    expect(inputQualityFor(5)).toBe(4);
+    expect(inputQualityFor(99)).toBe(11);
+  });
+
+  it("finds the cheapest listing at or above a quality", () => {
+    const listings = [
+      { quality: 0, price: 1 },
+      { quality: 3, price: 1.5 },
+      { quality: 5, price: 1.4 },
+      { quality: 6, price: 2 },
+    ];
+    expect(cheapestAtQuality(listings, 0)).toBe(1);
+    expect(cheapestAtQuality(listings, 3)).toBe(1.4);
+    expect(cheapestAtQuality(listings, 6)).toBe(2);
+    expect(cheapestAtQuality(listings, 7)).toBeNull();
   });
 });
 
@@ -185,44 +197,66 @@ describe("needs and shortfall", () => {
     },
   };
 
-  it("adds inputs and wages over the period and lists incomplete buildings", () => {
+  it("adds inputs per required quality and wages, skipping buildings without game numbers", () => {
     const result = aggregateNeeds(
       [
-        { buildingId: 1, productId: 16, hours: 10, unitsPerHour: 100, wagesPerHour: 50 },
-        { buildingId: 2, productId: 16, hours: 0, unitsPerHour: 100, wagesPerHour: 50 },
-        { buildingId: 3, productId: null, hours: 5, unitsPerHour: null, wagesPerHour: null },
+        { buildingId: 1, productId: 16, quality: 0, hours: 10, unitsPerHour: 100, wagesPerHour: 50 },
+        { buildingId: 2, productId: 16, quality: 5, hours: 1, unitsPerHour: 100, wagesPerHour: 50 },
+        { buildingId: 3, productId: 16, quality: 0, hours: 0, unitsPerHour: 100, wagesPerHour: 50 },
+        { buildingId: 4, productId: 16, quality: 0, hours: 5, unitsPerHour: null, wagesPerHour: 50 },
       ],
       (id) => recipes[id],
     );
-    expect(Object.fromEntries(result.inputs)).toEqual({ 44: 2000, 2: 500 });
-    expect(result.wages).toBe(500);
-    expect(result.incomplete).toEqual([
-      { buildingId: 3, missing: "wages" },
-      { buildingId: 3, missing: "units" },
+    expect(result.inputs).toEqual([
+      { productId: 44, quality: 0, amount: 2000 },
+      { productId: 2, quality: 0, amount: 500 },
+      { productId: 44, quality: 4, amount: 200 },
+      { productId: 2, quality: 4, amount: 50 },
     ]);
+    expect(result.wages).toBe(550);
   });
 
-  it("compares with stock summed over qualities and prices the shortfall", () => {
-    const stock = sumStockByKind([
-      { kind: 44, amount: 1200 },
-      { kind: 44, amount: 300 },
-      { kind: 2, amount: 900 },
+  it("covers higher-quality needs first and uses only stock that is good enough", () => {
+    const needs = [
+      { productId: 44, quality: 0, amount: 100 },
+      { productId: 44, quality: 4, amount: 100 },
+    ];
+    const covered = allocateStock(needs, [
+      { kind: 44, quality: 0, amount: 30 },
+      { kind: 44, quality: 3, amount: 500 },
+      { kind: 44, quality: 5, amount: 120 },
     ]);
-    const result = compareWithStock(
-      new Map([
-        [44, 2000],
-        [2, 500],
-        [7, 10],
-      ]),
-      stock,
-      new Map([[44, 0.8]]),
+    expect(covered.get("44:4")).toBe(100);
+    expect(covered.get("44:0")).toBe(100);
+
+    const lowOnly = allocateStock(
+      [{ productId: 44, quality: 4, amount: 100 }],
+      [{ kind: 44, quality: 3, amount: 500 }],
     );
-    expect(result.rows.map((r) => [r.productId, r.missing, r.buyCost])).toEqual([
-      [44, 500, 400],
-      [7, 10, null],
-      [2, 0, null],
+    expect(lowOnly.get("44:4")).toBe(0);
+  });
+
+  it("prices the shortfall per product and quality", () => {
+    const result = compareWithStock(
+      [
+        { productId: 44, quality: 0, amount: 2000 },
+        { productId: 44, quality: 4, amount: 100 },
+        { productId: 2, quality: 0, amount: 500 },
+        { productId: 7, quality: 0, amount: 10 },
+      ],
+      [
+        { kind: 44, quality: 0, amount: 1500 },
+        { kind: 2, quality: 1, amount: 900 },
+      ],
+      { "44:0": 0.8, "44:4": 1.2 },
+    );
+    expect(result.rows.map((r) => [r.key, r.missing, r.buyCost])).toEqual([
+      ["44:0", 500, 400],
+      ["44:4", 100, 120],
+      ["7:0", 10, null],
+      ["2:0", 0, null],
     ]);
-    expect(result.buyTotal).toBe(400);
+    expect(result.buyTotal).toBe(520);
     expect(result.unpriced).toBe(1);
   });
 
@@ -234,9 +268,9 @@ describe("needs and shortfall", () => {
 });
 
 describe("cooldownRemainingMs", () => {
-  it("counts down five minutes from the last run", () => {
+  it("counts down from the last run", () => {
     expect(cooldownRemainingMs(0, NOW)).toBe(0);
-    expect(cooldownRemainingMs(NOW - 60_000, NOW)).toBe(RESOURCE_NEEDS_COOLDOWN_MS - 60_000);
+    expect(cooldownRemainingMs(NOW - 30_000, NOW)).toBe(RESOURCE_NEEDS_COOLDOWN_MS - 30_000);
     expect(cooldownRemainingMs(NOW - RESOURCE_NEEDS_COOLDOWN_MS, NOW)).toBe(0);
   });
 });

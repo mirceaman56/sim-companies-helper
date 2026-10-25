@@ -1,23 +1,26 @@
-// Pure math for the resources-needed planner: period parsing, hourly rates, input totals and
-// shortfalls against warehouse stock and cash.
+// Pure math for the resources-needed planner: period parsing, hourly rates, input totals by
+// quality, shortfalls against warehouse stock and cash.
+import buildingProducts from "./resources/building_products.json";
 
 export const RESOURCE_NEEDS_COOLDOWN_MS = 60 * 1000;
 export const DEFAULT_PERIOD = "24h";
+export const MAX_QUALITY = 12;
 
 const HOUR_MS = 60 * 60 * 1000;
 const MAX_PERIOD_HOURS = 24 * 30;
 
 /**
- * @typedef {{ id: number, kind: string, name: string, size: number, category: string,
+ * @typedef {{ id: number, kind: string, name: string, size: number,
  *   status: "idle"|"producing"|"upgrading"|"other", freeAt: number|null,
- *   productId: number|null, runUnitsPerHour: number|null }} PlannerBuilding
- * @typedef {{ size: number|null, at: number, wagesPerHour: number|null, offers: number[]|null,
+ *   productId: number|null }} PlannerBuilding
+ * @typedef {{ size: number|null, at: number, wagesPerHour: number|null,
  *   products: Record<string, { unitsPerHour: number|null, wagesPerHour: number|null }> }} CapturedRates
- * @typedef {{ level: number|null, wagesPerHour: number|null, offers: number[],
+ * @typedef {{ level: number|null, wagesPerHour: number|null,
  *   rates: { productId: number, unitsPerHour: number|null, wagesPerHour: number|null }[] }} PageReading
- * @typedef {{ checked?: boolean, productId?: number|null, period?: string,
- *   unitsPerHour?: number|null, wagesPerHour?: number|null }} BuildingPref
+ * @typedef {{ checked?: boolean, productId?: number|null, quality?: number, period?: string }} BuildingPref
  * @typedef {{ id: number, materials?: { id: number, quantity: number }[] }} Recipe
+ * @typedef {{ productId: number, quality: number, amount: number }} Need
+ * @typedef {{ kind: number, quality: number, amount: number }} StockRow
  */
 
 /**
@@ -61,9 +64,31 @@ function positiveOrNull(value) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+/** @param {unknown} value */
+export function clampQuality(value) {
+  const n = Math.floor(Number(value));
+  return Number.isFinite(n) ? Math.min(Math.max(n, 0), MAX_QUALITY) : 0;
+}
+
 /**
- * Busy-state from the buildings list: "r" = production run, "b" = construction/upgrade.
- * @param {any} raw entry from /api/v2/companies/me/buildings/
+ * The game lets inputs be one quality below the output.
+ * @param {number} outputQuality
+ */
+export function inputQualityFor(outputQuality) {
+  return Math.max(0, clampQuality(outputQuality) - 1);
+}
+
+/**
+ * @param {string} kind building letter from the company profile
+ * @returns {number[]}
+ */
+export function productsForBuilding(kind) {
+  return /** @type {Record<string, number[]>} */ (buildingProducts)[kind] ?? [];
+}
+
+/**
+ * Busy-state from the company profile: "r" = production run, "b" = construction/upgrade.
+ * @param {any} raw entry from the v3 company profile's infrastructure.buildings
  * @returns {PlannerBuilding}
  */
 export function normalizeBuilding(raw) {
@@ -80,34 +105,43 @@ export function normalizeBuilding(raw) {
       ? startedMs + durationS * 1000
       : null;
 
-  const resource = status === "producing" ? busy?.resource : null;
-  const productId = positiveOrNull(resource?.kind);
-  const amount = positiveOrNull(resource?.amount);
-  const runUnitsPerHour = amount && durationS > 0 ? amount / (durationS / 3600) : null;
-
   return {
     id: Number(raw?.id),
     kind: String(raw?.kind ?? ""),
     name: String(raw?.name ?? ""),
     size: Number(raw?.size) || 0,
-    category: String(raw?.category ?? ""),
     status,
     freeAt,
-    productId,
-    runUnitsPerHour,
+    productId: status === "producing" ? positiveOrNull(busy?.resource?.kind) : null,
   };
 }
 
-/** @param {any[]} rawList */
+/**
+ * Production buildings that make something the static product list knows about.
+ * @param {any[]} rawList
+ */
 export function selectProductionBuildings(rawList) {
   return (Array.isArray(rawList) ? rawList : [])
     .filter((b) => b?.category === "production" && Number.isFinite(Number(b?.id)))
-    .map(normalizeBuilding);
+    .map(normalizeBuilding)
+    .filter((b) => productsForBuilding(b.kind).length > 0);
 }
 
 /** @param {PlannerBuilding} building */
 export function isCheckedByDefault(building) {
   return building.status !== "upgrading";
+}
+
+/**
+ * The saved product when the building can make it, else the running one, else the only one.
+ * @param {PlannerBuilding} building
+ * @param {number|null|undefined} saved
+ */
+export function resolveProduct(building, saved) {
+  const allowed = productsForBuilding(building.kind);
+  if (saved && allowed.includes(saved)) return saved;
+  if (building.productId && allowed.includes(building.productId)) return building.productId;
+  return allowed.length === 1 ? allowed[0] : null;
 }
 
 /**
@@ -143,52 +177,27 @@ export function mergeCapturedRates(previous, reading, now = Date.now()) {
     size: level ?? previous?.size ?? null,
     at: now,
     wagesPerHour: positiveOrNull(reading.wagesPerHour) ?? scaled(previous?.wagesPerHour),
-    offers: reading.offers.length > 0 ? [...reading.offers] : (previous?.offers ?? null),
     products,
   };
 }
 
 /**
- * Override wins, then what the building page showed, then the running order for units.
- * Wages are building-wide: the page header first, any product's wages otherwise. Page values
- * are used as read: the company profile's level is rounded, so it cannot rescale them.
- * @param {PlannerBuilding} building
+ * Rates as the building page showed them. Wages are building-wide: the page header first,
+ * any product's wages otherwise.
  * @param {CapturedRates|null|undefined} captured
- * @param {BuildingPref} pref
  * @param {number|null} productId
  */
-export function resolveRates(building, captured, pref, productId) {
+export function resolveRates(captured, productId) {
   const product = productId !== null ? captured?.products?.[productId] : undefined;
   const anyWages = Object.values(captured?.products ?? {}).find((p) => p?.wagesPerHour)?.wagesPerHour ?? null;
-  const overrideUnits = positiveOrNull(pref?.unitsPerHour);
-  const overrideWages = positiveOrNull(pref?.wagesPerHour);
-
-  let unitsPerHour = overrideUnits;
-  let unitsSource = overrideUnits ? "override" : null;
-  if (!unitsPerHour && product?.unitsPerHour) {
-    unitsPerHour = product.unitsPerHour;
-    unitsSource = "page";
-  }
-  if (!unitsPerHour && productId !== null && productId === building.productId && building.runUnitsPerHour) {
-    unitsPerHour = building.runUnitsPerHour;
-    unitsSource = "run";
-  }
-
-  let wagesPerHour = overrideWages;
-  let wagesSource = overrideWages ? "override" : null;
-  const pageWages = captured?.wagesPerHour ?? product?.wagesPerHour ?? anyWages;
-  if (!wagesPerHour && pageWages) {
-    wagesPerHour = pageWages;
-    wagesSource = "page";
-  }
-
-  return { unitsPerHour, unitsSource, wagesPerHour, wagesSource };
+  return {
+    unitsPerHour: product?.unitsPerHour ?? null,
+    wagesPerHour: captured?.wagesPerHour ?? product?.wagesPerHour ?? anyWages ?? null,
+  };
 }
 
 /**
  * What still has to be read from the game before a planned building's numbers are real.
- * A building whose page was never opened is not indexed at all; units guessed from the
- * running order count as missing.
  * @param {ReturnType<typeof resolveRates>} rates
  * @param {number|null} productId
  * @param {CapturedRates|null|undefined} captured
@@ -197,71 +206,121 @@ export function resolveRates(building, captured, pref, productId) {
 export function indexingGap(rates, productId, captured) {
   if (!captured) return "building";
   if (!productId) return "product";
-  if (!rates.unitsSource || rates.unitsSource === "run") return "units";
-  if (!rates.wagesSource) return "wages";
+  if (!rates.unitsPerHour) return "units";
+  if (!rates.wagesPerHour) return "wages";
   return null;
 }
 
+/** @param {number} productId @param {number} quality */
+export function needKey(productId, quality) {
+  return `${productId}:${quality}`;
+}
+
 /**
- * @param {{ buildingId: number, productId: number|null, hours: number,
+ * Inputs per product and minimum quality over each plan's period, plus wages.
+ * @param {{ buildingId: number, productId: number|null, quality: number, hours: number,
  *   unitsPerHour: number|null, wagesPerHour: number|null }[]} plans
  * @param {(productId: number) => Recipe|null|undefined} getRecipe
  */
 export function aggregateNeeds(plans, getRecipe) {
-  /** @type {Map<number, number>} */
+  /** @type {Map<string, Need>} */
   const inputs = new Map();
   let wages = 0;
-  const incomplete = [];
 
   for (const plan of plans) {
-    if (!(plan.hours > 0)) continue;
-    if (plan.wagesPerHour) wages += plan.wagesPerHour * plan.hours;
-    else incomplete.push({ buildingId: plan.buildingId, missing: "wages" });
-
-    if (!plan.productId || !plan.unitsPerHour) {
-      incomplete.push({ buildingId: plan.buildingId, missing: "units" });
-      continue;
-    }
+    if (!(plan.hours > 0) || !plan.productId || !plan.unitsPerHour || !plan.wagesPerHour) continue;
+    wages += plan.wagesPerHour * plan.hours;
     const units = plan.unitsPerHour * plan.hours;
+    const quality = inputQualityFor(plan.quality);
     for (const material of getRecipe(plan.productId)?.materials ?? []) {
-      const qty = Number(material.quantity) * units;
-      if (!(qty > 0)) continue;
-      inputs.set(material.id, (inputs.get(material.id) ?? 0) + qty);
+      const amount = Number(material.quantity) * units;
+      if (!(amount > 0)) continue;
+      const key = needKey(material.id, quality);
+      const need = inputs.get(key) ?? { productId: material.id, quality, amount: 0 };
+      need.amount += amount;
+      inputs.set(key, need);
     }
   }
-  return { inputs, wages, incomplete };
+  return { inputs: [...inputs.values()], wages };
 }
 
 /**
- * Stock is summed over all qualities: the planner does not know which quality a run will use.
- * @param {{ kind: number, amount: number }[]} stockRows
+ * Stock that covers each need: any quality at or above the need counts. Highest requirements
+ * take stock first, each from the lowest quality that still qualifies, so better stock is
+ * left for needs only it can cover.
+ * @param {Need[]} needs
+ * @param {StockRow[]} stockRows
+ * @returns {Map<string, number>} need key → amount covered
  */
-export function sumStockByKind(stockRows) {
-  /** @type {Map<number, number>} */
-  const totals = new Map();
+export function allocateStock(needs, stockRows) {
+  /** @type {Map<number, { quality: number, left: number }[]>} */
+  const pools = new Map();
   for (const row of Array.isArray(stockRows) ? stockRows : []) {
     const kind = Number(row?.kind);
     const amount = Number(row?.amount);
     if (!kind || !(amount > 0)) continue;
-    totals.set(kind, (totals.get(kind) ?? 0) + amount);
+    const pool = pools.get(kind) ?? [];
+    pool.push({ quality: clampQuality(row.quality), left: amount });
+    pools.set(kind, pool);
   }
-  return totals;
+  for (const pool of pools.values()) pool.sort((a, b) => a.quality - b.quality);
+
+  /** @type {Map<string, number>} */
+  const covered = new Map();
+  for (const need of [...needs].sort((a, b) => b.quality - a.quality)) {
+    let remaining = need.amount;
+    for (const lot of pools.get(need.productId) ?? []) {
+      if (remaining <= 0) break;
+      if (lot.quality < need.quality || lot.left <= 0) continue;
+      const take = Math.min(lot.left, remaining);
+      lot.left -= take;
+      remaining -= take;
+    }
+    covered.set(needKey(need.productId, need.quality), need.amount - remaining);
+  }
+  return covered;
 }
 
 /**
- * @param {Map<number, number>} inputs
- * @param {Map<number, number>} stock
- * @param {Map<number, number|null>} [prices]
+ * Any listing at or above the quality will do: better inputs are always allowed.
+ * @param {{ quality: number, price: number }[]} listings
+ * @param {number} quality
+ * @returns {number|null}
  */
-export function compareWithStock(inputs, stock, prices = new Map()) {
-  const rows = [...inputs].map(([productId, need]) => {
-    const have = stock.get(productId) ?? 0;
-    const missing = Math.max(0, Math.ceil(need - have));
-    const price = prices.get(productId);
+export function cheapestAtQuality(listings, quality) {
+  let best = null;
+  for (const listing of Array.isArray(listings) ? listings : []) {
+    if (listing.quality < quality || !(listing.price > 0)) continue;
+    if (best === null || listing.price < best) best = listing.price;
+  }
+  return best;
+}
+
+/**
+ * @param {Need[]} needs
+ * @param {StockRow[]} stockRows
+ * @param {Record<string, number|null>} [prices] need key → unit price
+ */
+export function compareWithStock(needs, stockRows, prices = {}) {
+  const covered = allocateStock(needs, stockRows);
+  const rows = needs.map((need) => {
+    const key = needKey(need.productId, need.quality);
+    const have = covered.get(key) ?? 0;
+    const missing = Math.max(0, Math.ceil(need.amount - have));
+    const price = prices[key] ?? null;
     const buyCost = missing > 0 && Number.isFinite(price) ? missing * Number(price) : null;
-    return { productId, need: Math.ceil(need), have, missing, price: price ?? null, buyCost };
+    return {
+      key,
+      productId: need.productId,
+      quality: need.quality,
+      need: Math.ceil(need.amount),
+      have,
+      missing,
+      price,
+      buyCost,
+    };
   });
-  rows.sort((a, b) => b.missing - a.missing || a.productId - b.productId);
+  rows.sort((a, b) => b.missing - a.missing || a.productId - b.productId || a.quality - b.quality);
   const buyTotal = rows.reduce((sum, row) => sum + (row.buyCost ?? 0), 0);
   const unpriced = rows.filter((row) => row.missing > 0 && row.buyCost === null).length;
   return { rows, buyTotal, unpriced };

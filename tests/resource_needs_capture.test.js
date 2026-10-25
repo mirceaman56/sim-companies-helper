@@ -10,7 +10,6 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 let stop = () => {};
 
 beforeEach(() => {
-  vi.spyOn(console, "log").mockImplementation(() => {});
   document.body.innerHTML = "";
 });
 
@@ -30,7 +29,6 @@ describe("startRateCapture", () => {
     expect(onReading).toHaveBeenCalledWith("52352297", {
       level: 12,
       wagesPerHour: 8290,
-      offers: [16, 17, 18, 43, 45],
       rates: [],
     });
   });
