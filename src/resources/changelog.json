@@ -1,6 +1,27 @@
 {
-  "generatedAt": "2026-10-23T04:42:00.000Z",
+  "generatedAt": "2026-10-25T05:59:08.000Z",
   "versions": [
+    {
+      "version": "1.3.0",
+      "date": "2026-10-25",
+      "entries": [
+        {
+          "cat": "feature",
+          "text": "New Resources needed planner: pick what each building makes and at which quality"
+        },
+        {
+          "cat": "feature",
+          "text": "See which inputs your warehouse is missing, what they cost to buy and if your cash is enough"
+        }
+      ],
+      "credits": [
+        {
+          "handle": "eneri81",
+          "role": "reporter",
+          "url": "https://github.com/eneri81"
+        }
+      ]
+    },
     {
       "version": "1.2.0",
       "date": "2026-10-23",

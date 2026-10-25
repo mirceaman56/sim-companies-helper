@@ -27,6 +27,7 @@
     "docs:warn-instructions": "node scripts/precommit-warning.mjs",
     "hooks:install": "git config core.hooksPath .githooks",
     "translate:sync": "node scripts/translate-translations.mjs",
+    "data:building-products": "node scripts/generate-building-products.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

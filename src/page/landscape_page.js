@@ -95,5 +95,7 @@ export function readLandscapeBuildings(root = document) {
  * @returns {string | null}
  */
 export function readBuildingIdFromPath(pathname) {
-  return String(pathname || "").match(BUILDING_HREF_RE)?.[1] || null;
+  // Non-English sessions prefix routes with the language ("/de/b/<id>/").
+  const path = String(pathname || "").replace(/^\/[a-z]{2}(?:-[a-z]{2})?(?=\/b\/)/, "");
+  return path.match(BUILDING_HREF_RE)?.[1] || null;
 }

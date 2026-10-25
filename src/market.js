@@ -91,6 +91,83 @@ export async function fetchMarketPrice(realmId, productId, quality = 0) {
   }
 }
 
+/**
+ * @param {number} realmId
+ * @param {number} productId
+ */
+function marketAllCacheKey(realmId, productId) {
+  return `all:${realmId}:${productId}`;
+}
+
+/**
+ * @param {number} realmId
+ * @param {number} productId
+ */
+export function hasFreshMarketAll(realmId, productId) {
+  const cached = STATE.marketCache.get(marketAllCacheKey(realmId, productId));
+  return Boolean(cached && Date.now() - cached.ts < MARKET_CACHE_TTL_MS);
+}
+
+// why: /market/ stops at the 200 cheapest listings, which for busy products are all low
+// quality; /market/all/ is what the game's own quality filter reads.
+/**
+ * Every exchange listing of a product, cheapest first.
+ * @param {number} realmId
+ * @param {number} productId
+ * @returns {Promise<{ quality: number, price: number }[]>}
+ */
+export async function fetchMarketAll(realmId, productId) {
+  const cacheKey = marketAllCacheKey(realmId, productId);
+  if (hasFreshMarketAll(realmId, productId)) return STATE.marketCache.get(cacheKey).data;
+
+  const data = await request("market", {
+    url: `https://www.simcompanies.com/api/v3/market/all/${realmId}/${productId}/`,
+    credentials: "include",
+    responseType: "json",
+    coalesce: true,
+    coalesceKey: cacheKey,
+    retries: 0,
+  });
+  const listings = (Array.isArray(data) ? data : [])
+    .map((item) => ({ quality: Number(item?.quality), price: Number(item?.price) }))
+    .filter((item) => Number.isFinite(item.quality) && item.price > 0);
+  STATE.marketCache.set(cacheKey, { ts: Date.now(), data: listings });
+  return listings;
+}
+
+const MARKET_TICKER_CACHE_TTL_MS = 5 * 60 * 1000;
+const tickerCache = new Map();
+
+// why: the planner needs prices for many products at once; one /market/ call per product
+// burned the shared rate limit. The ticker lists every exchange-traded product (aerospace
+// final goods are absent).
+/**
+ * Cheapest price per product for a whole realm in one request.
+ * @param {number} realmId
+ * @returns {Promise<Map<number, number>>} product id → price
+ */
+export async function fetchMarketTicker(realmId) {
+  const cached = tickerCache.get(realmId);
+  if (cached && Date.now() - cached.ts < MARKET_TICKER_CACHE_TTL_MS) return cached.prices;
+
+  const data = await request("market", {
+    url: `https://www.simcompanies.com/api/v3/market-ticker/${realmId}/`,
+    credentials: "include",
+    responseType: "json",
+    coalesce: true,
+    coalesceKey: `ticker:${realmId}`,
+    retries: 1,
+    retryDelayMs: 300,
+  });
+  const prices = new Map();
+  for (const entry of Array.isArray(data) ? data : []) {
+    const kind = Number(entry?.kind);
+    if (Number.isFinite(kind) && Number.isFinite(entry?.price)) prices.set(kind, entry.price);
+  }
+  tickerCache.set(realmId, { ts: Date.now(), prices });
+  return prices;
+}
+
 function ensureMarketFetch(realmId, productId, scheduleUpdate) {
   if (!productId) return;
 

@@ -9,7 +9,13 @@ vi.mock("../src/state.js", () => ({
   },
 }));
 
-import { fetchMarketPrice, ensureMarketFetchForProduct } from "../src/market.js";
+import {
+  fetchMarketAll,
+  fetchMarketPrice,
+  fetchMarketTicker,
+  hasFreshMarketAll,
+  ensureMarketFetchForProduct,
+} from "../src/market.js";
 import { STATE } from "../src/state.js";
 import {
   applyExternalRateLimit,
@@ -161,5 +167,69 @@ describe("ensureMarketFetchForProduct", () => {
     ensureMarketFetchForProduct(4, update);
     expect(STATE.marketState.status).toBe("loading");
     expect(update.mock.calls.length).toBe(callsAfterError + 1);
+  });
+});
+
+describe("fetchMarketTicker", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("maps every ticker entry to its price with one request and caches the result", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve([
+            { kind: 1, price: 0.248, is_up: false, realmId: 7 },
+            { kind: 9, price: 1.15, is_up: true, realmId: 7 },
+            { kind: 13, price: null, is_up: true, realmId: 7 },
+          ]),
+      }),
+    );
+
+    const prices = await fetchMarketTicker(7);
+    await fetchMarketTicker(7);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(String(global.fetch.mock.calls[0][0])).toContain("/api/v3/market-ticker/7/");
+    expect([...prices]).toEqual([
+      [1, 0.248],
+      [9, 1.15],
+    ]);
+  });
+});
+
+describe("fetchMarketAll", () => {
+  afterEach(() => {
+    STATE.marketCache.clear();
+  });
+
+  it("reads every listing of a product and serves repeats from the cache", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve([
+            { id: 1, kind: 2, quality: 0, price: 0.35 },
+            { id: 2, kind: 2, quality: 12, price: 0.74 },
+            { id: 3, kind: 2, quality: 4, price: null },
+          ]),
+      }),
+    );
+
+    expect(hasFreshMarketAll(0, 2)).toBe(false);
+    const listings = await fetchMarketAll(0, 2);
+    await fetchMarketAll(0, 2);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(String(global.fetch.mock.calls[0][0])).toContain("/api/v3/market/all/0/2/");
+    expect(listings).toEqual([
+      { quality: 0, price: 0.35 },
+      { quality: 12, price: 0.74 },
+    ]);
+    expect(hasFreshMarketAll(0, 2)).toBe(true);
   });
 });

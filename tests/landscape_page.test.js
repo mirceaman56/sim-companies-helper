@@ -99,6 +99,8 @@ describe("landscape page adapter", () => {
   it("reads the building id from building routes", () => {
     expect(readBuildingIdFromPath("/b/51683583/")).toBe("51683583");
     expect(readBuildingIdFromPath("/b/51683583/production/16/")).toBe("51683583");
+    expect(readBuildingIdFromPath("/de/b/51683583/")).toBe("51683583");
+    expect(readBuildingIdFromPath("/zh-cn/b/51683583/production/16/")).toBe("51683583");
     expect(readBuildingIdFromPath("/landscape/")).toBeNull();
     expect(readBuildingIdFromPath("")).toBeNull();
   });

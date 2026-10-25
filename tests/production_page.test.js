@@ -10,6 +10,9 @@ import {
   findFirstProductionRow,
   findProductionRowFromTarget,
   getProductionQuality,
+  readBuildingLevel,
+  readBuildingProductRates,
+  readBuildingWagesPerHour,
   readBusyProductionBlock,
   readProductionRow,
   readProductionStats,
@@ -186,6 +189,41 @@ describe("production_page adapter", () => {
       });
       expect(readProductionStats(row).laborCostPerUnit).toBeCloseTo(6271 / 2019.87, 6);
       expect(readProductionRow(row).unitCost).toBeNull();
+    });
+
+    it("lists output and wages per hour for each product the building offers", () => {
+      document.body.innerHTML = loadFixture("idle-block-rates.html");
+
+      expect(readBuildingProductRates(document)).toEqual([
+        { productId: 14, unitsPerHour: 2019.87, wagesPerHour: 6271 },
+      ]);
+    });
+
+    it("reads building wages from the header while the building is busy", () => {
+      document.body.innerHTML = loadFixture("busy-page-header.html");
+
+      expect(readBuildingWagesPerHour(document)).toBe(8290);
+      expect(readBuildingProductRates(document)).toEqual([]);
+    });
+
+    it("reads the exact building level from the page header", () => {
+      document.body.innerHTML = loadFixture("busy-page-header.html");
+      expect(readBuildingLevel(document)).toBe(12);
+
+      document.body.innerHTML = loadFixture("idle-block-rates.html");
+      expect(readBuildingLevel(document)).toBeNull();
+    });
+
+    it("reads no header wages from the setup form's stat list alone", () => {
+      document.body.innerHTML = loadFixture("idle-block-rates.html");
+
+      expect(readBuildingWagesPerHour(document)).toBeNull();
+    });
+
+    it("lists no building rates while only the running order is shown", () => {
+      document.body.innerHTML = loadFixture("busy-block.html");
+
+      expect(readBuildingProductRates(document)).toEqual([]);
     });
 
     it("ignores the finish-at clock value", () => {

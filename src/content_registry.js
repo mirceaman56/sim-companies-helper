@@ -16,6 +16,7 @@ import { initAccountingWidget } from "./accounting_ui.js";
 import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
 import { initAccessibility } from "./accessibility_ui.js";
+import { initResourceNeeds } from "./resource_needs_ui.js";
 
 /**
  * @typedef {{ id: string, titleKey: string, icon: string, update?: () => unknown }} SidebarSection
@@ -80,6 +81,8 @@ const FEATURES = [
   },
   // Top-bar switch; map tags and game high contrast only while it is on (or the OS asks).
   { id: "accessibility", init: initAccessibility },
+  // Left-sidebar planner; stock and prices are fetched only when the player presses Calculate.
+  { id: "resource-needs", init: initResourceNeeds },
   { id: "contract", init: initContractHelper },
   { id: "warehouse", init: initWarehouseHelper },
   { id: "upgrade", init: initUpgradeBuyMessage },
