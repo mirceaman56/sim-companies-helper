@@ -146,3 +146,24 @@ describe("bonds and summary", () => {
     expect(summary.isOverThreshold).toBe(false);
   });
 });
+
+describe("computeExecutiveLift with a CFO apprentice and a level 15 bank", () => {
+  // Board from a player report: the game showed "$3M + $88.8M" for this team.
+  const executives = [
+    exec("o", { cfo: 7 }),
+    exec("f", { cfo: 56 }),
+    exec("x", { cfo: 52 }),
+    exec("m", { cfo: 7 }),
+    exec("t", { cfo: 9 }),
+  ];
+  const buildings = [
+    { kind: "y", size: 10, position: "2" },
+    { kind: "n", size: 15, position: "4" },
+  ];
+
+  it("matches the game's executives table", () => {
+    const result = computeExecutiveLift(executives, buildings, { nowMs: NOW });
+    expect(result).toMatchObject({ effectiveSkill: 71, bankLevel: 15 });
+    expect(result.lift).toBe(88_750_000);
+  });
+});

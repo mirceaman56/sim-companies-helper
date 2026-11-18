@@ -63,6 +63,23 @@ describe("landscape page adapter", () => {
     });
   });
 
+  it("idle buildings report their exact level; busy ones report none", () => {
+    document.body.innerHTML = fixture("idle.html");
+    const buildings = byId(readLandscapeBuildings(document));
+    expect(buildings["2008"]).toMatchObject({ kind: "n", busy: false, level: 15 });
+    expect(buildings["2005"].level).toBe(10);
+    expect(buildings["2006"].level).toBe(26);
+    expect(buildings["2001"].level).toBeNull();
+    expect(buildings["2004"].level).toBeNull();
+  });
+
+  it("reads the level from localized idle labels", () => {
+    document.body.innerHTML = fixture("idle.html");
+    const bank = document.querySelector('a[href="/b/2008/"]');
+    bank.querySelector("span:last-child").textContent = "Stufe 15";
+    expect(readLandscapeBuilding(bank).level).toBe(15);
+  });
+
   it("retail stores report the product being sold", () => {
     document.body.innerHTML = fixture("idle.html");
     const buildings = byId(readLandscapeBuildings(document));

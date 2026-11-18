@@ -102,12 +102,14 @@ export const STATE = {
     details: {}, // { [executiveId]: { loaded, loading, error, data, lastRefreshAt } }
   },
 
-  // buildings (XP calculator)
+  // buildings: `items` is the API list with exact levels from game pages laid over `apiItems`
   buildings: {
     loaded: false,
     loading: false,
     error: null,
     items: [],
+    apiItems: [],
+    knownLevels: {}, // { [buildingId]: { level, at } }
     lastRefreshAt: 0, // ms epoch
   },
 

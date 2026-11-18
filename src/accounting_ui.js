@@ -47,6 +47,11 @@ export function updateAccountingWidget() {
   updateWidget();
 }
 
+/** Re-render with newer inputs; stays hidden until the startup loads have settled. */
+export function refreshAccountingWidget() {
+  updateWidget();
+}
+
 function syncWithNavbar() {
   const navContext = readMoneyNavbarContext(document);
   if (!navContext) {
