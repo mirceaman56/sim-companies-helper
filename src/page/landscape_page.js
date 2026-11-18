@@ -16,6 +16,7 @@ const STATUS_ICON_SELECTOR = 'img[src*="/resources/"], svg';
  *   id: string,
  *   kind: string,
  *   busy: boolean,
+ *   level: number | null,
  *   productSlug: string | null,
  *   statusEl: Element | null,
  *   labelHost: Element | null,
@@ -50,6 +51,20 @@ function findStatusEl(building) {
   return label && label.children.length > 0 ? label : null;
 }
 
+/**
+ * Exact level from an idle building's label: the last span holds a short "<label> <number>"
+ * ("lvl 15", "Stufe 15"). Busy buildings show a countdown there instead.
+ * @param {Element | null} statusEl
+ * @returns {number | null}
+ */
+function readIdleLevel(statusEl) {
+  const last = statusEl?.lastElementChild;
+  if (!last || last.children.length > 0) return null;
+  const match = (last.textContent || "").trim().match(/^\D{0,20}?(\d{1,3})$/u);
+  const level = match ? Number(match[1]) : NaN;
+  return level >= 1 ? level : null;
+}
+
 /** Extension nodes mounted inside the building must not shift the structural lookups. */
 function isOwnNode(el) {
   return [...el.classList].some((cls) => cls.startsWith("scx-"));
@@ -73,6 +88,7 @@ export function readLandscapeBuilding(element) {
     id,
     kind,
     busy,
+    level: busy ? null : readIdleLevel(statusEl),
     productSlug: busy && hasIcon ? extractResourceSlug(statusEl) : null,
     statusEl,
     labelHost: statusEl?.parentElement || null,

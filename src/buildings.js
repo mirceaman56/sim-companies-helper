@@ -1,11 +1,48 @@
-// Fetches and caches the player's building list for the XP calculator.
 import { STATE } from "./state.js";
 import { BUILDINGS_REFRESH_INTERVAL_MS } from "./constants.js";
 import { request } from "./data/apiClient.js";
 import { storage } from "./data/storage.js";
+import { applyKnownLevels, mergeKnownLevels, pruneKnownLevels } from "./building_levels_calc.js";
 
 const STORAGE_DOMAIN = "buildings-cache";
 const STORAGE_VERSION = 1;
+const LEVELS_STORAGE = { domain: "building-levels", version: 1, scope: "company", backend: "chrome" };
+
+/** @type {Promise<void> | null} */
+let knownLevelsLoad = null;
+
+function ensureKnownLevels() {
+  knownLevelsLoad ??= storage
+    .get(LEVELS_STORAGE)
+    .then((data) => {
+      if (data && typeof data === "object")
+        STATE.buildings.knownLevels = { ...data, ...STATE.buildings.knownLevels };
+    })
+    .catch(() => {});
+  return knownLevelsLoad;
+}
+
+function publishBuildings(apiItems) {
+  STATE.buildings.apiItems = apiItems;
+  STATE.buildings.items = applyKnownLevels(apiItems, STATE.buildings.knownLevels);
+}
+
+/**
+ * Remember exact levels read from game pages and lay them over the building list.
+ * @param {import("./building_levels_calc.js").LevelReading[]} readings
+ * @returns {Promise<boolean>} true when a level changed what the building list shows.
+ */
+export async function recordBuildingLevels(readings) {
+  if (!STATE.auth.companyId) return false;
+  await ensureKnownLevels();
+  const { known, changed } = mergeKnownLevels(STATE.buildings.knownLevels, readings);
+  if (!changed) return false;
+  STATE.buildings.knownLevels = known;
+  const before = STATE.buildings.items;
+  publishBuildings(STATE.buildings.apiItems);
+  await storage.set({ ...LEVELS_STORAGE, data: known });
+  return STATE.buildings.items.some((b, i) => b !== before[i]);
+}
 
 /**
  * Load buildings from chrome.storage.local cache or fetch from API.
@@ -26,11 +63,12 @@ export async function loadBuildings({ force = false } = {}) {
   STATE.buildings.error = null;
 
   try {
+    await ensureKnownLevels();
     // Try cached data first (unless forced)
     if (!force) {
       const cached = await readCachedBuildings(companyId);
       if (cached) {
-        STATE.buildings.items = cached.items;
+        publishBuildings(cached.items);
         STATE.buildings.lastRefreshAt = cached.ts;
         STATE.buildings.loaded = true;
 
@@ -52,7 +90,8 @@ export async function loadBuildings({ force = false } = {}) {
     });
     const buildings = data?.infrastructure?.buildings ?? [];
 
-    STATE.buildings.items = buildings;
+    STATE.buildings.knownLevels = pruneKnownLevels(STATE.buildings.knownLevels, buildings);
+    publishBuildings(buildings);
     STATE.buildings.lastRefreshAt = Date.now();
     STATE.buildings.loaded = true;
 

@@ -11,8 +11,9 @@ import { initChatFilter, updateChatFilterPanel } from "./chat_filter_ui.js";
 import { initContractHelper } from "./contract_ui.js";
 import { initWarehouseHelper } from "./warehouse_ui.js";
 import { initUpgradeBuyMessage } from "./upgrade_ui.js";
-import { initXpWidget } from "./xp_ui.js";
-import { initAccountingWidget } from "./accounting_ui.js";
+import { initXpWidget, updateXpWidget } from "./xp_ui.js";
+import { initAccountingWidget, refreshAccountingWidget } from "./accounting_ui.js";
+import { initBuildingLevelCapture } from "./building_levels.js";
 import { initWhatsNew } from "./whats_new_ui.js";
 import { initApiHealthBanner } from "./api_health_banner.js";
 import { initAccessibility } from "./accessibility_ui.js";
@@ -88,6 +89,17 @@ const FEATURES = [
   { id: "upgrade", init: initUpgradeBuyMessage },
   { id: "xp-widget", init: initXpWidget },
   { id: "accounting-widget", init: initAccountingWidget },
+  // The profile API rounds building levels down; the map and building pages show exact ones.
+  {
+    id: "building-levels",
+    init: () =>
+      initBuildingLevelCapture({
+        onChange: () => {
+          updateXpWidget();
+          refreshAccountingWidget();
+        },
+      }),
+  },
 ];
 
 function runIsolated(id, fn) {
